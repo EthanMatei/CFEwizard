@@ -196,7 +196,7 @@ db.host=jdbc:mysql://localhost:3306/cfg
 db.hbm2ddl=update
 
 # CAS
-host.cas.url=http://localhost:8080/mCFG
+host.cas.url=http://localhost:8080/CFE
 			
 # Server
 # Must be in sych with db.host</echo>		

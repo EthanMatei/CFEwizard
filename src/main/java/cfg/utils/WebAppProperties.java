@@ -59,7 +59,7 @@ public class WebAppProperties {
 		// Properties files are in user's home directory:
 		propertiesFileName = System.getProperty("user.home", ".") + System.getProperty("file.separator");
 		
-		propertiesFileName += ".cfg";
+		propertiesFileName += ".cfe";
 
 		propertiesFileName += ".properties";
 		

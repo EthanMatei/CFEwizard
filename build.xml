@@ -1,4 +1,4 @@
-<project name="cfg" default="initialize">
+<project name="cfe" default="initialize">
 
 	<!-- include the properties file for test (personal) installations
 	     build.properties file include; certain targets
@@ -8,7 +8,7 @@
 	
 	<property file="${buildPropertiesFile}"/>
 	
-	<property name="localCfgPropertiesFile" value="${user.home}/.cfg.properties"/>
+	<property name="localCfePropertiesFile" value="${user.home}/.cfe.properties"/>
 	
 	<!--
 	<artifact:dependencies pathId="dependency.classpath">
@@ -28,8 +28,8 @@
 		<antcall target="create-build-properties-file"/>
 		<echo message="Edit file ${buildPropertiesFile} before running the setup target."/>
 	
-	    <available file="${localCfgPropertiesFile}" property="isLocalCfgFileAvailable"/>
-		<antcall target="create-local-cfg-properties-file"/>
+	    <available file="${localCfePropertiesFile}" property="isLocalCfeFileAvailable"/>
+		<antcall target="create-local-cfe-properties-file"/>
 		
 	</target>
 	
@@ -184,15 +184,15 @@ mysqlAdminPassword=rootPassword</echo>
 	</target>
 
 	<!-- ======================================================
-	Create Local CFG Properties File
+	Create Local CFE Properties File
 	======================================================= -->
-	<target name="create-local-cfg-properties-file"
-	        description="Creates a CFG properties file for a local (personal) installation."
-		    unless="isLocalCfgFileAvailable">
-		<echo file="${localCfgPropertiesFile}"># Hibernate
-db.username=cfguser
-db.password=cfguserPassword
-db.host=jdbc:mysql://localhost:3306/cfg
+	<target name="create-local-cfe-properties-file"
+	        description="Creates a CFE properties file for a local (personal) installation."
+		    unless="isLocalCfeFileAvailable">
+		<echo file="${localCfePropertiesFile}"># Hibernate
+db.username=cfeuser
+db.password=cfeuserPassword
+db.host=jdbc:mysql://localhost:3306/cfe
 db.hbm2ddl=update
 
 # CAS
@@ -200,8 +200,8 @@ host.cas.url=http://localhost:8080/CFE
 			
 # Server
 # Must be in sych with db.host</echo>		
-        <chmod file="${localCfgPropertiesFile}" perm="600"/>
-        <echo message="CFG properties file created in: ${localCfgPropertiesFile}"/>
+        <chmod file="${localCfePropertiesFile}" perm="600"/>
+        <echo message="CFE properties file created in: ${localCfePropertiesFile}"/>
         <echo message="Note: in Eclipse you may need to do a refresh of your"/>
         <echo message="      directory/file window to actually see the new file."/>
     </target>
@@ -250,7 +250,7 @@ host.cas.url=http://localhost:8080/CFE
 	    <echo>${basedir}/target</echo>
 		<echo>${compile.classpath}</echo>
 		
-		<java classname="cfg.test.TestUtil" classpathref="compile.classpath">
+		<java classname="cfe.test.TestUtil" classpathref="compile.classpath">
 		    <classpath>
 		        <pathelement location="target/test-classes"/>
 		        <pathelement location="target/classes"/>

@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       
 <%-- 
-CFG Template
+CFE Template
 --%>
 
 <%@ taglib prefix="s" uri="/struts-tags"%>
@@ -17,7 +17,7 @@ CFG Template
         <%-- Page Header --%>
 
         <div id="logo">
-            <h2 style="margin-bottom: 4px; margin-top: 4px;"">CFG Wizard Scoring Program</h2>
+            <h2 style="margin-bottom: 4px; margin-top: 4px;"">CFE Wizard Scoring Program</h2>
             <h4 style="margin-top:2px; margin-bottom:4px">version <s:property value="@cfg.model.VersionNumber@VERSION_NUMBER" /> </h4>
         </div>
         

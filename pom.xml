@@ -211,7 +211,7 @@
                 <rulesUri>file:///${project.basedir}/rules.xml</rulesUri>
                 <!--
           		<driver>com.mysql.jdbc.Driver</driver>
-          		<url>jdbc:mysql://localhost:3306/cfg</url>
+          		<url>jdbc:mysql://localhost:3306/cfe</url>
           		<username>root</username>
           		<password>datimes</password>
           		<settingsKey>sensibleKey</settingsKey>

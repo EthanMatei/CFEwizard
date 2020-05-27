@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       
 <%-- 
-CFG Login Template
+CFE Login Template
 --%>
 
 <%@ taglib prefix="s" uri="/struts-tags"%>
@@ -20,7 +20,7 @@ CFG Login Template
         <%-- Page Header --%>
 
 
-        <h2>CFG LOGIN</h2>
+        <h2>CFE LOGIN</h2>
         
         <%-- Content --%>
     	<div class="content">

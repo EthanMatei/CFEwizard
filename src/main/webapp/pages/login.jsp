@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard Login</title>
+    <title>CFE Wizard Login</title>
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 

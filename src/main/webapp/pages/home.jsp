@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard</title>
+    <title>CFE Wizard</title>
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
@@ -36,7 +36,7 @@
 <h3>Admin</h3>
     <ul>
         <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>
-        <li> <s:a action="DatabaseStatusAction">CFG Database Status</s:a></li>
+        <li> <s:a action="DatabaseStatusAction">CFE Database Status</s:a></li>
         <li> <s:a action="SystemStatusAction">System Status</s:a></li>
     </ul>
 </s:if>

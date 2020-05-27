@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard</title>
+    <title>CFE Wizard</title>
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
@@ -34,7 +34,7 @@
   <h3>Database Table Map</h3>
   
   <table class="dataTable" style="margin-bottom: 14px;">
-  <tr> <th>MS Access Table</th> <th>CFG MySQL Table</th> <th>CFG MySQL Table Rows</th> </tr>
+  <tr> <th>MS Access Table</th> <th>CFE MySQL Table</th> <th>CFE MySQL Table Rows</th> </tr>
   <s:iterator value="tableMap">
     <tr>
       <td><s:property value="key"/></td>
@@ -46,7 +46,7 @@
   
   <p>
   Note: MS Access tables not shown in the database table map
-  above, and the linkage tables shown above, are ignored by the CFG Wizard.
+  above, and the linkage tables shown above, are ignored by the CFE Wizard.
   </p>
   
 </s:if>

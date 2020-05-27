@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard - Scoring Weights</title>
+    <title>CFE Wizard - Scoring Weights</title>
     <s:head />
 </tiles:putAttribute>
 <tiles:putAttribute name="content">

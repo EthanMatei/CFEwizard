@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard - Calculated Scores</title>
+    <title>CFE Wizard - Calculated Scores</title>
     <s:head />
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
@@ -45,7 +45,7 @@
 --%>
 
             
-<h1 style="padding-top:0px; margin-top:4px;">CFG Scores </h1>
+<h1 style="padding-top:0px; margin-top:4px;">CFE Scores </h1>
 <s:actionerror />
 
 

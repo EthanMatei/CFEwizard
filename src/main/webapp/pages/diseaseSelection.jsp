@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard - Dynamic Disease Scoring</title>
+    <title>CFE Wizard - Dynamic Disease Scoring</title>
     <s:head />
 
 

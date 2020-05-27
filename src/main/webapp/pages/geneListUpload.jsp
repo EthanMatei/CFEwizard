@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard - Gene List Upload</title>
+    <title>CFE Wizard - Gene List Upload</title>
     <s:head />
 </tiles:putAttribute>
 <tiles:putAttribute name="content">

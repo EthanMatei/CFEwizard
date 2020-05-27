@@ -1,0 +1,142 @@
+body  {
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+	margin-left: 2em;
+	margin-right: 2em;
+    background-color: #ffffff;
+	color: #000000;
+}
+
+.darkColor  {color: #1C2B59;}
+.lightColor {color: #8298D9;}
+.altLight   {color: #AF9699;}
+.altDark    {color: #1F4D48;}
+
+    	
+ .accentColor {color: #CE0000;}
+ .veryDarkColor {color: #000063;}
+ .darkColor {color: #5A79A5;}
+ .lightColor {color: #9CAAC6;}
+ .veryLightColor{color: #DEE7EF;}
+ 
+/***********************************************/
+/* Page links                                  */
+/***********************************************/
+a:link { color: #5A79A5; text-decoration: underline; }
+a:hover { color: #5A79A5; text-decoration: underline; }
+a:active { color: #5A79A5; text-decoration: underline; }
+a:visited { color: #5A79A5; text-decoration: underline; }
+a:visited:hover { color: #5A79A5; text-decoration: underline; }
+
+/**************************************************/
+/* Logo div                                       */
+/**************************************************/
+div#logo {
+	float: left;
+	text-align: center;
+	
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 7px;
+    padding-right: 7px;
+    border: 4px double #3D474C; 
+    
+    margin-top: 4px;
+    margin-bottom: 7px;
+    
+    color: #000063;
+    /* Gradient Stuff */
+   /*  background:  #DAEAF2; /* #eFeFeF; /*#FFFFFF; /* #DAEAF2; /* for non-css3 browsers */
+    
+
+    /*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF', endColorstr='#DAEAF2'); /* for IE */
+    /*background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#DAEAF2)); /* for webkit browsers */
+    /*background: -moz-linear-gradient(top, #FFFFFF, #DAEAF2); /* for firefox 3.6+ */ 
+
+    /* filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#DAEAF2', endColorstr='#FFFFFF'); /* for IE */
+    /* background: -webkit-gradient(linear, left top, left bottom, from(#DAEAF2), to(#FFFFFF)); /* for webkit browsers */
+    /* background: -moz-linear-gradient(top, #DAEAF2, #FFFFFF); /* for firefox 3.6+ */
+    
+    /* rounded corners - won't work in IE8 */
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    border-radius: 10px;	 
+    
+    background-color: #F5F5F5; /* #FFFFFF; /* #DAEAF2; /*white; */
+}
+
+div#login {
+	float: left;
+	text-align: center;
+	
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 7px;
+    padding-right: 7px;
+    border: 2px solid #3D474C; 
+    
+    margin-top: 4px;
+    margin-bottom: 7px;
+    
+    color: #000063;
+   
+    /* rounded corners - won't work in IE8 */
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    border-radius: 10px;	 
+    
+    background-color: #F5F5F5; /* #FFFFFF; /* #DAEAF2; /*white; */
+}
+
+div#login td {
+	padding: 4px;
+}
+
+/***********************/
+/* scrollable div      */
+/***********************/
+div.scrollable {
+	background-color: white;
+	border: 1px solid black;
+	margin-bottom: 4px;
+    overflow:auto;
+    /* width:500px; */
+    height:400px;
+    max-height:400px;
+    height: expression( this.scrollHeight > 419 ? '420px' : 'auto');   /* For Internet Explorer */
+    padding-right:5px;
+    padding-bottom:5px;
+
+}
+
+/************************************************/
+/* Data Table                                   */
+/************************************************/
+table.dataTable {
+    border-color: #000000;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+    border-spacing: 0px;
+    border-collapse: separate;
+    padding: 0px;
+    margin: 0px;
+    
+}
+
+table.dataTable th {
+	background-color: #DEE7EF;
+	padding: 4px;
+    border-color: #000000;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+}
+
+table.dataTable td {
+	padding: 4px;
+    border-color: #000000;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+}

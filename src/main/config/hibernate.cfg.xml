@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+	<!-- 
+		NOTE: This file does nothing in the application anymore. All
+		Configuration has been moved to: HibernateUtil.java
+		
+		This is kept to allow one to prototype HQL queries using Hibernate
+		Tools...
+		
+	 -->
+<hibernate-configuration>
+        <session-factory>
+                <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+                <property name="connection.url">jdbc:mysql://localhost:3306/cfg</property>
+                <property name="connection.username">root</property>
+                <property name="connection.password">datimes</property>
+                <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+                
+                <!-- Use C3PO connection pool -->
+                <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+                <property name="hibernate.c3p0.min_size">5</property>
+                <property name="hibernate.c3p0.max_size">20</property>
+                <property name="hibernate.c3p0.timeout">300</property>
+                <property name="hibernate.c3p0.max_statements">50</property>
+                <property name="hibernate.c3p0.idle_test_period">3000</property>
+                
+                <!-- Show and print nice SQL on stdout 
+                <property name="show_sql">true</property>
+                <property name="format_sql">true</property> -->
+        
+                
+                <property name="current_session_context_class">thread</property>  
+                <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+                
+                
+                <!-- Auto generate schema  -->
+                 <property name="hbm2ddl.auto">update</property> 
+                  
+                <!-- Location of package-level annotations for JPA -->
+                <mapping package="cfg.model"/>
+
+                <!-- JPA classes to map: -->
+                <mapping class="cfg.model.HuBrainGex" />
+                           
+        </session-factory>
+</hibernate-configuration>

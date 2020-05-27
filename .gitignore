@@ -1,0 +1,6 @@
+*.class
+/target
+/WebContent
+build.properties
+test-datasp.txt
+*.geany

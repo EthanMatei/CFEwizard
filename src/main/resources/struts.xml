@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	
+<!-- All constants are defined in struts.properties -->
+	<!--  <package name="cfg" extends="struts-default" namespace="/pages"> -->
+	
+	
+	<package name="cfg" extends="struts-default">
+	
+	    <interceptors>
+			<interceptor-stack name="cfgStack">
+				<interceptor-ref name="tokenSession">
+					<param name="includeMethods">*</param>
+				</interceptor-ref>
+				<interceptor-ref name="defaultStack" />					
+			</interceptor-stack>
+			
+			<interceptor-stack name="fileUploadStack">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="tokenSession">
+					<param name="includeMethods">*</param>
+				</interceptor-ref>
+			    <!--    	
+			    <interceptor-ref name="fileUpload">
+	        		<param name="allowedTypes">application/msaccess</param>
+	    		</interceptor-ref>
+	    		-->
+	    		
+	    		<!-- JM - commented this out to get serial file upload version to work
+			    <interceptor-ref name="execAndWait">
+			        <param name="delay">1000</param>
+			        <param name="delaySleepInterval">500</param>
+			    </interceptor-ref>
+			    -->
+        	</interceptor-stack>
+        	
+        	
+		</interceptors>
+		
+		<default-interceptor-ref name="cfgStack" />
+
+
+    	<global-results>
+     		<result name="error">pages/error.jsp</result>
+     		<result name="invalid.token">pages/error.html</result>
+		</global-results>
+
+ 		<global-exception-mappings>
+  			<exception-mapping exception="java.lang.Exception" result="error" />
+		</global-exception-mappings>
+
+		
+		<!-- 
+		<action name="" class="cfg.action.Home">
+            <result name="success">pages/home.jsp</result>
+            <result name="error">pages/error.jsp</result>
+        </action>
+        
+ 		<action name="/" class="cfg.action.Home">
+            <result name="success">pages/home.jsp</result>
+            <result name="error">pages/error.jsp</result>
+        </action>      
+          
+ 		<action name="home" class="cfg.action.Home">
+            <result name="success">pages/home.jsp</result>
+            <result name="error">pages/error.jsp</result>
+        </action>   
+                
+ 		<action name="/home" class="cfg.action.Home">
+            <result name="success">pages/home.jsp</result>
+            <result name="error">pages/error.jsp</result>
+        </action>   
+               
+ 		<action name="*">
+            <result name="success">pages/error.jsp</result>
+            <result name="error">pages/error.jsp</result>
+        </action>   
+        -->
+        	
+		
+		<action name="CFGLoginAction" class="cfg.action.CFGLoginAction">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/login.jsp</result>
+			<result name="error">pages/login.jsp</result>
+		</action>
+		
+		<action name="CFGLoginProcess" class="cfg.action.CFGLoginProcess">
+			<interceptor-ref name="cfgStack"/>
+			<result name="success" type="redirectAction">
+                <param name="actionName">Home</param>
+            </result>
+            <result name="input">pages/login.jsp</result>
+			<result name="error">pages/login.jsp</result>
+		</action>
+
+		<action name="LogoutAction" class="cfg.action.LogoutAction">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/login.jsp</result>
+			<result name="error">pages/login.jsp</result>
+		</action>
+				
+		<action name="Home" class="cfg.action.Home">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/home.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+		
+		<action name="DatabaseStatusAction" class="cfg.action.DatabaseStatusAction">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/dbStatus.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+		
+		<action name="DatabaseClear" class="cfg.action.DatabaseStatusAction" method="clear">
+			<interceptor-ref name="basicStack"/>
+			<result name="success" type="redirectAction">
+			    <param name="actionName">DatabaseStatusAction</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+		
+		<action name="SystemStatusAction" class="cfg.action.SystemStatusAction">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/systemStatus.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+		
+   		<!-- Step 1 -->
+   		<!--  Action for database upload log
+		<action name="DatabaseList" class="cfg.action.DatabaseList" method="initialize">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/dbList.jsp</result>
+			<result name="error">pages/error.jsp</result>
+		</action>     
+        -->
+        		
+	<!-- Upload database flow -->
+	
+		<!-- Step 1 -->
+		<action name="DBSelectionInitialize" class="cfg.action.DBSelection" method="initialize">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/dbSelection.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+		
+		<action name="DBSelection" class="cfg.action.DBSelection">
+			<result name="success">pages/fileUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/dbSelection.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+		
+		<!-- Step 2 -->
+		<!-- 
+		<action name="FileUpload" class="cfg.action.FileUpload">
+			<interceptor-ref name="fileUploadStack"/>
+
+		    <result name="wait">pages/wait.jsp</result>
+	    	<result name="success">pages/success.jsp</result>
+	    	<result name="error">pages/error.jsp</result>
+	    	<result name="input">pages/fileUpload.jsp</result>
+	    	<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>   	
+		</action>
+        -->
+        
+		<action name="FileUpload" class="cfg.action.FileUploadSerial">
+			<interceptor-ref name="fileUploadStack"/>
+	    	<result name="success">pages/dbUploadStatus.jsp</result>
+	    	<!-- <result name="error">pages/error.jsp</result> -->
+	        <result name="error">pages/dbUploadStatus.jsp</result>
+	    	<result name="input">pages/fileUpload.jsp</result>
+	    	<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>   	
+		</action>
+
+		
+	<!-- Calculate scores flow -->
+	
+		<!-- Step 1 -->	
+		
+		<!-- does not work with pages namespace -->
+	    <action name="GeneListUpload" class="cfg.action.GeneListUpload" method="initialize">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/geneListUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result> 
+		</action>
+		
+		<action name="GeneListUploadProcess" class="cfg.action.GeneListUpload">
+		    <interceptor-ref name="cfgStack"/>
+			<result name="success" type="redirectAction">
+            	<param name="actionName">ScoringWeights</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result> 			
+		</action>
+	
+	
+		<!-- Step 2 -->	
+		<action name="ScoringWeights" class="cfg.action.ScoringWeights" method="initialize">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/scoringWeights.jsp</result>	
+			<result name="error">pages/error.jsp</result>   
+		    <result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+		
+		<action name="ScoringWeightsProcess" class="cfg.action.ScoringWeights">
+			<interceptor-ref name="cfgStack"/>
+			<result name="success" type="redirectAction">
+                <param name="actionName">DiseaseSelection</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/scoringWeights.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>			    
+		</action>
+		
+		<!--  Step 3 -->
+		<action name="DiseaseSelection" class="cfg.action.DiseaseSelectionAction" method="initialize">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/diseaseSelection.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+
+		<action name="DiseaseSelectionProcess" class="cfg.action.DiseaseSelectionAction" method="execute">
+			<interceptor-ref name="cfgStack"/>
+			<result name="success" type="redirectAction">
+                <param name="actionName">CalculateScores</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>
+				
+		<!--  Step 4 -->
+		<action name="CalculateScores" class="cfg.action.CalculateScores">
+				<interceptor-ref name="basicStack"/>
+			    <result name="success">pages/calculatedScores.jsp</result>
+			    <result name="error">/pages/error.jsp</result>
+			    <result name="login" type="redirectAction">
+                    <param name="actionName">CFGLoginAction</param>
+                </result>
+		</action>
+		
+		<!--  Step 5 -->
+		<action name="Report" class="cfg.action.ReportAction" method="view">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success" type="stream">
+                <param name="inputName">fileStream</param>
+	            <param name="contentType">${fileContentType}</param>
+                <param name="contentDisposition">attachment; filename="${fileName}"</param>
+            </result>
+            <result name="error">pages/error.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">CFGLoginAction</param>
+            </result>
+		</action>	
+		
+	</package>
+</struts>
+
+<!-- 
+application/vnd.ms-excel 
+application/msaccess 
+text/plain 
+application/pdf
+application/vnd.openxmlformats *.docx
+-->

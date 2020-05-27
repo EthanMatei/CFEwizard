@@ -1,2 +1,4 @@
-# cfe-wizard
+CFE Wizard
+============================================
+
 Convergent Functional Evidence Wizard

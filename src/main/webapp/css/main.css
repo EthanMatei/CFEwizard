@@ -1,0 +1,25 @@
+@CHARSET "ISO-8859-1";
+
+body  {
+	font: 100% Verdana, Arial, Helvetica, sans-serif;
+	margin: 0; /* it's good practice to zero the margin and padding of the body element to account for differing browser defaults */
+	padding: 0;
+	text-align: center; /* this centers the container in IE 5* browsers. The text is then set to the left aligned default in the #container selector */
+	color: #000000;
+}
+
+#page-wrap {
+     width: 800px;
+     margin: 0 auto;
+}
+
+.checkBoxList label{
+			/* display: block; */
+			padding-bottom: 2px; 
+			margin-bottom: 2px;
+			margin-top: 2px;
+		} 
+.checkBoxList input{
+			margin-right: 10px;
+			float: left;
+} 

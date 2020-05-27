@@ -1,0 +1,146 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	      xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	      version="3.0">
+  <display-name>mCFG</display-name>
+  <!-- order of these parameters is important -->
+  
+    <!-- CAS Filter -->
+    <filter>
+       <filter-name>CAS</filter-name>
+       <filter-class>cfg.filters.CASFilter</filter-class>
+    </filter>
+ 
+ 	<!--
+    <filter-mapping>
+        <filter-name>CAS</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    -->
+    
+
+    <!-- Authentication filter -->
+    <filter>
+        <filter-name>authentication</filter-name>
+        <filter-class>cfg.filters.AuthenticationFilter</filter-class>
+    </filter>
+	
+     <filter-mapping>
+        <filter-name>authentication</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <!--  OWASP ClickjackFilter filter -->
+    <filter>
+        <filter-name>ClickjackFilterDeny</filter-name>
+        <filter-class>org.owasp.filters.ClickjackFilter</filter-class>
+        <init-param>
+            <param-name>mode</param-name>
+            <param-value>DENY</param-value>
+        </init-param>
+    </filter>
+    
+    <filter>
+        <filter-name>ClickjackFilterSameOrigin</filter-name>
+        <filter-class>org.owasp.filters.ClickjackFilter</filter-class>
+        <init-param>
+            <param-name>mode</param-name>
+            <param-value>SAMEORIGIN</param-value>
+        </init-param>
+    </filter>
+    
+    <!--  use the Deny version to prevent anyone, including yourself, from framing the page -->
+    <filter-mapping> 
+        <filter-name>ClickjackFilterDeny</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- use the SameOrigin version to allow your application to frame, but nobody else
+    <filter-mapping> 
+        <filter-name>ClickjackFilterSameOrigin</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    -->
+    
+    
+	<!--  Filter to set cookies to being "http only, and secure, if specified " -->
+    <filter>
+        <filter-name>httpOnlyCookies</filter-name>
+        <filter-class>cfg.filters.HttpOnlyCookiesFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>httpOnlyCookies</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+               
+    <!-- Struts2 setup: -->
+    <filter>
+        <filter-name>struts2</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter</filter-class>
+    </filter>
+	
+     <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+  
+
+    
+    <!-- 
+        Increase the session timeout to 1 hour on inactivity
+        to try to prevent form submissions from
+        being messed up
+        10 min
+    -->
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+  
+  
+  	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+    <!-- Web application initialization -->
+    <listener>
+      <listener-class>
+        cfg.listeners.AppInitContextListener
+      </listener-class>
+    </listener>
+    
+    <!--  Tiles set up - supports templates --> 
+    <listener>
+        <listener-class>
+            org.apache.struts2.tiles.StrutsTilesListener
+        </listener-class>
+    </listener>
+    
+    <!-- Disallow scriptlets in JSP pages -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <scripting-invalid>true</scripting-invalid>
+        </jsp-property-group>
+    </jsp-config> 
+      
+  	<!-- Remove unneeded methods for added security: -->
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>DisabledMethods</web-resource-name>
+			<url-pattern>/*</url-pattern>
+			<http-method>PUT</http-method>
+			<http-method>DELETE</http-method>
+			<http-method>OPTIONS</http-method>
+			<http-method>TRACE</http-method>
+		</web-resource-collection>
+		<auth-constraint />
+	</security-constraint>
+  
+   	<error-page>
+  		<exception-type>java.lang.Throwable</exception-type>
+  		<location>/error.jsp</location> 
+  	</error-page>
+  
+</web-app>

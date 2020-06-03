@@ -72,16 +72,14 @@ public class HibernateUtilsTest {
 				throw new Exception("HibernateUtils.getNumModels() != cfe.enums.Tables.size");
 			// Create index on genecardSymbol
 			sess = HibernateUtils.getSession();
-			//Query query = sess.createSQLQuery("call cfg.setScoringDataIndex()");			
-			//query.executeUpdate();
 			
 			HibernateUtils.setCreateSchema(false);
 			
 			for (cfe.enums.Tables tbl : cfe.enums.Tables.values())
 				System.out.println("SELECT genecardSymbol, descriptiveName, pubMedID, psychiatricDomain, subDomain, relevantDisorder FROM " + tbl.getTblName() + " LIMIT 0, 3;");
-			System.out.println("GRANT INSERT, DELETE, UPDATE, SELECT, EXECUTE ON cfg.* TO 'cfguser'@'localhost';");
+			System.out.println("GRANT INSERT, DELETE, UPDATE, SELECT, EXECUTE ON cfe.* TO 'cfeUser'@'localhost';");
 			System.out.println("SET lower_case_table_names=2;");
-			System.out.println("ALTER TABLE cfg.scoringdata ADD INDEX indx1 (genecardSymbol)");
+			System.out.println("ALTER TABLE cfe.scoringdata ADD INDEX indx1 (genecardSymbol)");
 			
 			// Let's create the stored procedures file
 			String path = "./test-data";

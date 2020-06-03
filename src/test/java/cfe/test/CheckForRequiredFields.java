@@ -19,8 +19,6 @@ public class CheckForRequiredFields {
 	@Test
 	public void checker()
 	{
-		
-		//String path = "C:\\Docs\\CFG_Score\\CFGWizard_for_Michel\\CFGWizard_for_Michel\\db_07Nov\\";
         String path = "./test-data/ms-access/";
 		
 		File folder = new File(path);	

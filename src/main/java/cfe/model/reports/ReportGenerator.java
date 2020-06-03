@@ -196,7 +196,7 @@ public class ReportGenerator {
 	private static ReportSheet getScoresSheet(String reportFormat, Map<String, ScoreResults> scores) {
 		ReportSheet sheet = new ReportSheet();
 		
-		sheet.setTitle( "CFG Wizard Scores" );
+		sheet.setTitle( "CFE Wizard Scores" );
 
 		String[] columnNames = {" ", "Gene", "Score", "Direction Of Change", "Tissue", "PubMed"};
 		sheet.setColumnNames( columnNames );
@@ -246,7 +246,7 @@ public class ReportGenerator {
 	private static ReportSheet getScoresSheet2(String reportFormat, Results results) {
 		ReportSheet sheet = new ReportSheet();
 		
-		sheet.setTitle( "CFG Wizard Scores" );
+		sheet.setTitle( "CFE Wizard Scores" );
 		
 		String[] columnNames = {" ", "Gene", "Score",  "Direction Of Change", "Tissue","Disorder", "PubMed"};
 		sheet.setColumnNames( columnNames );
@@ -478,7 +478,7 @@ public class ReportGenerator {
 
 		sheet.setTitle( "Version" );
 
-		String[] columnNames = {"CFG Wizard Version", "Time Output Genereated"};
+		String[] columnNames = {"CFE Wizard Version", "Time Output Genereated"};
 		sheet.setColumnNames( columnNames );
 
 		int[] columnWidths = {0, 0};

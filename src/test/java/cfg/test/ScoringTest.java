@@ -9,10 +9,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
-import cfg.action.CalculateScores;
-import cfg.enums.ScoringWeights;
-import cfg.model.GeneListInput;
-import cfg.model.results.Results;
+import cfe.action.CalculateScores;
+import cfe.enums.ScoringWeights;
+import cfe.model.GeneListInput;
+import cfe.model.results.Results;
 
 
 /**
@@ -49,36 +49,36 @@ public class ScoringTest {
 	private List<ScoringWeights> getWeights() {
 		List<ScoringWeights> weights = new ArrayList<ScoringWeights>();
 		ScoringWeights weight;
-		weight = cfg.enums.ScoringWeights.HUBRAIN;
+		weight = cfe.enums.ScoringWeights.HUBRAIN;
 		weight.setScore( 4.0 );
 	    weights.add(weight);
 		
-		weight = cfg.enums.ScoringWeights.HUPER;
+		weight = cfe.enums.ScoringWeights.HUPER;
 		weight.setScore( 2.0 );
 	    weights.add(weight);
 
-		weight = cfg.enums.ScoringWeights.HUGENEASSOC;
+		weight = cfe.enums.ScoringWeights.HUGENEASSOC;
 		weight.setScore( 2.0 );
 	    weights.add(weight);
 	    
-		weight = cfg.enums.ScoringWeights.HUGCNV;
+		weight = cfe.enums.ScoringWeights.HUGCNV;
 		weight.setScore( 1.75 );
 	    weights.add(weight);
 
 
-		weight = cfg.enums.ScoringWeights.NHBRAIN;
+		weight = cfe.enums.ScoringWeights.NHBRAIN;
 		weight.setScore( 2.0 );
 	    weights.add(weight);
 		
-		weight = cfg.enums.ScoringWeights.NHPER;
+		weight = cfe.enums.ScoringWeights.NHPER;
 		weight.setScore( 1.0 );
 	    weights.add(weight);
 
-		weight = cfg.enums.ScoringWeights.NHGENEASSOC;
+		weight = cfe.enums.ScoringWeights.NHGENEASSOC;
 		weight.setScore( 1.0 );
 	    weights.add(weight);
 	    
-		weight = cfg.enums.ScoringWeights.NHGCNV;
+		weight = cfe.enums.ScoringWeights.NHGCNV;
 		weight.setScore( 0.5 );
 	    weights.add(weight);
 

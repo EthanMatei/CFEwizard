@@ -53,22 +53,22 @@
 
 		
 		<!-- 
-		<action name="" class="cfg.action.Home">
+		<action name="" class="cfe.action.Home">
             <result name="success">pages/home.jsp</result>
             <result name="error">pages/error.jsp</result>
         </action>
         
- 		<action name="/" class="cfg.action.Home">
+ 		<action name="/" class="cfe.action.Home">
             <result name="success">pages/home.jsp</result>
             <result name="error">pages/error.jsp</result>
         </action>      
           
- 		<action name="home" class="cfg.action.Home">
+ 		<action name="home" class="cfe.action.Home">
             <result name="success">pages/home.jsp</result>
             <result name="error">pages/error.jsp</result>
         </action>   
                 
- 		<action name="/home" class="cfg.action.Home">
+ 		<action name="/home" class="cfe.action.Home">
             <result name="success">pages/home.jsp</result>
             <result name="error">pages/error.jsp</result>
         </action>   
@@ -80,13 +80,13 @@
         -->
         	
 		
-		<action name="CFGLoginAction" class="cfg.action.CFGLoginAction">
+		<action name="CFGLoginAction" class="cfe.action.CFGLoginAction">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/login.jsp</result>
 			<result name="error">pages/login.jsp</result>
 		</action>
 		
-		<action name="CFGLoginProcess" class="cfg.action.CFGLoginProcess">
+		<action name="CFGLoginProcess" class="cfe.action.CFGLoginProcess">
 			<interceptor-ref name="cfgStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">Home</param>
@@ -95,13 +95,13 @@
 			<result name="error">pages/login.jsp</result>
 		</action>
 
-		<action name="LogoutAction" class="cfg.action.LogoutAction">
+		<action name="LogoutAction" class="cfe.action.LogoutAction">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/login.jsp</result>
 			<result name="error">pages/login.jsp</result>
 		</action>
 				
-		<action name="Home" class="cfg.action.Home">
+		<action name="Home" class="cfe.action.Home">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/home.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -110,7 +110,7 @@
             </result>
 		</action>
 		
-		<action name="DatabaseStatusAction" class="cfg.action.DatabaseStatusAction">
+		<action name="DatabaseStatusAction" class="cfe.action.DatabaseStatusAction">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/dbStatus.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -119,7 +119,7 @@
             </result>
 		</action>
 		
-		<action name="DatabaseClear" class="cfg.action.DatabaseStatusAction" method="clear">
+		<action name="DatabaseClear" class="cfe.action.DatabaseStatusAction" method="clear">
 			<interceptor-ref name="basicStack"/>
 			<result name="success" type="redirectAction">
 			    <param name="actionName">DatabaseStatusAction</param>
@@ -130,7 +130,7 @@
             </result>
 		</action>
 		
-		<action name="SystemStatusAction" class="cfg.action.SystemStatusAction">
+		<action name="SystemStatusAction" class="cfe.action.SystemStatusAction">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/systemStatus.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -141,7 +141,7 @@
 		
    		<!-- Step 1 -->
    		<!--  Action for database upload log
-		<action name="DatabaseList" class="cfg.action.DatabaseList" method="initialize">
+		<action name="DatabaseList" class="cfe.action.DatabaseList" method="initialize">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/dbList.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -151,7 +151,7 @@
 	<!-- Upload database flow -->
 	
 		<!-- Step 1 -->
-		<action name="DBSelectionInitialize" class="cfg.action.DBSelection" method="initialize">
+		<action name="DBSelectionInitialize" class="cfe.action.DBSelection" method="initialize">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/dbSelection.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -160,7 +160,7 @@
             </result>
 		</action>
 		
-		<action name="DBSelection" class="cfg.action.DBSelection">
+		<action name="DBSelection" class="cfe.action.DBSelection">
 			<result name="success">pages/fileUpload.jsp</result>
 			<result name="error">pages/error.jsp</result>
 			<result name="input">pages/dbSelection.jsp</result>
@@ -171,7 +171,7 @@
 		
 		<!-- Step 2 -->
 		<!-- 
-		<action name="FileUpload" class="cfg.action.FileUpload">
+		<action name="FileUpload" class="cfe.action.FileUpload">
 			<interceptor-ref name="fileUploadStack"/>
 
 		    <result name="wait">pages/wait.jsp</result>
@@ -184,7 +184,7 @@
 		</action>
         -->
         
-		<action name="FileUpload" class="cfg.action.FileUploadSerial">
+		<action name="FileUpload" class="cfe.action.FileUploadSerial">
 			<interceptor-ref name="fileUploadStack"/>
 	    	<result name="success">pages/dbUploadStatus.jsp</result>
 	    	<!-- <result name="error">pages/error.jsp</result> -->
@@ -201,7 +201,7 @@
 		<!-- Step 1 -->	
 		
 		<!-- does not work with pages namespace -->
-	    <action name="GeneListUpload" class="cfg.action.GeneListUpload" method="initialize">
+	    <action name="GeneListUpload" class="cfe.action.GeneListUpload" method="initialize">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/geneListUpload.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -210,7 +210,7 @@
             </result> 
 		</action>
 		
-		<action name="GeneListUploadProcess" class="cfg.action.GeneListUpload">
+		<action name="GeneListUploadProcess" class="cfe.action.GeneListUpload">
 		    <interceptor-ref name="cfgStack"/>
 			<result name="success" type="redirectAction">
             	<param name="actionName">ScoringWeights</param>
@@ -223,7 +223,7 @@
 	
 	
 		<!-- Step 2 -->	
-		<action name="ScoringWeights" class="cfg.action.ScoringWeights" method="initialize">
+		<action name="ScoringWeights" class="cfe.action.ScoringWeights" method="initialize">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/scoringWeights.jsp</result>	
 			<result name="error">pages/error.jsp</result>   
@@ -232,7 +232,7 @@
             </result>
 		</action>
 		
-		<action name="ScoringWeightsProcess" class="cfg.action.ScoringWeights">
+		<action name="ScoringWeightsProcess" class="cfe.action.ScoringWeights">
 			<interceptor-ref name="cfgStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">DiseaseSelection</param>
@@ -245,7 +245,7 @@
 		</action>
 		
 		<!--  Step 3 -->
-		<action name="DiseaseSelection" class="cfg.action.DiseaseSelectionAction" method="initialize">
+		<action name="DiseaseSelection" class="cfe.action.DiseaseSelectionAction" method="initialize">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success">pages/diseaseSelection.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -254,7 +254,7 @@
             </result>
 		</action>
 
-		<action name="DiseaseSelectionProcess" class="cfg.action.DiseaseSelectionAction" method="execute">
+		<action name="DiseaseSelectionProcess" class="cfe.action.DiseaseSelectionAction" method="execute">
 			<interceptor-ref name="cfgStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">CalculateScores</param>
@@ -266,7 +266,7 @@
 		</action>
 				
 		<!--  Step 4 -->
-		<action name="CalculateScores" class="cfg.action.CalculateScores">
+		<action name="CalculateScores" class="cfe.action.CalculateScores">
 				<interceptor-ref name="basicStack"/>
 			    <result name="success">pages/calculatedScores.jsp</result>
 			    <result name="error">/pages/error.jsp</result>
@@ -276,7 +276,7 @@
 		</action>
 		
 		<!--  Step 5 -->
-		<action name="Report" class="cfg.action.ReportAction" method="view">
+		<action name="Report" class="cfe.action.ReportAction" method="view">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success" type="stream">
                 <param name="inputName">fileStream</param>

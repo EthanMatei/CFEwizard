@@ -12,13 +12,13 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Test;
 
-import cfg.dao.HuBrainGexDao;
-import cfg.model.HuBrainGex;
-import cfg.parser.Parser;
-import cfg.utils.HibernateUtils;
-
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
+
+import cfe.dao.HuBrainGexDao;
+import cfe.model.HuBrainGex;
+import cfe.parser.Parser;
+import cfe.utils.HibernateUtils;
 
 
 public class UploadConsistencyTest{
@@ -34,7 +34,7 @@ public class UploadConsistencyTest{
 //		long startTime = System.currentTimeMillis();
 //	
 //		// Our target table
-//		String tablename = cfg.enums.Tables.HU_BRAIN_GENE.getClassname();
+//		String tablename = cfe.enums.Tables.HU_BRAIN_GENE.getClassname();
 //		
 //		Session session = HibernateUtils.getSession();
 //		
@@ -62,13 +62,13 @@ public class UploadConsistencyTest{
 //			
 //			for (String tblname : tablenames)	{
 //				
-//				if (tblname.contains(cfg.enums.Tables.HU_BRAIN_GENE.getLabel()))	{
+//				if (tblname.contains(cfe.enums.Tables.HU_BRAIN_GENE.getLabel()))	{
 //														
 //					Parser<HuBrainGene> parser = new Parser<HuBrainGene>();
 //			
 //					assertNotNull(parser);
 //			
-//					parser.parseTable(db, tblname, "cfg.model.HuBrainGene", hbgs);
+//					parser.parseTable(db, tblname, "cfe.model.HuBrainGene", hbgs);
 //					
 //					parser = null;
 //				}
@@ -81,7 +81,7 @@ public class UploadConsistencyTest{
 //			HuBrainGeneDao hbgDao = new HuBrainGeneDao(session, tx);
 //			
 //			// Clean the table (remove current old data)
-//			hbgDao.deleteAll(cfg.enums.Tables.HU_BRAIN_GENE.getTblName());
+//			hbgDao.deleteAll(cfe.enums.Tables.HU_BRAIN_GENE.getTblName());
 //			
 //			// Check to see it the table is clean
 //			int numCurrentRecords =  getNumRecords(session, tablename);

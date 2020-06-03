@@ -22,7 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import cfg.utils.HibernateUtils;
+import cfe.utils.HibernateUtils;
 
 
 public class HibernateUtilsTest {
@@ -68,8 +68,8 @@ public class HibernateUtilsTest {
 			
 			// Did we forget to add models?
 			// 2 to include GeneList and ScoringModel
-			if (HibernateUtils.getNumModels() != cfg.enums.Tables.size + 4)
-				throw new Exception("HibernateUtils.getNumModels() != cfg.enums.Tables.size");
+			if (HibernateUtils.getNumModels() != cfe.enums.Tables.size + 4)
+				throw new Exception("HibernateUtils.getNumModels() != cfe.enums.Tables.size");
 			// Create index on genecardSymbol
 			sess = HibernateUtils.getSession();
 			//Query query = sess.createSQLQuery("call cfg.setScoringDataIndex()");			
@@ -77,7 +77,7 @@ public class HibernateUtilsTest {
 			
 			HibernateUtils.setCreateSchema(false);
 			
-			for (cfg.enums.Tables tbl : cfg.enums.Tables.values())
+			for (cfe.enums.Tables tbl : cfe.enums.Tables.values())
 				System.out.println("SELECT genecardSymbol, descriptiveName, pubMedID, psychiatricDomain, subDomain, relevantDisorder FROM " + tbl.getTblName() + " LIMIT 0, 3;");
 			System.out.println("GRANT INSERT, DELETE, UPDATE, SELECT, EXECUTE ON cfg.* TO 'cfguser'@'localhost';");
 			System.out.println("SET lower_case_table_names=2;");

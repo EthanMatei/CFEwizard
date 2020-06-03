@@ -19,14 +19,14 @@ Please select the database(s):<br />
 
 <s:form action="DBSelection" theme="simple">
 
-  <s:iterator value="@cfg.enums.Databases@values()" var="dbvalue" status="stat" >
+  <s:iterator value="@cfe.enums.Databases@values()" var="dbvalue" status="stat" >
     <s:checkbox name="dbnames" fieldValue="%{dbvalue}"/> <s:property value="label"/> <br />
   </s:iterator>
 
 <!-- 
 <s:checkboxlist
 	label="Please select the database(s)"
-	list="@cfg.enums.Databases@values()"
+	list="@cfe.enums.Databases@values()"
 	listValue="label"
 	name="dbnames" 
 /> 

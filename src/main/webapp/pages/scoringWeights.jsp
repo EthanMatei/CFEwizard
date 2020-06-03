@@ -14,7 +14,7 @@
 Enter the scoring weights:
 <s:form action="ScoringWeightsProcess" >
 
-<s:iterator value="@cfg.enums.ScoringWeights@values()" var="scoringWeight">
+<s:iterator value="@cfe.enums.ScoringWeights@values()" var="scoringWeight">
 	<s:textfield label= "%{#scoringWeight.label}" name="%{#scoringWeight.name}" value="%{#scoringWeight.score}"
 	             cssStyle="text-align:right;"/>
 </s:iterator>

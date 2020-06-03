@@ -39,10 +39,10 @@
                  <property name="hbm2ddl.auto">update</property> 
                   
                 <!-- Location of package-level annotations for JPA -->
-                <mapping package="cfg.model"/>
+                <mapping package="cfe.model"/>
 
                 <!-- JPA classes to map: -->
-                <mapping class="cfg.model.HuBrainGex" />
+                <mapping class="cfe.model.HuBrainGex" />
                            
         </session-factory>
 </hibernate-configuration>

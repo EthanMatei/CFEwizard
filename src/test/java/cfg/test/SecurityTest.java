@@ -35,7 +35,7 @@ public class SecurityTest {
 			String gene;
 			while ((gene = br.readLine()) != null) {
 				assertTrue("Good gene " + gene + " failed when it should have passed.", 
-						cfg.secure.Security.passesGeneWhiteList(gene.trim()));
+						cfe.secure.Security.passesGeneWhiteList(gene.trim()));
 				System.out.println(gene + " passed.");
 			}
 
@@ -56,7 +56,7 @@ public class SecurityTest {
 			String gene;
 			while ((gene = br.readLine()) != null) {
 				assertTrue("Bad " + gene + " passed when it should have failed.", 
-						!cfg.secure.Security.passesGeneWhiteList(gene.trim()));
+						!cfe.secure.Security.passesGeneWhiteList(gene.trim()));
 				System.out.println("Bad gene \"" + gene + "\" failed.");
 			}
 
@@ -77,7 +77,7 @@ public class SecurityTest {
     	BufferedReader br = new BufferedReader(new FileReader(filename));
     	String gene;
     	while ((gene = br.readLine()) != null) {
-    		assertTrue("Failed for gene: " + gene, cfg.secure.Security.passesGeneWhiteList(gene.trim()));
+    		assertTrue("Failed for gene: " + gene, cfe.secure.Security.passesGeneWhiteList(gene.trim()));
     		System.out.println(gene + " passed.");
     	}
     	

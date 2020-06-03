@@ -18,7 +18,7 @@ CFE Template
 
         <div id="logo">
             <h2 style="margin-bottom: 4px; margin-top: 4px;"">CFE Wizard Scoring Program</h2>
-            <h4 style="margin-top:2px; margin-bottom:4px">version <s:property value="@cfg.model.VersionNumber@VERSION_NUMBER" /> </h4>
+            <h4 style="margin-top:2px; margin-bottom:4px">version <s:property value="@cfe.model.VersionNumber@VERSION_NUMBER" /> </h4>
         </div>
         
 

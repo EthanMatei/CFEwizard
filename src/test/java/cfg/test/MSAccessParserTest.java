@@ -16,8 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import cfg.parser.MSAccessParser;
-import cfg.services.DisorderService;
+import cfe.parser.MSAccessParser;
+import cfe.services.DisorderService;
 
 
 public class MSAccessParserTest {

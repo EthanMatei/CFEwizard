@@ -3,7 +3,7 @@ package cfg.test;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import cfg.parser.MSAccessParser;
+import cfe.parser.MSAccessParser;
 
 
 public class TestUtil {

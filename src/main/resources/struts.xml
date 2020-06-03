@@ -4,13 +4,11 @@
 <struts>
 	
 <!-- All constants are defined in struts.properties -->
-	<!--  <package name="cfg" extends="struts-default" namespace="/pages"> -->
 	
-	
-	<package name="cfg" extends="struts-default">
+	<package name="cfe" extends="struts-default">
 	
 	    <interceptors>
-			<interceptor-stack name="cfgStack">
+			<interceptor-stack name="cfeStack">
 				<interceptor-ref name="tokenSession">
 					<param name="includeMethods">*</param>
 				</interceptor-ref>
@@ -39,7 +37,7 @@
         	
 		</interceptors>
 		
-		<default-interceptor-ref name="cfgStack" />
+		<default-interceptor-ref name="cfeStack" />
 
 
     	<global-results>
@@ -87,7 +85,7 @@
 		</action>
 		
 		<action name="LoginProcess" class="cfe.action.LoginProcess">
-			<interceptor-ref name="cfgStack"/>
+			<interceptor-ref name="cfeStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">Home</param>
             </result>
@@ -211,7 +209,7 @@
 		</action>
 		
 		<action name="GeneListUploadProcess" class="cfe.action.GeneListUpload">
-		    <interceptor-ref name="cfgStack"/>
+		    <interceptor-ref name="cfeStack"/>
 			<result name="success" type="redirectAction">
             	<param name="actionName">ScoringWeights</param>
             </result>
@@ -233,7 +231,7 @@
 		</action>
 		
 		<action name="ScoringWeightsProcess" class="cfe.action.ScoringWeights">
-			<interceptor-ref name="cfgStack"/>
+			<interceptor-ref name="cfeStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">DiseaseSelection</param>
             </result>
@@ -255,7 +253,7 @@
 		</action>
 
 		<action name="DiseaseSelectionProcess" class="cfe.action.DiseaseSelectionAction" method="execute">
-			<interceptor-ref name="cfgStack"/>
+			<interceptor-ref name="cfeStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">CalculateScores</param>
             </result>

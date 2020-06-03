@@ -55,8 +55,8 @@ public class CASFilter implements Filter {
 			myUrl = InrsrchUtil.SERVER_PROD_URL;
 		*/
 		
-		//String casUrl = "http://in-uits-800112:8080/mCFG"; //myUrl + "/ctsiadmin/home";
-		String casUrl = "http://localhost:8080/mCFG";    // JGM
+		//String casUrl = "http://in-uits-800112:8080/CFE"; //myUrl + "/ctsiadmin/home";
+		String casUrl = "http://localhost:8080/CFE";    // JGM
 		
 		//String test = java.net.InetAddress.getByName( request.getServerName() ).toString();
 		//log.info("InetAddress: " + test);

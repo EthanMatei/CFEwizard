@@ -52,7 +52,6 @@ public abstract class AbstractDao<T> extends BaseDao{
 	}
 	
 	// Use this method for batch inserts
-	// 20 must match hibernate.jdbc.batch_size in hibernate.cfg.xml
 	public void saveAll(List<T> ts) throws HibernateException{
 		
 		int count = 1;

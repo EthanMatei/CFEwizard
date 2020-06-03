@@ -122,7 +122,7 @@ public class FileUpload extends BaseAction implements SessionAware {
 			List<File> filesToProcess = new ArrayList<File>();
 
 			for (File f: uploads)	{
-				File tmp = File.createTempFile("dbupload", ".cfg", null);
+				File tmp = File.createTempFile("dbupload", ".cfe", null);
 				FileUtils.copyFile(f, tmp);
 				filesToProcess.add(tmp);
 			}

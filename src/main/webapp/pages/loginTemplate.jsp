@@ -11,7 +11,7 @@ CFE Login Template
  <html>
     <head>
      <!-- 
-        <link rel="stylesheet"  type="text/css" href="<s:url includeParams="none" value='/css/cfg.css'/>" />
+        <link rel="stylesheet"  type="text/css" href="<s:url includeParams="none" value='/css/cfe.css'/>" />
                 -->
         <tiles:insertAttribute name="header" />
 

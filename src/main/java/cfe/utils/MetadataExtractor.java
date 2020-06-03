@@ -24,7 +24,6 @@ public class MetadataExtractor {
 	 */
 	public static void main(String[] args) {
 		
-		//String path = "C:\\Docs\\CFG_Score\\CFGWizard_for_Michel\\CFGWizard_for_Michel\\db_07Nov\\";
         String path = "./test-data/ms-access/";
         
 		File folder = new File(path);	

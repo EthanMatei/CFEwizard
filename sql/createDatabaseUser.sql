@@ -1,2 +1,2 @@
-GRANT USAGE ON *.* TO 'cfguser'@'localhost' IDENTIFIED BY 'cfguserPassword';
-GRANT ALL ON `cfg`.* TO 'cfguser'@'localhost';
+GRANT USAGE ON *.* TO 'cfeUser'@'localhost' IDENTIFIED BY 'cfeUserPassword';
+GRANT ALL ON `cfe`.* TO 'cfeUser'@'localhost';

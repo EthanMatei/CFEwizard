@@ -12,10 +12,10 @@ import org.apache.struts2.interceptor.SessionAware;
  * @author Jim Mullen
  *
  */
-public class CFGLoginAction extends BaseAction implements SessionAware {
+public class LoginAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-	private static final Log log = LogFactory.getLog(CFGLoginAction.class);
+	private static final Log log = LogFactory.getLog(LoginAction.class);
 	
 	private Map<String, Object> session;
 	
@@ -27,7 +27,7 @@ public class CFGLoginAction extends BaseAction implements SessionAware {
 			this.session = session;
 	}
 	
-	public CFGLoginAction() {
+	public LoginAction() {
 		this.setErrorMessage("");
 	}
 		

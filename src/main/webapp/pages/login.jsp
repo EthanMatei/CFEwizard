@@ -9,7 +9,7 @@
 <tiles:putAttribute name="content">
 
 <div id="login">
-<s:form theme="simple" action="CFGLoginProcess">
+<s:form theme="simple" action="LoginProcess">
 
 
 

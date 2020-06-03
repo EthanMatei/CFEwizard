@@ -80,13 +80,13 @@
         -->
         	
 		
-		<action name="CFGLoginAction" class="cfe.action.CFGLoginAction">
+		<action name="LoginAction" class="cfe.action.LoginAction">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/login.jsp</result>
 			<result name="error">pages/login.jsp</result>
 		</action>
 		
-		<action name="CFGLoginProcess" class="cfe.action.CFGLoginProcess">
+		<action name="LoginProcess" class="cfe.action.LoginProcess">
 			<interceptor-ref name="cfgStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">Home</param>
@@ -106,7 +106,7 @@
 			<result name="success">pages/home.jsp</result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 		
@@ -115,7 +115,7 @@
 			<result name="success">pages/dbStatus.jsp</result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 		
@@ -126,7 +126,7 @@
             </result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 		
@@ -135,7 +135,7 @@
 			<result name="success">pages/systemStatus.jsp</result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 		
@@ -156,7 +156,7 @@
 			<result name="success">pages/dbSelection.jsp</result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 		
@@ -165,7 +165,7 @@
 			<result name="error">pages/error.jsp</result>
 			<result name="input">pages/dbSelection.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 		
@@ -179,7 +179,7 @@
 	    	<result name="error">pages/error.jsp</result>
 	    	<result name="input">pages/fileUpload.jsp</result>
 	    	<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>   	
 		</action>
         -->
@@ -191,7 +191,7 @@
 	        <result name="error">pages/dbUploadStatus.jsp</result>
 	    	<result name="input">pages/fileUpload.jsp</result>
 	    	<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>   	
 		</action>
 
@@ -206,7 +206,7 @@
 			<result name="success">pages/geneListUpload.jsp</result>
 			<result name="error">pages/error.jsp</result>
 		    <result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result> 
 		</action>
 		
@@ -217,7 +217,7 @@
             </result>
 			<result name="error">pages/error.jsp</result>
 		    <result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result> 			
 		</action>
 	
@@ -228,7 +228,7 @@
 			<result name="success">pages/scoringWeights.jsp</result>	
 			<result name="error">pages/error.jsp</result>   
 		    <result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 		
@@ -240,7 +240,7 @@
 			<result name="error">pages/error.jsp</result>
 			<result name="input">pages/scoringWeights.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>			    
 		</action>
 		
@@ -250,7 +250,7 @@
 		    <result name="success">pages/diseaseSelection.jsp</result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 
@@ -261,7 +261,7 @@
             </result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>
 				
@@ -271,7 +271,7 @@
 			    <result name="success">pages/calculatedScores.jsp</result>
 			    <result name="error">/pages/error.jsp</result>
 			    <result name="login" type="redirectAction">
-                    <param name="actionName">CFGLoginAction</param>
+                    <param name="actionName">LoginAction</param>
                 </result>
 		</action>
 		
@@ -285,7 +285,7 @@
             </result>
             <result name="error">pages/error.jsp</result>
             <result name="login" type="redirectAction">
-                <param name="actionName">CFGLoginAction</param>
+                <param name="actionName">LoginAction</param>
             </result>
 		</action>	
 		

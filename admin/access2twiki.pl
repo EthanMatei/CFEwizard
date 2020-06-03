@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------
 # This script generated html (compatible with Confluence) that
-# describe the MS Acess database schemas for the CFG Wizard.
+# describe the MS Acess database schemas for the CFE Wizard.
 # The output can be copied and pasted into Conflunce (in HTML mode).
 # 
 # Note: This script ONLY RUNS ON WINDOWS. And MS Acess, and the

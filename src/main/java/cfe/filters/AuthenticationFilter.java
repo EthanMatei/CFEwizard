@@ -66,7 +66,7 @@ public class AuthenticationFilter implements Filter {
         }
         else if (username == null || username.trim().equals("")) {
         	
-        	String redirectUrl = req.getContextPath() + "/" + "CFGLoginAction.action";
+        	String redirectUrl = req.getContextPath() + "/" + "LoginAction.action";
         	
         	log.info("access to " + uri + " rediredcted to " + redirectUrl + ".");
             res.sendRedirect( redirectUrl );

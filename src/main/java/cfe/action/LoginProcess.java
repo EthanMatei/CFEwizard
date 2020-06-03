@@ -19,10 +19,10 @@ import cfe.utils.WebAppProperties;
  * @author Jim Mullen
  *
  */
-public class CFGLoginProcess extends BaseAction  implements SessionAware {
+public class LoginProcess extends BaseAction  implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-	private static final Log log = LogFactory.getLog(CFGLoginProcess.class);
+	private static final Log log = LogFactory.getLog(LoginProcess.class);
 	
 	private Map<String, Object> session;
 	
@@ -36,7 +36,7 @@ public class CFGLoginProcess extends BaseAction  implements SessionAware {
 	}
 	
 	
-	public CFGLoginProcess() {
+	public LoginProcess() {
 		this.setErrorMessage("");
 	}
 

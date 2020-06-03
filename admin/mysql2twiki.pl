@@ -170,7 +170,7 @@ sub usage() {
     print "\n";
     print "usage: mysql2twiki.pl <db_user> <db_name> <db_wiki_title>\n";
     print "\n";
-    print "    example: mysql2twiki.pl cfg \"CFG Wizard\"\n\n";
+    print "    example: mysql2twiki.pl cfe \"CFE Wizard\"\n\n";
     exit(1);
 }
 

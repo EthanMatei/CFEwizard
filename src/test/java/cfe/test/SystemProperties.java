@@ -1,4 +1,4 @@
-package cfg.test;
+package cfe.test;
 
 import java.net.UnknownHostException;
 import java.util.Properties;

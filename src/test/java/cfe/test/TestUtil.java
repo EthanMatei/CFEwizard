@@ -1,4 +1,4 @@
-package cfg.test;
+package cfe.test;
 
 import java.io.File;
 import java.io.FilenameFilter;

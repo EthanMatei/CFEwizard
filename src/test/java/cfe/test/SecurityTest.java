@@ -1,4 +1,4 @@
-package cfg.test;
+package cfe.test;
 
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertTrue;

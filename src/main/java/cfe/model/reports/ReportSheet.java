@@ -401,7 +401,7 @@ public class ReportSheet {
 	    footer.setCenter( "&BPage &P of &N");
 
 	    sheet.createFreezePane(0,1); // freeze the header row
-	    sheet.protectSheet("cfg"); // protect the sheet so it cannot be modified
+	    sheet.protectSheet("cfe"); // protect the sheet so it cannot be modified
 	}
 
 	

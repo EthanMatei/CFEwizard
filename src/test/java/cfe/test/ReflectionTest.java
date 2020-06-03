@@ -1,4 +1,4 @@
-package cfg.test;
+package cfe.test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -11,7 +11,7 @@ public class ReflectionTest {
 	public static void main(String[] args) {
 
 		try {
-			Object v = Class.forName("cfg.test.RTest").newInstance();
+			Object v = Class.forName("cfe.test.RTest").newInstance();
 			
 			Method[] methods = v.getClass().getDeclaredMethods();
 			

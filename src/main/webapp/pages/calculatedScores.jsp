@@ -24,7 +24,7 @@
      style="margin-top: 2px;"
      src="<s:url includeParams='none' value='/images/application-vnd.ms-excel.png'/>"
      alt="SCORES" /> <br />
-    cfg-scores.xlsx
+    cfe-scores.xlsx
     </div>
 </s:a>
 </td>

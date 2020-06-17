@@ -16,21 +16,7 @@ import cfe.dao.DisorderDao;
 import cfe.dao.HuBrainGexDao;
 import cfe.dao.HuBrainMetDao;
 import cfe.dao.HuBrainProtDao;
-import cfe.dao.HuGeneAssocDao;
-import cfe.dao.HuGeneCNVDao;
-import cfe.dao.HuGeneLinkageDao;
-import cfe.dao.HuPerGexDao;
-import cfe.dao.HuPerMetDao;
-import cfe.dao.HuPerProtDao;
-import cfe.dao.NhBrainGexDao;
-import cfe.dao.NhBrainMetDao;
-import cfe.dao.NhBrainProtDao;
-import cfe.dao.NhGeneAssocDao;
-import cfe.dao.NhGeneCNVDao;
-import cfe.dao.NhGeneLinkageDao;
-import cfe.dao.NhPerGexDao;
-import cfe.dao.NhPerMetDao;
-import cfe.dao.NhPerProtDao;
+
 import cfe.model.Disorder;
 import cfe.model.DisorderComparator;
 import cfe.model.disease.DiseaseSelector;
@@ -78,53 +64,12 @@ public class DisorderService {
 		HuBrainMetDao  huBrainMetDao  = new HuBrainMetDao(session, tx);
 		HuBrainProtDao huBrainProtDao  = new HuBrainProtDao(session, tx);
 		
-		HuGeneAssocDao   huGeneAssocDao   = new HuGeneAssocDao(session, tx);
-		HuGeneCNVDao     huGeneCNVDao     = new HuGeneCNVDao(session, tx);
-		HuGeneLinkageDao huGeneLinkageDao = new HuGeneLinkageDao(session, tx);
-		
-		HuPerGexDao huPerGexDao = new HuPerGexDao(session, tx);
-		HuPerMetDao  huPerMetDao  = new HuPerMetDao(session, tx);
-		HuPerProtDao huPerProtDao  = new HuPerProtDao(session, tx);
-
-		NhBrainGexDao nhBrainGexDao = new NhBrainGexDao(session, tx);
-		NhBrainMetDao  nhBrainMetDao  = new NhBrainMetDao(session, tx);
-		NhBrainProtDao nhBrainProtDao  = new NhBrainProtDao(session, tx);
-		
-		NhGeneAssocDao   nhGeneAssocDao   = new NhGeneAssocDao(session, tx);
-		NhGeneCNVDao     nhGeneCNVDao     = new NhGeneCNVDao(session, tx);
-		NhGeneLinkageDao nhGeneLinkageDao = new NhGeneLinkageDao(session, tx);
-		
-		NhPerGexDao nhPerGexDao = new NhPerGexDao(session, tx);
-		NhPerMetDao  nhPerMetDao  = new NhPerMetDao(session, tx);
-		NhPerProtDao nhPerProtDao  = new NhPerProtDao(session, tx);
-		
 		TreeSet<Disorder> disordersSet = new TreeSet<Disorder>(new DisorderComparator());
 		
 		try	{
 			disordersSet.addAll( huBrainGexDao.getDisorders() );
 			disordersSet.addAll( huBrainMetDao.getDisorders() );
 			disordersSet.addAll( huBrainProtDao.getDisorders() );
-			
-			disordersSet.addAll( huGeneAssocDao.getDisorders() );
-			disordersSet.addAll( huGeneCNVDao.getDisorders() );
-			disordersSet.addAll( huGeneLinkageDao.getDisorders() );
-			
-			disordersSet.addAll( huPerGexDao.getDisorders() );
-			disordersSet.addAll( huPerMetDao.getDisorders() );
-			disordersSet.addAll( huPerProtDao.getDisorders() );
-
-			
-			disordersSet.addAll( nhBrainGexDao.getDisorders() );
-			disordersSet.addAll( nhBrainMetDao.getDisorders() );
-			disordersSet.addAll( nhBrainProtDao.getDisorders() );
-			
-			disordersSet.addAll( nhGeneAssocDao.getDisorders() );
-			disordersSet.addAll( nhGeneCNVDao.getDisorders() );
-			disordersSet.addAll( nhGeneLinkageDao.getDisorders() );
-			
-			disordersSet.addAll( nhPerGexDao.getDisorders() );
-			disordersSet.addAll( nhPerMetDao.getDisorders() );
-			disordersSet.addAll( nhPerProtDao.getDisorders() );
 			
 			// Clear the Disorder table
 			disorderDao.deleteAll();

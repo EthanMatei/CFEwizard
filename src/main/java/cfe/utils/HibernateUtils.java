@@ -92,31 +92,6 @@ public class HibernateUtils {
 					cfe.model.HuBrainProt.class, 
 					cfe.model.HuBrainMet.class,
 					
-					// Human Gene Database contains these three tables
-					cfe.model.HuGeneCNV.class,
-					cfe.model.HuGeneAssoc.class,
-					cfe.model.HuGeneLinkage.class,
-					
-					// Human Per Database contains these three tables
-					cfe.model.HuPerGex.class,
-					cfe.model.HuPerProt.class, 
-					cfe.model.HuPerMet.class,
-					
-					
-					// Non Human Brain Database contains these three tables
-					cfe.model.NhBrainGex.class, 
-					cfe.model.NhBrainProt.class, 
-					cfe.model.NhBrainMet.class, 
-									
-					// Non Human Per Database contains these three tables
-					cfe.model.NhPerGex.class,
-					cfe.model.NhPerProt.class,
-					cfe.model.NhPerMet.class,
-					
-					cfe.model.NhGeneCNV.class,
-					cfe.model.NhGeneAssoc.class,
-					cfe.model.NhGeneLinkage.class,
-					
 					// Gene list
 					cfe.model.GeneList.class,
 					

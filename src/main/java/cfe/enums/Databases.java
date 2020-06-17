@@ -9,12 +9,8 @@ package cfe.enums;
  */
 public enum Databases {
 	
-	HUBRAIN("Human Brain"),
-	HUGENE("Human Genetic"),
-	HUPER("Human Peripheral"),
-	NHBRAIN("NonHuman Brain"),
-	NHGENE("NonHuman Genetic"),
-	NHPER("NonHuman Peripheral");
+	HUBRAIN("Human Brain")
+	;
 	
 	private String label;
 	private Databases (String label){ this.label = label; }

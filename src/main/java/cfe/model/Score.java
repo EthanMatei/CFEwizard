@@ -20,22 +20,6 @@ import cfe.model.results.Results;
 import cfe.services.HuBrainGexService;
 import cfe.services.HuBrainMetService;
 import cfe.services.HuBrainProtService;
-import cfe.services.HuGeneAssocService;
-import cfe.services.HuGeneCNVService;
-import cfe.services.HuGeneLinkageService;
-import cfe.services.HuPerGexService;
-import cfe.services.HuPerMetService;
-import cfe.services.HuPerProtService;
-import cfe.services.NhBrainGexService;
-import cfe.services.NhBrainMetService;
-import cfe.services.NhBrainProtService;
-import cfe.services.NhGeneAssocService;
-import cfe.services.NhGeneCNVService;
-import cfe.services.NhGeneLinkageService;
-import cfe.services.NhPerGexService;
-import cfe.services.NhPerMetService;
-import cfe.services.NhPerProtService;
-
 
 public class Score {
 	
@@ -87,51 +71,6 @@ public class Score {
 		List<ModelInterface> huBrainProts     = HuBrainProtService.getSelected(diseaseSelection, geneListInput);
 		researchData.add("HUBRAIN",  "HuBrainProt", huBrainProts);
 		
-		List<ModelInterface> huGeneAssocs     = HuGeneAssocService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("HUGENE",  "HuGeneAssoc", huGeneAssocs);
-		
-		List<ModelInterface> huGeneCNVs         = HuGeneCNVService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("HUGENE",  "HuGeneCNV", huGeneCNVs);
-		
-		//List<ModelInterface> huGeneLinkages = HuGeneLinkageService.getSelected(diseaseSelection, geneListInput);
-		//researchData.add("HUGENE",  "HuGeneLinkage", huGeneLinkages);
-		
-		List<ModelInterface> huPerGexs         = HuPerGexService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("HUPER",  "HuPerGex", huPerGexs);
-		
-		List<ModelInterface> huPerMets           = HuPerMetService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("HUPER",  "HuPerMet", huPerMets);
-		
-		List<ModelInterface> huPerProts         = HuPerProtService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("HUPER",  "HuPerProt", huPerProts);
-		
-		List<ModelInterface> nhBrainGexs     = NhBrainGexService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("NHBRAIN",  "NhBrainGex", nhBrainGexs);
-		    
-		List<ModelInterface> nhBrainMets       = NhBrainMetService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("NHBRAIN",  "NhBrainMet", nhBrainMets);
-		
-		List<ModelInterface> nhBrainProts     = NhBrainProtService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("NHBRAIN",  "NhBrainProt", nhBrainProts);
-		
-		List<ModelInterface> nhGeneAssocs     = NhGeneAssocService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("NHGENE",  "NhGeneAssoc", nhGeneAssocs);
-		
-		List<ModelInterface> nhGeneCNVs         = NhGeneCNVService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("NHGENE",  "NhGeneCNV", nhGeneCNVs);
-		
-		//List<ModelInterface> nhGeneLinkages = NhGeneLinkageService.getSelected(diseaseSelection, geneListInput);
-		//researchData.add("NHGENE",  "NhGeneLinkage", nhGeneLinkages);
-		
-		List<ModelInterface> nhPerGexs         = NhPerGexService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("NHPER",  "NhPerGex", nhPerGexs);
-		
-		List<ModelInterface> nhPerMets           = NhPerMetService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("NHPER",  "NhPerMet", nhPerMets);
-		
-		List<ModelInterface> nhPerProts         = NhPerProtService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("NHPER",  "NhPerProt", nhPerProts);
-
 		//-------------------------------------------------
 		// DEBUG
 		//-------------------------------------------------

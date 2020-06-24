@@ -74,26 +74,6 @@ public class MSAccessParser implements IParser {
 
 					// tblnames.add(cfe.enums.Tables.HU_BRAIN_GEX.getClassname());
 
-				} else if (tablename.contains(cfe.enums.Tables.HU_BRAIN_MET.getLabel())) {
-					HuBrainMet entity = new HuBrainMet();
-					List<HuBrainMet> entities = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
-
-					Transaction tx = session.beginTransaction();
-					HuBrainMetDao hbgDao = new HuBrainMetDao(session, tx);
-					hbgDao.deleteAll(cfe.enums.Tables.HU_BRAIN_MET.getTblName());
-					hbgDao.saveAll(entities);
-					// tblnames.add(cfe.enums.Tables.HU_BRAIN_MET.getClassname());
-
-				} else if (tablename.contains(cfe.enums.Tables.HU_BRAIN_PROT.getLabel())) {
-					HuBrainProt entity = new HuBrainProt();
-					List<HuBrainProt> entities = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
-
-					Transaction tx = session.beginTransaction();
-					HuBrainProtDao hbgDao = new HuBrainProtDao(session, tx);
-					hbgDao.deleteAll(cfe.enums.Tables.HU_BRAIN_PROT.getTblName());
-					hbgDao.saveAll(entities);
-					// tblnames.add(cfe.enums.Tables.HU_BRAIN_PROT.getClassname());
-
 					/************************ End HUBRAIN TABLES *******************************/
 
 				} else {

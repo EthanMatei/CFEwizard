@@ -9,9 +9,7 @@ package cfe.enums;
 public enum Tables {
 	
 	// MS Access table name, CFE MySQL table name, class name
-	HU_BRAIN_GEX("HUBRAIN-GEX", TblNames.HU_BRAIN_GEX, "HuBrainGex"), // *
-	HU_BRAIN_PROT("HUBRAIN-PROT", TblNames.HU_BRAIN_PROT, "HuBrainProt"),
-	HU_BRAIN_MET("HUBRAIN-MET", TblNames.HU_BRAIN_MET, "HuBrainMet"),
+	HU_BRAIN_GEX("HUBRAIN-GEX", TblNames.HU_BRAIN_GEX, "HuBrainGex")
 	;
 	
 	// Used for sanity check in HibernateUtils

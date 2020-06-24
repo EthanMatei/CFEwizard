@@ -12,26 +12,6 @@ public enum Tables {
 	HU_BRAIN_GEX("HUBRAIN-GEX", TblNames.HU_BRAIN_GEX, "HuBrainGex"), // *
 	HU_BRAIN_PROT("HUBRAIN-PROT", TblNames.HU_BRAIN_PROT, "HuBrainProt"),
 	HU_BRAIN_MET("HUBRAIN-MET", TblNames.HU_BRAIN_MET, "HuBrainMet"),
-	
-	HU_GENE_CNV("HUGEN-CNV", TblNames.HU_GENE_CNV, "HuGeneCNV"), // *
-	HU_GENE_ASSOC("HUGEN-ASSOCIATION", TblNames.HU_GENE_ASSOC, "HuGeneAssoc"), 
-	HU_GENE_LINKAGE("HUGEN-LINKAGE", TblNames.HU_GENE_LINKAGE, "HuGeneLinkage"), // *
-	
-	HU_PER_GEX("HUPER-GEX", TblNames.HU_PER_GEX, "HuPerGex"),
-	HU_PER_MET("HUPER-MET", TblNames.HU_PER_MET, "HuPerMet"),
-	HU_PER_PROT("HUPER-PROT", TblNames.HU_PER_PROT, "HuPerProt"),
-	
-	NH_BRAIN_GEX("NHBRAIN-GEX", TblNames.NH_BRAIN_GEX, "NhBrainGex"),
-	NH_BRAIN_PROT("NHBRAIN-PROT", TblNames.NH_BRAIN_PROT, "NhBrainProt"),
-	NH_BRAIN_MET("NHBRAIN-MET", TblNames.NH_BRAIN_MET, "NhBrainMet"),
-	
-	NH_PER_GEX("NHPER-GEX", TblNames.NH_PER_GEX, "NhPerGex"),
-	NH_PER_PROT("NHPER-PROT", TblNames.NH_PER_PROT, "NhPerProt"),
-	NH_PER_MET("NHPER-MET", TblNames.NH_PER_MET, "NhPerMet"),
-	
-	NH_GENE_CNV("NHGEN-CNV", TblNames.NH_GENE_CNV, "NhGeneCNV"), // *
-	NH_GENE_ASSOC("NHGEN-ASSOCIATION", TblNames.NH_GENE_ASSOC, "NhGeneAssoc"), 
-	NH_GENE_LINKAGE("NHGEN-LINKAGE", TblNames.NH_GENE_LINKAGE, "NhGeneLinkage"), // *
 	;
 	
 	// Used for sanity check in HibernateUtils

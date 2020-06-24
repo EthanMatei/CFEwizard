@@ -12,14 +12,6 @@
 
 <h2>Please choose:</h2>
 <ul>
-
-    <li>
-        <s:a action="Report">
-            <s:param name="reportName" value="'diseases'" />
-            <s:param name="reportFormat" value="'xlsx'" />
-            Diseases Report
-        </s:a>
-    </li>
     
     
     <%-- Only allow admins see and make database uploads --%>
@@ -28,7 +20,7 @@
         <li> <s:a action="DBSelectionInitialize">Upload Databases </s:a></li>
     </s:if>
     
-    <li><s:a action="GeneListUpload">Calculate Scores</s:a></li>
+    <li><s:a action="ScoringWeights">Calculate Scores</s:a></li>
 </ul>
 
 <s:if test="#session.username==adminUser">

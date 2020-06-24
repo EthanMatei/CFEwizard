@@ -28,25 +28,11 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 	
 	private Map<String, Object> userSession;
 	
-	private double huBrainScore;
-	private double huPerScore;
-	private double huGeneCnvScore;
-	private double huGeneAssocScore;
-	private double huGeneLinkageScore;
-	
-	private double nhBrainScore;
-	private double nhPerScore;
-	private double nhGeneCnvScore;
-	private double nhGeneAssocScore;
-	private double nhGeneLinkageScore;
+	private double discovery;
+	private double prioritization;
+	private double validation;
+	private double testing;
 
-	
-	public double getHuBrainScore() {		
-		return huBrainScore;
-	}
-	public void setHuBrainScore(double huBrainScore) {
-		this.huBrainScore = huBrainScore;
-	}
 	
 	public String initialize() {
 		String result = SUCCESS;
@@ -61,18 +47,10 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 		
 		log.info("Entered values: ");
 		
-		log.info("Human Brain Score: " + huBrainScore);
-		log.info("Human Peripheral Score: " + huPerScore);
-		log.info("Human Gene Association Score: " + huGeneAssocScore);
-		log.info("Human Gene CNV: " + huGeneCnvScore);
-		log.info("Human Gene Linkage: " + huGeneLinkageScore);
-		
-		
-		log.info("NonHuman Brain Score: " + nhBrainScore);
-		log.info("NonHuman Peripheral Score: " + nhPerScore);
-		log.info("NonHuman Gene Association Score: " + nhGeneAssocScore);
-		log.info("NonHuman Gene CNV: " + nhGeneCnvScore);
-		log.info("NonHuman Gene Linkage: " + nhGeneLinkageScore);
+		log.info("Discovery: " + this.discovery);
+		log.info("Prioritization: " + this.prioritization);
+		log.info("Validation: " + this.validation);
+		log.info("Testing: " + this.testing);
 
 		//Session session = HibernateUtils.getSession();		
 		//Transaction tx = session.beginTransaction();
@@ -91,39 +69,21 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 				List<cfe.enums.ScoringWeights> weights = new ArrayList<cfe.enums.ScoringWeights>();
 				cfe.enums.ScoringWeights weight;
 
-				weight = cfe.enums.ScoringWeights.HUBRAIN;
-				weight.setScore( huBrainScore );
+				weight = cfe.enums.ScoringWeights.DISCOVERY;
+				weight.setScore( this.discovery );
 				weights.add(weight);
 
-				weight = cfe.enums.ScoringWeights.HUPER;
-				weight.setScore( huPerScore );
+				weight = cfe.enums.ScoringWeights.PRIORITIZATION;
+				weight.setScore( this.prioritization );
 				weights.add(weight);
 
-				weight = cfe.enums.ScoringWeights.HUGENEASSOC;
-				weight.setScore( huGeneAssocScore );
+				weight = cfe.enums.ScoringWeights.VALIDATION;
+				weight.setScore( this.validation );
 				weights.add(weight);
 
-				weight = cfe.enums.ScoringWeights.HUGCNV;
-				weight.setScore( huGeneCnvScore );
+				weight = cfe.enums.ScoringWeights.TESTING;
+				weight.setScore( this.testing );
 				weights.add(weight);
-
-
-				weight = cfe.enums.ScoringWeights.NHBRAIN;
-				weight.setScore( nhBrainScore );
-				weights.add(weight);
-
-				weight = cfe.enums.ScoringWeights.NHPER;
-				weight.setScore( nhPerScore );
-				weights.add(weight);
-
-				weight = cfe.enums.ScoringWeights.NHGENEASSOC;
-				weight.setScore( nhGeneAssocScore );
-				weights.add(weight);
-
-				weight = cfe.enums.ScoringWeights.NHGCNV;
-				weight.setScore( nhGeneCnvScore );
-				weights.add(weight);
-
 
 				userSession.put("weights", weights);
 
@@ -139,78 +99,59 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 		
 		return rtn;
 	}
-	
-	
-	public double getHuGeneAssocScore() {
-		return huGeneAssocScore;
-	}
-	
-	public void setHuGeneAssocScore(double huGeneAssocScore) {
-		this.huGeneAssocScore = huGeneAssocScore;
-	}
+
 
 	public void validate() {
 		
-		boolean res = (huBrainScore < 0.0) || (huPerScore < 0.0) || (huGeneCnvScore < 0.0) || (huGeneAssocScore < 0.0)  
-				|| (nhBrainScore < 0.0) || (nhPerScore < 0.0) || (nhGeneCnvScore < 0.0) || (nhGeneAssocScore < 0.0);
+		boolean res = (this.discovery < 0.0)
+				    || (this.prioritization < 0.0)
+				    || (this.validation < 0.0)
+				    || (this.testing < 0.0)  
+		;
 
 		if (res) 
 			addActionError( "ERROR: Scores cannot be negative." );
-	}
-	
-
-	public double getNhBrainScore() {
-		return nhBrainScore;
-	}
-	public void setNhBrainScore(double nhBrainScore) {
-		this.nhBrainScore = nhBrainScore;
-	}
-	public double getNhPerScore() {
-		return nhPerScore;
-	}
-	public void setNhPerScore(double nhPerScore) {
-		this.nhPerScore = nhPerScore;
-	}
-	public double getHuPerScore() {
-		return huPerScore;
-	}
-	public void setHuPerScore(double huPerScore) {
-		this.huPerScore = huPerScore;
-	}
-	public double getHuGeneCnvScore() {
-		return huGeneCnvScore;
-	}
-	public void setHuGeneCnvScore(double huGeneCnvScore) {
-		this.huGeneCnvScore = huGeneCnvScore;
-	}
-	public double getNhGeneCnvScore() {
-		return nhGeneCnvScore;
-	}
-	public void setNhGeneCnvScore(double nhCnvScore) {
-		this.nhGeneCnvScore = nhCnvScore;
-	}
-	public double getNhGeneAssocScore() {
-		return nhGeneAssocScore;
-	}
-	public void setNhGeneAssocScore(double nhGeneAssocScore) {
-		this.nhGeneAssocScore = nhGeneAssocScore;
-	}
-
-	public double getHuGeneLinkageScore() {
-		return huGeneLinkageScore;
-	}
-	public void setHuGeneLinkageScore(double huGeneLinkageScore) {
-		this.huGeneLinkageScore = huGeneLinkageScore;
-	}
-	public double getNhGeneLinkageScore() {
-		return nhGeneLinkageScore;
-	}
-	public void setNhGeneLinkageScore(double nhGeneLinkageScore) {
-		this.nhGeneLinkageScore = nhGeneLinkageScore;
 	}
 	
 	@Override
 	public void setSession(Map<String, Object> session) {
 		this.userSession = session;
 	}
+
+	public double getDiscovery() {
+		return discovery;
+	}
+
+	public void setDiscovery(double discovery) {
+		this.discovery = discovery;
+	}
+
+	public double getPrioritization() {
+		return prioritization;
+	}
+
+	public void setPrioritization(double prioritization) {
+		this.prioritization = prioritization;
+	}
+
+	public double getValidation() {
+		return validation;
+	}
+
+	public void setValidation(double validation) {
+		this.validation = validation;
+	}
+
+	public double getTesting() {
+		return testing;
+	}
+
+	public void setTesting(double testing) {
+		this.testing = testing;
+	}
+
+	public static Log getLog() {
+		return log;
+	}
+	
 }

@@ -21,7 +21,7 @@ Table: **Discovery**
 | MS Access Column                      | MySQL Column                        | Type       |
 | ------------------------------------- | ----------------------------------- |----------- |
 | Probeset                              | probeset                            | String     |
-| GeneCards Symbol                      | geneCardSymbol                      | String     |
+| GeneCards Symbol                      | geneCardsSymbol                     | String     |
 | Gene Title                            | geneTitle                           | String     |
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
 | APscores                              | apScore                             | Double     |
@@ -40,7 +40,7 @@ Table: **Discovery**
 | MS Access Column                      | MySQL Column                        | Type       |
 | ------------------------------------- | ----------------------------------- |----------- |
 | Probeset                              | probeset                            | String     |
-| GeneCards Symbol                      | geneCardSymbol                      | String     |
+| GeneCards Symbol                      | geneCardsSymbol                     | String     |
 | Gene Title                            | geneTitle                           | String     |
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
 | HUBRAIN Score                         | huBrainScore                        | Integer    |
@@ -58,7 +58,7 @@ Table: **Validation**
 | MS Access Column                      | MySQL Column                        | Type       |
 | ------------------------------------- | ----------------------------------- |----------- |
 | Probeset                              | probeset                            | String     |
-| GeneCards Symbol                      | geneCardSymbol                      | String     |
+| GeneCards Symbol                      | geneCardsSymbol                     | String     |
 | Gene Title                            | geneTitle                           | String     |
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
 
@@ -70,7 +70,7 @@ Table: **Testing**
 | MS Access Column                      | MySQL Column                        | Type       |
 | ------------------------------------- | ----------------------------------- |----------- |
 | Probeset                              | probeset                            | String     |
-| GeneCards Symbol                      | geneCardSymbol                      | String     |
+| GeneCards Symbol                      | geneCardsSymbol                     | String     |
 | Gene Title                            | geneTitle                           | String     |
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
 

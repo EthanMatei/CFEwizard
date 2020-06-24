@@ -8,7 +8,7 @@ package cfe.enums;
  *
  */
 public enum Databases {
-	
+	DISCOVERY("Discovery"),
 	HUBRAIN("Human Brain")
 	;
 	

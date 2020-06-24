@@ -201,13 +201,17 @@
 		<!-- does not work with pages namespace -->
 	    <action name="GeneListUpload" class="cfe.action.GeneListUpload" method="initialize">
 			<interceptor-ref name="basicStack"/>
-			<result name="success">pages/geneListUpload.jsp</result>
+			<!--  <result name="success">pages/geneListUpload.jsp</result> -->
+			<result name="success" type="redirectAction">
+            	<param name="actionName">ScoringWeights</param>
+            </result>			
 			<result name="error">pages/error.jsp</result>
 		    <result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result> 
 		</action>
 		
+		<!-- 
 		<action name="GeneListUploadProcess" class="cfe.action.GeneListUpload">
 		    <interceptor-ref name="cfeStack"/>
 			<result name="success" type="redirectAction">
@@ -218,7 +222,7 @@
                 <param name="actionName">LoginAction</param>
             </result> 			
 		</action>
-	
+	    -->
 	
 		<!-- Step 2 -->	
 		<action name="ScoringWeights" class="cfe.action.ScoringWeights" method="initialize">
@@ -232,9 +236,14 @@
 		
 		<action name="ScoringWeightsProcess" class="cfe.action.ScoringWeights">
 			<interceptor-ref name="cfeStack"/>
+			<!--
 			<result name="success" type="redirectAction">
                 <param name="actionName">DiseaseSelection</param>
             </result>
+            -->
+			<result name="success" type="redirectAction">
+                <param name="actionName">CalculateScores</param>
+            </result>            
 			<result name="error">pages/error.jsp</result>
 			<result name="input">pages/scoringWeights.jsp</result>
 			<result name="login" type="redirectAction">
@@ -243,6 +252,7 @@
 		</action>
 		
 		<!--  Step 3 -->
+		<!--
 		<action name="DiseaseSelection" class="cfe.action.DiseaseSelectionAction" method="initialize">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success">pages/diseaseSelection.jsp</result>
@@ -262,6 +272,7 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
+		-->
 				
 		<!--  Step 4 -->
 		<action name="CalculateScores" class="cfe.action.CalculateScores">

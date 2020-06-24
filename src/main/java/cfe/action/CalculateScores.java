@@ -37,7 +37,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	
 	private Map<String, Object> session;
 	
-	private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
+	//private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
 
 	public String execute() {
 		String status = SUCCESS;
@@ -49,28 +49,28 @@ public class CalculateScores extends BaseAction implements SessionAware {
 			//-----------------------------------------------------
 			// Get input selections
 			//-----------------------------------------------------
-			Object diseasesObject = session.get("diseaseSelectors");
+			//Object diseasesObject = session.get("diseaseSelectors");
 			Object weightsObject  = session.get("weights");
 
-			if (diseasesObject == null || weightsObject == null) {
+			if (weightsObject == null) {
 				this.setErrorMessage("Unfortunately, your session has expired. You will need to restart your score calculation.");
 				status = ERROR;
 			}
 			else {
-				diseaseSelectors = (List<DiseaseSelector>) diseasesObject;
-				GeneListInput geneListInput = (GeneListInput) session.get("geneListInput");
+				//diseaseSelectors = (List<DiseaseSelector>) diseasesObject;
+				//GeneListInput geneListInput = (GeneListInput) session.get("geneListInput");
 				List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) weightsObject;
 
 				score = Scores.OTHER.getLabel();
 
-				DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
-				try {
-					results = Score.calculate(geneListInput, diseaseSelection, weights);
-				}
-				catch (Exception exception) {
-					this.setErrorMessage( exception.getMessage() );
-					status = ERROR;	
-				}
+				//DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
+				//try {
+				//	results = Score.calculate(geneListInput, diseaseSelection, weights);
+				//}
+				//catch (Exception exception) {
+				//	this.setErrorMessage( exception.getMessage() );
+				//	status = ERROR;	
+				//}
 
 				session.put("results", results);
 			}
@@ -129,13 +129,13 @@ public class CalculateScores extends BaseAction implements SessionAware {
 		this.otherCompleted = otherCompleted;
 	}
 
-	public List<DiseaseSelector> getDiseaseSelectors() {
-		return diseaseSelectors;
-	}
+	//public List<DiseaseSelector> getDiseaseSelectors() {
+	//	return diseaseSelectors;
+	//}
 
-	public void setDiseaseSelectors(List<DiseaseSelector> diseaseSelectors) {
-		this.diseaseSelectors = diseaseSelectors;
-	}
+	//public void setDiseaseSelectors(List<DiseaseSelector> diseaseSelectors) {
+	//	this.diseaseSelectors = diseaseSelectors;
+	//}
 
 	public Results getResults() {
 		return results;

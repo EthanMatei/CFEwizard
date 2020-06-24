@@ -166,29 +166,17 @@ public class ResearchData {
 	public List<Research> getResearchByScoringCategory(String gene, cfe.enums.ScoringWeights scoringCategory) {
 		List<Research> researchList = new ArrayList<Research>();
 		switch (scoringCategory) {
-		case HUBRAIN:
-			researchList = this.get(gene, "HUBRAIN");
+		case DISCOVERY:
+			researchList = this.get(gene, "DISCOVERY");
 			break;
-		case HUPER:
-			researchList = this.get(gene, "HUPER");
+		case PRIORITIZATION:
+			researchList = this.get(gene, "PRIORITIZATION");
 			break;
-		case HUGENEASSOC:
-			researchList = this.get(gene, "HUGENE", "HuGeneAssoc");
+		case VALIDATION:
+			researchList = this.get(gene, "VALIDATION");
 		    break;
-		case HUGCNV:
-			researchList = this.get(gene, "HUGENE", "HuGeneCNV");
-			break;
-		case NHBRAIN:
-			researchList = this.get(gene, "NHBRAIN");
-			break;
-		case NHPER:
-			researchList = this.get(gene, "NHPER");
-			break;
-		case NHGENEASSOC:
-			researchList = this.get(gene, "NHGENE", "NhGeneAssoc");
-			break;
-		case NHGCNV:
-			researchList = this.get(gene, "NHGENE", "NhGeneCNV");
+		case TESTING:
+			researchList = this.get(gene, "TESTING");
 			break;
 		}
 		return researchList;

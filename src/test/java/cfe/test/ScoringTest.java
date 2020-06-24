@@ -49,37 +49,20 @@ public class ScoringTest {
 	private List<ScoringWeights> getWeights() {
 		List<ScoringWeights> weights = new ArrayList<ScoringWeights>();
 		ScoringWeights weight;
-		weight = cfe.enums.ScoringWeights.HUBRAIN;
-		weight.setScore( 4.0 );
+		weight = cfe.enums.ScoringWeights.DISCOVERY;
+		weight.setScore( 1.0 );
 	    weights.add(weight);
 		
-		weight = cfe.enums.ScoringWeights.HUPER;
-		weight.setScore( 2.0 );
-	    weights.add(weight);
-
-		weight = cfe.enums.ScoringWeights.HUGENEASSOC;
-		weight.setScore( 2.0 );
-	    weights.add(weight);
-	    
-		weight = cfe.enums.ScoringWeights.HUGCNV;
-		weight.setScore( 1.75 );
-	    weights.add(weight);
-
-
-		weight = cfe.enums.ScoringWeights.NHBRAIN;
-		weight.setScore( 2.0 );
-	    weights.add(weight);
-		
-		weight = cfe.enums.ScoringWeights.NHPER;
+		weight = cfe.enums.ScoringWeights.PRIORITIZATION;
 		weight.setScore( 1.0 );
 	    weights.add(weight);
 
-		weight = cfe.enums.ScoringWeights.NHGENEASSOC;
+		weight = cfe.enums.ScoringWeights.VALIDATION;
 		weight.setScore( 1.0 );
 	    weights.add(weight);
 	    
-		weight = cfe.enums.ScoringWeights.NHGCNV;
-		weight.setScore( 0.5 );
+		weight = cfe.enums.ScoringWeights.TESTING;
+		weight.setScore( 1.0 );
 	    weights.add(weight);
 
         return weights;

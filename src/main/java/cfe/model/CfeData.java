@@ -20,6 +20,10 @@ import javax.persistence.MappedSuperclass;
 // http://stackoverflow.com/questions/4265454/hibernate-jpa-inheritance-mapping-of-abstract-super-classes
 @MappedSuperclass
 abstract class CfeData {
+	
+	// Map from MS Access field name to MySQL/Hibernate field name
+	protected TreeMap<String, String> fieldMap = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+
 	private long id;
 	private String probeSet;         // Natural key
 	private String geneCardSymbol;

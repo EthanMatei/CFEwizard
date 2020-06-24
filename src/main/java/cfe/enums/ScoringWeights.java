@@ -2,17 +2,11 @@ package cfe.enums;
 
 public enum ScoringWeights {
 	
-	HUBRAIN("Human Brain", "huBrainScore", 4.0), 
-	HUPER("Human Peripheral", "huPerScore", 2.0),
-	HUGENEASSOC("Human Genetic Association", "huGeneAssocScore", 2.0),
-	HUGCNV("Human Genetic CNV", "HuGeneCnvScore", 1.5),
-		
-	NHBRAIN("NonHuman Brain", "nhBrainScore", 2.0), 
-	NHPER("NonHuman Peripheral", "nhPerScore", 1.0),
-	NHGENEASSOC("NonHuman Genetic Association", "nhGeneAssocScore", 1.0),
-	NHGCNV("NonHuman Genetic CNV", "nhGeneCnvScore", 0.75);
-	
-	// HUGENELINKAGE("Human Gene Linkage", "huGeneLinkage", 0.5);
+	DISCOVERY("Discovery", "discoveryScore", 1.0), 
+	PRIORITIZATION("Prioritization", "prioritizationScore", 1.0),
+	VALIDATION("Validation", "validationScore", 1.0),
+	TESTING("Testing", "testingScore", 1.0)
+	;
 	
 	private String label;
 	private double score;

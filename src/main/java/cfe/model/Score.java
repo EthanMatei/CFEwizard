@@ -132,41 +132,24 @@ public class Score {
     	//---------------------------------------------------------
 		// Get the global scoring weights
 		//---------------------------------------------------------
-		double huBrainScore     = 0.0;
-		double huPerScore       = 0.0;
-		double huGeneAssocScore = 0.0;
-		double huGeneCNVScore   = 0.0;
-			
-		double nhBrainScore     = 0.0;
-		double nhPerScore       = 0.0;
-		double nhGeneAssocScore = 0.0;
-		double nhGeneCNVScore   = 0.0;
+		double discovery        = 0.0;
+		double prioritization   = 0.0;
+		double validation       = 0.0;
+		double testing          = 0.0;
 			
 		for (cfe.enums.ScoringWeights weight: weights) {
 			switch (weight) {
-			case HUBRAIN:
-				huBrainScore = weight.getScore();
+			case DISCOVERY:
+				discovery = weight.getScore();
 				break;
-			case HUPER:
-				huPerScore = weight.getScore();
+			case PRIORITIZATION:
+				prioritization = weight.getScore();
 				break;
-			case HUGENEASSOC:
-				huGeneAssocScore = weight.getScore();
+			case VALIDATION:
+				validation = weight.getScore();
 				break;
-			case HUGCNV:
-				huGeneCNVScore = weight.getScore();
-				break;
-			case NHBRAIN:
-				nhBrainScore = weight.getScore();
-				break;
-			case NHPER:
-				nhPerScore = weight.getScore();
-				break;
-			case NHGENEASSOC:
-				nhGeneAssocScore = weight.getScore();
-				break;
-			case NHGCNV:
-				nhGeneCNVScore = weight.getScore();
+			case TESTING:
+				testing = weight.getScore();
 				break;
 			}
 		}
@@ -180,6 +163,7 @@ public class Score {
 			CategoryResult cResult = null;
 			Result result = new Result();
 			
+			/*
 			//-----------------------------------------------
 			// HUBRAIN
 			//-----------------------------------------------
@@ -308,6 +292,7 @@ public class Score {
 					+ nhBrainCategoryScore + nhPerCategoryScore + Math.max(nhGeneAssocCategoryScore, nhGeneCNVCategoryScore) );
 			
 			results.add(gene, result);
+			*/
 		}
 
 		return results;

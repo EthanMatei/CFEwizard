@@ -13,6 +13,8 @@ Steps/Databases:
 Data is entered into MS Access databases, and those databases are uploaded to the CFE Wizard,
 and the data from them are stored into the CFE Wizard's MySQL database.
 
+---
+
 Discovery Database
 ---------------------
 
@@ -33,7 +35,12 @@ Table: **Discovery**
 | DE Score                              | deScore                             | Integer    |
 | DE change                             | deChange                            | String     |
  
- 
+
+---
+
+Priortization Database
+----------------------
+
  Table: **Prioritization**
  
  
@@ -52,6 +59,11 @@ Table: **Discovery**
  
 ...
 
+---
+
+Validation Database
+-------------------
+
 
 Table: **Validation**
 
@@ -64,6 +76,12 @@ Table: **Validation**
 
 ...
 
+
+---
+
+Testing Database
+----------------
+
 Table: **Testing**
  
 
@@ -75,3 +93,16 @@ Table: **Testing**
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
 
 ...
+
+
+---
+
+Building the CFE Wizard
+-------------------------------
+
+To build run the following command in the top-level directory:
+
+    mvn -X clean package
+
+This will create the web archive file **target/CFE.war**
+

@@ -46,7 +46,7 @@
   
   <p>
   Note: MS Access tables not shown in the database table map
-  above, and the linkage tables shown above, are ignored by the CFE Wizard.
+  above are ignored by the CFE Wizard.
   </p>
   
 </s:if>

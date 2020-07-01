@@ -10,7 +10,6 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import cfe.dao.ScoringDataDao;
 import cfe.utils.Authorization;
 import cfe.utils.HibernateUtils;
 

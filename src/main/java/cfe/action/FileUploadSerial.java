@@ -20,7 +20,6 @@ import cfe.enums.Databases;
 import cfe.model.DatabaseUploadInfo;
 import cfe.parser.MSAccessParser;
 import cfe.services.DatabaseUploadInfoService;
-import cfe.services.DisorderService;
 import cfe.utils.Authorization;
 import cfe.utils.ParseResult;
 
@@ -221,16 +220,6 @@ public class FileUploadSerial extends BaseAction implements SessionAware {
     		// Should this be moved to a variable for serial version??? 
     		//-------------------------------------------------------------
    		    webSession.put("uploaded",uploadFileNames);
-    		
-    		// Handled in parse result now
-    		//if (!validationMsgs.isEmpty()) {
-    		//	webSession.put("vMsgs",validationMsgs);
-    		//}
-
-    		//-------------------------------------
-    		// Update the disorders table
-    		//-------------------------------------
-    		DisorderService.update();
     	}
 
 		

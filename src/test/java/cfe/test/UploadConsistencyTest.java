@@ -15,8 +15,6 @@ import org.junit.Test;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
 
-import cfe.dao.HuBrainGexDao;
-import cfe.model.HuBrainGex;
 import cfe.parser.Parser;
 import cfe.utils.HibernateUtils;
 

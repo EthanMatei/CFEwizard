@@ -9,7 +9,7 @@ package cfe.enums;
 public enum Tables {
 	
 	// MS Access table name, CFE MySQL table name, class name
-	HU_BRAIN_GEX("HUBRAIN-GEX", TblNames.HU_BRAIN_GEX, "HuBrainGex")
+	DISCOVERY("Discovery", TblNames.DISCOVERY, "Discovery");
 	;
 	
 	// Used for sanity check in HibernateUtils
@@ -43,31 +43,7 @@ public enum Tables {
 		public static final String DISORDER         	= "disorder";
 		
 		public static final String HU_BRAIN_GEX 	= "hubraingex";
-		public static final String HU_BRAIN_PROT 	= "hubrainprot";
-		public static final String HU_BRAIN_MET 	= "hubrainmet";
-		
-		public static final String HU_GENE_CNV 		= "hugenecnv";
-		public static final String HU_GENE_ASSOC 	= "hugeneassoc";
-		public static final String HU_GENE_LINKAGE	= "hugenelinkage";
-		
-		public static final String HU_PER_GEX 		= "hupergex";
-		public static final String HU_PER_MET		= "hupermet";
-		public static final String HU_PER_PROT 		= "huperprot";
-		
 
-		public static final String NH_BRAIN_GEX 	= "nhbraingex";
-		public static final String NH_BRAIN_PROT 	= "nhbrainprot";
-		public static final String NH_BRAIN_MET 	= "nhbrainmet";
-		
-		public static final String NH_PER_GEX 		= "nhpergex";
-		public static final String NH_PER_PROT 		= "nhperprot";
-		public static final String NH_PER_MET 		= "nhpermet";
-		
-		public static final String NH_GENE_CNV 		= "nhgenecnv";
-		public static final String NH_GENE_ASSOC 	= "nhgeneassoc";
-		public static final String NH_GENE_LINKAGE	= "nhgenelinkage";
-		
-		public static final String GENE_LIST 		= "genelist";
-		public static final String SCORING_DATA 	= "scoringdata";
+	    public static final String DISCOVERY = "discovery";
 	}
 }

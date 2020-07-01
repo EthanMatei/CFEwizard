@@ -60,24 +60,19 @@ public class MSAccessParser implements IParser {
 			parseResult.addTableParseResult(tablename);
 
 			try {
-				/************************ Begin HUBRAIN TABLES *******************************/
-
-				if (tablename.contains(cfe.enums.Tables.HU_BRAIN_GEX.getLabel())) {
-					HuBrainGex entity = new HuBrainGex();
-					List<HuBrainGex> hbgs = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
+				
+				if (tablename.contains(cfe.enums.Tables.DISCOVERY.getLabel())) {
+					// DISCOVERY DATABASE TABLE
+					Discovery entity = new Discovery();
+					List<Discovery> discoveries = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
 
 					Transaction tx = session.beginTransaction();
-					HuBrainGexDao hbgDao = new HuBrainGexDao(session, tx);
+					DiscoveryDao discoveryDao = new DiscoveryDao(session, tx);
 
-					hbgDao.deleteAll(cfe.enums.Tables.HU_BRAIN_GEX.getTblName());
-					hbgDao.saveAll(hbgs);
-
-					// tblnames.add(cfe.enums.Tables.HU_BRAIN_GEX.getClassname());
-
-					/************************ End HUBRAIN TABLES *******************************/
-
+					discoveryDao.deleteAll(cfe.enums.Tables.DISCOVERY.getTblName());
+					log.info("*************** discoveries count: " + discoveries.size());
+					discoveryDao.saveAll(discoveries);
 				} else {
-
 					log.warn("Ignored tablename " + tablename);
 					parseResult.setTableStatus(tablename, TableParseResult.Status.IGNORED);
 				}
@@ -94,22 +89,9 @@ public class MSAccessParser implements IParser {
 		}
 		db.close();
 		
-		session.close();
-		
+		session.close();		
 		session = null;
-		
-		
-		/* Jim ??????????? 
-		 * Perhaps this code was necessary with the parallel file upload version,
-		 * but I can't see why it is needed with the serial version
-		 *
-		// Give some time to release the session
-		try {
-			Thread.sleep(1500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-        ***************************/
+
 		
 		log.info("Done processing ms uploaded file " + filename);
 		log.info(Util.getFreeMemory());

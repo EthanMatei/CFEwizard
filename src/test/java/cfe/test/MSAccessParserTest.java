@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import cfe.parser.MSAccessParser;
-import cfe.services.DisorderService;
 
 
 public class MSAccessParserTest {
@@ -74,9 +73,6 @@ public class MSAccessParserTest {
 		    
 		    // Wait until all threads are finished
 		    executor.awaitTermination(50L, TimeUnit.SECONDS);
-		    
-		    // Update the disorder table
-		    DisorderService.update();
 			
 		    long endTime = System.currentTimeMillis();
 			

@@ -25,12 +25,17 @@ abstract class CfeData {
 	protected TreeMap<String, String> fieldMap = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
 
 	private long id;
-	private String probeSet;         // Natural key
-	private String geneCardSymbol;
-	private String DirectionChange;
+	private String probeset;         // Natural key
+	private String geneCardsSymbol;
+	private String changeInExpressionInTrackedPhene;
 
 	protected CfeData()
 	{
+		// Fields common to all CFE data tables
+		fieldMap.put("Probeset", "probeset");
+		fieldMap.put("GeneCards Symbol", "geneCardsSymbol");
+		fieldMap.put("Gene Title", "geneTitle");
+		fieldMap.put("Change in expression in tracked phene", "changeInExpressionInTrackedPhene");
 	}
 	
 	@Id
@@ -39,33 +44,34 @@ abstract class CfeData {
 		return id;
 	}
 
-	public void setID(long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
 	// @Index(name="idx_probeset")
-	public String getProbeSet() {
-	    return this.probeSet;	
+	public String getProbeset() {
+	    return this.probeset;	
 	}
 	
-	public void setProbeSet(String probeSet) {
-		this.probeSet = probeSet;
+	public void setProbeset(String probeset) {
+		this.probeset = probeset;
 	}
 	
-	public String getGeneCardSymbol() {
-		return geneCardSymbol;
+	public String getGenesCardsSymbol() {
+		return geneCardsSymbol;
 	}
 
-	public void setGeneCardSymbol(String geneCardSymbol) {
-		if (geneCardSymbol == null) geneCardSymbol = "";
-		this.geneCardSymbol = geneCardSymbol.trim();
+	public void setGeneCardsSymbol(String geneCardsSymbol) {
+		if (geneCardsSymbol == null) geneCardsSymbol = "";
+		this.geneCardsSymbol = geneCardsSymbol.trim();
 	}
 
-	public String getDirectionChange() {
-		return DirectionChange;
+	public String getChangeInExpressionInTrackedPhene() {
+		return changeInExpressionInTrackedPhene;
 	}
 
-	public void setDirectionChange(String directionChange) {
-		DirectionChange = directionChange;
+	public void setChangeInExpressionInTrackedPhene(String changeInExpressionInTrackedPhene) {
+		this.changeInExpressionInTrackedPhene = changeInExpressionInTrackedPhene;
 	}
+
 }

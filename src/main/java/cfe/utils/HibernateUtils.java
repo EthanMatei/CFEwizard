@@ -85,16 +85,8 @@ public class HibernateUtils {
 			Class<?>[] models = {
 					
 					cfe.model.DatabaseUploadInfo.class,
-					cfe.model.Disorder.class,
 					
-					// Human Brain Database contains these three tables
-					cfe.model.HuBrainGex.class , 
-					
-					// Gene list
-					cfe.model.GeneList.class,
-					
-					// Summary data
-					cfe.model.ScoringData.class										
+					cfe.model.Discovery.class
 					};
 			for( Class<?> model: models)
 				conf.addAnnotatedClass(model);

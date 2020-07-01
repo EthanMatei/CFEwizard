@@ -9,7 +9,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import cfe.model.DatabaseUploadInfo;
-import cfe.model.ScoringData;
 
 
 public class DatabaseUploadInfoDao extends AbstractDao<DatabaseUploadInfo> {

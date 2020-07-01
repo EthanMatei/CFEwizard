@@ -14,7 +14,6 @@ import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import cfe.action.ActionErrorException;
-import cfe.dao.ScoringDataDao;
 import cfe.model.ScoreResults;
 import cfe.model.disease.DiseaseSelector;
 import cfe.model.reports.ReportException;

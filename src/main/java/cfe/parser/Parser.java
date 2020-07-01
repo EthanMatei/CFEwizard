@@ -61,13 +61,14 @@ public class Parser<M> {
 			   
 			   String fieldName = (String)getFieldName.invoke(hbg, columnName);
 			      
-				if (fieldName == null || fieldName.equalsIgnoreCase("ID")) continue;
+				if (fieldName == null || fieldName.equalsIgnoreCase("id")) continue;
 								
 				Object value = row.get(columnName);
 				
 				if (value == null) continue ; //{ value = ""; }
 				
-				Method m = hbg.getClass().getDeclaredMethod("set" + fieldName,  getParameterType(column.getType()));
+				String fieldSetterName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+				Method m = hbg.getClass().getDeclaredMethod("set" + fieldSetterName,  getParameterType(column.getType()));
 				
 				// Tue Apr 09 00:00:00 EDT 2013
 				// EEE MMM dd hh:mm:ss z yyyy

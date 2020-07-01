@@ -13,7 +13,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import cfe.enums.ScoringWeights;
-import cfe.model.Disorder;
 import cfe.model.Research;
 import cfe.model.ScoreResults;
 import cfe.model.VersionNumber;
@@ -21,7 +20,7 @@ import cfe.model.disease.DiseaseSelector;
 import cfe.model.results.CategoryResult;
 import cfe.model.results.Result;
 import cfe.model.results.Results;
-import cfe.services.DisorderService;
+
 
 /**
  * Class that generates reports in Excel format.
@@ -175,18 +174,6 @@ public class ReportGenerator {
 
 			String[] columnTypes = {"string", "string", "string"};
 			sheet.setColumnTypes(columnTypes);
-
-
-			List<Disorder> disorders = DisorderService.getAll();
-			
-			for (Disorder disorder: disorders) {
-				List<String> row = new ArrayList<String>();
-
-				row.add( disorder.getDomain() );
-				row.add( disorder.getSubdomain() );
-				row.add( disorder.getRelevantDisorder() );
-				sheet.addData( row );				
-			}
 
 		return sheet;
 	}

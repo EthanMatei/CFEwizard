@@ -1,14 +1,13 @@
 package cfe.model;
 
 import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import cfe.enums.Tables.TblNames;
 
 @Entity
-@Table(name=TblNames.HU_BRAIN_GEX)
+@Table(name=TblNames.DISCOVERY)
 public class Discovery extends CfeData implements Serializable {
 	
 	private static final long serialVersionUID = 3063001087206669093L;
@@ -19,167 +18,93 @@ public class Discovery extends CfeData implements Serializable {
 	 * setaccessNumber (for example).
 	 */
 	public Discovery()	{
-		//initCommonFields();
 		super();
-		fieldMap.put("Accession Number","AccessionNumber");
-		fieldMap.put("Paper Symbol","PaperSymbol");
-		fieldMap.put("Gene Name","GeneName");
 		
-		// fieldMap.put("Brain Region/ cell line","BrainRegion");
-		// fieldMap.put("Change","CChange");
-	
-		fieldMap.put("Brain Region/ Cell Line","Tissue");
-		fieldMap.put("Change","DirectionChange");
-		
-		fieldMap.put("Number of subjects","NumberOfSubjects");
-		fieldMap.put("Males","Males");
-		fieldMap.put("Females","Females");
-		fieldMap.put("Sample Source (Ex Stanley)","SampleSource");
-		fieldMap.put("Additional information","AdditionalInfo");
-		//fieldMap.put("flagged studies","FlaggedStudies");
-		fieldMap.put("Descriptive Name From Author","DescriptiveName");
-		fieldMap.put("Author ID","AuthorId");
-		fieldMap.put("Title","Title");
-		fieldMap.put("Source info (TABLE#,ABSTRACT,FULL TEXT, SUPPLEMENTARY)","SourceInfo");
-		fieldMap.put("Added By","AddedBy");
-		//fieldMap.put("Date added","DateAdded");
-		fieldMap.put("Field20","Comments");
-		// New
-		fieldMap.put("Source info", "SourceInfo");
-		fieldMap.put("Author/Date", "AuthorId");
-		fieldMap.put("Title of Paper", "Title");
-		fieldMap.put("flagged studies", "FlaggedStudies");
-		
+		fieldMap.put("APscores", "apScores");
+		fieldMap.put("AP Percentile", "apPercentile");
+		fieldMap.put("Ap Score", "apScore");
+		fieldMap.put("AP Change", "apChange");
+		fieldMap.put("DEscores", "deScores");
+		fieldMap.put("DE Percentile", "dePercentile");
+		fieldMap.put("DE Score", "deScore");
+		fieldMap.put("DE change", "deChange");
 	}
-	private String AccessionNumber;
-	private String PaperSymbol;
-	private String GeneName;
-	private String BrainRegion;
-	private String CChange;
-	private String NumberOfSubjects;
-	private String Males;
-	private String Females;
-	private String SampleSource;
-	private String AdditionalInfo;
-	private String FlaggedStudies;
-	private String DescriptiveName;
-	private String AuthorId;
-	private String Title;
-	private String SourceInfo;
-	private String AddedBy;
-	private Date  DateAdded;
-	private String Comments; // Field20
-	
-	public String getAccessionNumber() {
-		return AccessionNumber;
-	}
-	public void setAccessionNumber(String accessionNumber) {
-		AccessionNumber = accessionNumber;
-	}
-	public String getPaperSymbol() {
-		return PaperSymbol;
-	}
-	public void setPaperSymbol(String paperSymbol) {
-		PaperSymbol = paperSymbol;
-	}
-	public String getGeneName() {
-		return GeneName;
-	}
-	public void setGeneName(String geneName) {
-		GeneName = geneName;
-	}
-	public String getBrainRegion() {
-		return BrainRegion;
-	}
-	public void setBrainRegion(String brainRegion) {
-		BrainRegion = brainRegion;
-	}
-	public String getCChange() {
-		return CChange;
-	}
-	public void setCChange(String cChange) {
-		CChange = cChange;
-	}
-	public String getNumberOfSubjects() {
-		return NumberOfSubjects;
-	}
-	public void setNumberOfSubjects(String numberOfSubjects) {
-		NumberOfSubjects = numberOfSubjects;
-	}
-	public String getMales() {
-		return Males;
-	}
-	public void setMales(String males) {
-		Males = males;
-	}
-	public String getFemales() {
-		return Females;
-	}
-	public void setFemales(String females) {
-		Females = females;
-	}
-	public String getSampleSource() {
-		return SampleSource;
-	}
-	public void setSampleSource(String sampleSource) {
-		SampleSource = sampleSource;
-	}
-	public String getAdditionalInfo() {
-		return AdditionalInfo;
-	}
-	public void setAdditionalInfo(String additionalInfo) {
-		AdditionalInfo = additionalInfo;
-	}
-	public String getFlaggedStudies() {
-		return FlaggedStudies;
-	}
-	public void setFlaggedStudies(String flaggedStudies) {
-		FlaggedStudies = flaggedStudies;
-	}
-	public String getDescriptiveName() {
-		return DescriptiveName;
-	}
-	public void setDescriptiveName(String descriptiveName) {
-		DescriptiveName = descriptiveName;
-	}
-	public String getAuthorId() {
-		return AuthorId;
-	}
-	public void setAuthorId(String authorId) {
-		AuthorId = authorId;
-	}
-	public String getTitle() {
-		return Title;
-	}
-	public void setTitle(String title) {
-		Title = title;
-	}
-	public String getSourceInfo() {
-		return SourceInfo;
-	}
-	public void setSourceInfo(String sourceInfo) {
-		SourceInfo = sourceInfo;
-	}
-	public String getAddedBy() {
-		return AddedBy;
-	}
-	public void setAddedBy(String addedBy) {
-		AddedBy = addedBy;
-	}
-	public Date getDateAdded() {
-		return DateAdded;
-	}
-	public void setDateAdded(Date dateAdded) {
-		DateAdded = dateAdded;
-	}
-	public String getComments() {
-		return Comments;
-	}
-	public void setComments(String comments) {
-		Comments = comments;
-	}
+
+	private Double apScores;
+	private Double apPercentile;
+	private Integer apScore;
+	private String apChange;
+	private Double deScores;
+	private Double dePercentile;
+	private Integer	deScore;
+	private String deChange;
 	
 	public String getFieldName(String name)	{
 		return fieldMap.get(name.trim());		
 	}
+
+	public Double getApScores() {
+		return apScores;
+	}
+
+	public void setApScores(Double apScores) {
+		this.apScores = apScores;
+	}
+
+	public Double getApPercentile() {
+		return apPercentile;
+	}
+
+	public void setApPercentile(Double apPercentile) {
+		this.apPercentile = apPercentile;
+	}
+
+	public Integer getApScore() {
+		return apScore;
+	}
+
+	public void setApScore(Integer apScore) {
+		this.apScore = apScore;
+	}
+
+	public String getApChange() {
+		return apChange;
+	}
+
+	public void setApChange(String apChange) {
+		this.apChange = apChange;
+	}
+
+	public Double getDeScores() {
+		return deScores;
+	}
+
+	public void setDeScores(Double deScores) {
+		this.deScores = deScores;
+	}
+
+	public Double getDePercentile() {
+		return dePercentile;
+	}
+
+	public void setDePercentile(Double dePercentile) {
+		this.dePercentile = dePercentile;
+	}
+
+	public Integer getDeScore() {
+		return deScore;
+	}
+
+	public void setDeScore(Integer deScore) {
+		this.deScore = deScore;
+	}
+
+	public String getDeChange() {
+		return deChange;
+	}
+
+	public void setDeChange(String deChange) {
+		this.deChange = deChange;
+	}
+	
 }

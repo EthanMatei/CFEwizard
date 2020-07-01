@@ -14,8 +14,6 @@ import org.hibernate.Transaction;
 
 import cfe.dao.DisorderDao;
 import cfe.dao.HuBrainGexDao;
-import cfe.dao.HuBrainMetDao;
-import cfe.dao.HuBrainProtDao;
 
 import cfe.model.Disorder;
 import cfe.model.DisorderComparator;
@@ -61,15 +59,11 @@ public class DisorderService {
 		DisorderDao disorderDao = new DisorderDao(session, tx);
 		
 		HuBrainGexDao huBrainGexDao = new HuBrainGexDao(session, tx);
-		HuBrainMetDao  huBrainMetDao  = new HuBrainMetDao(session, tx);
-		HuBrainProtDao huBrainProtDao  = new HuBrainProtDao(session, tx);
 		
 		TreeSet<Disorder> disordersSet = new TreeSet<Disorder>(new DisorderComparator());
 		
 		try	{
 			disordersSet.addAll( huBrainGexDao.getDisorders() );
-			disordersSet.addAll( huBrainMetDao.getDisorders() );
-			disordersSet.addAll( huBrainProtDao.getDisorders() );
 			
 			// Clear the Disorder table
 			disorderDao.deleteAll();

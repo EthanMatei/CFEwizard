@@ -89,8 +89,6 @@ public class HibernateUtils {
 					
 					// Human Brain Database contains these three tables
 					cfe.model.HuBrainGex.class , 
-					cfe.model.HuBrainProt.class, 
-					cfe.model.HuBrainMet.class,
 					
 					// Gene list
 					cfe.model.GeneList.class,

@@ -18,8 +18,6 @@ import cfe.model.results.CategoryResult;
 import cfe.model.results.Result;
 import cfe.model.results.Results;
 import cfe.services.HuBrainGexService;
-import cfe.services.HuBrainMetService;
-import cfe.services.HuBrainProtService;
 
 public class Score {
 	
@@ -64,12 +62,6 @@ public class Score {
 		
 		List<ModelInterface> huBrainGexs     = HuBrainGexService.getSelected(diseaseSelection, geneListInput);
 		researchData.add("HUBRAIN",  "HuBrainGex", huBrainGexs);
-		
-		List<ModelInterface> huBrainMets       = HuBrainMetService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("HUBRAIN",  "HuBrainMet", huBrainMets);
-		
-		List<ModelInterface> huBrainProts     = HuBrainProtService.getSelected(diseaseSelection, geneListInput);
-		researchData.add("HUBRAIN",  "HuBrainProt", huBrainProts);
 		
 		//-------------------------------------------------
 		// DEBUG

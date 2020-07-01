@@ -58,4 +58,21 @@ CREATE TABLE `hubraingex` (
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+CREATE TABLE `discovery` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `probeset` varchar(255) DEFAULT NULL,
+  `genecardSymbol` varchar(255) DEFAULT NULL,
+  `geneTitle` varchar(255) DEFAULT NULL,
+  `changeInExpressionInTrackedPhene` varchar(255) DEFAULT NULL,
+  `apScores` double DEFAULT NULL,
+  `apPercentile` double DEFAULT NULL,
+  `apScore` int DEFAULT NULL,
+  `apChange` varchar(255) DEFAULT NULL,
+  `deScores` double DEFAULT NULL,
+  `dePercentile` double DEFAULT NULL,
+  `deScore` int DEFAULT NULL,
+  `deChange` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 

@@ -26,7 +26,7 @@ Table: **Discovery**
 | GeneCards Symbol                      | geneCardsSymbol                     | String     |
 | Gene Title                            | geneTitle                           | String     |
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
-| APscores                              | apScore                             | Double     |
+| APscores                              | apScores                            | Double     |
 | AP Percentile                         | apPercentile                        | Double     |
 | Ap Score                              | apScore                             | Integer    |
 | AP Change                             | apChange                            | String     |

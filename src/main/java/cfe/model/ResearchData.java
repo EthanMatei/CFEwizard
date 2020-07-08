@@ -9,9 +9,6 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import cfe.model.disease.Disease;
-
-
 
 
 /**
@@ -52,28 +49,6 @@ public class ResearchData {
 		
 		researchList.add(research);
 		this.data.put(gene,  researchList);
-	}
-	
-	public void add(String category, String subcategory, List<ModelInterface> modelData) {
-		for (ModelInterface modelInterface: modelData) {
-			
-
-			Research research = new Research();
-			String gene = modelInterface.getGenecardSymbol();
-			
-			research.setCategory(category.trim());
-			research.setDirectionChange( modelInterface.getDirectionChange() );
-			research.setGene(gene.trim());
-			research.setPsychiatricDomain( modelInterface.getPsychiatricDomain().trim() );
-			research.setPubMedId( (Math.round(modelInterface.getPubMedID()) + "").trim() );
-			research.setRelevantDisorder( modelInterface.getRelevantDisorder().trim() );
-			research.setSubcategory( subcategory.trim() );
-			research.setSubdomain( modelInterface.getSubDomain().trim() );
-			research.setTissue( modelInterface.getTissue() );
-			
-			this.add(gene, research);
-		}
-		
 	}
 	
 	public List<Research> get(String gene) {
@@ -140,28 +115,7 @@ public class ResearchData {
 		}
 		return values;
 	}
-	
-	public Set<Disease> getUniqueDiseases(String gene, String category) {
-		Set<Disease> diseases = new HashSet<Disease>();
-		for (Research research: this.get(gene)) {
-			if (research.category.equals(category)) {
-				Disease disease = new Disease(research.getPsychiatricDomain(), research.getSubdomain(), research.getRelevantDisorder());
-				diseases.add( disease );
-			}
-		}		
-		return diseases;
-	}
 
-	public Set<Disease> getUniqueDiseases(String gene, String category, String subcategory) {
-		Set<Disease> diseases = new HashSet<Disease>();
-		for (Research research: this.get(gene)) {
-			if (research.category.equals(category) && research.subcategory.equals(subcategory)) {
-				Disease disease = new Disease(research.getPsychiatricDomain(), research.getSubdomain(), research.getRelevantDisorder());
-				diseases.add( disease );
-			}
-		}		
-		return diseases;
-	}
 	
 	public List<Research> getResearchByScoringCategory(String gene, cfe.enums.ScoringWeights scoringCategory) {
 		List<Research> researchList = new ArrayList<Research>();

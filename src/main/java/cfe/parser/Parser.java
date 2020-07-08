@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +16,8 @@ import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
+
+import cfe.model.Model;
 
 public class Parser<M> {
 	
@@ -97,15 +100,8 @@ public class Parser<M> {
 	// Need to protect the code from the users
 	private void validateColumns(Table t) { //throws Exception{
 		
-		/**
-		 *	Psychiatric domain
-			Sub domain
-			Relevant disorder
-			Genecard symbol
-			Pub Med ID
-		 */
-		
-		String[] reqFields = {"Psychiatric domain","Sub domain","Relevant disorder", "Genecard symbol","Pub Med ID"};
+		//String[] reqFields = {"Psychiatric domain","Sub domain","Relevant disorder", "Genecard symbol","Pub Med ID"};
+		Set<String> reqFields = Model.getKeys();
 		
 		boolean res = false;
 		

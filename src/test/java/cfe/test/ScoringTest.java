@@ -11,7 +11,6 @@ import org.junit.rules.ErrorCollector;
 
 import cfe.action.CalculateScores;
 import cfe.enums.ScoringWeights;
-import cfe.model.GeneListInput;
 import cfe.model.results.Results;
 
 
@@ -30,9 +29,6 @@ public class ScoringTest {
 	public void testGetDynamicScores(){
 	
 		Map<String, Object> userSession = new HashMap<String,Object>();
-		
-		GeneListInput geneListInput = new GeneListInput();
-		userSession.put("geneListInput", geneListInput);
 		
 		List<ScoringWeights> weights = getWeights();
 	

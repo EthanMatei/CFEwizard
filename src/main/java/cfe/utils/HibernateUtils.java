@@ -105,6 +105,7 @@ public class HibernateUtils {
 			/**
 			 * We just run this once. This needs to be moved to a script
 			 */
+			/*
 			if (createSchema){
 				
 				org.hibernate.tool.hbm2ddl.SchemaExport se = new org.hibernate.tool.hbm2ddl.SchemaExport(sr, conf);
@@ -116,12 +117,14 @@ public class HibernateUtils {
 				
 
 			}
+			*/
 			
 			return sessionFactory;			 
 			
 		} catch (Throwable ex) {
-			
+
 			System.err.println("Initial SessionFactory creation failed. " + ex); 
+			ex.printStackTrace();
 			throw new ExceptionInInitializerError(ex);
 		}
 	}

@@ -43,7 +43,7 @@ public class ParseResult {
 	}
 	
 	public List<TableParseResult> getTableParseResults() {
-		Collection values = this.tableParseResults.values();
+		Collection<TableParseResult> values = this.tableParseResults.values();
 		
 		List<TableParseResult> results = new ArrayList<TableParseResult>( values );
 		return results;

@@ -10,11 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.enums.Scores;
-import cfe.model.GeneListInput;
 import cfe.model.Score;
 import cfe.model.ScoreResults;
-import cfe.model.disease.DiseaseSelection;
-import cfe.model.disease.DiseaseSelector;
 import cfe.model.results.Results;
 import cfe.utils.Authorization;
 

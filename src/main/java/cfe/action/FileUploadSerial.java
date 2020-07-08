@@ -202,6 +202,7 @@ public class FileUploadSerial extends BaseAction implements SessionAware {
 	    		}
 	    		msparser = null;
     		} catch (Exception exception) {
+    			exception.printStackTrace();
     			this.errorMessage = "Database upload error for " + uploadFileNames.get(i) + ": " + exception.getLocalizedMessage();
     			Throwable cause = exception.getCause();
     			if (cause != null) {

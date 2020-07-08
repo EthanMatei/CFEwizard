@@ -15,11 +15,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.enums.Scores;
-import cfe.model.GeneListInput;
 import cfe.model.Score;
 import cfe.model.ScoreResults;
-import cfe.model.disease.DiseaseSelection;
-import cfe.model.disease.DiseaseSelector;
 import cfe.model.results.Results;
 
 /**
@@ -40,8 +37,6 @@ public class ScoreDetail extends BaseAction implements SessionAware {
 	private Results results;
 	
 	private Map<String, Object> session;
-	
-	private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
 
 	
 	public String getFilename()	{
@@ -69,20 +64,10 @@ public class ScoreDetail extends BaseAction implements SessionAware {
 			status = ERROR;
 		}
 		else {
-		    diseaseSelectors = (List<DiseaseSelector>) diseasesObject;
-		    GeneListInput geneListInput = (GeneListInput) session.get("geneListInput");
 		    List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) weightsObject;
 		
 		    score = Scores.OTHER.getLabel();
-		
-		    DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
-		    try {
-	    	    results = Score.calculate(geneListInput, diseaseSelection, weights);
-		    }
-		    catch (Exception exception) {
-			    this.setErrorMessage( exception.getMessage() );
-		        status = ERROR;	
-		    }
+	
 		
 		    //this.scores = ScoringDataService.getScores(score, diseaseSelectors);
 
@@ -143,14 +128,6 @@ public class ScoreDetail extends BaseAction implements SessionAware {
 
 	public void setOtherCompleted(boolean otherCompleted) {
 		this.otherCompleted = otherCompleted;
-	}
-
-	public List<DiseaseSelector> getDiseaseSelectors() {
-		return diseaseSelectors;
-	}
-
-	public void setDiseaseSelectors(List<DiseaseSelector> diseaseSelectors) {
-		this.diseaseSelectors = diseaseSelectors;
 	}
 
 	public Results getResults() {

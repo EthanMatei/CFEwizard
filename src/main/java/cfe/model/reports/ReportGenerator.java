@@ -16,7 +16,6 @@ import cfe.enums.ScoringWeights;
 import cfe.model.Research;
 import cfe.model.ScoreResults;
 import cfe.model.VersionNumber;
-import cfe.model.disease.DiseaseSelector;
 import cfe.model.results.CategoryResult;
 import cfe.model.results.Result;
 import cfe.model.results.Results;
@@ -47,14 +46,14 @@ public class ReportGenerator {
 	 * 
 	 * @throws ReportException
 	 */
-	public static InputStream generate(String reportName, String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) throws ReportException {
+	public static InputStream generate(String reportName, String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.ScoringWeights> weights) throws ReportException {
 		InputStream fileStream = null;
 
 		log.info("############### GENERATE: " + reportName);
 		
 		if (reportName.equals("scores")) {
 			
-			fileStream = generateScoresReport( reportFormat, results, scores, weights, diseaseSelectors );
+			fileStream = generateScoresReport( reportFormat, results, scores, weights);
 		}
 		else if (reportName.equals("diseases")) {
 			fileStream =  generateDiseasesReport( reportFormat );
@@ -108,7 +107,7 @@ public class ReportGenerator {
 	 * @param diseaseSelectors
 	 * @return an InputStream for the generated spreadsheet.
 	 */
-	private static InputStream generateScoresReport(String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) {
+	private static InputStream generateScoresReport(String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.ScoringWeights> weights) {
 
 		log.info("############### IN GENERATE SCORES REPORT: " + reportFormat);
 		Report report = new Report();
@@ -139,13 +138,13 @@ public class ReportGenerator {
 	    //----------------------------------------------------------------------------------------
 	    // Disease Selectors Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getDiseaseSelectorsSheet(reportFormat, scores, diseaseSelectors);
+	    sheet = getDiseaseSelectorsSheet(reportFormat, scores);
 	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
 	    // Version Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getVersionSheet(reportFormat, scores, diseaseSelectors);
+	    sheet = getVersionSheet(reportFormat, scores);
 	    if (sheet != null) sheets.add(sheet);
 	    
 		report.setReportSheets( sheets );
@@ -423,43 +422,14 @@ public class ReportGenerator {
 	 * @param diseaseSelectors
 	 * @return
 	 */
-	private static ReportSheet getDiseaseSelectorsSheet(String reportFormat, Map<String, ScoreResults> scores, List<DiseaseSelector> diseaseSelectors) {
+	private static ReportSheet getDiseaseSelectorsSheet(String reportFormat, Map<String, ScoreResults> scores) {
 		
 		ReportSheet sheet = null;
-
-		if (diseaseSelectors != null) {
-			sheet = new ReportSheet();
-
-			sheet.setTitle( "Selected Diseases" );
-
-			String[] columnNames = {"Domain", "SubDomain", "Relevant Disorder", "Coefficient"};
-			sheet.setColumnNames( columnNames );
-
-			int[] columnWidths = {0, 0, 0, 0};
-			sheet.setColumnWidths(columnWidths);
-
-			String[] columnTypes = {"string", "string", "string", "float"};
-			sheet.setColumnTypes(columnTypes);
-
-
-			for (DiseaseSelector diseaseSelector: diseaseSelectors) {
-
-				if (diseaseSelector.isRelevantDisorderSelected() && diseaseSelector.getCoefficient() > 0.0) {
-					List<String> row = new ArrayList<String>();
-
-					row.add( diseaseSelector.getPsychiatricDomain() );
-					row.add( diseaseSelector.getPsychiatricSubDomain() );
-					row.add( diseaseSelector.getRelevantDisorder() );
-					row.add( "" + diseaseSelector.getCoefficient() );
-					sheet.addData( row );
-				}
-			}
-		}
 
 		return sheet;
 	}
 	
-	private static ReportSheet getVersionSheet(String reportFormat, Map<String, ScoreResults> scores, List<DiseaseSelector> diseaseSelectors) {
+	private static ReportSheet getVersionSheet(String reportFormat, Map<String, ScoreResults> scores) {
 
 		ReportSheet sheet = new ReportSheet();
 

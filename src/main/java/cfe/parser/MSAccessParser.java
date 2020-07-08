@@ -41,25 +41,30 @@ public class MSAccessParser implements IParser {
 		
 		parseResult = new ParseResult(filename);
 		
+		log.info("****** parseResult.filename: " + parseResult.getFileName());
+		
 		File dbfile = new File(filename);
 		
 		Database db = DatabaseBuilder.open(dbfile);
 		
+		log.info("********** Database object created");
+		
 		Set<String> tablenames = db.getTableNames();
-				
+		
+		log.info("******* COUNT OF TABLE NAMES: " + tablenames.size());
+		
 		Session session = HibernateUtils.getSession();
-		
-		//ArrayList<String> tblnames = new ArrayList<String>(20);
-		
+
 		//--------------------------------------------------------------------
 		// For each table in the database...
 		//--------------------------------------------------------------------
 		for (String tablename : tablenames)	{
 
-			log.info("Found  table " + tablename);
+			log.info("Found table " + tablename);
 			parseResult.addTableParseResult(tablename);
 
-			try {
+
+		    try {
 				
 				if (tablename.contains(cfe.enums.Tables.DISCOVERY.getLabel())) {
 					// DISCOVERY DATABASE TABLE

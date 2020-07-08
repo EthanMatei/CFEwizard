@@ -8,7 +8,7 @@ import cfe.enums.Tables.TblNames;
 
 @Entity
 @Table(name=TblNames.DISCOVERY)
-public class Discovery extends CfeData implements Serializable {
+public class Discovery extends Model implements ModelInterface, Serializable {
 	
 	private static final long serialVersionUID = 3063001087206669093L;
 	
@@ -30,79 +30,75 @@ public class Discovery extends CfeData implements Serializable {
 		fieldMap.put("DE change", "deChange");
 	}
 
-	private Double apScores;
-	private Double apPercentile;
-	private Integer apScore;
+	private double apScores;
+	private double apPercentile;
+	private double apScore;
 	private String apChange;
-	private Double deScores;
-	private Double dePercentile;
-	private Integer	deScore;
+	private double deScores;
+	private double dePercentile;
+	private double	deScore;
 	private String deChange;
-	
-	public String getFieldName(String name)	{
-		return fieldMap.get(name.trim());		
-	}
 
-	public Double getApScores() {
+	public double getApScores() {
 		return apScores;
 	}
-
-	public void setApScores(Double apScores) {
+	
+	public void setApScores(double apScores) {
 		this.apScores = apScores;
 	}
-
-	public Double getApPercentile() {
+	
+	public double getApPercentile() {
 		return apPercentile;
 	}
-
-	public void setApPercentile(Double apPercentile) {
+	
+	public void setApPercentile(double apPercentile) {
 		this.apPercentile = apPercentile;
 	}
-
-	public Integer getApScore() {
+	
+	public double getApScore() {
 		return apScore;
 	}
-
-	public void setApScore(Integer apScore) {
+	
+	public void setApScore(double apScore) {
 		this.apScore = apScore;
 	}
-
+	
 	public String getApChange() {
 		return apChange;
 	}
-
+	
 	public void setApChange(String apChange) {
 		this.apChange = apChange;
 	}
-
-	public Double getDeScores() {
+	
+	public double getDeScores() {
 		return deScores;
 	}
-
-	public void setDeScores(Double deScores) {
+	
+	public void setDeScores(double deScores) {
 		this.deScores = deScores;
 	}
-
-	public Double getDePercentile() {
+	
+	public double getDePercentile() {
 		return dePercentile;
 	}
-
-	public void setDePercentile(Double dePercentile) {
+	
+	public void setDePercentile(double dePercentile) {
 		this.dePercentile = dePercentile;
 	}
-
-	public Integer getDeScore() {
+	
+	public double getDeScore() {
 		return deScore;
 	}
-
-	public void setDeScore(Integer deScore) {
+	
+	public void setDeScore(double deScore) {
 		this.deScore = deScore;
 	}
-
+	
 	public String getDeChange() {
 		return deChange;
 	}
-
+	
 	public void setDeChange(String deChange) {
 		this.deChange = deChange;
 	}

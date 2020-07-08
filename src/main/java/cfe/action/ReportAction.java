@@ -15,7 +15,6 @@ import com.opensymphony.xwork2.ActionSupport;
 
 import cfe.action.ActionErrorException;
 import cfe.model.ScoreResults;
-import cfe.model.disease.DiseaseSelector;
 import cfe.model.reports.ReportException;
 import cfe.model.reports.ReportGenerator;
 import cfe.model.results.Results;
@@ -89,9 +88,6 @@ public class ReportAction extends BaseAction implements SessionAware {
     		Object scoresObject = session.get("scores");
     		scores = (Map<String, ScoreResults>) scoresObject;
 
-    		List<DiseaseSelector> diseaseSelectors;
-    		diseaseSelectors = (List<DiseaseSelector>) session.get("diseaseSelectors");
-
     		List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) session.get("weights");
 
     		Results results = (Results) session.get("results");
@@ -110,7 +106,7 @@ public class ReportAction extends BaseAction implements SessionAware {
     		//try {
     		log.info("Trying to generate report with name " + reportName + " and format " + reportFormat + ".");
 
-    		fileStream = ReportGenerator.generate( reportName,  reportFormat, results, scores, weights, diseaseSelectors );
+    		//fileStream = ReportGenerator.generate( reportName,  reportFormat, results, scores, weights, diseaseSelectors );
     		if (fileStream == null) {
     			throw new ReportException("No data could be retrieved for this report.");
     		}

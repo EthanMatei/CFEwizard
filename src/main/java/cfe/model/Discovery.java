@@ -36,9 +36,12 @@ public class Discovery extends Model implements ModelInterface, Serializable {
 	private String apChange;
 	private double deScores;
 	private double dePercentile;
-	private double	deScore;
+	private double deScore;
 	private String deChange;
 
+	
+	// Getters and Setters:
+	
 	public double getApScores() {
 		return apScores;
 	}

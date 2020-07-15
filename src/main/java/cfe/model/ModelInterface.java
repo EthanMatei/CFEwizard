@@ -12,13 +12,10 @@ import javax.persistence.MappedSuperclass;
 //import org.hibernate.annotations.Index;
 
 /**
- * Base class for CFE data classes that contains the common fields.
  *
  * @author Jim Mullen
  *
  */
-// http://stackoverflow.com/questions/4265454/hibernate-jpa-inheritance-mapping-of-abstract-super-classes
-@MappedSuperclass
 public interface ModelInterface {
 	public String getFieldName(String name);
 	public long getId();

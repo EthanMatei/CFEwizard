@@ -43,7 +43,7 @@ public class Parser<M> {
 	}
 
 	
-	public void parseTable(Database db, String tablename, String modelName, List<M> hbgs) throws Exception {
+	public void parseTable(Database db, String tablename, String modelName, List<M> entities) throws Exception {
 		
 		Table table = db.getTable(tablename);
 		
@@ -54,15 +54,16 @@ public class Parser<M> {
 		for(Map<String,Object> row : table) {
 			
 			@SuppressWarnings("unchecked")
-			M hbg = (M)Class.forName(modelName).newInstance();
+			M entity = (M)Class.forName(modelName).newInstance();
 			
-			Method getFieldName = hbg.getClass().getDeclaredMethod("getFieldName", String.class);
-					
+			//Jim: Method getFieldName = entity.getClass().getDeclaredMethod("getFieldName", String.class);
+			Method getFieldName = entity.getClass().getMethod("getFieldName", String.class);
+			
 			for(Column column : table.getColumns()) {
 			
 			   String columnName = column.getName().trim();
 			   
-			   String fieldName = (String)getFieldName.invoke(hbg, columnName);
+			   String fieldName = (String)getFieldName.invoke(entity, columnName);
 			      
 				if (fieldName == null || fieldName.equalsIgnoreCase("id")) continue;
 								
@@ -71,7 +72,8 @@ public class Parser<M> {
 				if (value == null) continue ; //{ value = ""; }
 				
 				String fieldSetterName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-				Method m = hbg.getClass().getDeclaredMethod("set" + fieldSetterName,  getParameterType(column.getType()));
+				// Jim: Method m = entity.getClass().getDeclaredMethod("set" + fieldSetterName,  getParameterType(column.getType()));
+				Method m = entity.getClass().getMethod("set" + fieldSetterName,  getParameterType(column.getType()));
 				
 				// Tue Apr 09 00:00:00 EDT 2013
 				// EEE MMM dd hh:mm:ss z yyyy
@@ -85,22 +87,21 @@ public class Parser<M> {
 					
 						Date d = formatter.parse(value.toString());
 					
-						m.invoke(hbg, d);
+						m.invoke(entity, d);
 					}
 					
 				} else {
 					
-					m.invoke(hbg, value);
+					m.invoke(entity, value);
 				}
 			}
-			hbgs.add(hbg);			
+			entities.add(entity);			
 		}  	
 	}
 	
 	// Need to protect the code from the users
 	private void validateColumns(Table t) { //throws Exception{
-		
-		//String[] reqFields = {"Psychiatric domain","Sub domain","Relevant disorder", "Genecard symbol","Pub Med ID"};
+
 		Set<String> reqFields = Model.getKeys();
 		
 		boolean res = false;

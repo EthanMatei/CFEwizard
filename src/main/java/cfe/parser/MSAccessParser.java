@@ -75,9 +75,20 @@ public class MSAccessParser implements IParser {
 					DiscoveryDao discoveryDao = new DiscoveryDao(session, tx);
 
 					discoveryDao.deleteAll(cfe.enums.Tables.DISCOVERY.getTblName());
-					log.info("*************** discoveries count: " + discoveries.size());
 					discoveryDao.saveAll(discoveries);
-				} else {
+				} 
+				else if (tablename.contains(cfe.enums.Tables.PRIORITIZATION.getLabel())) {
+					// PRIORITIZATION DATABASE TABLE
+					Prioritization entity = new Prioritization();
+					List<Prioritization> prioritizations = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
+
+					Transaction tx = session.beginTransaction();
+					PrioritizationDao prioritizationDao = new PrioritizationDao(session, tx);
+
+					prioritizationDao.deleteAll(cfe.enums.Tables.DISCOVERY.getTblName());
+					prioritizationDao.saveAll(prioritizations);
+				} 				
+				else {
 					log.warn("Ignored tablename " + tablename);
 					parseResult.setTableStatus(tablename, TableParseResult.Status.IGNORED);
 				}

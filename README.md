@@ -56,10 +56,17 @@ Priortization Database
 | HUPER Info                            | huPerInfo                           | String     | 
 | HUGENEASSOC Score                     | huGeneAssocScore                    | Integer    |
 | HUGENEASSOC Info                      | huGeneAssocInfo                     | String     | 
- 
-...
+| HUGCNV Score                          | huGCnvScore                         | Integer    |
+| HUGCNV Info                           | huGCnvInfo                          | String     | 
+| NHBRAIN Score                         | nhBrainScore                        | Integer    |
+| NHBRAIN Info                          | nhBrainInfo                         | String     |
+| NHPER Score                           | nhPerScore                          | Integer    |
+| NHPER Info                            | nhPerInfo                           | String     |
+| NHGENEASSOC Score                     | nhGeneAssocScore                    | Integer    |
+| NHGENEASSOC Info                      | nhGeneAssocInfo                     | String     | 
+| NHGCNV Score                          | nhGCnvScore                         | Integer    |
+| NHGCNV Info                           | nhGCnvInfo                          | String     | 
 
----
 
 Validation Database
 -------------------

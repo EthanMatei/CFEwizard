@@ -1,101 +1,44 @@
 package cfe.model;
 
 /**
- * Scoring weights class (hu = human, nh = non-human) WORK IN PROGRESS.
- * 
  * @author Jim Mullen
  *
  */
 public class GlobalScoringWeights {
-	private double huBrainScore;
-	private double huPerScore;
-	private double huGeneCnvScore;
-	private double huGeneAssocScore;
-	private double huGeneLinkageScore;
-	private double nhBrainScore;
-	private double nhPerScore;
-	private double nhGeneCnvScore;
-	private double nhGeneAssocScore;
-	private double nhGeneLinkageScore;
+	private double discoveryWeight;
+	private double prioritizationWeight;
+	private double validationWeight;
+	private double testingWeight;
 	
-	public double getHuBrainScore() {
-		return huBrainScore;
+	public double getDiscoveryWeight() {
+		return discoveryWeight;
 	}
 	
-	public void setHuBrainScore(double huBrainScore) {
-		this.huBrainScore = huBrainScore;
+	public void setDiscoveryWeight(double discoveryWeight) {
+		this.discoveryWeight = discoveryWeight;
 	}
 	
-	public double getHuPerScore() {
-		return huPerScore;
+	public double getPrioritizationWeight() {
+		return prioritizationWeight;
 	}
 	
-	public void setHuPerScore(double huPerScore) {
-		this.huPerScore = huPerScore;
+	public void setPrioritizationWeight(double prioritizationWeight) {
+		this.prioritizationWeight = prioritizationWeight;
 	}
 	
-	public double getHuGeneCnvScore() {
-		return huGeneCnvScore;
+	public double getValidationWeight() {
+		return validationWeight;
 	}
 	
-	public void setHuGeneCnvScore(double huGeneCnvScore) {
-		this.huGeneCnvScore = huGeneCnvScore;
+	public void setValidationWeight(double validationWeight) {
+		this.validationWeight = validationWeight;
 	}
 	
-	public double getHuGeneAssocScore() {
-		return huGeneAssocScore;
+	public double getTestingWeight() {
+		return testingWeight;
 	}
 	
-	public void setHuGeneAssocScore(double huGeneAssocScore) {
-		this.huGeneAssocScore = huGeneAssocScore;
+	public void setTestingWeight(double testingWeight) {
+		this.testingWeight = testingWeight;
 	}
-	
-	public double getHuGeneLinkageScore() {
-		return huGeneLinkageScore;
-	}
-	
-	public void setHuGeneLinkageScore(double huGeneLinkageScore) {
-		this.huGeneLinkageScore = huGeneLinkageScore;
-	}
-	
-	public double getNhBrainScore() {
-		return nhBrainScore;
-	}
-	
-	public void setNhBrainScore(double nhBrainScore) {
-		this.nhBrainScore = nhBrainScore;
-	}
-	
-	public double getNhPerScore() {
-		return nhPerScore;
-	}
-	
-	public void setNhPerScore(double nhPerScore) {
-		this.nhPerScore = nhPerScore;
-	}
-	
-	public double getNhGeneCnvScore() {
-		return nhGeneCnvScore;
-	}
-	
-	public void setNhGeneCnvScore(double nhGeneCnvScore) {
-		this.nhGeneCnvScore = nhGeneCnvScore;
-	}
-	
-	public double getNhGeneAssocScore() {
-		return nhGeneAssocScore;
-	}
-	
-	public void setNhGeneAssocScore(double nhGeneAssocScore) {
-		this.nhGeneAssocScore = nhGeneAssocScore;
-	}
-	
-	public double getNhGeneLinkageScore() {
-		return nhGeneLinkageScore;
-	}
-	
-	public void setNhGeneLinkageScore(double nhGeneLinkageScore) {
-		this.nhGeneLinkageScore = nhGeneLinkageScore;
-	}
-	
 }

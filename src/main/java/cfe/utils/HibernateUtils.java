@@ -83,11 +83,10 @@ public class HibernateUtils {
 			Configuration conf = new Configuration();
 			
 			Class<?>[] models = {
-					
 					cfe.model.DatabaseUploadInfo.class,
-					
-					cfe.model.Discovery.class
-					};
+					cfe.model.Discovery.class,
+					cfe.model.Prioritization.class
+			};
 			for( Class<?> model: models)
 				conf.addAnnotatedClass(model);
 			

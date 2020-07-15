@@ -8,7 +8,8 @@ package cfe.enums;
  *
  */
 public enum Databases {
-	DISCOVERY("Discovery")
+	DISCOVERY("Discovery"),
+	PRIORITIZATION("Prioritization")
 	;
 	
 	private String label;

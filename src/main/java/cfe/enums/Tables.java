@@ -9,7 +9,8 @@ package cfe.enums;
 public enum Tables {
 	
 	// MS Access table name, CFE MySQL table name, class name
-	DISCOVERY("Discovery", TblNames.DISCOVERY, "Discovery");
+	DISCOVERY("Discovery", TblNames.DISCOVERY, "Discovery"),
+	PRIORITIZATION("Prioritization", TblNames.PRIORITIZATION, "Prioritization")
 	;
 	
 	// Used for sanity check in HibernateUtils
@@ -40,10 +41,8 @@ public enum Tables {
 	public final static class TblNames	{
 		
 		public static final String DATABASE_UPLOAD_INFO	= "databaseuploadinfo";
-		public static final String DISORDER         	= "disorder";
-		
-		public static final String HU_BRAIN_GEX 	= "hubraingex";
 
 	    public static final String DISCOVERY = "discovery";
+	    public static final String PRIORITIZATION = "prioritization";
 	}
 }

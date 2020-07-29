@@ -85,7 +85,9 @@ public class HibernateUtils {
 			Class<?>[] models = {
 					cfe.model.DatabaseUploadInfo.class,
 					cfe.model.Discovery.class,
-					cfe.model.Prioritization.class
+					cfe.model.Prioritization.class,
+					cfe.model.Validation.class,
+					cfe.model.Testing.class
 			};
 			for( Class<?> model: models)
 				conf.addAnnotatedClass(model);

@@ -9,7 +9,9 @@ package cfe.enums;
  */
 public enum Databases {
 	DISCOVERY("Discovery"),
-	PRIORITIZATION("Prioritization")
+	PRIORITIZATION("Prioritization"),
+	VALIDATION("Validation"),
+	TESTING("Testing")
 	;
 	
 	private String label;

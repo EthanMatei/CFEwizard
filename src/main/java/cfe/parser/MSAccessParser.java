@@ -41,17 +41,17 @@ public class MSAccessParser implements IParser {
 		
 		parseResult = new ParseResult(filename);
 		
-		log.info("****** parseResult.filename: " + parseResult.getFileName());
+		log.info("parseResult filename: " + parseResult.getFileName());
 		
 		File dbfile = new File(filename);
 		
 		Database db = DatabaseBuilder.open(dbfile);
 		
-		log.info("********** Database object created");
+		log.info("database object successfully created");
 		
 		Set<String> tablenames = db.getTableNames();
 		
-		log.info("******* COUNT OF TABLE NAMES: " + tablenames.size());
+		log.info("number of database tables: " + tablenames.size());
 		
 		Session session = HibernateUtils.getSession();
 
@@ -87,7 +87,29 @@ public class MSAccessParser implements IParser {
 
 					prioritizationDao.deleteAll(cfe.enums.Tables.DISCOVERY.getTblName());
 					prioritizationDao.saveAll(prioritizations);
-				} 				
+				}
+				else if (tablename.contains(cfe.enums.Tables.VALIDATION.getLabel())) {
+					// VALIDATION DATABASE TABLE
+					Validation entity = new Validation();
+					List<Validation> validations = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
+
+					Transaction tx = session.beginTransaction();
+					ValidationDao validationDao = new ValidationDao(session, tx);
+
+					validationDao.deleteAll(cfe.enums.Tables.VALIDATION.getTblName());
+					validationDao.saveAll(validations);
+				}
+				else if (tablename.contains(cfe.enums.Tables.TESTING.getLabel())) {
+					// TESTING DATABASE TABLE
+					Testing entity = new Testing();
+					List<Testing> testings = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
+
+					Transaction tx = session.beginTransaction();
+					TestingDao testingDao = new TestingDao(session, tx);
+
+					testingDao.deleteAll(cfe.enums.Tables.TESTING.getTblName());
+					testingDao.saveAll(testings);
+				} 
 				else {
 					log.warn("Ignored tablename " + tablename);
 					parseResult.setTableStatus(tablename, TableParseResult.Status.IGNORED);

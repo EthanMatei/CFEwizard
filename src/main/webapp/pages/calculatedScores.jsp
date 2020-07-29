@@ -90,6 +90,7 @@ New Results: <br />
     <th> Prioritization Score </th>
     <th> Validation Score </th>
     <th> Testing Score </th>
+    <th> TOTAL Score </th>
 </tr>
 <s:iterator value="results.results" var="var" status="rstatus">
     <tr>

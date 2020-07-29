@@ -52,3 +52,32 @@ CREATE TABLE `prioritization` (
 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `validation` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `probeset` varchar(255) DEFAULT NULL,
+  `geneCardsSymbol` varchar(255) DEFAULT NULL,
+  `geneTitle` varchar(255) DEFAULT NULL,
+  `changeInExpressionInTrackedPhene` varchar(255) DEFAULT NULL,
+
+  `sig`  double DEFAULT NULL,
+  `validation`   varchar(255) DEFAULT NULL,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `testing` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `probeset` varchar(255) DEFAULT NULL,
+  `geneCardsSymbol` varchar(255) DEFAULT NULL,
+  `geneTitle` varchar(255) DEFAULT NULL,
+  `changeInExpressionInTrackedPhene` varchar(255) DEFAULT NULL,
+
+  `smsLowMoodScore` double DEFAULT NULL,
+  `hamdScore` double DEFAULT NULL,
+  `firstYearDepressionScore` double DEFAULT NULL,
+  `allFutureDepression` double DEFAULT NULL,
+
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

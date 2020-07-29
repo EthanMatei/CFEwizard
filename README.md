@@ -68,6 +68,8 @@ Priortization Database
 | NHGCNV Info                           | nhGCnvInfo                          | String     | 
 
 
+---
+
 Validation Database
 -------------------
 
@@ -80,8 +82,8 @@ Table: **Validation**
 | GeneCards Symbol                      | geneCardsSymbol                     | String     |
 | Gene Title                            | geneTitle                           | String     |
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
-
-...
+| Sig                                   | sig                                 | Double     |
+| Validation                            | validation                          | String     |
 
 
 ---
@@ -98,8 +100,10 @@ Table: **Testing**
 | GeneCards Symbol                      | geneCardsSymbol                     | String     |
 | Gene Title                            | geneTitle                           | String     |
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
-
-...
+| SMSLowMood Score                      | smsLowMoodScore                     | Double     |
+| HAMD Score                            | hamdScore                           | Double     |
+| First Year Depression Score           | firstYearDepressionScore            | Double     |
+| All Future Depression                 | allFutureDepression                 | Double     |
 
 
 ---

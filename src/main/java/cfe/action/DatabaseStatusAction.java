@@ -77,7 +77,6 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 		    	String className = "cfe.model." + t.getClassname();
 		    	TableInfoService.deleteAll(className);
 		    }
-		    TableInfoService.deleteAll("cfe.model.Disorder");
 	    }
 
         return result;        

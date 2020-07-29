@@ -85,7 +85,7 @@ public class MSAccessParser implements IParser {
 					Transaction tx = session.beginTransaction();
 					PrioritizationDao prioritizationDao = new PrioritizationDao(session, tx);
 
-					prioritizationDao.deleteAll(cfe.enums.Tables.DISCOVERY.getTblName());
+					prioritizationDao.deleteAll(cfe.enums.Tables.PRIORITIZATION.getTblName());
 					prioritizationDao.saveAll(prioritizations);
 				}
 				else if (tablename.contains(cfe.enums.Tables.VALIDATION.getLabel())) {

@@ -82,12 +82,14 @@ New Results: <br />
 
 <table class="dataTable">
 <tr>
-    <th> Gene </th>
-    <th> Score </th>
-    <th> Direction of Change </th>
-    <th> Tissue </th>
-    <th> Disorder </th>
-    <th> PubMed </th>
+    <th> Probeset </th>
+    <th> GeneCards Symbol </th>
+    <th> Gene Title </th>
+    <th> Change in expression in tracked phene </th>
+    <th> Discovery Score </th>
+    <th> Prioritization Score </th>
+    <th> Validation Score </th>
+    <th> Testing Score </th>
 </tr>
 <s:iterator value="results.results" var="var" status="rstatus">
     <tr>

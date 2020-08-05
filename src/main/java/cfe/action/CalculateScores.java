@@ -2,6 +2,7 @@ package cfe.action;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,19 @@ import cfe.enums.Scores;
 import cfe.model.Score;
 import cfe.model.ScoreResults;
 import cfe.model.results.Results;
+
+import cfe.model.CfeScore;
+import cfe.model.CfeScores;
+
+import cfe.model.Discovery;
+import cfe.services.DiscoveryService;
+import cfe.model.Prioritization;
+import cfe.services.PrioritizationService;
+import cfe.model.Testing;
+import cfe.services.TestingService;
+import cfe.model.Validation;
+import cfe.services.ValidationService;
+
 import cfe.utils.Authorization;
 
 /**
@@ -31,7 +45,9 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	private boolean otherCompleted = false;
 	
 	private Results results;
-	
+    
+    CfeScores cfeScores;
+    
 	private Map<String, Object> session;
 	
 	//private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
@@ -56,9 +72,37 @@ public class CalculateScores extends BaseAction implements SessionAware {
 			else {
 				//diseaseSelectors = (List<DiseaseSelector>) diseasesObject;
 				//GeneListInput geneListInput = (GeneListInput) session.get("geneListInput");
+				
 				List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) weightsObject;
+			    
+			    this.cfeScores = new CfeScores();
+				
+				try {
+				    List<Validation>     validations     = ValidationService.getAll();
+				    List<Testing>        testing         = TestingService.getAll();
 
-				score = Scores.OTHER.getLabel();
+				    
+				    
+				    // Process discovery data
+				    List<Discovery> discoveries = DiscoveryService.getAll();
+				    for (Discovery discovery: discoveries) {
+				        this.cfeScores.setDiscovery(discovery);
+				    }
+				    
+				    // Process prioritization data
+				    List<Prioritization> prioritizations = PrioritizationService.getAll();
+				    for (Prioritization prioritization: prioritizations) {
+				        this.cfeScores.setPrioritization(prioritization);
+				    }
+				    				    
+				   //log.info("CFE Scores Count: " + this.cfeScores.);
+				    
+				    
+				}
+				catch (Exception exception) {
+					this.setErrorMessage( exception.getMessage() );
+					status = ERROR;	
+				}
 
 				//DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
 				//try {
@@ -77,26 +121,20 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	
 		
 	public void validate() {
-		
-		//JGM log.info("Score: " + this.score);
-		
-		if (	!this.score.contains(Scores.SUICIDE.getLabel()) && 
-				!this.score.contains(Scores.MOOD.getLabel()) &&
-				!this.score.contains(Scores.PSYCHOSIS.getLabel()) &&
-				!this.score.contains(Scores.OTHER.getLabel())
-				)
-			addActionError( "Score calculation for " + this.score + " is currently not supported." );
-
+		//addActionError( "Score calculation for " + this.score + " is currently not supported." );
 	}
 
-	public Map<String, ScoreResults> getScores() {
-		return scores;
-	}
+	//public Map<String, ScoreResults> getScores() {
+	//	return scores;
+	//}
 
-	public void setScores(Map<String, ScoreResults> scores) {
-		this.scores = scores;
+	//public void setScores(Map<String, ScoreResults> scores) {
+	//	this.scores = scores;
+	//}
+
+	public Map<String,CfeScore> getScores() {
+		return this.cfeScores.getScores();
 	}
-	
 
 
 	//---------------------------------------------------------------------

@@ -21,8 +21,10 @@ public class CfeScore {
     private double testingScore;
     private double cfeScore; // total score
 
-	protected CfeScore() {
+	public CfeScore(String probeset) {
+		this.probeset = probeset;
 	}
+	
 	
 	// Getters and setters -------------------------------------------------------------------------
 	

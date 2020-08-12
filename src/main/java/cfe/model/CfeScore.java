@@ -19,7 +19,7 @@ public class CfeScore {
     private double prioritizationScore;
     private double validationScore;
     private double testingScore;
-    private double cfeScore; // total score
+    private double totalScore; // total score
 
 	public CfeScore(String probeset) {
 		this.probeset = probeset;
@@ -92,12 +92,12 @@ public class CfeScore {
 		this.testingScore = testingScore;
 	}
 
-	public double getCfeScore() {
-		return cfeScore;
+	public double getTotalcore() {
+		return totalScore;
 	}
 
-	public void setCfeScore(double cfeScore) {
-		this.cfeScore = cfeScore;
+	public void setTotalScore(double totalScore) {
+		this.totalScore = totalScore;
 	}
 
 }

@@ -103,9 +103,9 @@ CFE Scores Count: <s:property value="scores.size"/>
         <td> <s:property value="value.changeInExpressionInTrackedPhene"/> </td>
         <td> <s:property value="value.discoveryScore"/> </td>
         <td> <s:property value="value.prioritizationScore"/> </td>
+        <td> <s:property value="value.validationScore"/> </td>
         <td> &nbsp; </td>
-        <td> &nbsp; </td>
-        <td> &nbsp; </td>                           
+        <td> <s:property value="value.totalScore"/> </td>                           
     </tr>
 </s:iterator>
 </table>

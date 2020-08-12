@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import cfe.action.CalculateScores;
+
 //import org.hibernate.annotations.Index;
 
 /**
@@ -13,6 +18,8 @@ import java.util.TreeMap;
  *
  */
 public class CfeScores {
+	
+	private static final Log log = LogFactory.getLog(CfeScores.class);
 	
 	private Map<String, CfeScore> scores;
 
@@ -32,12 +39,7 @@ public class CfeScores {
 		
 		
 		double discoveryScore = 0.0;
-		Double apScore = discovery.getApScore();
-		if (apScore != null) {
-			discoveryScore = apScore;
-		} else {
-			discoveryScore = discovery.getDeScore();
-		}
+		discoveryScore = Math.max(discovery.getApScore(), discovery.getDeScore());
 		
 		cfeScore.setDiscoveryScore(discoveryScore);
 		
@@ -56,6 +58,18 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 
+	public void calculateTotalScores() {
+	    for (CfeScore score: this.scores.values()) {
+	    	score.setTotalScore(
+	    	    score.getDiscoveryScore()
+	    	    + score.getPrioritizationScore()
+	    	    + score.getValidationScore()
+	    	    + score.getTestingScore()
+	    	);
+	    	this.setScore(score);
+	    }
+	}
+	
 	public void setPrioritization(Prioritization prioritization) {
 		String probeset = prioritization.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
@@ -90,7 +104,54 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 	
-	
+	public void setValidation(Validation validation) throws Exception {
+		String probeset = validation.getProbeset();
+		CfeScore cfeScore = this.getScore(probeset);
+		
+		double validationScore = 0.0;
+		
+		String validationType = validation.getValidation();
+		if (validationType == null) {
+			validationType = "";
+		}
+		else {
+			validationType = validationType.trim().toLowerCase();
+		}
+		
+		if (validationType.equals("non-stepwise")) {
+			validationScore = 0.0;
+		}
+		else if (validationType.equals("stepwise")) {
+			validationScore = 2.0;
+		}
+		else if (validationType.equals("nominal")) {
+			validationScore = 4.0;
+		}
+		else if (validationType.equals("bonferroni")) {
+			validationScore = 6.0;
+		}
+		else {
+			log.info("*** VALIDATION TYPE ERROR, TYPE: " + validationType);
+			throw new Exception("Unrecognized validation type \"" + validationType + "\".");
+		}
+		
+		cfeScore.setValidationScore(validationScore);
+		
+		if (cfeScore.getGeneCardsSymbol() == null || cfeScore.getGeneCardsSymbol().trim().equals("")) {
+			cfeScore.setGeneCardsSymbol(validation.getGeneCardsSymbol());
+		}
+		
+		if (cfeScore.getGeneTitle() == null || cfeScore.getGeneTitle().trim().equals("")) {
+			cfeScore.setGeneTitle(validation.getGeneTitle());
+		}
+		
+		if (cfeScore.getChangeInExpressionInTrackedPhene() == null || cfeScore.getChangeInExpressionInTrackedPhene().trim().equals("")) {
+			cfeScore.setChangeInExpressionInTrackedPhene(validation.getChangeInExpressionInTrackedPhene());
+		}
+		
+		this.setScore(cfeScore);		
+	}
+
 	public void addProbesetIfNotExists(String probeset) {
 		if (!this.scores.containsKey(probeset)) {
 			CfeScore cfeScore = new CfeScore(probeset);

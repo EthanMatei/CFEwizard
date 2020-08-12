@@ -78,11 +78,6 @@ public class CalculateScores extends BaseAction implements SessionAware {
 			    this.cfeScores = new CfeScores();
 				
 				try {
-				    List<Validation>     validations     = ValidationService.getAll();
-				    List<Testing>        testing         = TestingService.getAll();
-
-				    
-				    
 				    // Process discovery data
 				    List<Discovery> discoveries = DiscoveryService.getAll();
 				    for (Discovery discovery: discoveries) {
@@ -94,6 +89,16 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				    for (Prioritization prioritization: prioritizations) {
 				        this.cfeScores.setPrioritization(prioritization);
 				    }
+				    
+				    // Process validation data
+			        List<Validation> validations = ValidationService.getAll();
+				    for (Validation validation: validations) {
+				    	this.cfeScores.setValidation(validation);
+				    }
+				    
+				    List<Testing>        testing         = TestingService.getAll();
+				    
+				    this.cfeScores.calculateTotalScores();
 				    				    
 				   //log.info("CFE Scores Count: " + this.cfeScores.);
 				    
@@ -101,6 +106,8 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				}
 				catch (Exception exception) {
 					this.setErrorMessage( exception.getMessage() );
+					log.error( exception.getMessage() );
+					exception.printStackTrace();
 					status = ERROR;	
 				}
 

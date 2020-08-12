@@ -14,10 +14,9 @@ import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import cfe.action.ActionErrorException;
-import cfe.model.ScoreResults;
+import cfe.model.CfeScores;
 import cfe.model.reports.ReportException;
 import cfe.model.reports.ReportGenerator;
-import cfe.model.results.Results;
 import cfe.utils.Authorization;
 import cfe.utils.Filter;
 
@@ -84,6 +83,7 @@ public class ReportAction extends BaseAction implements SessionAware {
     			throw new ActionErrorException("No report name was specified.");
     		}
 
+    		/*
     		Map<String, ScoreResults> scores;
     		Object scoresObject = session.get("scores");
     		scores = (Map<String, ScoreResults>) scoresObject;
@@ -91,7 +91,8 @@ public class ReportAction extends BaseAction implements SessionAware {
     		List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) session.get("weights");
 
     		Results results = (Results) session.get("results");
-
+            */
+    		
     		/*********
     		if (session == null) {
     			String exceptionMessage = "You user information could not be retrieved."

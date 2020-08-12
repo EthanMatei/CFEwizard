@@ -13,12 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import cfe.enums.ScoringWeights;
-import cfe.model.Research;
-import cfe.model.ScoreResults;
+import cfe.model.CfeScores;
 import cfe.model.VersionNumber;
-import cfe.model.results.CategoryResult;
-import cfe.model.results.Result;
-import cfe.model.results.Results;
 
 
 /**
@@ -46,54 +42,18 @@ public class ReportGenerator {
 	 * 
 	 * @throws ReportException
 	 */
-	public static InputStream generate(String reportName, String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.ScoringWeights> weights) throws ReportException {
+	public static InputStream generate(String reportName, String reportFormat, CfeScores cfeScores, List<cfe.enums.ScoringWeights> weights) throws ReportException {
 		InputStream fileStream = null;
 
 		log.info("############### GENERATE: " + reportName);
 		
 		if (reportName.equals("scores")) {
 			
-			fileStream = generateScoresReport( reportFormat, results, scores, weights);
-		}
-		else if (reportName.equals("diseases")) {
-			fileStream =  generateDiseasesReport( reportFormat );
+			fileStream = generateScoresReport( reportFormat, cfeScores, weights);
 		}
 
 		return fileStream;
 	}
-
-	
-	/**
-	 * Generates an Excel spreadsheet with all the diseases/disorders in the databases.
-	 * 
-	 * @param reportFormat indicates the Excel format to generate (either "xls" or "xlsx",
-	 *                     which corresponds to the file extension used).
-	 * 
-	 * @return an InputStream for the generated spreadsheet.
-	 */
-	private static InputStream generateDiseasesReport(String reportFormat) {
-
-		Report report = new Report();
-		
-		InputStream fileStream = null;
-		List<ReportSheet> sheets = new ArrayList<ReportSheet>();
-		ReportSheet sheet = new ReportSheet();
-	    
-	    //----------------------------------------------------------------------------------------
-	    // Disease Selectors Sheet
-	    //----------------------------------------------------------------------------------------
-	    sheet = getDisordersSheet(reportFormat);
-	    if (sheet != null) sheets.add(sheet);
-	    
-		report.setReportSheets( sheets );
-		boolean isLandscape = false;
-		boolean xlsxFormat = false;
-		if (reportFormat != null && reportFormat.equals("xlsx")) xlsxFormat = true;
-		fileStream = report.getExcel(isLandscape,xlsxFormat);		
-
-		return fileStream;
-	}
-
 	
 	
 	/**
@@ -107,7 +67,7 @@ public class ReportGenerator {
 	 * @param diseaseSelectors
 	 * @return an InputStream for the generated spreadsheet.
 	 */
-	private static InputStream generateScoresReport(String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.ScoringWeights> weights) {
+	private static InputStream generateScoresReport(String reportFormat, CfeScores cfeScores, List<cfe.enums.ScoringWeights> weights) {
 
 		log.info("############### IN GENERATE SCORES REPORT: " + reportFormat);
 		Report report = new Report();
@@ -120,13 +80,13 @@ public class ReportGenerator {
 	    // Scores Sheet
 	    //----------------------------------------------------------------------------------------
 	    //sheet = getScoresSheet(reportFormat, scores);
-	    sheet = getScoresSheet2(reportFormat, results);
+	    sheet = getScoresSheet2(reportFormat, cfeScores);
 	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
 	    // Score Detail Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getScoreDetailsSheet(reportFormat, results);
+	    sheet = getScoreDetailsSheet(reportFormat, cfeScores);
 	    if (sheet != null) sheets.add(sheet);
 	    
 	    //----------------------------------------------------------------------------------------
@@ -134,17 +94,11 @@ public class ReportGenerator {
 	    //----------------------------------------------------------------------------------------
 	    sheet = getScoringWeightsSheet(reportFormat, weights);
 	    if (sheet != null) sheets.add(sheet);
-	    
-	    //----------------------------------------------------------------------------------------
-	    // Disease Selectors Sheet
-	    //----------------------------------------------------------------------------------------
-	    sheet = getDiseaseSelectorsSheet(reportFormat, scores);
-	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
 	    // Version Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getVersionSheet(reportFormat, scores);
+	    sheet = getVersionSheet(reportFormat, cfeScores);
 	    if (sheet != null) sheets.add(sheet);
 	    
 		report.setReportSheets( sheets );
@@ -157,29 +111,7 @@ public class ReportGenerator {
 	}
 	
 	
-	private static ReportSheet getDisordersSheet(String reportFormat) {
-		
-		ReportSheet sheet = null;
-
-			sheet = new ReportSheet();
-
-			sheet.setTitle( "Diseases" );
-
-			String[] columnNames = {"Domain", "SubDomain", "Relevant Disorder"};
-			sheet.setColumnNames( columnNames );
-
-			int[] columnWidths = {0, 0, 0};
-			sheet.setColumnWidths(columnWidths);
-
-			String[] columnTypes = {"string", "string", "string"};
-			sheet.setColumnTypes(columnTypes);
-
-		return sheet;
-	}
-	
-	
-	
-	private static ReportSheet getScoresSheet(String reportFormat, Map<String, ScoreResults> scores) {
+	private static ReportSheet getScoresSheet(String reportFormat, CfeScores cfeScores) {
 		ReportSheet sheet = new ReportSheet();
 		
 		sheet.setTitle( "CFE Wizard Scores" );
@@ -195,6 +127,7 @@ public class ReportGenerator {
 
 
 		int i = 0;
+		/*
         for (String gene: scores.keySet()) {
 				List<String> row = new ArrayList<String>();
 				row.add("" + i);
@@ -218,7 +151,8 @@ public class ReportGenerator {
 				sheet.addData( row );
 				
 				i++;
-    	}		
+    	}
+    	*/		
 		return sheet;
 	}
 
@@ -229,7 +163,7 @@ public class ReportGenerator {
 	 * @param results
 	 * @return
 	 */
-	private static ReportSheet getScoresSheet2(String reportFormat, Results results) {
+	private static ReportSheet getScoresSheet2(String reportFormat, CfeScores cfeScores) {
 		ReportSheet sheet = new ReportSheet();
 		
 		sheet.setTitle( "CFE Wizard Scores" );
@@ -245,6 +179,7 @@ public class ReportGenerator {
 
 
 		int i = 0;
+		/*
         for (String gene: results.getResults().keySet()) {
         	    TreeMap<String, Result> resultMap = results.getResults();
 				List<String> row = new ArrayList<String>();
@@ -288,7 +223,8 @@ public class ReportGenerator {
 				sheet.addData( row );
 				
 				i++;
-    	}		
+    	}
+    	*/		
 		return sheet;
 	}
 	
@@ -300,9 +236,10 @@ public class ReportGenerator {
 	 * @param results
 	 * @return
 	 */
-	private static ReportSheet getScoreDetailsSheet(String reportFormat, Results results) {
+	private static ReportSheet getScoreDetailsSheet(String reportFormat, CfeScores cfeScores) {
 		ReportSheet sheet = new ReportSheet();
 		
+		/*
 		List<String> categoryHeaders = results.getCategoryHeaders();
 		int numberOfColumns = 2 + (categoryHeaders.size() * 2);
 		
@@ -409,27 +346,14 @@ public class ReportGenerator {
 
 			sheet.addData( row );
 
-		}		
+		}
+		*/		
 		return sheet;
 	}
 	
-	
-	/**
-	 * Generates an Excel sheet with the selected diseases for the scoring.
-	 * 
-	 * @param reportFormat
-	 * @param scores
-	 * @param diseaseSelectors
-	 * @return
-	 */
-	private static ReportSheet getDiseaseSelectorsSheet(String reportFormat, Map<String, ScoreResults> scores) {
-		
-		ReportSheet sheet = null;
 
-		return sheet;
-	}
 	
-	private static ReportSheet getVersionSheet(String reportFormat, Map<String, ScoreResults> scores) {
+	private static ReportSheet getVersionSheet(String reportFormat, CfeScores cfeScores) {
 
 		ReportSheet sheet = new ReportSheet();
 

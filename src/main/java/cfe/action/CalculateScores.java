@@ -11,9 +11,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.enums.Scores;
-import cfe.model.Score;
-import cfe.model.ScoreResults;
-import cfe.model.results.Results;
 
 import cfe.model.CfeScore;
 import cfe.model.CfeScores;
@@ -41,10 +38,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	private static final long serialVersionUID = 0L;
 	private static final Log log = LogFactory.getLog(CalculateScores.class);
 	private String score;
-	private Map<String, ScoreResults> scores;
 	private boolean otherCompleted = false;
-	
-	private Results results;
     
     CfeScores cfeScores;
     
@@ -123,7 +117,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				//	status = ERROR;	
 				//}
 
-				session.put("results", results);
+				session.put("cfeScores", this.cfeScores);
 			}
 		}
 		return status;
@@ -172,22 +166,6 @@ public class CalculateScores extends BaseAction implements SessionAware {
 
 	public void setOtherCompleted(boolean otherCompleted) {
 		this.otherCompleted = otherCompleted;
-	}
-
-	//public List<DiseaseSelector> getDiseaseSelectors() {
-	//	return diseaseSelectors;
-	//}
-
-	//public void setDiseaseSelectors(List<DiseaseSelector> diseaseSelectors) {
-	//	this.diseaseSelectors = diseaseSelectors;
-	//}
-
-	public Results getResults() {
-		return results;
-	}
-
-	public void setResults(Results results) {
-		this.results = results;
 	}
 
 }

@@ -11,7 +11,6 @@ import org.junit.rules.ErrorCollector;
 
 import cfe.action.CalculateScores;
 import cfe.enums.ScoringWeights;
-import cfe.model.results.Results;
 
 
 /**
@@ -36,7 +35,7 @@ public class ScoringTest {
 		CalculateScores calculateScores = new CalculateScores();
 		calculateScores.setSession(userSession);
 		
-		Results results = calculateScores.getResults();
+		//Results results = calculateScores.getResults();
 	}
 	
 	

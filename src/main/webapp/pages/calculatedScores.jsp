@@ -49,33 +49,6 @@
 <s:actionerror />
 
 
-<%--
-<table border="1">
-<thead>
-<tr><th /><th>Gene</th><th>Score</th><th>Tissue</th><th>Direction Of Change</th><th>PubMed</tr>
-</thead>
-<tbody>
-
-<s:iterator value="scores" var="_score" status="status">
-	<tr>
-	<td><s:property value="%{#status.index}" /></td>
-	<td><s:property value="%{key}"/></td>
-	<td><s:property value="value.score"/></td>
-	<td><s:property value="value.tissue"/></td>
-	<td><s:property value="value.directionChange"/></td>
-	<td>
-	<s:iterator value="value.pubMedUrl" var="_pubMedUrl">
-		<s:a href="http://www.ncbi.nlm.nih.gov/pubmed/%{_pubMedUrl}" target="_blank"><s:property value="%{_pubMedUrl}"/></s:a><br>
-	</s:iterator>
-	</td>
-	</tr>
-</s:iterator>
-
-</tbody>	
-</table>
-
---%>
-
 
 <p>
 CFE Scores Count: <s:property value="scores.size"/>
@@ -101,11 +74,11 @@ CFE Scores Count: <s:property value="scores.size"/>
         <td> <s:property value="value.geneCardsSymbol"/> </td>
         <td> <s:property value="value.geneTitle"/> </td>
         <td> <s:property value="value.changeInExpressionInTrackedPhene"/> </td>
-        <td> <s:property value="value.discoveryScore"/> </td>
-        <td> <s:property value="value.prioritizationScore"/> </td>
-        <td> <s:property value="value.validationScore"/> </td>
-        <td> &nbsp; </td>
-        <td> <s:property value="value.totalScore"/> </td>                           
+        <td style="text-align: right;"> <s:property value="value.discoveryScore"/> </td>
+        <td style="text-align: right;"> <s:number name="value.prioritizationScore" minimumFractionDigits="1"/> </td>
+        <td style="text-align: right;"> <s:property value="value.validationScore"/> </td>
+        <td style="text-align: right;"> <s:property value="value.testingScore"/> </td>
+        <td style="text-align: right;"> <s:number name="value.totalScore" minimumFractionDigits="1"/> </td>                           
     </tr>
 </s:iterator>
 </table>

@@ -58,17 +58,6 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 
-	public void calculateTotalScores() {
-	    for (CfeScore score: this.scores.values()) {
-	    	score.setTotalScore(
-	    	    score.getDiscoveryScore()
-	    	    + score.getPrioritizationScore()
-	    	    + score.getValidationScore()
-	    	    + score.getTestingScore()
-	    	);
-	    	this.setScore(score);
-	    }
-	}
 	
 	public void setPrioritization(Prioritization prioritization) {
 		String probeset = prioritization.getProbeset();
@@ -152,6 +141,47 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 
+	public void setTesting(Testing testing) throws Exception {
+		String probeset = testing.getProbeset();
+		CfeScore cfeScore = this.getScore(probeset);
+		
+		double testingScore = 0.0;
+		
+		testingScore += testing.getSmsLowMoodScore();
+		testingScore += testing.getHamdScore();
+		testingScore += testing.getFirstYearDepressionScore();
+		testingScore += testing.getAllFutureDepression();
+		
+		cfeScore.setTestingScore(testingScore);
+		
+		if (cfeScore.getGeneCardsSymbol() == null || cfeScore.getGeneCardsSymbol().trim().equals("")) {
+			cfeScore.setGeneCardsSymbol(testing.getGeneCardsSymbol());
+		}
+		
+		if (cfeScore.getGeneTitle() == null || cfeScore.getGeneTitle().trim().equals("")) {
+			cfeScore.setGeneTitle(testing.getGeneTitle());
+		}
+		
+		if (cfeScore.getChangeInExpressionInTrackedPhene() == null || cfeScore.getChangeInExpressionInTrackedPhene().trim().equals("")) {
+			cfeScore.setChangeInExpressionInTrackedPhene(testing.getChangeInExpressionInTrackedPhene());
+		}
+		
+		this.setScore(cfeScore);		
+	}
+
+	public void calculateTotalScores() {
+		// Add weights???
+	    for (CfeScore score: this.scores.values()) {
+	    	score.setTotalScore(
+	    	    score.getDiscoveryScore()
+	    	    + score.getPrioritizationScore()
+	    	    + score.getValidationScore()
+	    	    + score.getTestingScore()
+	    	);
+	    	this.setScore(score);
+	    }
+	}
+	
 	public void addProbesetIfNotExists(String probeset) {
 		if (!this.scores.containsKey(probeset)) {
 			CfeScore cfeScore = new CfeScore(probeset);

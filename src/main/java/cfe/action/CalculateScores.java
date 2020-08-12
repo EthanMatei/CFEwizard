@@ -96,10 +96,13 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				    	this.cfeScores.setValidation(validation);
 				    }
 				    
-				    List<Testing>        testing         = TestingService.getAll();
-				    
+				    List<Testing> testings = TestingService.getAll();
+				    for (Testing testing: testings) {
+				    	this.cfeScores.setTesting(testing);
+				    }
+
 				    this.cfeScores.calculateTotalScores();
-				    				    
+				    
 				   //log.info("CFE Scores Count: " + this.cfeScores.);
 				    
 				    

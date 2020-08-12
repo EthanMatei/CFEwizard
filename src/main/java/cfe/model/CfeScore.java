@@ -92,7 +92,7 @@ public class CfeScore {
 		this.testingScore = testingScore;
 	}
 
-	public double getTotalcore() {
+	public double getTotalScore() {
 		return totalScore;
 	}
 

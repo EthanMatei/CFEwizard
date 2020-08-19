@@ -24,9 +24,19 @@ public class CfeScores {
 	
 	private Map<String, CfeScore> scores;
 	private List<ScoringWeights> weights;
+	
+	private double discoveryWeight;
+	private double prioritizationWeight;
+	private double validationWeight;
+	private double testingWeight;
 
 	public CfeScores() {
 		this.scores = new TreeMap<String,CfeScore>();
+		
+		this.discoveryWeight      = 1.0;
+		this.prioritizationWeight = 1.0;
+		this.validationWeight     = 1.0;
+		this.testingWeight        = 1.0;
 	}
 	
 	public void addDiscoveryData(List<Discovery> discoveries) {
@@ -171,14 +181,31 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 
-	public void calculateTotalScores() {
-		// Add weights???
+	public void calculateTotalScores(List<ScoringWeights> weights) {
+		
+		for (ScoringWeights weight: weights) {
+			switch (weight) {
+			    case DISCOVERY:
+			    	discoveryWeight = weight.getWeight();
+			    	break;
+			    case PRIORITIZATION:
+			    	prioritizationWeight = weight.getWeight();
+			    	break;
+			    case VALIDATION:
+			    	validationWeight = weight.getWeight();
+			    	break;
+			    case TESTING:
+			    	testingWeight = weight.getWeight();
+			    	break;
+			}
+		}
+		
 	    for (CfeScore score: this.scores.values()) {
 	    	score.setTotalScore(
-	    	    score.getDiscoveryScore()
-	    	    + score.getPrioritizationScore()
-	    	    + score.getValidationScore()
-	    	    + score.getTestingScore()
+	    	    (score.getDiscoveryScore() * discoveryWeight)
+	    	    + (score.getPrioritizationScore() * prioritizationWeight)
+	    	    + (score.getValidationScore() * validationWeight)
+	    	    + (score.getTestingScore() * testingWeight)
 	    	);
 	    	this.setScore(score);
 	    }
@@ -214,6 +241,22 @@ public class CfeScores {
 	
 	public void setScore(CfeScore cfeScore) {
 		this.scores.put(cfeScore.getProbeset(), cfeScore);
+	}
+
+	public double getDiscoveryWeight() {
+		return discoveryWeight;
+	}
+
+	public double getPrioritizationWeight() {
+		return prioritizationWeight;
+	}
+
+	public double getValidationWeight() {
+		return validationWeight;
+	}
+
+	public double getTestingWeight() {
+		return testingWeight;
 	}
 
 }

@@ -20,10 +20,10 @@ Enter the scoring weights:
 <s:form action="ScoringWeightsProcess" >
 
 <s:iterator value="@cfe.enums.ScoringWeights@values()" var="scoringWeight">
-    <s:set var="scoreWeight" value="%{#scoringWeight.score}"/>
+    <s:set var="scoreWeight" value="%{#scoringWeight.weight}"/>
 	<s:textfield label= "%{#scoringWeight.label}"
 	    name="%{#scoringWeight.name}"
-	    value="%{getText('{0,number,##0.0}',{#scoringWeight.score})}"
+	    value="%{getText('{0,number,##0.0}',{#scoringWeight.weight})}"
 	    cssStyle="text-align:right;"/>
 </s:iterator>
 <s:submit value="Next" />

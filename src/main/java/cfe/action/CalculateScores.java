@@ -99,7 +99,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				    	this.cfeScores.setTesting(testing);
 				    }
 
-				    this.cfeScores.calculateTotalScores();
+				    this.cfeScores.calculateTotalScores(weights);
 				    
 				   //log.info("CFE Scores Count: " + this.cfeScores.);
 				    

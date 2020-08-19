@@ -28,10 +28,10 @@ public class ScoringWeightsAction extends BaseAction implements SessionAware {
 	
 	private Map<String, Object> userSession;
 	
-	private double discoveryScore;
-	private double prioritizationScore;
-	private double validationScore;
-	private double testingScore;
+	private double discoveryWeight;
+	private double prioritizationWeight;
+	private double validationWeight;
+	private double testingWeight;
 
 	private List<cfe.enums.ScoringWeights> weights;
 	
@@ -50,10 +50,10 @@ public class ScoringWeightsAction extends BaseAction implements SessionAware {
 		
 		log.info("Entered values: ");
 		
-		log.info("Discovery: " + this.discoveryScore);
-		log.info("Prioritization: " + this.prioritizationScore);
-		log.info("Validation: " + this.validationScore);
-		log.info("Testing: " + this.testingScore);
+		log.info("Discovery: " + this.discoveryWeight);
+		log.info("Prioritization: " + this.prioritizationWeight);
+		log.info("Validation: " + this.validationWeight);
+		log.info("Testing: " + this.testingWeight);
 
 		//Session session = HibernateUtils.getSession();		
 		//Transaction tx = session.beginTransaction();
@@ -73,19 +73,19 @@ public class ScoringWeightsAction extends BaseAction implements SessionAware {
 				cfe.enums.ScoringWeights weight;
 
 				weight = cfe.enums.ScoringWeights.DISCOVERY;
-				weight.setScore( this.discoveryScore );
+				weight.setWeight( this.discoveryWeight );
 				weights.add(weight);
 
 				weight = cfe.enums.ScoringWeights.PRIORITIZATION;
-				weight.setScore( this.prioritizationScore);
+				weight.setWeight( this.prioritizationWeight);
 				weights.add(weight);
 
 				weight = cfe.enums.ScoringWeights.VALIDATION;
-				weight.setScore( this.validationScore);
+				weight.setWeight( this.validationWeight);
 				weights.add(weight);
 
 				weight = cfe.enums.ScoringWeights.TESTING;
-				weight.setScore( this.testingScore );
+				weight.setWeight( this.testingWeight );
 				weights.add(weight);
 
 				userSession.put("weights", weights);
@@ -106,14 +106,14 @@ public class ScoringWeightsAction extends BaseAction implements SessionAware {
 
 	public void validate() {
 		
-		boolean res = (this.discoveryScore < 0.0)
-				    || (this.prioritizationScore < 0.0)
-				    || (this.validationScore < 0.0)
-				    || (this.testingScore < 0.0)  
+		boolean res = (this.discoveryWeight < 0.0)
+				    || (this.prioritizationWeight < 0.0)
+				    || (this.validationWeight < 0.0)
+				    || (this.testingWeight < 0.0)  
 		;
 
 		if (res) 
-			addActionError( "ERROR: Scores cannot be negative." );
+			addActionError( "ERROR: Scoring weights cannot be negative." );
 	}
 	
 	@Override
@@ -121,36 +121,36 @@ public class ScoringWeightsAction extends BaseAction implements SessionAware {
 		this.userSession = session;
 	}
 
-	public double getDiscoveryScore() {
-		return discoveryScore;
+	public double getDiscoveryWeight() {
+		return discoveryWeight;
 	}
 
-	public void setDiscoveryScore(double discoveryScore) {
-		this.discoveryScore = discoveryScore;
+	public void setDiscoveryWeight(double discoveryWeight) {
+		this.discoveryWeight = discoveryWeight;
 	}
 
-	public double getPrioritizationScore() {
-		return prioritizationScore;
+	public double getPrioritizationWeight() {
+		return prioritizationWeight;
 	}
 
-	public void setPrioritizationScore(double prioritizationScore) {
-		this.prioritizationScore = prioritizationScore;
+	public void setPrioritizationWeight(double prioritizationWeight) {
+		this.prioritizationWeight = prioritizationWeight;
 	}
 
-	public double getValidationScore() {
-		return validationScore;
+	public double getValidationWeight() {
+		return validationWeight;
 	}
 
-	public void setValidationScore(double validationScore) {
-		this.validationScore = validationScore;
+	public void setValidationWeight(double validationWeight) {
+		this.validationWeight = validationWeight;
 	}
 
-	public double getTestingScore() {
-		return testingScore;
+	public double getTestingWeight() {
+		return testingWeight;
 	}
 
-	public void setTestingScore(double testingScore) {
-		this.testingScore = testingScore;
+	public void setTestingWeight(double testingWeight) {
+		this.testingWeight = testingWeight;
 	}
 
 	public static Log getLog() {

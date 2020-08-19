@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import cfe.enums.ScoringWeights;
+import cfe.model.CfeScore;
 import cfe.model.CfeScores;
 import cfe.model.VersionNumber;
 
@@ -146,6 +147,24 @@ public class ReportGenerator {
 
 
 		int i = 0;
+		for (CfeScore cfeScore: cfeScores.getScores().values()) {
+			List<String> row = new ArrayList<String>();
+			
+			row.add(cfeScore.getProbeset());
+			row.add(cfeScore.getGeneCardsSymbol());
+			row.add(cfeScore.getGeneTitle());
+		    row.add(cfeScore.getChangeInExpressionInTrackedPhene());
+		    row.add("" + cfeScore.getDiscoveryScore());
+		    row.add("" + cfeScore.getPrioritizationScore());
+		    row.add("" + cfeScore.getValidationScore());
+		    row.add("" + cfeScore.getTestingScore());
+		    row.add("" + cfeScore.getTotalScore());
+		    
+			sheet.addData( row );
+			
+			i++;
+		}
+		
 		/*
         for (String gene: results.getResults().keySet()) {
         	    TreeMap<String, Result> resultMap = results.getResults();
@@ -306,7 +325,7 @@ public class ReportGenerator {
 					else {
 						researchData += "\n";
 					}
-					researchData += directionChange + " " + tissue + " " + disorder + " " + pubMedId;
+					resea)rchData += directionChange + " " + tissue + " " + disorder + " " + pubMedId;
 				}
 				row.add(researchData);
 			}
@@ -370,7 +389,7 @@ public class ReportGenerator {
 		    List<String> row = new ArrayList<String>();
 
 		    row.add( weight.getLabel() );
-		    row.add( "" + weight.getScore() );
+		    row.add( "" + weight.getWeight() );
 
 		    sheet.addData( row );
 		}

@@ -83,8 +83,8 @@ public class ReportAction extends BaseAction implements SessionAware {
     			throw new ActionErrorException("No report name was specified.");
     		}
 
-    		Object scoresObject = session.get("scores");
-    		CfeScores cfeScores = (CfeScores) scoresObject;
+    		Object cfeScoresObject = session.get("cfeScores");
+    		CfeScores cfeScores = (CfeScores) cfeScoresObject;
 
     		List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) session.get("weights");
     		

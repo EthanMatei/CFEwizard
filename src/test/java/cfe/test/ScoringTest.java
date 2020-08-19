@@ -45,19 +45,19 @@ public class ScoringTest {
 		List<ScoringWeights> weights = new ArrayList<ScoringWeights>();
 		ScoringWeights weight;
 		weight = cfe.enums.ScoringWeights.DISCOVERY;
-		weight.setScore( 1.0 );
+		weight.setWeight( 1.0 );
 	    weights.add(weight);
 		
 		weight = cfe.enums.ScoringWeights.PRIORITIZATION;
-		weight.setScore( 1.0 );
+		weight.setWeight( 1.0 );
 	    weights.add(weight);
 
 		weight = cfe.enums.ScoringWeights.VALIDATION;
-		weight.setScore( 1.0 );
+		weight.setWeight( 1.0 );
 	    weights.add(weight);
 	    
 		weight = cfe.enums.ScoringWeights.TESTING;
-		weight.setScore( 1.0 );
+		weight.setWeight( 1.0 );
 	    weights.add(weight);
 
         return weights;

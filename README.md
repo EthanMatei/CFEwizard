@@ -48,11 +48,11 @@ Table: **Discovery**
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
 | APscores                              | apScores                            | Double     |
 | AP Percentile                         | apPercentile                        | Double     |
-| Ap Score                              | apScore                             | Integer    |
+| Ap Score                              | apScore                             | Double     |
 | AP Change                             | apChange                            | String     |
 | DEscores                              | deScores                            | Double     |
 | DE Percentile                         | dePercentile                        | Double     |
-| DE Score                              | deScore                             | Integer    |
+| DE Score                              | deScore                             | Double     |
 | DE change                             | deChange                            | String     |
  
 
@@ -70,21 +70,21 @@ Priortization Database
 | GeneCards Symbol                      | geneCardsSymbol                     | String     |
 | Gene Title                            | geneTitle                           | String     |
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
-| HUBRAIN Score                         | huBrainScore                        | Integer    |
+| HUBRAIN Score                         | huBrainScore                        | Double     |
 | HUBRAIN Info                          | huBrainInfo                         | String     | 
-| HUPER Score                           | huPerScore                          | Integer    |
+| HUPER Score                           | huPerScore                          | Double     |
 | HUPER Info                            | huPerInfo                           | String     | 
-| HUGENEASSOC Score                     | huGeneAssocScore                    | Integer    |
+| HUGENEASSOC Score                     | huGeneAssocScore                    | Double     |
 | HUGENEASSOC Info                      | huGeneAssocInfo                     | String     | 
-| HUGCNV Score                          | huGCnvScore                         | Integer    |
+| HUGCNV Score                          | huGCnvScore                         | Double     |
 | HUGCNV Info                           | huGCnvInfo                          | String     | 
-| NHBRAIN Score                         | nhBrainScore                        | Integer    |
+| NHBRAIN Score                         | nhBrainScore                        | Double     |
 | NHBRAIN Info                          | nhBrainInfo                         | String     |
-| NHPER Score                           | nhPerScore                          | Integer    |
+| NHPER Score                           | nhPerScore                          | Double     |
 | NHPER Info                            | nhPerInfo                           | String     |
-| NHGENEASSOC Score                     | nhGeneAssocScore                    | Integer    |
+| NHGENEASSOC Score                     | nhGeneAssocScore                    | Double     |
 | NHGENEASSOC Info                      | nhGeneAssocInfo                     | String     | 
-| NHGCNV Score                          | nhGCnvScore                         | Integer    |
+| NHGCNV Score                          | nhGCnvScore                         | Double     |
 | NHGCNV Info                           | nhGCnvInfo                          | String     | 
 
 

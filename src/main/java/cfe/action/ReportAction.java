@@ -83,6 +83,11 @@ public class ReportAction extends BaseAction implements SessionAware {
     			throw new ActionErrorException("No report name was specified.");
     		}
 
+    		Object scoresObject = session.get("scores");
+    		CfeScores cfeScores = (CfeScores) scoresObject;
+
+    		List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) session.get("weights");
+    		
     		/*
     		Map<String, ScoreResults> scores;
     		Object scoresObject = session.get("scores");
@@ -104,17 +109,17 @@ public class ReportAction extends BaseAction implements SessionAware {
     		reportFormat = Filter.filterNonAlphaNumeric( reportFormat );
 
 
-    		//try {
-    		log.info("Trying to generate report with name " + reportName + " and format " + reportFormat + ".");
+    		try {
+    		    log.info("Trying to generate report with name " + reportName + " and format " + reportFormat + ".");
 
-    		//fileStream = ReportGenerator.generate( reportName,  reportFormat, results, scores, weights, diseaseSelectors );
-    		if (fileStream == null) {
-    			throw new ReportException("No data could be retrieved for this report.");
+    		    fileStream = ReportGenerator.generate( reportName,  reportFormat, cfeScores, weights );
+    		    if (fileStream == null) {
+    			    throw new ReportException("No data could be retrieved for this report.");
+    		    }
     		}
-    		//}
-    		//catch (ReportException exception) {
-    		//	throw new ActionErrorException( exception.getMessage() );
-    		//}
+    		catch (ReportException exception) {
+    			throw new ActionErrorException( exception.getMessage() );
+    		}
 
     		fileContentType = "application/vnd.ms-excel";
 

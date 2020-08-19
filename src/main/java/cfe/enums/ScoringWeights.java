@@ -15,7 +15,11 @@ public enum ScoringWeights {
 	private ScoringWeights (String label){ this.label = label; }	
 	public String getLabel(){ return this.label; }
 	
-	private ScoringWeights(String label, String name, double score) {this.score = score; this.label = label; this.name = name;}
+	private ScoringWeights(String label, String name, double score) {
+		this.score = score;
+		this.label = label;
+		this.name = name;
+	}
 	
 	public double getScore() {
 		return score;

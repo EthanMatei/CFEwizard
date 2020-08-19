@@ -197,7 +197,7 @@
 	<!-- Calculate scores flow -->
 		
 		<!-- Step 2 -->	
-		<action name="ScoringWeights" class="cfe.action.ScoringWeights" method="initialize">
+		<action name="ScoringWeights" class="cfe.action.ScoringWeightsAction" method="initialize">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/scoringWeights.jsp</result>	
 			<result name="error">pages/error.jsp</result>   
@@ -206,7 +206,7 @@
             </result>
 		</action>
 		
-		<action name="ScoringWeightsProcess" class="cfe.action.ScoringWeights">
+		<action name="ScoringWeightsProcess" class="cfe.action.ScoringWeightsAction">
 			<interceptor-ref name="cfeStack"/>
 			<!--
 			<result name="success" type="redirectAction">

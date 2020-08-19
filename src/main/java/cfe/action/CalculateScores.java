@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.enums.Scores;
+import cfe.enums.ScoringWeights;
 
 import cfe.model.CfeScore;
 import cfe.model.CfeScores;
@@ -64,10 +65,13 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				status = ERROR;
 			}
 			else {
-				//diseaseSelectors = (List<DiseaseSelector>) diseasesObject;
-				//GeneListInput geneListInput = (GeneListInput) session.get("geneListInput");
-				
-				List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) weightsObject;
+
+				List<ScoringWeights> weights = (List<ScoringWeights>) weightsObject;
+				for (ScoringWeights weight: weights) {
+					if (weight == ScoringWeights.DISCOVERY) {
+						
+					}
+				}
 			    
 			    this.cfeScores = new CfeScores();
 				
@@ -99,7 +103,6 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				    
 				   //log.info("CFE Scores Count: " + this.cfeScores.);
 				    
-				    
 				}
 				catch (Exception exception) {
 					this.setErrorMessage( exception.getMessage() );
@@ -107,15 +110,6 @@ public class CalculateScores extends BaseAction implements SessionAware {
 					exception.printStackTrace();
 					status = ERROR;	
 				}
-
-				//DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
-				//try {
-				//	results = Score.calculate(geneListInput, diseaseSelection, weights);
-				//}
-				//catch (Exception exception) {
-				//	this.setErrorMessage( exception.getMessage() );
-				//	status = ERROR;	
-				//}
 
 				session.put("cfeScores", this.cfeScores);
 			}

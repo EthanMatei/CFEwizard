@@ -1,6 +1,7 @@
 package cfe.action;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,24 +21,27 @@ import cfe.utils.HibernateUtils;
  * @author Jim Mullen
  *
  */
-public class ScoringWeights extends BaseAction implements SessionAware {
+public class ScoringWeightsAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 4461152837155935053L;
-	private static final Log log = LogFactory.getLog(ScoringWeights.class);
+	private static final Log log = LogFactory.getLog(ScoringWeightsAction.class);
 	
 	private Map<String, Object> userSession;
 	
-	private double discovery;
-	private double prioritization;
-	private double validation;
-	private double testing;
+	private double discoveryScore;
+	private double prioritizationScore;
+	private double validationScore;
+	private double testingScore;
 
+	private List<cfe.enums.ScoringWeights> weights;
+	
 	
 	public String initialize() {
 		String result = SUCCESS;
 		if (!Authorization.isLoggedIn(userSession)) {
 			result = LOGIN;
 		}
+		
 		log.info("result: " + result);
 		return result;
 	}
@@ -46,10 +50,10 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 		
 		log.info("Entered values: ");
 		
-		log.info("Discovery: " + this.discovery);
-		log.info("Prioritization: " + this.prioritization);
-		log.info("Validation: " + this.validation);
-		log.info("Testing: " + this.testing);
+		log.info("Discovery: " + this.discoveryScore);
+		log.info("Prioritization: " + this.prioritizationScore);
+		log.info("Validation: " + this.validationScore);
+		log.info("Testing: " + this.testingScore);
 
 		//Session session = HibernateUtils.getSession();		
 		//Transaction tx = session.beginTransaction();
@@ -69,19 +73,19 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 				cfe.enums.ScoringWeights weight;
 
 				weight = cfe.enums.ScoringWeights.DISCOVERY;
-				weight.setScore( this.discovery );
+				weight.setScore( this.discoveryScore );
 				weights.add(weight);
 
 				weight = cfe.enums.ScoringWeights.PRIORITIZATION;
-				weight.setScore( this.prioritization );
+				weight.setScore( this.prioritizationScore);
 				weights.add(weight);
 
 				weight = cfe.enums.ScoringWeights.VALIDATION;
-				weight.setScore( this.validation );
+				weight.setScore( this.validationScore);
 				weights.add(weight);
 
 				weight = cfe.enums.ScoringWeights.TESTING;
-				weight.setScore( this.testing );
+				weight.setScore( this.testingScore );
 				weights.add(weight);
 
 				userSession.put("weights", weights);
@@ -102,10 +106,10 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 
 	public void validate() {
 		
-		boolean res = (this.discovery < 0.0)
-				    || (this.prioritization < 0.0)
-				    || (this.validation < 0.0)
-				    || (this.testing < 0.0)  
+		boolean res = (this.discoveryScore < 0.0)
+				    || (this.prioritizationScore < 0.0)
+				    || (this.validationScore < 0.0)
+				    || (this.testingScore < 0.0)  
 		;
 
 		if (res) 
@@ -117,36 +121,36 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 		this.userSession = session;
 	}
 
-	public double getDiscovery() {
-		return discovery;
+	public double getDiscoveryScore() {
+		return discoveryScore;
 	}
 
-	public void setDiscovery(double discovery) {
-		this.discovery = discovery;
+	public void setDiscoveryScore(double discoveryScore) {
+		this.discoveryScore = discoveryScore;
 	}
 
-	public double getPrioritization() {
-		return prioritization;
+	public double getPrioritizationScore() {
+		return prioritizationScore;
 	}
 
-	public void setPrioritization(double prioritization) {
-		this.prioritization = prioritization;
+	public void setPrioritizationScore(double prioritizationScore) {
+		this.prioritizationScore = prioritizationScore;
 	}
 
-	public double getValidation() {
-		return validation;
+	public double getValidationScore() {
+		return validationScore;
 	}
 
-	public void setValidation(double validation) {
-		this.validation = validation;
+	public void setValidationScore(double validationScore) {
+		this.validationScore = validationScore;
 	}
 
-	public double getTesting() {
-		return testing;
+	public double getTestingScore() {
+		return testingScore;
 	}
 
-	public void setTesting(double testing) {
-		this.testing = testing;
+	public void setTestingScore(double testingScore) {
+		this.testingScore = testingScore;
 	}
 
 	public static Log getLog() {

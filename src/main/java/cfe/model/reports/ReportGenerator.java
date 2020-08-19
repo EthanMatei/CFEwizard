@@ -80,14 +80,14 @@ public class ReportGenerator {
 	    // Scores Sheet
 	    //----------------------------------------------------------------------------------------
 	    //sheet = getScoresSheet(reportFormat, scores);
-	    sheet = getScoresSheet2(reportFormat, cfeScores);
+	    sheet = getScoresSheet(reportFormat, cfeScores);
 	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
 	    // Score Detail Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getScoreDetailsSheet(reportFormat, cfeScores);
-	    if (sheet != null) sheets.add(sheet);
+	    //sheet = getScoreDetailsSheet(reportFormat, cfeScores);
+	    //if (sheet != null) sheets.add(sheet);
 	    
 	    //----------------------------------------------------------------------------------------
 	    // Scoring Weights Sheet
@@ -111,51 +111,6 @@ public class ReportGenerator {
 	}
 	
 	
-	private static ReportSheet getScoresSheet(String reportFormat, CfeScores cfeScores) {
-		ReportSheet sheet = new ReportSheet();
-		
-		sheet.setTitle( "CFE Wizard Scores" );
-
-		String[] columnNames = {" ", "Gene", "Score", "Direction Of Change", "Tissue", "PubMed"};
-		sheet.setColumnNames( columnNames );
-
-		int[] columnWidths = {0, 0, 0, 0, 0, 0};
-		sheet.setColumnWidths(columnWidths);
-		
-		String[] columnTypes = {"int", "string", "float", "string", "string", "string"};
-		sheet.setColumnTypes(columnTypes);
-
-
-		int i = 0;
-		/*
-        for (String gene: scores.keySet()) {
-				List<String> row = new ArrayList<String>();
-				row.add("" + i);
-				row.add(gene);
-				row.add(scores.get(gene).getScore());
-				row.add(scores.get(gene).getDirectionChange());
-				row.add(scores.get(gene).getTissue());
-				
-				//row.add(scores.get(gene).getPubMedId().replaceAll("#", "\n").replaceAll("0", ""));
-
-				String urls = "";
-				int j = 0;
-				for (String url: scores.get(gene).getPubMedUrl()) {
-					if (j > 0) urls += "\n";
-				//	//urls += "<a href=\"http://www.ncbi.nlm.nih.gov/pubmed/" + url +"\">" + url + "</a>";
-					urls += " " + url;
-					j++;
-				}
-				row.add(urls);
-				
-				sheet.addData( row );
-				
-				i++;
-    	}
-    	*/		
-		return sheet;
-	}
-
 	/**
 	 * Creates the main score sheet.
 	 * 
@@ -163,18 +118,30 @@ public class ReportGenerator {
 	 * @param results
 	 * @return
 	 */
-	private static ReportSheet getScoresSheet2(String reportFormat, CfeScores cfeScores) {
+	private static ReportSheet getScoresSheet(String reportFormat, CfeScores cfeScores) {
 		ReportSheet sheet = new ReportSheet();
 		
 		sheet.setTitle( "CFE Wizard Scores" );
 		
-		String[] columnNames = {" ", "Gene", "Score",  "Direction Of Change", "Tissue","Disorder", "PubMed"};
+		String[] columnNames = {
+			    "Probeset", "GeneCards Symbol", "Gene Title", "Change in expression in tracked phene",
+			    "Discovery Score", "Prioritization Score", "Validation Score", "Testing Score",
+			    "TOTAL Score"
+		};
 		sheet.setColumnNames( columnNames );
 
-		int[] columnWidths = {0, 0, 0, 0, 0, 0, 0};
+		int[] columnWidths = {
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0
+		};
 		sheet.setColumnWidths(columnWidths);
 		
-		String[] columnTypes = {"int", "string", "float", "string", "string", "string", "string"};
+		String[] columnTypes = {
+				"string", "string", "string", "string",
+				"float", "float", "float", "float",
+				"float"
+		};
 		sheet.setColumnTypes(columnTypes);
 
 
@@ -387,7 +354,7 @@ public class ReportGenerator {
 
 		ReportSheet sheet = new ReportSheet();
 
-		sheet.setTitle( "Global Scoring Weights" );
+		sheet.setTitle( "Scoring Weights" );
 
 		String[] columnNames = {"Name", "Weight"};
 		sheet.setColumnNames( columnNames );

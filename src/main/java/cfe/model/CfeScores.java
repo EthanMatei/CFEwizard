@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import cfe.action.CalculateScores;
+import cfe.enums.ScoringWeights;
 
 //import org.hibernate.annotations.Index;
 
@@ -22,6 +23,7 @@ public class CfeScores {
 	private static final Log log = LogFactory.getLog(CfeScores.class);
 	
 	private Map<String, CfeScore> scores;
+	private List<ScoringWeights> weights;
 
 	public CfeScores() {
 		this.scores = new TreeMap<String,CfeScore>();

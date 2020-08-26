@@ -130,6 +130,10 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	//	this.scores = scores;
 	//}
 
+	public CfeScores getCfeScores() {
+		return this.cfeScores;
+	}
+
 	public Map<String,CfeScore> getScores() {
 		return this.cfeScores.getScores();
 	}

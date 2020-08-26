@@ -49,9 +49,11 @@
 <s:actionerror />
 
 
-
 <p>
-CFE Scores Count: <s:property value="scores.size"/>
+Discovery Weight: <s:number name="cfeScores.discoveryWeight" minimumFractionDigits="1"/> <br/>
+Prioritization Weight: <s:number name="cfeScores.prioritizationWeight" minimumFractionDigits="1"/> <br/>
+Validation Weight: <s:number name="cfeScores.validationWeight" minimumFractionDigits="1"/> <br/>
+Testing Weight: <s:number name="cfeScores.testingWeight" minimumFractionDigits="1"/> <br/>
 </p>
 
 <table class="dataTable">
@@ -59,12 +61,12 @@ CFE Scores Count: <s:property value="scores.size"/>
     <th> Probeset </th>
     <th> GeneCards Symbol </th>
     <th> Gene Title </th>
-    <th> Change in expression in tracked phene </th>
-    <th> Discovery Score </th>
-    <th> Prioritization Score </th>
-    <th> Validation Score </th>
-    <th> Testing Score </th>
-    <th> TOTAL Score </th>
+    <th> Change in expression<br/>in tracked phene </th>
+    <th> Discovery<br/>Score </th>
+    <th> Prioritization<br/>Score </th>
+    <th> Validation<br/>Score </th>
+    <th> Testing<br/>Score </th>
+    <th> TOTAL<br/>Score </th>
 </tr>
 
 

@@ -51,6 +51,10 @@ public class ReportSheet {
 	private Set<Integer> rowsWithTopBorder;
 	private List<Region> mergedRegions;
 	
+	private Sheet sheet;
+	
+	private int freezeColumns;
+	
 	private Log log = LogFactory.getLog(ReportSheet.class);
 	
 	ReportSheet() {
@@ -64,6 +68,8 @@ public class ReportSheet {
 	    columnAlignment = new String[0];
 	    columnTotal     = new boolean[0];
 	    rowsWithTopBorder    = new HashSet<Integer>();
+	    
+	    freezeColumns = 0;
 	}
 
 	private int getNumberOfColumns() {
@@ -111,7 +117,7 @@ public class ReportSheet {
 		//--------------------------------------------------
 		String sheetTitle = this.sheetTitle;
 		if (sheetTitle == null) sheetTitle = title;
-		Sheet sheet = workbook.createSheet( sheetTitle );
+		this.sheet = workbook.createSheet( sheetTitle );
 		
 		sheet.getPrintSetup().setLandscape( isLandscape );
 
@@ -400,13 +406,21 @@ public class ReportSheet {
 	    Footer footer = sheet.getFooter();
 	    footer.setCenter( "&BPage &P of &N");
 
-	    sheet.createFreezePane(0,1); // freeze the header row
+	    sheet.createFreezePane(this.freezeColumns,1); // freeze the header row
 	    sheet.protectSheet("cfe"); // protect the sheet so it cannot be modified
 	}
 
 	
 	public void addData(List<String> row) {
 	    this.data.add( row );	
+	}
+	
+	public void createFreezePane(int colSplit, int rowSplit) {
+		this.sheet.createFreezePane(colSplit, rowSplit);
+	}
+	
+	public void createFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow) {
+		this.sheet.createFreezePane(colSplit, rowSplit, leftmostColumn, topRow);
 	}
 	
 	public String getTitle() {
@@ -469,6 +483,14 @@ public class ReportSheet {
 
 	public void setMergedRegions(List<Region> mergedRegions) {
 		this.mergedRegions = mergedRegions;
+	}
+	
+	public int getFreezeColumns() {
+		return this.freezeColumns;
+	}
+	
+	public void setFreezeColumns(int freezeColumns) {
+		this.freezeColumns = freezeColumns;
 	}
 
 	public String convertColNumToLetter(int col) {

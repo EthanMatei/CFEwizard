@@ -125,16 +125,16 @@ public class ReportGenerator {
 		sheet.setTitle( "CFE Wizard Scores" );
 		
 		String[] columnNames = {
-			    "Probeset", "GeneCards Symbol", "Gene Title", "Change in expression in tracked phene",
-			    "Discovery Score", "Prioritization Score", "Validation Score", "Testing Score",
-			    "TOTAL Score"
+			    "\nProbeset", "GeneCards\nSymbol", "\nGene Title", "Change in expression\nin tracked phene",
+			    "Discovery\nScore", "Prioritization\nScore", "Validation\nScore", "Testing\nScore",
+			    "TOTAL\nScore"
 		};
 		sheet.setColumnNames( columnNames );
 
 		int[] columnWidths = {
-				0, 0, 0, 0,
-				0, 0, 0, 0,
-				0
+				0, 12, 0, 22,
+				15, 15, 15, 15,
+				15
 		};
 		sheet.setColumnWidths(columnWidths);
 		
@@ -165,52 +165,8 @@ public class ReportGenerator {
 			i++;
 		}
 		
-		/*
-        for (String gene: results.getResults().keySet()) {
-        	    TreeMap<String, Result> resultMap = results.getResults();
-				List<String> row = new ArrayList<String>();
-				row.add("" + i);
-				row.add( results.getGeneNames(gene) );
-				row.add(resultMap.get(gene).getScore() + "");
-				
-				List<Research> researchList = resultMap.get(gene).getAllResearch();
-				String directionChange = "";
-				String tissue = "";
-				String disorder = "";
-				String pubMedIds = "";
-				
-				boolean isFirst = true;
-				for (Research research: researchList) {
-					if (isFirst) isFirst = false;
-					else {
-						directionChange += "\n";
-						tissue          += "\n";
-						disorder        += "\n";
-						pubMedIds       += "\n";
-					}
-					
-					String tissueValue = research.getTissue();
-					if (tissueValue == null || tissueValue.equals("null")) tissueValue = "";
-					
-					String directionChangeValue = research.getDirectionChange();
-					if (directionChangeValue == null || directionChangeValue.equals("null")) directionChangeValue = "";
-					
-					tissue += tissueValue;
-					directionChange += directionChangeValue;
-					disorder += research.getPsychiatricDomain() + ", " + research.getSubdomain() + ", " + research.getRelevantDisorder();
-					pubMedIds += research.getPubMedId();
-				}
-
-				row.add(directionChange);
-				row.add(tissue);
-				row.add(disorder);
-				row.add(pubMedIds);
-				
-				sheet.addData( row );
-				
-				i++;
-    	}
-    	*/		
+		sheet.setFreezeColumns(4);
+		
 		return sheet;
 	}
 	

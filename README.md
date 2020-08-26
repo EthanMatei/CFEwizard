@@ -128,6 +128,13 @@ Table: **Testing**
 
 ---
 
+### Checking for out of date dependencies
+
+To check for out of date dependencies, run the following command in the
+top-level directory of your project:
+
+   mvn versions:display-dependency-updates
+
 Building the CFE Wizard
 -------------------------------
 

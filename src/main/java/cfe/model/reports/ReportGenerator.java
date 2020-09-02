@@ -125,14 +125,19 @@ public class ReportGenerator {
 		sheet.setTitle( "CFE Wizard Scores" );
 		
 		String[] columnNames = {
-			    "\nProbeset", "GeneCards\nSymbol", "\nGene Title", "Change in expression\nin tracked phene",
-			    "Discovery\nScore", "Prioritization\nScore", "Validation\nScore", "Testing\nScore",
-			    "TOTAL\nScore"
+			    "\n\nProbeset", "\nGeneCards\nSymbol", "\n\nGene Title", "\nChange in expression\nin tracked phene",
+			    "\nDiscovery\nScore", "\nPrioritization\nScore", "\nValidation\nScore", "\nTesting\nScore",
+			    "Weighted\nDiscovery\nScore (x " + cfeScores.getDiscoveryWeight() + ")",
+			    "Weighted\nPrioritization\nScore" + "(x " + cfeScores.getPrioritizationWeight() + ")",
+			    "Weighted\nValidation\nScore" + "(x " + cfeScores.getValidationWeight() + ")",
+			    "Weighted\nTesting\nScore" + "(x " + cfeScores.getTestingWeight() + ")",
+			    "\nTOTAL\nScore"
 		};
 		sheet.setColumnNames( columnNames );
 
 		int[] columnWidths = {
 				0, 12, 0, 22,
+				15, 15, 15, 15,
 				15, 15, 15, 15,
 				15
 		};
@@ -140,6 +145,7 @@ public class ReportGenerator {
 		
 		String[] columnTypes = {
 				"string", "string", "string", "string",
+				"float", "float", "float", "float",
 				"float", "float", "float", "float",
 				"float"
 		};
@@ -154,10 +160,17 @@ public class ReportGenerator {
 			row.add(cfeScore.getGeneCardsSymbol());
 			row.add(cfeScore.getGeneTitle());
 		    row.add(cfeScore.getChangeInExpressionInTrackedPhene());
+		    
 		    row.add("" + cfeScore.getDiscoveryScore());
 		    row.add("" + cfeScore.getPrioritizationScore());
 		    row.add("" + cfeScore.getValidationScore());
 		    row.add("" + cfeScore.getTestingScore());
+		    
+		    row.add("" + cfeScore.getWeightedDiscoveryScore());
+		    row.add("" + cfeScore.getWeightedPrioritizationScore());
+		    row.add("" + cfeScore.getWeightedValidationScore());
+		    row.add("" + cfeScore.getWeightedTestingScore());
+		    
 		    row.add("" + cfeScore.getTotalScore());
 		    
 			sheet.addData( row );

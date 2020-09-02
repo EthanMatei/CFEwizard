@@ -48,13 +48,14 @@
 <h1 style="padding-top:0px; margin-top:4px;">CFE Scores </h1>
 <s:actionerror />
 
-
+<%--
 <p>
 Discovery Weight: <s:number name="cfeScores.discoveryWeight" minimumFractionDigits="1"/> <br/>
 Prioritization Weight: <s:number name="cfeScores.prioritizationWeight" minimumFractionDigits="1"/> <br/>
 Validation Weight: <s:number name="cfeScores.validationWeight" minimumFractionDigits="1"/> <br/>
 Testing Weight: <s:number name="cfeScores.testingWeight" minimumFractionDigits="1"/> <br/>
 </p>
+--%>
 
 <table class="dataTable">
 <tr>
@@ -62,10 +63,17 @@ Testing Weight: <s:number name="cfeScores.testingWeight" minimumFractionDigits="
     <th> GeneCards Symbol </th>
     <th> Gene Title </th>
     <th> Change in expression<br/>in tracked phene </th>
+    
     <th> Discovery<br/>Score </th>
     <th> Prioritization<br/>Score </th>
     <th> Validation<br/>Score </th>
     <th> Testing<br/>Score </th>
+    
+    <th> Weighted<br/>Discovery<br/>Score (x <s:number name="cfeScores.discoveryWeight" minimumFractionDigits="1"/>) </th>
+    <th> Weighted<br/>Prioritization<br/>Score (x <s:number name="cfeScores.prioritizationWeight" minimumFractionDigits="1"/>) </th>
+    <th> Weighted<br/>Validation<br/>Score (x <s:number name="cfeScores.validationWeight" minimumFractionDigits="1"/>) </th>
+    <th> Weighted<br/>Testing<br/>Score (x <s:number name="cfeScores.testingWeight" minimumFractionDigits="1"/>) </th>
+    
     <th> TOTAL<br/>Score </th>
 </tr>
 
@@ -76,10 +84,17 @@ Testing Weight: <s:number name="cfeScores.testingWeight" minimumFractionDigits="
         <td> <s:property value="value.geneCardsSymbol"/> </td>
         <td> <s:property value="value.geneTitle"/> </td>
         <td> <s:property value="value.changeInExpressionInTrackedPhene"/> </td>
+        
         <td style="text-align: right;"> <s:property value="value.discoveryScore"/> </td>
         <td style="text-align: right;"> <s:number name="value.prioritizationScore" minimumFractionDigits="1"/> </td>
         <td style="text-align: right;"> <s:property value="value.validationScore"/> </td>
         <td style="text-align: right;"> <s:property value="value.testingScore"/> </td>
+        
+        <td style="text-align: right;"> <s:property value="value.weightedDiscoveryScore"/> </td>
+        <td style="text-align: right;"> <s:number name="value.weightedPrioritizationScore" minimumFractionDigits="1"/> </td>
+        <td style="text-align: right;"> <s:property value="value.weightedValidationScore"/> </td>
+        <td style="text-align: right;"> <s:property value="value.weightedTestingScore"/> </td>
+             
         <td style="text-align: right;"> <s:number name="value.totalScore" minimumFractionDigits="1"/> </td>                           
     </tr>
 </s:iterator>

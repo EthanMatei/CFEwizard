@@ -74,29 +74,31 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				}
 			    
 			    this.cfeScores = new CfeScores();
+			    
+			    this.cfeScores.setWeights(weights);
 				
 				try {
 				    // Process discovery data
 				    List<Discovery> discoveries = DiscoveryService.getAll();
 				    for (Discovery discovery: discoveries) {
-				        this.cfeScores.setDiscovery(discovery);
+				        this.cfeScores.setDiscovery(discovery, weights);
 				    }
 				    
 				    // Process prioritization data
 				    List<Prioritization> prioritizations = PrioritizationService.getAll();
 				    for (Prioritization prioritization: prioritizations) {
-				        this.cfeScores.setPrioritization(prioritization);
+				        this.cfeScores.setPrioritization(prioritization, weights);
 				    }
 				    
 				    // Process validation data
 			        List<Validation> validations = ValidationService.getAll();
 				    for (Validation validation: validations) {
-				    	this.cfeScores.setValidation(validation);
+				    	this.cfeScores.setValidation(validation, weights);
 				    }
 				    
 				    List<Testing> testings = TestingService.getAll();
 				    for (Testing testing: testings) {
-				    	this.cfeScores.setTesting(testing);
+				    	this.cfeScores.setTesting(testing, weights);
 				    }
 
 				    this.cfeScores.calculateTotalScores(weights);

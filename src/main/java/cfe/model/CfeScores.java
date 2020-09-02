@@ -39,21 +39,35 @@ public class CfeScores {
 		this.testingWeight        = 1.0;
 	}
 	
-	public void addDiscoveryData(List<Discovery> discoveries) {
-		for (Discovery discovery: discoveries) {
-			
+	public void setWeights(List<ScoringWeights> weights) {
+		
+		for (ScoringWeights weight: weights) {
+			switch (weight) {
+			    case DISCOVERY:
+			    	this.discoveryWeight = weight.getWeight();
+			    	break;
+			    case PRIORITIZATION:
+			    	this.prioritizationWeight = weight.getWeight();
+			    	break;
+			    case VALIDATION:
+			    	this.validationWeight = weight.getWeight();
+			    	break;
+			    case TESTING:
+			    	this.testingWeight = weight.getWeight();
+			    	break;
+			}
 		}
 	}
 	
-	public void setDiscovery(Discovery discovery) {
+	public void setDiscovery(Discovery discovery, List<ScoringWeights> weights) {
 		String probeset = discovery.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
-		
 		
 		double discoveryScore = 0.0;
 		discoveryScore = Math.max(discovery.getApScore(), discovery.getDeScore());
 		
 		cfeScore.setDiscoveryScore(discoveryScore);
+		cfeScore.setWeightedDiscoveryScore(discoveryWeight * discoveryScore);
 		
 		if (cfeScore.getGeneCardsSymbol() == null || cfeScore.getGeneCardsSymbol().trim().equals("")) {
 			cfeScore.setGeneCardsSymbol(discovery.getGeneCardsSymbol());
@@ -71,7 +85,7 @@ public class CfeScores {
 	}
 
 	
-	public void setPrioritization(Prioritization prioritization) {
+	public void setPrioritization(Prioritization prioritization, List<ScoringWeights> weights) {
 		String probeset = prioritization.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
 		
@@ -89,6 +103,7 @@ public class CfeScores {
 				;
 		
 		cfeScore.setPrioritizationScore(prioritizationScore);
+		cfeScore.setWeightedPrioritizationScore(prioritizationWeight * prioritizationScore);
 		
 		if (cfeScore.getGeneCardsSymbol() == null || cfeScore.getGeneCardsSymbol().trim().equals("")) {
 			cfeScore.setGeneCardsSymbol(prioritization.getGeneCardsSymbol());
@@ -105,7 +120,7 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 	
-	public void setValidation(Validation validation) throws Exception {
+	public void setValidation(Validation validation, List<ScoringWeights> weights) throws Exception {
 		String probeset = validation.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
 		
@@ -137,6 +152,7 @@ public class CfeScores {
 		}
 		
 		cfeScore.setValidationScore(validationScore);
+		cfeScore.setWeightedValidationScore(validationWeight * validationScore);
 		
 		if (cfeScore.getGeneCardsSymbol() == null || cfeScore.getGeneCardsSymbol().trim().equals("")) {
 			cfeScore.setGeneCardsSymbol(validation.getGeneCardsSymbol());
@@ -153,7 +169,7 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 
-	public void setTesting(Testing testing) throws Exception {
+	public void setTesting(Testing testing, List<ScoringWeights> weights) throws Exception {
 		String probeset = testing.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
 		
@@ -165,6 +181,7 @@ public class CfeScores {
 		testingScore += testing.getAllFutureDepression();
 		
 		cfeScore.setTestingScore(testingScore);
+		cfeScore.setWeightedTestingScore(testingWeight * testingScore);
 		
 		if (cfeScore.getGeneCardsSymbol() == null || cfeScore.getGeneCardsSymbol().trim().equals("")) {
 			cfeScore.setGeneCardsSymbol(testing.getGeneCardsSymbol());
@@ -182,23 +199,6 @@ public class CfeScores {
 	}
 
 	public void calculateTotalScores(List<ScoringWeights> weights) {
-		
-		for (ScoringWeights weight: weights) {
-			switch (weight) {
-			    case DISCOVERY:
-			    	discoveryWeight = weight.getWeight();
-			    	break;
-			    case PRIORITIZATION:
-			    	prioritizationWeight = weight.getWeight();
-			    	break;
-			    case VALIDATION:
-			    	validationWeight = weight.getWeight();
-			    	break;
-			    case TESTING:
-			    	testingWeight = weight.getWeight();
-			    	break;
-			}
-		}
 		
 	    for (CfeScore score: this.scores.values()) {
 	    	score.setTotalScore(

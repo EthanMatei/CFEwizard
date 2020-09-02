@@ -19,6 +19,12 @@ public class CfeScore {
     private double prioritizationScore;
     private double validationScore;
     private double testingScore;
+    
+    private double weightedDiscoveryScore;
+    private double weightedPrioritizationScore;
+    private double weightedValidationScore;
+    private double weightedTestingScore;
+    
     private double totalScore; // total score
 
 	public CfeScore(String probeset) {
@@ -98,6 +104,38 @@ public class CfeScore {
 
 	public void setTotalScore(double totalScore) {
 		this.totalScore = totalScore;
+	}
+
+	public double getWeightedDiscoveryScore() {
+		return weightedDiscoveryScore;
+	}
+
+	public void setWeightedDiscoveryScore(double weightedDiscoveryScore) {
+		this.weightedDiscoveryScore = weightedDiscoveryScore;
+	}
+
+	public double getWeightedPrioritizationScore() {
+		return weightedPrioritizationScore;
+	}
+
+	public void setWeightedPrioritizationScore(double weightedPrioritizationScore) {
+		this.weightedPrioritizationScore = weightedPrioritizationScore;
+	}
+
+	public double getWeightedValidationScore() {
+		return weightedValidationScore;
+	}
+
+	public void setWeightedValidationScore(double weightedValidationScore) {
+		this.weightedValidationScore = weightedValidationScore;
+	}
+
+	public double getWeightedTestingScore() {
+		return weightedTestingScore;
+	}
+
+	public void setWeightedTestingScore(double weightedTestingScore) {
+		this.weightedTestingScore = weightedTestingScore;
 	}
 
 }

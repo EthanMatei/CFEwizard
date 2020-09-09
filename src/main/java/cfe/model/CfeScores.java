@@ -131,10 +131,10 @@ public class CfeScores {
 			validationType = "";
 		}
 		else {
-			validationType = validationType.trim().toLowerCase();
+			validationType = validationType.trim().toLowerCase().replaceAll("\\s+", " ");
 		}
 		
-		if (validationType.equals("non-stepwise")) {
+		if (validationType.equals("non-stepwise") || validationType.equals("not stepwise")) {
 			validationScore = 0.0;
 		}
 		else if (validationType.equals("stepwise")) {

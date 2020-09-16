@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 //import org.hibernate.annotations.Index;
 
@@ -49,9 +50,15 @@ public abstract class Model {
 		return fieldMap.get(name.trim());		
 	}
 	
+	@Transient
 	public static Set<String> getKeys() {
 		Set<String> keys = classFieldMap.keySet();
 		return keys;
+	}
+	
+	@Transient
+	public Set<String> getDataFieldNames() {
+		return this.fieldMap.keySet();
 	}
 
 	

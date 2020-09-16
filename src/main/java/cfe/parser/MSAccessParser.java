@@ -69,7 +69,8 @@ public class MSAccessParser implements IParser {
 				if (tablename.contains(cfe.enums.Tables.DISCOVERY.getLabel())) {
 					// DISCOVERY DATABASE TABLE
 					Discovery entity = new Discovery();
-					List<Discovery> discoveries = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
+					Set<String> fieldNames = entity.getDataFieldNames();
+					List<Discovery> discoveries = this.parseTable(db, tablename, fieldNames, entity.getClass().getCanonicalName());
 
 					Transaction tx = session.beginTransaction();
 					DiscoveryDao discoveryDao = new DiscoveryDao(session, tx);
@@ -80,7 +81,8 @@ public class MSAccessParser implements IParser {
 				else if (tablename.contains(cfe.enums.Tables.PRIORITIZATION.getLabel())) {
 					// PRIORITIZATION DATABASE TABLE
 					Prioritization entity = new Prioritization();
-					List<Prioritization> prioritizations = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
+					Set<String> fieldNames = entity.getDataFieldNames();
+					List<Prioritization> prioritizations = this.parseTable(db, tablename, fieldNames, entity.getClass().getCanonicalName());
 
 					Transaction tx = session.beginTransaction();
 					PrioritizationDao prioritizationDao = new PrioritizationDao(session, tx);
@@ -91,7 +93,8 @@ public class MSAccessParser implements IParser {
 				else if (tablename.contains(cfe.enums.Tables.VALIDATION.getLabel())) {
 					// VALIDATION DATABASE TABLE
 					Validation entity = new Validation();
-					List<Validation> validations = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
+					Set<String> fieldNames = entity.getDataFieldNames();
+					List<Validation> validations = this.parseTable(db, tablename, fieldNames, entity.getClass().getCanonicalName());
 
 					Transaction tx = session.beginTransaction();
 					ValidationDao validationDao = new ValidationDao(session, tx);
@@ -102,7 +105,8 @@ public class MSAccessParser implements IParser {
 				else if (tablename.contains(cfe.enums.Tables.TESTING.getLabel())) {
 					// TESTING DATABASE TABLE
 					Testing entity = new Testing();
-					List<Testing> testings = this.parseTable(db, tablename, entity.getClass().getCanonicalName());
+					Set<String> fieldNames = entity.getDataFieldNames();
+					List<Testing> testings = this.parseTable(db, tablename, fieldNames, entity.getClass().getCanonicalName());
 
 					Transaction tx = session.beginTransaction();
 					TestingDao testingDao = new TestingDao(session, tx);
@@ -136,13 +140,13 @@ public class MSAccessParser implements IParser {
 	}
 
 	
-	public <T> List<T> parseTable(Database db, String tableName, String className) throws Exception {
+	public <T> List<T> parseTable(Database db, String tableName, Set<String> fieldNames, String className) throws Exception {
 		List<T> entities = new ArrayList<T>();
 		Parser<T> parser = new Parser<T>();
 		
 		validationMsgs.clear();
 		
-	    parser.parseTable(db, tableName, className, entities);
+	    parser.parseTable(db, tableName, fieldNames, className, entities);
 
 	    this.parseResult.setTableStatus(tableName, TableParseResult.Status.PROCESSED);
 		validationMsgs.addAll(parser.getValidationMsgs());

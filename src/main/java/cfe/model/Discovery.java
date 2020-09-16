@@ -22,12 +22,12 @@ public class Discovery extends Model implements ModelInterface, Serializable {
 		
 		fieldMap.put("APscores", "apScores");
 		fieldMap.put("AP Percentile", "apPercentile");
-		fieldMap.put("Ap Score", "apScore");
+		fieldMap.put("AP Score", "apScore");
 		fieldMap.put("AP Change", "apChange");
 		fieldMap.put("DEscores", "deScores");
 		fieldMap.put("DE Percentile", "dePercentile");
 		fieldMap.put("DE Score", "deScore");
-		fieldMap.put("DE change", "deChange");
+		fieldMap.put("DE Change", "deChange");
 	}
 
 	private double apScores;

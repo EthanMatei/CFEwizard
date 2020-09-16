@@ -43,11 +43,11 @@ public class Parser<M> {
 	}
 
 	
-	public void parseTable(Database db, String tablename, String modelName, List<M> entities) throws Exception {
+	public void parseTable(Database db, String tablename, Set<String> fieldNames, String modelName, List<M> entities) throws Exception {
 		
 		Table table = db.getTable(tablename);
 		
-		validateColumns(table);
+		validateColumns(table, fieldNames);
 		
 		log.info("Processing " + table.getName());
 		
@@ -95,14 +95,14 @@ public class Parser<M> {
 					m.invoke(entity, value);
 				}
 			}
-			entities.add(entity);			
+			entities.add(entity);
 		}  	
 	}
 	
 	// Need to protect the code from the users
-	private void validateColumns(Table t) { //throws Exception{
-
-		Set<String> reqFields = Model.getKeys();
+	private void validateColumns(Table t, Set<String> fieldNames) { //throws Exception{
+		
+		Set<String> reqFields = fieldNames;
 		
 		boolean res = false;
 		

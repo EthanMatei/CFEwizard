@@ -48,12 +48,12 @@ Table: **Discovery**
 | Change in expression in tracked phene | changeInExpressionInTrackedPhene    | String     |
 | APscores                              | apScores                            | Double     |
 | AP Percentile                         | apPercentile                        | Double     |
-| Ap Score                              | apScore                             | Double     |
+| AP Score                              | apScore                             | Double     |
 | AP Change                             | apChange                            | String     |
 | DEscores                              | deScores                            | Double     |
 | DE Percentile                         | dePercentile                        | Double     |
 | DE Score                              | deScore                             | Double     |
-| DE change                             | deChange                            | String     |
+| DE Change                             | deChange                            | String     |
  
 
 ---

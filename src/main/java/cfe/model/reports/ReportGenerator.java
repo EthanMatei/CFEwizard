@@ -136,7 +136,7 @@ public class ReportGenerator {
 		sheet.setColumnNames( columnNames );
 
 		int[] columnWidths = {
-				0, 12, 0, 22,
+				0, 12, 0, 12,
 				15, 15, 15, 15,
 				15, 15, 15, 15,
 				15
@@ -178,7 +178,7 @@ public class ReportGenerator {
 			i++;
 		}
 		
-		sheet.setFreezeColumns(4);
+		sheet.setFreezeColumns(2);
 		
 		return sheet;
 	}

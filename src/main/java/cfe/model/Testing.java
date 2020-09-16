@@ -20,7 +20,7 @@ public class Testing extends Model implements ModelInterface, Serializable {
 	public Testing()	{
 		super();
 		
-		fieldMap.put("SMSLowMood Score ", "smsLowMoodScore");
+		fieldMap.put("SMSLowMood Score", "smsLowMoodScore");
 		fieldMap.put("HAMD Score", "hamdScore");
 		fieldMap.put("First Year Depression Score", "firstYearDepressionScore");
 		fieldMap.put("All Future Depression", "allFutureDepression");

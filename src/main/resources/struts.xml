@@ -196,7 +196,7 @@
 		
 	<!-- Calculate scores flow -->
 		
-		<!-- Step 2 -->	
+		<!-- Step 1 -->	
 		<action name="ScoringWeights" class="cfe.action.ScoringWeightsAction" method="initialize">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/scoringWeights.jsp</result>	
@@ -208,13 +208,9 @@
 		
 		<action name="ScoringWeightsProcess" class="cfe.action.ScoringWeightsAction">
 			<interceptor-ref name="cfeStack"/>
-			<!--
+
 			<result name="success" type="redirectAction">
-                <param name="actionName">DiseaseSelection</param>
-            </result>
-            -->
-			<result name="success" type="redirectAction">
-                <param name="actionName">CalculateScores</param>
+                <param name="actionName">ValidationWeights</param>
             </result>            
 			<result name="error">pages/error.jsp</result>
 			<result name="input">pages/scoringWeights.jsp</result>
@@ -223,9 +219,28 @@
             </result>			    
 		</action>
 		
-
+		<!-- Step 2 -->	
+		<action name="ValidationWeights" class="cfe.action.ValidationWeightsAction" method="initialize">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/validationWeights.jsp</result>	
+			<result name="error">pages/error.jsp</result>   
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<action name="ValidationWeightsProcess" class="cfe.action.ValidationWeightsAction">
+			<interceptor-ref name="cfeStack"/>
+			<result name="success" type="redirectAction">
+                <param name="actionName">CalculateScores</param>
+            </result>  
+			<result name="error">pages/error.jsp</result>   
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
 				
-		<!--  Step 4 -->
+		<!--  Step 3 -->
 		<action name="CalculateScores" class="cfe.action.CalculateScores">
 				<interceptor-ref name="basicStack"/>
 			    <result name="success">pages/calculatedScores.jsp</result>

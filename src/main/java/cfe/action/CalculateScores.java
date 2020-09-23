@@ -12,7 +12,7 @@ import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.enums.Scores;
 import cfe.enums.ScoringWeights;
-
+import cfe.enums.ValidationWeights;
 import cfe.model.CfeScore;
 import cfe.model.CfeScores;
 
@@ -59,23 +59,30 @@ public class CalculateScores extends BaseAction implements SessionAware {
 			//-----------------------------------------------------
 			//Object diseasesObject = session.get("diseaseSelectors");
 			Object weightsObject  = session.get("weights");
+			Object validationWeightsObject = session.get("validationWeights");
+			
 
-			if (weightsObject == null) {
+			if (weightsObject == null || validationWeightsObject == null) {
 				this.setErrorMessage("Unfortunately, your session has expired. You will need to restart your score calculation.");
 				status = ERROR;
 			}
 			else {
 
 				List<ScoringWeights> weights = (List<ScoringWeights>) weightsObject;
+				/*
 				for (ScoringWeights weight: weights) {
 					if (weight == ScoringWeights.DISCOVERY) {
 						
 					}
 				}
+				*/
+				
+				List<ValidationWeights> validationWeights = (List<ValidationWeights>) validationWeightsObject;
 			    
 			    this.cfeScores = new CfeScores();
 			    
 			    this.cfeScores.setWeights(weights);
+			    this.cfeScores.setValidationWeights(validationWeights);
 				
 				try {
 				    // Process discovery data

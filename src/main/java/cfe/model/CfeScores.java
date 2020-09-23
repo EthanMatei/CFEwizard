@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 
 import cfe.action.CalculateScores;
 import cfe.enums.ScoringWeights;
+import cfe.enums.ValidationWeights;
 
 //import org.hibernate.annotations.Index;
 
@@ -30,6 +31,11 @@ public class CfeScores {
 	private double validationWeight;
 	private double testingWeight;
 
+	private double nonStepwiseWeight;
+	private double stepwiseWeight;
+	private double nominalWeight;
+	private double bonferroniWeight;
+	
 	public CfeScores() {
 		this.scores = new TreeMap<String,CfeScore>();
 		
@@ -54,6 +60,26 @@ public class CfeScores {
 			    	break;
 			    case TESTING:
 			    	this.testingWeight = weight.getWeight();
+			    	break;
+			}
+		}
+	}
+	
+	public void setValidationWeights(List<ValidationWeights> weights) {
+		
+		for (ValidationWeights weight: weights) {
+			switch (weight) {
+			    case NON_STEPWISE:
+			    	this.nonStepwiseWeight = weight.getWeight();
+			    	break;
+			    case STEPWISE:
+			    	this.stepwiseWeight = weight.getWeight();
+			    	break;
+			    case NOMINAL:
+			    	this.nominalWeight = weight.getWeight();
+			    	break;
+			    case BONFERRONI:
+			    	this.bonferroniWeight = weight.getWeight();
 			    	break;
 			}
 		}
@@ -135,16 +161,16 @@ public class CfeScores {
 		}
 		
 		if (validationType.equals("non-stepwise") || validationType.equals("not stepwise")) {
-			validationScore = 0.0;
+			validationScore = this.nonStepwiseWeight;
 		}
 		else if (validationType.equals("stepwise")) {
-			validationScore = 2.0;
+			validationScore = this.stepwiseWeight;
 		}
 		else if (validationType.equals("nominal")) {
-			validationScore = 4.0;
+			validationScore = this.nominalWeight;
 		}
 		else if (validationType.equals("bonferroni")) {
-			validationScore = 6.0;
+			validationScore = this.bonferroniWeight;
 		}
 		else {
 			log.info("*** VALIDATION TYPE ERROR, TYPE: " + validationType);
@@ -257,6 +283,22 @@ public class CfeScores {
 
 	public double getTestingWeight() {
 		return testingWeight;
+	}
+
+	public double getNonStepwiseWeight() {
+		return nonStepwiseWeight;
+	}
+
+	public double getStepwiseWeight() {
+		return stepwiseWeight;
+	}
+
+	public double getNominalWeight() {
+		return nominalWeight;
+	}
+
+	public double getBonferroniWeight() {
+		return bonferroniWeight;
 	}
 
 }

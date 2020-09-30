@@ -43,14 +43,16 @@ public class ReportGenerator {
 	 * 
 	 * @throws ReportException
 	 */
-	public static InputStream generate(String reportName, String reportFormat, CfeScores cfeScores, List<cfe.enums.ScoringWeights> weights) throws ReportException {
+	public static InputStream generate(String reportName, String reportFormat,
+			CfeScores cfeScores, List<cfe.enums.ScoringWeights> weights,
+			List<cfe.enums.ValidationWeights>validationWeights ) throws ReportException {
 		InputStream fileStream = null;
 
 		log.info("############### GENERATE: " + reportName);
 		
 		if (reportName.equals("scores")) {
 			
-			fileStream = generateScoresReport( reportFormat, cfeScores, weights);
+			fileStream = generateScoresReport( reportFormat, cfeScores, weights, validationWeights);
 		}
 
 		return fileStream;
@@ -68,7 +70,8 @@ public class ReportGenerator {
 	 * @param diseaseSelectors
 	 * @return an InputStream for the generated spreadsheet.
 	 */
-	private static InputStream generateScoresReport(String reportFormat, CfeScores cfeScores, List<cfe.enums.ScoringWeights> weights) {
+	private static InputStream generateScoresReport(String reportFormat, CfeScores cfeScores,
+			List<cfe.enums.ScoringWeights> weights, List<cfe.enums.ValidationWeights>validationWeights ) {
 
 		log.info("############### IN GENERATE SCORES REPORT: " + reportFormat);
 		Report report = new Report();
@@ -94,6 +97,12 @@ public class ReportGenerator {
 	    // Scoring Weights Sheet
 	    //----------------------------------------------------------------------------------------
 	    sheet = getScoringWeightsSheet(reportFormat, weights);
+	    if (sheet != null) sheets.add(sheet);
+
+	    //----------------------------------------------------------------------------------------
+	    // Validation Weights Sheet
+	    //----------------------------------------------------------------------------------------
+	    sheet = getValidationWeightsSheet(reportFormat, validationWeights);
 	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
@@ -355,6 +364,35 @@ public class ReportGenerator {
 
 
 		for (cfe.enums.ScoringWeights weight: weights) {
+		    List<String> row = new ArrayList<String>();
+
+		    row.add( weight.getLabel() );
+		    row.add( "" + weight.getWeight() );
+
+		    sheet.addData( row );
+		}
+
+		return sheet;
+	}
+	
+	
+	private static ReportSheet getValidationWeightsSheet(String reportFormat, List<cfe.enums.ValidationWeights> weights) {
+
+		ReportSheet sheet = new ReportSheet();
+
+		sheet.setTitle( "Validation Weights" );
+
+		String[] columnNames = {"Name", "Weight"};
+		sheet.setColumnNames( columnNames );
+
+		int[] columnWidths = {0, 0};
+		sheet.setColumnWidths(columnWidths);
+
+		String[] columnTypes = {"string", "float"};
+		sheet.setColumnTypes(columnTypes);
+
+
+		for (cfe.enums.ValidationWeights weight: weights) {
 		    List<String> row = new ArrayList<String>();
 
 		    row.add( weight.getLabel() );

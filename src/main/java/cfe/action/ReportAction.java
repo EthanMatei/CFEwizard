@@ -87,6 +87,8 @@ public class ReportAction extends BaseAction implements SessionAware {
     		CfeScores cfeScores = (CfeScores) cfeScoresObject;
 
     		List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) session.get("weights");
+    		List<cfe.enums.ValidationWeights> validationWeights =
+    				(List<cfe.enums.ValidationWeights>) session.get("validationWeights");
     		
     		/*
     		Map<String, ScoreResults> scores;
@@ -112,7 +114,7 @@ public class ReportAction extends BaseAction implements SessionAware {
     		try {
     		    log.info("Trying to generate report with name " + reportName + " and format " + reportFormat + ".");
 
-    		    fileStream = ReportGenerator.generate( reportName,  reportFormat, cfeScores, weights );
+    		    fileStream = ReportGenerator.generate( reportName,  reportFormat, cfeScores, weights, validationWeights );
     		    if (fileStream == null) {
     			    throw new ReportException("No data could be retrieved for this report.");
     		    }

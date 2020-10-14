@@ -64,14 +64,14 @@
 	<dependency>
   		<groupId>org.hibernate</groupId>
   		<artifactId>hibernate-entitymanager</artifactId>
-  		<version>4.3.11.Final</version>
+  		<version>5.4.22.Final</version>
 	</dependency>
 
     <!-- For C3P0ConnectionProvider -->
     <dependency>
 	<groupId>org.hibernate</groupId>
 		<artifactId>hibernate-c3p0</artifactId>
-		<version>4.3.11.Final</version>
+		<version>5.4.22.Final</version>
 	</dependency>
 
 	<!-- End of Used by hibernate core to handle metadata -->

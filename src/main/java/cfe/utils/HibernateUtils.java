@@ -5,9 +5,10 @@ import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
+//import org.hibernate.service.ServiceRegistryBuilder;
 
 
 // http://stackoverflow.com/questions/8621906/is-buildsessionfactory-deprecated-in-hibernate-4 
@@ -74,11 +75,18 @@ public class HibernateUtils {
 			//log.info("hbm2ddl set to: " + WebAppProperties.getProperty(WebAppProperties.DB_HBM2DDL));
 						
 			
-			ServiceRegistryBuilder srb = new ServiceRegistryBuilder();
-						
-			srb.applySettings(settings);
+			// Hibernate 4.x
+			//ServiceRegistryBuilder srb = new ServiceRegistryBuilder();
 			
-			ServiceRegistry sr = srb.buildServiceRegistry();
+			//srb.applySettings(settings);
+			
+			//ServiceRegistry sr = srb.buildServiceRegistry();
+			
+			
+			// Hibernate 5.x
+		    ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(settings).build();
+		    
+
 						
 			Configuration conf = new Configuration();
 			

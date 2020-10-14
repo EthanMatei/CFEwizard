@@ -45,7 +45,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
     <!-- Open CSV -->
@@ -60,7 +60,7 @@
 	<dependency>
 		<groupId>com.healthmarketscience.jackcess</groupId>
 		<artifactId>jackcess</artifactId>
-		<version>3.0.1</version>
+		<version>3.5.1</version>
 	</dependency>
             
 	<!-- Hibernate -->
@@ -83,7 +83,7 @@
     <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
-        <version>6.5.5</version>
+        <version>7.0.3</version>
     </dependency>
 
     <!-- MySQL -->
@@ -122,7 +122,7 @@
     <dependency>
       <groupId>org.apache.struts</groupId>
 	  <artifactId>struts2-core</artifactId>
-      <version>2.5.22</version>
+      <version>2.5.25</version>
     </dependency>
     
  	<!-- Maven war plugin -->
@@ -156,7 +156,7 @@
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-tiles-plugin</artifactId>
-            <version>2.5.22</version>
+            <version>2.5.25</version>
         </dependency>
       		
   </dependencies>

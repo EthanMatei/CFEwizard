@@ -184,7 +184,7 @@ under, e.g., /home/tomcat/. This is a template for this file showing what proper
     # Database and Hibernate
     db.username=cfeUser
     db.password=cfePassword
-    db.host=jdbc:mysql://localhost:3306/cfe?serverTimezone=UTC#
+    db.host=jdbc:mysql://localhost:3306/cfe?serverTimezone=UTC
     db.hbm2ddl=validate
 
     # Set this to true, if https is being used

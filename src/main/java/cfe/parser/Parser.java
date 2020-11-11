@@ -17,13 +17,11 @@ import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 
-import cfe.model.Model;
-
 public class Parser<M> {
 	
 	private static final Log log = LogFactory.getLog(Parser.class);
 	
-	private List<String> validationMsgs = new ArrayList<String>(10);
+	private List<String> validationMessages = new ArrayList<String>(10);
 	
 	// http://www.mkyong.com/java/how-to-use-reflection-to-call-java-method-at-runtime/
 	@SuppressWarnings("rawtypes")
@@ -42,7 +40,17 @@ public class Parser<M> {
 		return paramString;
 	}
 
-	
+	/**
+	 * Parses the specified table in the specified database.
+	 *
+	 * @param db access Database containing the table to be parsed.
+	 * @param tablename The name of the table to be parsed.
+	 * @param fieldNames
+	 * @param modelName
+	 * @param entities
+	 *
+	 * @throws Exception
+	 */
 	public void parseTable(Database db, String tablename, Set<String> fieldNames, String modelName, List<M> entities) throws Exception {
 		
 		Table table = db.getTable(tablename);
@@ -61,9 +69,9 @@ public class Parser<M> {
 			
 			for(Column column : table.getColumns()) {
 			
-			   String columnName = column.getName().trim();
+			    String columnName = column.getName().trim();
 			   
-			   String fieldName = (String)getFieldName.invoke(entity, columnName);
+			    String fieldName = (String)getFieldName.invoke(entity, columnName);
 			      
 				if (fieldName == null || fieldName.equalsIgnoreCase("id")) continue;
 								
@@ -99,32 +107,36 @@ public class Parser<M> {
 		}  	
 	}
 	
-	// Need to protect the code from the users
-	private void validateColumns(Table t, Set<String> fieldNames) { //throws Exception{
+	/**
+	 * Checks that the specified table contains the needed columns.
+	 *
+	 * @param table
+	 * @param fieldNames
+	 */
+	private void validateColumns(Table table, Set<String> fieldNames) {
 		
 		Set<String> reqFields = fieldNames;
 		
-		boolean res = false;
+		boolean columnFound = false;
 		
-		for (String f: reqFields)	{
+		for (String fieldName: reqFields)	{
 		
-			res = false;
-			for(Column c : t.getColumns()) {
+			columnFound = false;
+			for(Column c : table.getColumns()) {
 			
 				String column = c.getName();
-				if (column.contentEquals(f)) 
-					res = true;
+				if (column.contentEquals(fieldName)) 
+					columnFound = true;
 			}
 			
-			if (res == false) {
-				// throw new Exception ("Field " + f + " not found in table " + t.getName() + ". Parsing aborted.");
-				log.warn("Field " + f + " not found in table " + t.getName() + ". Parsing aborted.");
-				validationMsgs.add("Field " + f + " not found in table " + t.getName() + ".");
+			if (!columnFound) {
+				log.warn("Field " + fieldName + " not found in table " + table.getName());
+				validationMessages.add("Field " + fieldName + " not found in table " + table.getName() + ".");
 			}
 		}
 	}
 	
-	public List<String> getValidationMsgs() {
-		return this.validationMsgs;
+	public List<String> getValidationMessages() {
+		return this.validationMessages;
 	}
 }

@@ -35,6 +35,10 @@ public class MSAccessParser implements IParser {
 	private List<String> validationMsgs = new ArrayList<String>(10);
 	private ParseResult parseResult;
 	
+	/**
+	 * Parses the specified MS Access database file and stores the appropriate data
+	 * in the application's database.
+	 */
 	public void parse(String filename) throws Exception {
 		
 		log.info("Processing uploaded ms file " + filename);
@@ -149,7 +153,7 @@ public class MSAccessParser implements IParser {
 	    parser.parseTable(db, tableName, fieldNames, className, entities);
 
 	    this.parseResult.setTableStatus(tableName, TableParseResult.Status.PROCESSED);
-		validationMsgs.addAll(parser.getValidationMsgs());
+		validationMsgs.addAll(parser.getValidationMessages());
 		for (String issue: validationMsgs) {
 			this.parseResult.addTableIssue(tableName, issue);
 		}

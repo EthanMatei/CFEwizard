@@ -37,7 +37,9 @@ public class DatabaseMigration {
 		log.info("Database Username: " + dbUsername);
 		
 		try {
-	        Flyway flyway = Flyway.configure()
+	        Flyway flyway = Flyway.configure().baselineOnMigrate(true)
+              	//.baselineOnMigrate(true).baselineVersion("1.0").baselineDescription("Baseline version")
+	        	.validateOnMigrate(false)
 	        	.dataSource(dbHost, dbUsername, dbPassword).load();
 	        
 		    log.info("Flyway locations: " + Arrays.toString( flyway.getConfiguration().getLocations()) );

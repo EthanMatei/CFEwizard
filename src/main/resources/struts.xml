@@ -107,7 +107,17 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-		
+				
+		<action name="DiscoveryFileUpload" class="cfe.action.DiscoveryFileUpload">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/discoveryFileUpload.jsp</result>
+			<result name="input">pages/discoveryFileUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+				
 		<action name="DatabaseStatusAction" class="cfe.action.DatabaseStatusAction">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/dbStatus.jsp</result>

@@ -17,22 +17,23 @@
     }
 </script>
 
-<h1>Discovery File Upload<br> 
+<h1>Database Upload<br> 
 </h1>
-
-
+<p>
+Please select the files to upload:
+</p>
+ <!-- http://stackoverflow.com/questions/5633949/jquery-solution-for-dynamically-uploading-multiple-files -->
+ <!-- http://stackoverflow.com/questions/8906910/struts2-dynamically-add-remove-list-of-objects-from-page -->
 <s:actionerror />
-<s:form id ="discoveryUploadForm"
-        name="discoveryUploadForm"
-        action="DiscoveryFileUpload"
-        method="post" enctype="multipart/form-data">
 
-    Phene database: <br/>
-    
-	<s:submit value="Upload" id="uploadButton" onclick="submitForm();" />
-<s:token />
+<s:form id ="discoveryUploadForm" name="discoveryUploadForm" action="DiscoveryFileUpload" method="post" enctype="multipart/form-data">
 
-
+    <s:file name="discoveryDb" label="DE Database" />
+    <s:file name="discoveryCsv" label="DE Spreadsheet" />
+    <br />
+    <!-- <s:submit value="Upload" id="uploadButton" onclick="submitForm();" /> -->
+    <s:submit value="Upload" id="uploadButton" />
+    <s:token />
 
 </s:form>
 

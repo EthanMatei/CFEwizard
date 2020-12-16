@@ -107,12 +107,22 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
+		
+		<action name="DiscoveryFileUploadInitialize" class="cfe.action.DiscoveryFileUpload" method="initialize">
+		<interceptor-ref name="basicStack"/>
+	        <result name="success">pages/discoveryFileUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/discoveryFileUpload.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
 				
 		<action name="DiscoveryFileUpload" class="cfe.action.DiscoveryFileUpload">
-			<interceptor-ref name="basicStack"/>
-			<result name="success">pages/discoveryFileUpload.jsp</result>
-			<result name="input">pages/discoveryFileUpload.jsp</result>
+		<interceptor-ref name="fileUploadStack"/>
+			<result name="success">pages/discoveryFileUploadStatus.jsp</result>
 			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/discoveryFileUpload.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>

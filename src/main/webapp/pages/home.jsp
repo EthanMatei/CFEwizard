@@ -22,7 +22,7 @@
     
     <li><s:a action="ScoringWeights">Calculate Scores</s:a></li>
     
-    <li><s:a action="DiscoveryFileUpload">Discovery File Upload</s:a></li>
+    <li><s:a action="DiscoveryFileUploadInitialize">Discovery File Upload</s:a></li>
 </ul>
 
 <s:if test="#session.username==adminUser">

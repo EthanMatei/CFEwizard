@@ -51,10 +51,13 @@ public class WebAppProperties {
 		return properties.getProperty(name);
 	}
 	
+	private static String rootDir;
+	
 	/**
 	 * Loads web application properties from a file
 	 */
 	public static void initialize(String rootDir) {
+		WebAppProperties.rootDir = rootDir;
 		
 		// Properties files are in user's home directory:
 		propertiesFileName = System.getProperty("user.home", ".") + System.getProperty("file.separator");
@@ -107,5 +110,9 @@ public class WebAppProperties {
 	
 	public static String getDbUsername() {
 		return properties.getProperty( DB_USERNAME );
+	}
+	
+	public static String getRootDir() {
+		return WebAppProperties.rootDir;
 	}
 }

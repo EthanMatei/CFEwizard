@@ -164,6 +164,7 @@
             <webResources>
               <resource>
                 <!-- this is relative to the pom.xml directory -->
+                <!-- Add this so that the R scripts get included in the WAR file -->
                 <directory>src/main/R</directory>
               </resource>
             </webResources>

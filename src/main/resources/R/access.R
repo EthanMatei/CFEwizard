@@ -7,16 +7,36 @@ if (length(args) == 0) {
 }
 
 print(tempdir())
+
 dbFile <- args[1]
+print(dbFile)
+
+scriptDir <- args[2]
+print(paste("Script dir:", scriptDir))
+
+cat("Before JDBC call")
+cat(paste("Current directory:", getwd()))
 
 # Using Ucanacess Driver
 # Need to download this, unzip, and put all jars in directory with script
+jars = paste(
+    paste(scriptDir, "commons-lang3-3.8.1.jar", sep="/"),
+    paste(scriptDir, "commons-logging-1.2.jar", sep="/"),
+    paste(scriptDir, "hsqldb-2.5.0.jar", sep="/"),
+    paste(scriptDir, "jackcess-3.0.1.jar", sep="/"),
+    paste(scriptDir, "ucanaccess-5.0.0.jar", sep="/"),    
+    sep=":"
+)
+
+print(jars)
+
 driver <- JDBC(
     "net.ucanaccess.jdbc.UcanaccessDriver",
-    "commons-lang3-3.8.1.jar:commons-logging-1.2.jar:hsqldb-2.5.0.jar:jackcess-3.0.1.jar:ucanaccess-5.0.0.jar",
+    jars,
     identifier.quote="`"
 )
 
+print("After JDBC call")
 
 
 dbUrl <- paste("jdbc:ucanaccess://", dbFile, sep="")

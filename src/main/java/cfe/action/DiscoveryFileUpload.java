@@ -27,8 +27,9 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	
 	private File discoveryDb;
 	private String discoverDbContentType;
-	private String dicoveryDbFileName;
+	private String discoveryDbFileName;
 	
+	private String scriptDir;
 	private String scriptFile;
 	private String scriptOutput;
 	
@@ -50,8 +51,11 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			baseDir = WebAppProperties.getRootDir();
 			
 			// Runtime.getRuntime().exec("test.sh");
-			this.scriptFile = new File(getClass().getResource("/R/test1.R").toURI()).getAbsolutePath();
-			scriptOutput = this.runCommand(WebAppProperties.getRscriptPath() + " " + scriptFile);
+			
+			this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
+			this.scriptFile = new File(getClass().getResource("/R/access.R").toURI()).getAbsolutePath();
+			scriptOutput = this.runCommand(WebAppProperties.getRscriptPath() + " " + scriptFile 
+					+ " " + discoveryDb + " " + scriptDir);
 		}
 		return result;
 	}
@@ -78,7 +82,7 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 
 	    int status = process.waitFor();
 	    if (status != 0) {
-            throw new Exception("Command \"" + command + "\" exited with code " + status);
+            //throw new Exception("Command \"" + command + "\" exited with code " + status);
 	    }
 
 		return output.toString();
@@ -136,17 +140,21 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 		this.discoverDbContentType = discoverDbContentType;
 	}
 
-	public String getDicoveryDbFileName() {
-		return dicoveryDbFileName;
+	public String getDiscoveryDbFileName() {
+		return discoveryDbFileName;
 	}
 
-	public void setDicoveryDbFileName(String dicoveryDbFileName) {
-		this.dicoveryDbFileName = dicoveryDbFileName;
+	public void setDiscoveryDbFileName(String dicoveryDbFileName) {
+		this.discoveryDbFileName = dicoveryDbFileName;
 	}
 
 	public String getBaseDir() {
 		return baseDir;
 	}	
+	
+	public String getScriptDir() {
+	    return scriptDir;	
+	}
 	
 	public String getScriptFile() {
 		return scriptFile;

@@ -43,6 +43,9 @@ public class WebAppProperties {
 	private static final String ADMIN_USERNAME_PROPERTY = "admin.username";
 	private static final String ADMIN_PASSWORD_PROPERTY = "admin.password";
 	
+	private static final String RSCRIPT_PATH_PROPERTY = "rscript.path";
+	private static final String DEFAULT_RSCRIPT_PATH  = "/usr/bin/Rscript";
+	
 	private static Log log = LogFactory.getLog(WebAppProperties.class);
 	
 	private static Properties properties = new Properties();
@@ -104,6 +107,10 @@ public class WebAppProperties {
 		return properties.getProperty( ADMIN_PASSWORD_PROPERTY );
 	}
 	
+	public static String getRscriptPath() {
+		return properties.getProperty( RSCRIPT_PATH_PROPERTY, DEFAULT_RSCRIPT_PATH );
+	}
+	
 	public static String getDbHost() {
 		return properties.getProperty( DB_HOST );
 	}
@@ -115,4 +122,5 @@ public class WebAppProperties {
 	public static String getRootDir() {
 		return WebAppProperties.rootDir;
 	}
+
 }

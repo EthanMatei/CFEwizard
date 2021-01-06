@@ -29,6 +29,9 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	private String discoverDbContentType;
 	private String dicoveryDbFileName;
 	
+	private String scriptFile;
+	private String scriptOutput;
+	
 	private String baseDir;
 	
 	public String initialize() throws Exception {
@@ -47,6 +50,8 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			baseDir = WebAppProperties.getRootDir();
 			
 			// Runtime.getRuntime().exec("test.sh");
+			this.scriptFile = new File(getClass().getResource("/R/test1.R").toURI()).getAbsolutePath();
+			scriptOutput = this.runCommand(WebAppProperties.getRscriptPath() + " " + scriptFile);
 		}
 		return result;
 	}
@@ -61,7 +66,7 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	public String runCommand(String command) throws Exception {
 		StringBuilder output = new StringBuilder();
 		
-        Process process = Runtime.getRuntime().exec(command, null, new File("C:\\Users\\mkyong\\"));
+        Process process = Runtime.getRuntime().exec(command);
 
 	    BufferedReader reader = new BufferedReader(
 	    new InputStreamReader(process.getInputStream()));
@@ -142,5 +147,13 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	public String getBaseDir() {
 		return baseDir;
 	}	
+	
+	public String getScriptFile() {
+		return scriptFile;
+	}
+	
+	public String getScriptOutput() {
+		return scriptOutput;
+	}
 
 }

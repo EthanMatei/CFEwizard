@@ -14,6 +14,9 @@
 
 Discovery CSV File: <s:property value="discoveryCsv" /> <br/>
 Discovery Database File: <s:property value="discoveryDb" /> <br/>
+<br/>
+Script File: <s:property value="scriptFile" /> <br/>
+Script Output: <s:property value="scriptOutput" /> <br/>
 
 <br/>
 <br/>

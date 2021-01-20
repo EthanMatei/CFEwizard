@@ -4,6 +4,8 @@
 
 
 prepAccessData <- function(data){
+	
+	print("*** prepAccessData")
   
   #specify all the names of the tables you want to pull from access
   cohortTbl <- "Cohorts"
@@ -12,7 +14,10 @@ prepAccessData <- function(data){
   varName <- NULL #instantiate varNames holder
   
   #pull all the sql keys to use as a base for merging
-  bigData <- sqlFetch(data,tblsNeeded[1])$PheneVisit
+  ###bigData <- sqlFetch(data,tblsNeeded[1])$PheneVisit # Reads tables in database into a data frame
+  bigData <- dbReadTable(data,tblsNeeded[1]) ###$PheneVisit # Reads tables in database into a data frame
+  print("BIG DATA:\n\n")
+  print(bigData)
   bigData <- data.frame(bigData)
   colnames(bigData) <- "PheneVisit"
   

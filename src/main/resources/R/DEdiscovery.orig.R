@@ -1,82 +1,28 @@
 
 
 
-### wants <- c("RODBC","RODBCext","gWidgets", "tcltk", "plyr", "gtools", "dplyr")
-
-# Packages
-# RJDBC - for accessing MS Access
-# plyr - "Tools for Splitting, Applying and Combining Data"
-# dplyr - tool for working with data frame like objects
-# gtools - various general R programming tools
-
-wants <- c("RJDBC", "plyr", "gtools", "dplyr")
+wants <- c("RODBC","RODBCext","gWidgets", "tcltk", "plyr", "gtools", "dplyr")
 has   <- wants %in% rownames(installed.packages())
 if(any(!has)) install.packages(wants[!has])
 
-### library(RODBC)
-### require(gWidgets)
-### require(tcltk)
-library(RJDBC)
+library(RODBC)
+require(gWidgets)
+require(tcltk)
 library(gtools)
 library(plyr)
 library(dplyr)
-### options(guiToolkit="tcltk") 
+options(guiToolkit="tcltk") 
 
-#-------------------------------------------------
-# Process command line arguments
-#-------------------------------------------------
-args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 3) {
-	print(paste("Incorrect number of arguments: ", length(args)))
-	stop("Incorrect number of arguments to DEdiscovery script")
-}
-
-scriptDir <- args[1]
-dbFile    <- args[2]
-csvFile   <- args[3]
-
-print(paste("Script dir:", scriptDir, "db file:", dbFile, "csv file", csvFile))
 
 addAsymmetry <- TRUE
 
 
 #get access database location
-accessDb <- dbFile
+d <- "Z:\\Jim Mullen\\Discovery\\PheneVisit Database1.accdb"
 
 ##open connection with access database
-
-#-------------------------------------------------------
-# Get MS Access database connection
-#-------------------------------------------------------
-###PheneData <- odbcConnectAccess2007(accessDb)
-
-# Using Ucanacess Driver
-# Need to download this, unzip, and put all jars in directory with script
-jars = paste(
-		paste(scriptDir, "commons-lang3-3.8.1.jar", sep="/"),
-		paste(scriptDir, "commons-logging-1.2.jar", sep="/"),
-		paste(scriptDir, "hsqldb-2.5.0.jar", sep="/"),
-		paste(scriptDir, "jackcess-3.0.1.jar", sep="/"),
-		paste(scriptDir, "ucanaccess-5.0.0.jar", sep="/"),    
-		sep=":"
-)
-
-driver <- JDBC(
-		"net.ucanaccess.jdbc.UcanaccessDriver",
-		jars,
-		identifier.quote="`"
-)
-dbUrl <- paste("jdbc:ucanaccess://", dbFile, sep="")
-PheneData <- dbConnect(driver, dbUrl)
-
-# List the tables in the database
-dbListTables(PheneData)
-
-
-
-# Get the access integration script
-accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
-source(accessIntegrationScript)
+PheneData <- odbcConnectAccess2007(d)
+source("Z:\\Jim Mullen\\Discovery\\accessIntegrationDE.R")
 
 ##get processed access data
 accessIntegrationOutput <- prepAccessData(PheneData)
@@ -87,9 +33,7 @@ rm(accessIntegrationOutput)
 
 PHENE <- "SI"   # This is your dependent variable
 
-print(paste("PHENE", PHENE))
-
-DEdata <- read.csv(csvFile) #location of RMA data #location of RMA data
+DEdata <- read.csv("Z:\\Jim Mullen\\Discovery\\Normalization for 821  Suicide  based on mean and 2 HK genes (ABN 10-28-2020 SG 10-22-2020).csv") #location of RMA data #location of RMA data
 
 rownames(DEdata) <- DEdata[,1] #make the first row into headers
 DEdata <- DEdata[, -1] #delete the now-redundant first row
@@ -97,7 +41,6 @@ DEdata <- DEdata[, -1] #delete the now-redundant first row
 #transpose data to set the subject visits as rows
 DEdata <- as.data.frame(t(DEdata))
 
-print(DEdata)
 
 #define function that gets the last n characters of a string x
 substrRight <- function(x, n){
@@ -483,17 +426,16 @@ Max changes downward")
     THISISYOUROUTPUT <- t(THISISYOUROUTPUT)
   
   
-print("*** BEFORE OUTPUT")
-
-outputFile <- paste("/home/jim/output",PHENE, cohortChoice, dxChoice, Sys.Date(),"Suicide.csv")
+  
+outputFile <- paste("Z:\\Jim Mullen\\Discovery\\output",PHENE, cohortChoice, dxChoice, Sys.Date(),"Suicide.csv")
 write.csv(THISISYOUROUTPUT, outputFile)
 
-reportFile <- paste("/home/jim/output",PHENE, cohortChoice, dxChoice, Sys.Date()," REPORT SUMMARY.csv")
+reportFile <- paste("Z:\\Jim Mullen\\Discovery\\output",PHENE, cohortChoice, dxChoice, Sys.Date()," REPORT SUMMARY.csv")
 write.csv(summaryResultsTable,reportFile)
 
-# Displays the files - can't do that from within a web app like this
-### file.show(outputFile)
-### file.show(reportFile)
+
+file.show(outputFile)
+file.show(reportFile)
 
 View(t(subjectLevelOutput))
 

@@ -13,6 +13,8 @@ Steps/Databases:
 Data is entered into MS Access databases, and those databases are uploaded to the CFE Wizard,
 and the data from them are stored into the CFE Wizard's MySQL database.
 
+For developer information, see [Developers Guide](./docs/DevelopersGuide.md)
+
 **Scoring**
 
 | Score          | Calculation                                                                                |

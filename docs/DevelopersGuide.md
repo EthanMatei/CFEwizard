@@ -12,6 +12,8 @@ uses the following technologies:
 * [Maven](https://maven.apache.org/) is used for the build process, including dependency management.
 * [Flyway](https://flywaydb.org/) is used to handle database migrations.
 
+For information on setting up a development environment (with Ubuntu examples),
+see [Development Environment Setup](./DevelopmentEnvironmentSetup.md)
 
 ### Checking for out of date dependencies
 

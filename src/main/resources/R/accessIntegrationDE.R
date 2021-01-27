@@ -5,7 +5,7 @@
 
 prepAccessData <- function(data){
 	
-	print("*** prepAccessData")
+    print("*** prepAccessData")
   
   #specify all the names of the tables you want to pull from access
   cohortTbl <- "Cohorts"
@@ -15,17 +15,55 @@ prepAccessData <- function(data){
   
   #pull all the sql keys to use as a base for merging
   ###bigData <- sqlFetch(data,tblsNeeded[1])$PheneVisit # Reads tables in database into a data frame
-  bigData <- dbReadTable(data,tblsNeeded[1]) ###$PheneVisit # Reads tables in database into a data frame
-  print("BIG DATA:\n\n")
-  print(bigData)
-  bigData <- data.frame(bigData)
-  colnames(bigData) <- "PheneVisit"
   
+  print(tblsNeeded[1])
+  
+  print("DATA:")
+  print(data)
+  
+  # It appears that the table name needs to be escaped if it has a hyphen
+  tableName <- paste("`", tblsNeeded[1], "`", sep="")
+  
+  bigData <- dbReadTable(data, tableName)$PheneVisit # Reads tables in database into a data frame
+
+
+  print("BIG DATA:\n\n")
+  bigData <- data.frame(bigData)
+  
+  print("Frame created.")
+
+  colnames(bigData) <- "PheneVisit"
+
+  print(bigData)
   
   for (i in tblsNeeded){
     # collect all the tables you want and merge them together sequentially
-    bigData <- merge(bigData,sqlFetch(data, i, na.strings=c("na","NA","", "<NA>", "Na", "N/A")), by="PheneVisit")
+    
+	# New code
+	tableName = paste("`", i, "`", sep="")
+	print(paste("TABLE", tableName, ":"))
+	tableData = dbReadTable(data, tableName)
+	
+	vars <- names(tableData)
+	tableData[vars] <- lapply(
+			tableData[vars],
+			function(x) replace(x,x %in% c("na","NA","", "<NA>", "Na", "n/a", "N/A"), NA)
+	)
+	
+	#print("VARS---------------")
+	#print(vars)
+	#print(tableData)
+
+    bigData <- merge(bigData, tableData, by="PheneVisit")
+    
+	# OLD CODE:
+	# bigData <- merge(bigData,sqlFetch(data, i, na.strings=c("na","NA","", "<NA>", "Na", "N/A")), by="PheneVisit")
   }
+  
+  print("BIG DATA VARS:")
+  print(names(bigData))
+  print("------------------------------------------------------------------------------------")
+  print(bigData)
   
   #define function that gets all characters of string x minus the last n characters
   substrLeft <- function(x, n){

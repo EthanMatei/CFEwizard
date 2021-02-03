@@ -73,34 +73,41 @@ prepAccessData <- function(data){
   # APPEARS TO BE WORKING UP TO HERE =========================================================================
   write.csv(bigData, "/home/jim/discovery-debug/bigData.csv", row.names = FALSE)
 
+  sasColumns = c("SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch ",
+		  "SAS Uncertainty (0-100)",
+		  "SAS Fear (0-100)",
+		  "SAS Anger (0-100)")
+
   # jim debug:
-  bigDataC <- bigData[c("SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch ",
-						  "SAS Uncertainty (0-100)",
-						  "SAS Fear (0-100)",
-						  "SAS Anger (0-100)")]
-  write.csv(bigDataC, "/home/jim/discovery-debug/bigDataC.csv")
+  #bigDataC <- bigData[sasColumns]
+  #write.csv(bigDataC, "/home/jim/discovery-debug/bigDataC.csv")
+  #print("")
+  #for (j in 1:ncol(bigDataC)) {
+  #    for (i in 1:nrow(bigDataC)) {
+  #		  cols = colnames(bigDataC)
+  # 	  print(paste(cols[j], "type[", i, j, "]:", typeof(bigDataC[i,j])))
+  #	  }
+  #    
+  #}
   # end jim debug
 
+  bigData[sasColumns] <- lapply(sasColumns, as.numeric)
   ##calculate raw SAS score
-  bigData["sasScore"] <- rowMeans(bigData[c("SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch ",
-                                            "SAS Uncertainty (0-100)",
-                                            "SAS Fear (0-100)",
-                                            "SAS Anger (0-100)")])
-					
-  print("BIG DATA VARS:")
-  print(names(bigData))
-  print("------------------------------------------------------------------------------------")
-  print("------------------------------------------------------------------------------------")
-  print(bigData)
+  bigData["sasScore"] <- rowMeans(bigData[sasColumns])
 					
   ##calculate raw SMS score
-  bigData["smsScore"] <- rowMeans(bigData[c("SMS Mood (0-100)",
-                                           "SMS Motivation (0-100)",
-                                           "SMS Movement (0-100)",
-                                           "SMS Thinking (0-100)",
-                                           "SMS Self-esteem (0-100)",
-                                           "SMS Interest (0-100)",
-                                           "SMS Appetite (0-100)")])
+  smsColumns = c(
+    "SMS Mood (0-100)",
+    "SMS Motivation (0-100)",
+	"SMS Movement (0-100)",
+	"SMS Thinking (0-100)",
+	"SMS Self-esteem (0-100)",
+	"SMS Interest (0-100)",
+	"SMS Appetite (0-100)"
+  )
+  bigData[smsColumns] <- lapply(smsColumns, as.numeric)
+  
+  bigData["smsScore"] <- rowMeans(bigData[smsColumns])
   
   ##calculate raw SMSmood score
   bigData["SMSmood"] <- rowMeans(bigData[c("SMS Mood (0-100)")])

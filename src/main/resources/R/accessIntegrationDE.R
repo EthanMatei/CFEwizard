@@ -59,11 +59,7 @@ prepAccessData <- function(data){
 	# OLD CODE:
 	# bigData <- merge(bigData,sqlFetch(data, i, na.strings=c("na","NA","", "<NA>", "Na", "N/A")), by="PheneVisit")
   }
-  
-  print("BIG DATA VARS:")
-  print(names(bigData))
-  print("------------------------------------------------------------------------------------")
-  print(bigData)
+
   
   #define function that gets all characters of string x minus the last n characters
   substrLeft <- function(x, n){
@@ -74,13 +70,29 @@ prepAccessData <- function(data){
   bigData <- cbind(bigData,substrLeft( sapply(bigData["PheneVisit"],as.character),2))
   colnames(bigData)[length(bigData)] <- "Subject"
   
+  # APPEARS TO BE WORKING UP TO HERE =========================================================================
+  write.csv(bigData, "/home/jim/discovery-debug/bigData.csv", row.names = FALSE)
 
+  # jim debug:
+  bigDataC <- bigData[c("SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch ",
+						  "SAS Uncertainty (0-100)",
+						  "SAS Fear (0-100)",
+						  "SAS Anger (0-100)")]
+  write.csv(bigDataC, "/home/jim/discovery-debug/bigDataC.csv")
+  # end jim debug
 
   ##calculate raw SAS score
   bigData["sasScore"] <- rowMeans(bigData[c("SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch ",
                                             "SAS Uncertainty (0-100)",
                                             "SAS Fear (0-100)",
                                             "SAS Anger (0-100)")])
+					
+  print("BIG DATA VARS:")
+  print(names(bigData))
+  print("------------------------------------------------------------------------------------")
+  print("------------------------------------------------------------------------------------")
+  print(bigData)
+					
   ##calculate raw SMS score
   bigData["smsScore"] <- rowMeans(bigData[c("SMS Mood (0-100)",
                                            "SMS Motivation (0-100)",
@@ -122,7 +134,7 @@ prepAccessData <- function(data){
                                             "21 Age",
                                             "22  Gender")], as.numeric), na.rm=TRUE)
   
-  
+
 
   ##define Phene as people who scored a 2 or greater on the ideation item of HAMD
   bigData["SI"] <- as.numeric(bigData["HAMD SI"] >= 2)
@@ -143,8 +155,8 @@ prepAccessData <- function(data){
   bigData["Delusions"] <- as.numeric(bigData["P1 Delusions (1-7)"] >= 4)
   
   bigData["Hallucinations"] <- as.numeric(bigData["P3 Hallucinations (1-7)"] >= 4)
-  
-  
+
+
   #get names of cohorts
   cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
   #drop the subject header column

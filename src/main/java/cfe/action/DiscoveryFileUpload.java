@@ -54,8 +54,12 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			
 			this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
 			this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
-			scriptOutput = this.runCommand(WebAppProperties.getRscriptPath() + " " + scriptFile 
-					+ " " + scriptDir + " " + discoveryDb + " " + discoveryCsv);
+			String rScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
+					+ " " + scriptDir + " " + discoveryDb + " " + discoveryCsv;
+			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
+					+ " " + scriptDir + " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"";
+			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
+			scriptOutput = this.runCommand(rScriptCommand);
 		}
 		return result;
 	}

@@ -162,21 +162,23 @@ prepAccessData <- function(data){
   bigData["Delusions"] <- as.numeric(bigData["P1 Delusions (1-7)"] >= 4)
   
   bigData["Hallucinations"] <- as.numeric(bigData["P3 Hallucinations (1-7)"] >= 4)
-
-
+  
   #get names of cohorts
-  cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
+  # OLD: cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
+  cohortColumns <- dbGetFields(data, cohortTbl)$COLUMN_NAME
+  
   #drop the subject header column
   cohortColumns <- cohortColumns[-1]
   
   cohortString <- "" #initiate variable for prompt
-  for (i in 1:length(cohortColumns)){
+  for (i in 1:length(cohortColumns)) {
     entry <- paste0("(",i,") ",cohortColumns[i])
-    
     cohortString <- paste(cohortString,entry, sep="\n")
-    
-    
-    }
+  }
+  
+  print("=================================================================================")
+  print("COHORT STRING")
+  print(cohortString)
 
   cohortPreference <- ginput(message = paste("Enter the number corresponding with the cohort that you want to use.",cohortString), 
                            icon="question",

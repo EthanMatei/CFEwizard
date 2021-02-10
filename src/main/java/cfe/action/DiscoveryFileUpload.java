@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
+import cfe.parser.PheneVisitParser;
 import cfe.utils.Authorization;
 import cfe.utils.WebAppProperties;
 
@@ -35,6 +36,9 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	
 	private String baseDir;
 	
+	private List<String> cohorts;
+	private Map<String,String> diagnosisCodes;
+	
 	public String initialize() throws Exception {
 	    return SUCCESS;
 	}
@@ -46,6 +50,12 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			result = LOGIN;
 		}
 		else {
+			// NEED TO GET THE COHORT AND DIAGNOSIS CODES
+			PheneVisitParser pheneVisitParser = new PheneVisitParser();
+		    cohorts = pheneVisitParser.getCohorts(discoveryDb.getAbsolutePath());
+		    
+		    diagnosisCodes = pheneVisitParser.getDiagnosisCodes(discoveryDb.getAbsolutePath());
+
 			//baseDir = System.getProperty("user.dir");
 			//baseDir = System.getProperty("user.dir");
 			baseDir = WebAppProperties.getRootDir();
@@ -166,6 +176,14 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	
 	public String getScriptOutput() {
 		return scriptOutput;
+	}
+	
+	public List<String> getCohorts() {
+		return cohorts;
+	}
+	
+	public Map<String,String> getDiagnosisCodes() {
+		return diagnosisCodes;
 	}
 
 }

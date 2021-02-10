@@ -19,6 +19,21 @@ Script Dir: <s:property value="scriptDir" /> <br/>
 Script File: <s:property value="scriptFile" /> <br/>
 Script Output: <s:property value="scriptOutput" /> <br/>
 
+<s:iterator value="cohorts" var="cohort" status="cstatus">
+    <s:property value="cohort"/> <br />
+</s:iterator>
+
+<hr />
+
+<table>
+<s:iterator value="diagnosisCodes">
+    <tr>
+        <td> <s:property value="key"/> </td>
+        <td> <s:property value="value"/> </td>
+    </tr>
+</s:iterator>
+</table>
+
 <br/>
 <br/>
 Base directory: <s:property value="baseDir"/> <br/>

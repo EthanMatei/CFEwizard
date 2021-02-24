@@ -39,8 +39,33 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	private List<String> cohorts;
 	private Map<String,String> diagnosisCodes;
 	
+	private String dbFileName;
+	
 	public String initialize() throws Exception {
-	    return SUCCESS;
+		String result = SUCCESS;
+		
+		if (!Authorization.isAdmin(webSession)) {
+			result = LOGIN;
+		}
+	    return result;
+	}
+	
+	public String getParameters() throws Exception {
+		String result = SUCCESS;
+		
+		if (!Authorization.isAdmin(webSession)) {
+			result = LOGIN;
+		} else {
+			dbFileName = discoveryDb.getAbsolutePath();
+			
+			// NEED TO GET THE COHORT AND DIAGNOSIS CODES
+			PheneVisitParser pheneVisitParser = new PheneVisitParser();
+		    cohorts = pheneVisitParser.getCohorts(discoveryDb.getAbsolutePath());
+		    cohorts.add(0, "ALL");
+		    
+		    diagnosisCodes = pheneVisitParser.getDiagnosisCodes(discoveryDb.getAbsolutePath());
+		}
+	    return result;
 	}
 	
 	public String execute() throws Exception {
@@ -50,12 +75,6 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			result = LOGIN;
 		}
 		else {
-			// NEED TO GET THE COHORT AND DIAGNOSIS CODES
-			PheneVisitParser pheneVisitParser = new PheneVisitParser();
-		    cohorts = pheneVisitParser.getCohorts(discoveryDb.getAbsolutePath());
-		    
-		    diagnosisCodes = pheneVisitParser.getDiagnosisCodes(discoveryDb.getAbsolutePath());
-
 			//baseDir = System.getProperty("user.dir");
 			//baseDir = System.getProperty("user.dir");
 			baseDir = WebAppProperties.getRootDir();
@@ -64,6 +83,7 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			
 			this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
 			this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
+			
 			String rScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
 					+ " " + scriptDir + " " + discoveryDb + " " + discoveryCsv;
 			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
@@ -184,6 +204,14 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	
 	public Map<String,String> getDiagnosisCodes() {
 		return diagnosisCodes;
+	}
+	
+	public String getDbFileName() {
+		return this.dbFileName;
+	}
+
+	public void setDbFileName(String dbFileName) {
+	    this.dbFileName = dbFileName;
 	}
 
 }

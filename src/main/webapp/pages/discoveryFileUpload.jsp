@@ -26,7 +26,8 @@ Please select the files to upload:
  <!-- http://stackoverflow.com/questions/8906910/struts2-dynamically-add-remove-list-of-objects-from-page -->
 <s:actionerror />
 
-<s:form id ="discoveryUploadForm" name="discoveryUploadForm" action="DiscoveryFileUpload" method="post" enctype="multipart/form-data">
+<s:form id ="discoveryUploadForm" name="discoveryUploadForm" action="DiscoveryFileUploadGetParameters"
+        method="post" enctype="multipart/form-data">
 
     <s:file name="discoveryDb" label="DE Database" />
     <s:file name="discoveryCsv" label="DE Spreadsheet" />

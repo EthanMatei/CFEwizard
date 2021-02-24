@@ -12,8 +12,13 @@
 
 <h2>Discovery File Upload Status</h2>
 
+DB File Name: <s:property value="dbFileName" /> <br />
+<br />
 Discovery CSV File: <s:property value="discoveryCsv" /> <br/>
 Discovery Database File: <s:property value="discoveryDb" /> <br/>
+<br/>
+Discovery CSV File Name: <s:property value="discoveryCsvFileName" /> <br/>
+Discovery Database File Name: <s:property value="discoveryDbFileName" /> <br/>
 <br/>
 Script Dir: <s:property value="scriptDir" /> <br/>
 Script File: <s:property value="scriptFile" /> <br/>

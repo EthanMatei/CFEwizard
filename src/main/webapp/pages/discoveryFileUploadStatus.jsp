@@ -12,32 +12,36 @@
 
 <h2>Discovery File Upload Status</h2>
 
-DB File Name: <s:property value="dbFileName" /> <br />
-<br />
-Discovery CSV File: <s:property value="discoveryCsv" /> <br/>
-Discovery Database File: <s:property value="discoveryDb" /> <br/>
+<table class="dataTable">
+    <tr>
+        <th> Cohort </th>
+        <td> <s:property value="cohort"/> </td>
+    </tr>
+    <tr>
+        <th> Diagnosis Code </th>
+        <td> <s:property value="diagnosisCode"/> </td>
+    </tr>
+    <tr>
+        <th>Database File</th>
+        <td><s:property value="discoveryDbFileName" /></td>
+    </tr>
+    <tr>
+        <th>CSV File</th>
+        <td><s:property value="discoveryCsvFileName" /></td>
+</table>
+
 <br/>
-Discovery CSV File Name: <s:property value="discoveryCsvFileName" /> <br/>
-Discovery Database File Name: <s:property value="discoveryDbFileName" /> <br/>
+DB temp file name: <s:property value="discoveryDbTempFileName" />
+<br/>
+CSV temp file name: <s:property value="discoveryCsvTempFileName" />
+
+<hr />
+
 <br/>
 Script Dir: <s:property value="scriptDir" /> <br/>
 Script File: <s:property value="scriptFile" /> <br/>
 Script Output: <s:property value="scriptOutput" /> <br/>
 
-<s:iterator value="cohorts" var="cohort" status="cstatus">
-    <s:property value="cohort"/> <br />
-</s:iterator>
-
-<hr />
-
-<table>
-<s:iterator value="diagnosisCodes">
-    <tr>
-        <td> <s:property value="key"/> </td>
-        <td> <s:property value="value"/> </td>
-    </tr>
-</s:iterator>
-</table>
 
 <br/>
 <br/>

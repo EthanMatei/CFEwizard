@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
@@ -30,6 +34,9 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	private String discoverDbContentType;
 	private String discoveryDbFileName;
 	
+	private String discoveryDbTempFileName;
+	private String discoveryCsvTempFileName;
+	
 	private String scriptDir;
 	private String scriptFile;
 	private String scriptOutput;
@@ -38,6 +45,9 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	
 	private List<String> cohorts;
 	private Map<String,String> diagnosisCodes;
+	
+	private String cohort;
+	private String diagnosisCode;
 	
 	private String dbFileName;
 	
@@ -56,6 +66,16 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		} else {
+			// Copy the upload files to temporary files, because the upload files get deleted
+			// and they are needed beyond this method
+			File discoveryDbTmp = File.createTempFile("discovery-db-", ".accdb");
+			FileUtils.copyFile(this.discoveryDb, discoveryDbTmp);
+			this.discoveryDbTempFileName = discoveryDbTmp.getAbsolutePath();
+					
+			File discoveryCsvTmp = File.createTempFile("discovery-csv-",  ".csv");
+            FileUtils.copyFile(this.discoveryCsv, discoveryCsvTmp);
+            this.discoveryCsvTempFileName = discoveryCsvTmp.getAbsolutePath();
+            
 			dbFileName = discoveryDb.getAbsolutePath();
 			
 			// NEED TO GET THE COHORT AND DIAGNOSIS CODES
@@ -85,10 +105,14 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
 			
 			String rScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
-					+ " " + scriptDir + " " + discoveryDb + " " + discoveryCsv;
+					+ " " + scriptDir + " " 
+					+ this.discoveryDbTempFileName + " " + this.discoveryCsvTempFileName;
+			
+			// Log a version of the command used for debugging
 			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
 					+ " " + scriptDir + " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"";
 			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
+			
 			scriptOutput = this.runCommand(rScriptCommand);
 		}
 		return result;
@@ -212,6 +236,38 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 
 	public void setDbFileName(String dbFileName) {
 	    this.dbFileName = dbFileName;
+	}
+
+	public String getCohort() {
+		return cohort;
+	}
+
+	public void setCohort(String cohort) {
+		this.cohort = cohort;
+	}
+
+	public String getDiagnosisCode() {
+		return diagnosisCode;
+	}
+
+	public void setDiagnosisCode(String diagnosisCode) {
+		this.diagnosisCode = diagnosisCode;
+	}
+
+	public String getDiscoveryDbTempFileName() {
+		return discoveryDbTempFileName;
+	}
+
+	public void setDiscoveryDbTempFileName(String discoveryDbTempFileName) {
+		this.discoveryDbTempFileName = discoveryDbTempFileName;
+	}
+
+	public String getDiscoveryCsvTempFileName() {
+		return discoveryCsvTempFileName;
+	}
+
+	public void setDiscoveryCsvTempFileName(String discoveryCsvTempFileName) {
+		this.discoveryCsvTempFileName = discoveryCsvTempFileName;
 	}
 
 }

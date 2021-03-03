@@ -22,39 +22,46 @@
 
 <s:actionerror />
 
-Database File: <s:property value="discoveryDbFileName" /> <br />
+<%-- Database File: <s:property value="discoveryDbFileName" /> <br /> --%>
 
-<s:form id ="discoveryUploadForm" name="discoveryUploadForm" action="DiscoveryFileUpload" method="post" enctype="multipart/form-data">
+<s:form id ="discoveryUploadForm" name="discoveryUploadForm" action="DiscoveryFileUpload"
+        theme="simple" method="post" enctype="multipart/form-data">
 
     <s:hidden name="discoveryDb" />
     <s:hidden name="discoveryCsv" />
     <s:hidden name="discoveryDbFileName" />
     <s:hidden name="discoveryCsvFileName" />
     
+    <s:hidden name="discoveryDbTempFileName" />
+    <s:hidden name="discoveryCsvTempFileName" />
+        
     <s:hidden name="dbFileName" />
     
+    <h2>Cohort</h2>
     <s:radio label="Cohort"
               name="cohort"
               list="cohorts"
               required="true"
     />
 
-<hr />
-    Cohort: <br/>
-    <s:iterator value="cohorts" var="cohort" status="cstatus">
-        <s:property value="cohort"/> <br />
-    </s:iterator>
 
-<table>
-<s:iterator value="diagnosisCodes">
-    <tr>
-        <td> <s:property value="key"/> </td>
-        <td> <s:property value="value"/> </td>
-    </tr>
-</s:iterator>
-</table>
+    <h2>Diagnosis</h2>
+    <table class="dataTable" style="margin-top: 1em;">
+        <tr>
+            <th> Diagnosis&nbsp;Code </th>
+            <th> Examples </th>
+        </tr>
+        <s:iterator value="diagnosisCodes">
+            <tr>
+                <td> <s:radio name="diagnosisCode" list="{key}" /> </td>
+                <td> <s:property value="value"/> </td>
+            </tr>
+        </s:iterator>
+    </table>
 
+    <div style="margin-top: 1em; font-weight: bold;">
     <s:submit value="Process" id="processDiscoveryDEButton" />
+    </div>
     <s:token />
 </s:form>
 

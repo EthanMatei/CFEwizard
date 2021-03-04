@@ -26,14 +26,22 @@ library(dplyr)
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 3) {
+if (length(args) != 5) {
 	print(paste("Incorrect number of arguments: ", length(args)))
 	stop("Incorrect number of arguments to DEdiscovery script")
 }
 
-scriptDir <- args[1]
-dbFile    <- args[2]
-csvFile   <- args[3]
+scriptDir          <- args[1]
+cohortParam        <- args[2]
+diagnosisCodeParam <- args[3]
+dbFile             <- args[4]
+csvFile            <- args[5]
+
+print(paste("---------------------------------- COHORT PARAM: ", cohortParam, " -------------------------------"))
+
+if (diagnosisCodeParam == "All") {
+	diagnosisCodeParam <- ""
+}
 
 print(paste("Script dir:", scriptDir, "db file:", dbFile, "csv file", csvFile))
 
@@ -79,7 +87,10 @@ accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
 source(accessIntegrationScript)
 
 ##get processed access data
-accessIntegrationOutput <- prepAccessData(PheneData)
+print("BEFORE CALL TO prepAccessData =================================================")
+accessIntegrationOutput <- prepAccessData(PheneData, cohortParam, diagnosisCodeParam)
+print("========================= AFTER CALL TO prepAccessData =================================================")
+
 PheneData <- accessIntegrationOutput[[1]]
 dxChoice <- accessIntegrationOutput[[2]]
 cohortChoice <- accessIntegrationOutput[[3]]
@@ -97,6 +108,7 @@ DEdata <- DEdata[, -1] #delete the now-redundant first row
 #transpose data to set the subject visits as rows
 DEdata <- as.data.frame(t(DEdata))
 
+print("DE DATA ==========================================================================================================================")
 print(DEdata)
 
 #define function that gets the last n characters of a string x

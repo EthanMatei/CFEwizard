@@ -3,7 +3,7 @@
 
 
 
-prepAccessData <- function(data){
+prepAccessData <- function(data, cohort, dxCode){
 	
     print("*** prepAccessData")
   
@@ -68,16 +68,21 @@ prepAccessData <- function(data){
   
   #define a "Subject" column that excludes visit data
   bigData <- cbind(bigData,substrLeft( sapply(bigData["PheneVisit"],as.character),2))
+  
   colnames(bigData)[length(bigData)] <- "Subject"
   
+  print("===================================== Subject colname added =================================")
   # APPEARS TO BE WORKING UP TO HERE =========================================================================
-  write.csv(bigData, "/home/jim/discovery-debug/bigData.csv", row.names = FALSE)
+  #write.csv(bigData, "/home/jim/discovery-debug/bigData.csv", row.names = FALSE)
 
+  print("============================== Before sasColumns = ======================================")
+  
   sasColumns = c("SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch ",
 		  "SAS Uncertainty (0-100)",
 		  "SAS Fear (0-100)",
 		  "SAS Anger (0-100)")
 
+  
   # jim debug:
   #bigDataC <- bigData[sasColumns]
   #write.csv(bigDataC, "/home/jim/discovery-debug/bigDataC.csv")
@@ -163,6 +168,8 @@ prepAccessData <- function(data){
   
   bigData["Hallucinations"] <- as.numeric(bigData["P3 Hallucinations (1-7)"] >= 4)
   
+  print("=============== BIG DATA CHANGES MADE ====================================================================================")
+  
   #get names of cohorts
   # OLD: cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
   cohortColumns <- dbGetFields(data, cohortTbl)$COLUMN_NAME
@@ -170,33 +177,43 @@ prepAccessData <- function(data){
   #drop the subject header column
   cohortColumns <- cohortColumns[-1]
   
-  cohortString <- "" #initiate variable for prompt
-  for (i in 1:length(cohortColumns)) {
-    entry <- paste0("(",i,") ",cohortColumns[i])
-    cohortString <- paste(cohortString,entry, sep="\n")
-  }
+  #cohortString <- "" #initiate variable for prompt
+  #for (i in 1:length(cohortColumns)) {
+  #  entry <- paste0("(",i,") ",cohortColumns[i])
+  #  cohortString <- paste(cohortString,entry, sep="\n")
+  #}
   
-  print("=================================================================================")
-  print("COHORT STRING")
-  print(cohortString)
+  #print("=================================================================================")
+  #print("COHORT STRING")
+  #print(cohortString)
 
-  cohortPreference <- ginput(message = paste("Enter the number corresponding with the cohort that you want to use.",cohortString), 
-                           icon="question",
-                           title="Choose a cohort")
+  #cohortPreference <- ginput(message = paste("Enter the number corresponding with the cohort that you want to use.",cohortString), 
+  #                         icon="question",
+  #                         title="Choose a cohort")
   
   #make sure the user entered a choice of cohort
-  stopifnot(!(cohortPreference == ""))
+  #stopifnot(!(cohortPreference == ""))
   
   #Convert string to integer
-  cohortPreference <- strtoi(cohortPreference)
+  #cohortPreference <- strtoi(cohortPreference)
+  
+  print("============================== COHORT = ")
+  print(cohort)
+  print(" ===========================================")
+  
+  print("================================ DX CODE = ")
+  print(dxCode)
+  print(" =======================================")
   
   #subset data by cohort
-  bigData <- bigData[bigData[cohortColumns[cohortPreference]] == 1,]
+  # OLD: bigData <- bigData[bigData[cohortColumns[cohortPreference]] == 1,]
+  bigData <- bigData[bigData[cohort] == 1,]
   
-  dxCodeString <- ""
-  dxCode <- ginput(message = paste("Type the diagnosis code you want to use.\nIf you want to keep everyone, just press <enter>",dxCodeString), 
-                   icon="question",
-                   title="Choose a diagnosis")
+  # OLD CODE (get this from web app now):
+  #dxCodeString <- ""
+  #dxCode <- ginput(message = paste("Type the diagnosis code you want to use.\nIf you want to keep everyone, just press <enter>",dxCodeString), 
+  #                 icon="question",
+  #                 title="Choose a diagnosis")
   
   #make sure the user entered a choice of diagnosis
   if (dxCode != ""){
@@ -210,8 +227,10 @@ prepAccessData <- function(data){
   #close database
   close(data)
   
-  output <- list(bigData, dxCode, cohortColumns[cohortPreference])
+  # OLD: output <- list(bigData, dxCode, cohortColumns[cohortPreference])
+  output <- list(bigData, dxCode, cohort)  
   
+  print("=========================================== output set before return =============================")
   
   return(output)
   

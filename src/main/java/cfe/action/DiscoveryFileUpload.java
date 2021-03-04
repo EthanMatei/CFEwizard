@@ -81,7 +81,7 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			// NEED TO GET THE COHORT AND DIAGNOSIS CODES
 			PheneVisitParser pheneVisitParser = new PheneVisitParser();
 		    cohorts = pheneVisitParser.getCohorts(discoveryDb.getAbsolutePath());
-		    cohorts.add(0, "ALL");
+		    //cohorts.add(0, "All");
 		    
 		    diagnosisCodes = pheneVisitParser.getDiagnosisCodes(discoveryDb.getAbsolutePath());
 		}
@@ -104,13 +104,28 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
 			this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
 			
+			if (this.cohort == null) this.cohort = "";
+			this.cohort = this.cohort.trim();
+			if (this.cohort.equals("")) {
+				this.cohort = "All";
+			}
+			
+			if (this.diagnosisCode == null) this.diagnosisCode = "";
+			this.diagnosisCode = this.diagnosisCode.trim();
+			if (this.diagnosisCode.equals("")) {
+				this.diagnosisCode = "All";
+			}
+			
 			String rScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
-					+ " " + scriptDir + " " 
-					+ this.discoveryDbTempFileName + " " + this.discoveryCsvTempFileName;
+					+ " " + scriptDir 
+					+ " " + "\"" + this.cohort + "\"" + " " + "\"" + this.diagnosisCode + "\"" 
+					+ " " + this.discoveryDbTempFileName + " " + this.discoveryCsvTempFileName;
 			
 			// Log a version of the command used for debugging
 			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
-					+ " " + scriptDir + " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"";
+					+ " " + scriptDir 
+					+ " " + "\"" + this.cohort + "\"" + " " + "\"" + this.diagnosisCode + "\"" 
+					+ " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"";
 			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
 			
 			scriptOutput = this.runCommand(rScriptCommand);

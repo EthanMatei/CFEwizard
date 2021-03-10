@@ -133,6 +133,7 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
 			
 			scriptOutput = this.runCommand(rScriptCommand);
+			scriptOutput = scriptOutput.replaceAll("\n",  "<br/>\n");
 		}
 		return result;
 	}

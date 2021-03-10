@@ -17,7 +17,7 @@
     }
 </script>
 
-<h1>Database Upload<br> 
+<h1>Discovery File Upload<br> 
 </h1>
 <p>
 Please select the files to upload:

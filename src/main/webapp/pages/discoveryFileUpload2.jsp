@@ -17,7 +17,7 @@
     }
 </script>
 
-<h1>Discovery DE<br> 
+<h1>Discovery Parameters<br> 
 </h1>
 
 <s:actionerror />

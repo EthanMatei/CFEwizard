@@ -40,7 +40,7 @@ CSV temp file name: <s:property value="discoveryCsvTempFileName" />
 <br/>
 Script Dir: <s:property value="scriptDir" /> <br/>
 Script File: <s:property value="scriptFile" /> <br/>
-Script Output: <s:property value="scriptOutput" /> <br/>
+Script Output: <s:property value="scriptOutput" escapeHtml="false"/> <br/>
 
 
 <br/>

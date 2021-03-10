@@ -1,11 +1,6 @@
 
 
-
-
-
-prepAccessData <- function(data, cohort, dxCode){
-	
-    print("*** prepAccessData")
+prepAccessData <- function(data, cohort, dxCode) {
   
   #specify all the names of the tables you want to pull from access
   cohortTbl <- "Cohorts"
@@ -16,32 +11,20 @@ prepAccessData <- function(data, cohort, dxCode){
   #pull all the sql keys to use as a base for merging
   ###bigData <- sqlFetch(data,tblsNeeded[1])$PheneVisit # Reads tables in database into a data frame
   
-  print(tblsNeeded[1])
-  
-  print("DATA:")
-  print(data)
-  
   # It appears that the table name needs to be escaped if it has a hyphen
   tableName <- paste("`", tblsNeeded[1], "`", sep="")
   
   bigData <- dbReadTable(data, tableName)$PheneVisit # Reads tables in database into a data frame
 
-
-  print("BIG DATA:\n\n")
   bigData <- data.frame(bigData)
-  
-  print("Frame created.")
 
   colnames(bigData) <- "PheneVisit"
-
-  print(bigData)
   
   for (i in tblsNeeded){
     # collect all the tables you want and merge them together sequentially
     
 	# New code
 	tableName = paste("`", i, "`", sep="")
-	print(paste("TABLE", tableName, ":"))
 	tableData = dbReadTable(data, tableName)
 	
 	vars <- names(tableData)
@@ -49,10 +32,6 @@ prepAccessData <- function(data, cohort, dxCode){
 			tableData[vars],
 			function(x) replace(x,x %in% c("na","NA","", "<NA>", "Na", "n/a", "N/A"), NA)
 	)
-	
-	#print("VARS---------------")
-	#print(vars)
-	#print(tableData)
 
     bigData <- merge(bigData, tableData, by="PheneVisit")
     
@@ -71,30 +50,14 @@ prepAccessData <- function(data, cohort, dxCode){
   
   colnames(bigData)[length(bigData)] <- "Subject"
   
-  print("===================================== Subject colname added =================================")
-  # APPEARS TO BE WORKING UP TO HERE =========================================================================
-  #write.csv(bigData, "/home/jim/discovery-debug/bigData.csv", row.names = FALSE)
 
-  print("============================== Before sasColumns = ======================================")
+  #write.csv(bigData, "/tmp/bigData.csv", row.names = FALSE)
+
   
   sasColumns = c("SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch ",
 		  "SAS Uncertainty (0-100)",
 		  "SAS Fear (0-100)",
 		  "SAS Anger (0-100)")
-
-  
-  # jim debug:
-  #bigDataC <- bigData[sasColumns]
-  #write.csv(bigDataC, "/home/jim/discovery-debug/bigDataC.csv")
-  #print("")
-  #for (j in 1:ncol(bigDataC)) {
-  #    for (i in 1:nrow(bigDataC)) {
-  #		  cols = colnames(bigDataC)
-  # 	  print(paste(cols[j], "type[", i, j, "]:", typeof(bigDataC[i,j])))
-  #	  }
-  #    
-  #}
-  # end jim debug
 
   bigData[sasColumns] <- lapply(sasColumns, as.numeric)
   ##calculate raw SAS score
@@ -167,9 +130,7 @@ prepAccessData <- function(data, cohort, dxCode){
   bigData["Delusions"] <- as.numeric(bigData["P1 Delusions (1-7)"] >= 4)
   
   bigData["Hallucinations"] <- as.numeric(bigData["P3 Hallucinations (1-7)"] >= 4)
-  
-  print("=============== BIG DATA CHANGES MADE ====================================================================================")
-  
+
   #get names of cohorts
   # OLD: cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
   cohortColumns <- dbGetFields(data, cohortTbl)$COLUMN_NAME
@@ -183,9 +144,6 @@ prepAccessData <- function(data, cohort, dxCode){
   #  cohortString <- paste(cohortString,entry, sep="\n")
   #}
   
-  #print("=================================================================================")
-  #print("COHORT STRING")
-  #print(cohortString)
 
   #cohortPreference <- ginput(message = paste("Enter the number corresponding with the cohort that you want to use.",cohortString), 
   #                         icon="question",
@@ -196,14 +154,6 @@ prepAccessData <- function(data, cohort, dxCode){
   
   #Convert string to integer
   #cohortPreference <- strtoi(cohortPreference)
-  
-  print("============================== COHORT = ")
-  print(cohort)
-  print(" ===========================================")
-  
-  print("================================ DX CODE = ")
-  print(dxCode)
-  print(" =======================================")
   
   #subset data by cohort
   # OLD: bigData <- bigData[bigData[cohortColumns[cohortPreference]] == 1,]
@@ -225,14 +175,12 @@ prepAccessData <- function(data, cohort, dxCode){
   gc()
   
   #close database
-  close(data)
+  #close(data)
+  dbDisconnect(data)  # RJDBC (equivalent call for close)
   
   # OLD: output <- list(bigData, dxCode, cohortColumns[cohortPreference])
   output <- list(bigData, dxCode, cohort)  
-  
-  print("=========================================== output set before return =============================")
-  
+
   return(output)
-  
-  }
+}
   

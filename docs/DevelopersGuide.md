@@ -11,6 +11,7 @@ uses the following technologies:
 * [Hibernate](https://hibernate.org/) is used for the persistence framework.
 * [Maven](https://maven.apache.org/) is used for the build process, including dependency management.
 * [Flyway](https://flywaydb.org/) is used to handle database migrations.
+* [R](https://www.r-project.org/) is used as a scripting language; R scripts are executed from Java.
 
 For information on setting up a development environment (with Ubuntu examples),
 see [Development Environment Setup](./DevelopmentEnvironmentSetup.md)

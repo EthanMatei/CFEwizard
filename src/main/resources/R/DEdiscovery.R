@@ -37,13 +37,9 @@ diagnosisCodeParam <- args[3]
 dbFile             <- args[4]
 csvFile            <- args[5]
 
-print(paste("---------------------------------- COHORT PARAM: ", cohortParam, " -------------------------------"))
-
 if (diagnosisCodeParam == "All") {
 	diagnosisCodeParam <- ""
 }
-
-print(paste("Script dir:", scriptDir, "db file:", dbFile, "csv file", csvFile))
 
 addAsymmetry <- TRUE
 
@@ -87,9 +83,7 @@ accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
 source(accessIntegrationScript)
 
 ##get processed access data
-print("BEFORE CALL TO prepAccessData =================================================")
 accessIntegrationOutput <- prepAccessData(PheneData, cohortParam, diagnosisCodeParam)
-print("========================= AFTER CALL TO prepAccessData =================================================")
 
 PheneData <- accessIntegrationOutput[[1]]
 dxChoice <- accessIntegrationOutput[[2]]
@@ -107,9 +101,6 @@ DEdata <- DEdata[, -1] #delete the now-redundant first row
 
 #transpose data to set the subject visits as rows
 DEdata <- as.data.frame(t(DEdata))
-
-print("DE DATA ==========================================================================================================================")
-print(DEdata)
 
 #define function that gets the last n characters of a string x
 substrRight <- function(x, n){
@@ -493,21 +484,21 @@ Max changes downward")
 
     THISISYOUROUTPUT <- data["DEscores",]
     THISISYOUROUTPUT <- t(THISISYOUROUTPUT)
-  
-  
-print("*** BEFORE OUTPUT")
 
-outputFile <- paste("/home/jim/output",PHENE, cohortChoice, dxChoice, Sys.Date(),"Suicide.csv")
+
+outputFile <- paste("/tmp/output",PHENE, cohortChoice, dxChoice, Sys.Date(),"Suicide.csv")
 write.csv(THISISYOUROUTPUT, outputFile)
+cat("\nFile ", outputFile, " created.\n")
 
-reportFile <- paste("/home/jim/output",PHENE, cohortChoice, dxChoice, Sys.Date()," REPORT SUMMARY.csv")
+reportFile <- paste("/tmp/output",PHENE, cohortChoice, dxChoice, Sys.Date()," REPORT SUMMARY.csv")
 write.csv(summaryResultsTable,reportFile)
+cat("File ", reportFile, " created.\n")
 
 # Displays the files - can't do that from within a web app like this
 ### file.show(outputFile)
 ### file.show(reportFile)
 
-View(t(subjectLevelOutput))
+### View(t(subjectLevelOutput))
 
 
 

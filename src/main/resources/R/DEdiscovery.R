@@ -76,8 +76,6 @@ PheneData <- dbConnect(driver, dbUrl)
 # List the tables in the database
 dbListTables(PheneData)
 
-
-
 # Get the access integration script
 accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
 source(accessIntegrationScript)
@@ -488,11 +486,11 @@ Max changes downward")
 
 outputFile <- paste("/tmp/output",PHENE, cohortChoice, dxChoice, Sys.Date(),"Suicide.csv")
 write.csv(THISISYOUROUTPUT, outputFile)
-cat("\nFile ", outputFile, " created.\n")
+cat("\nOutput file created: ", outputFile, "\n")
 
 reportFile <- paste("/tmp/output",PHENE, cohortChoice, dxChoice, Sys.Date()," REPORT SUMMARY.csv")
 write.csv(summaryResultsTable,reportFile)
-cat("File ", reportFile, " created.\n")
+cat("Report file created: ", reportFile, "\n")
 
 # Displays the files - can't do that from within a web app like this
 ### file.show(outputFile)

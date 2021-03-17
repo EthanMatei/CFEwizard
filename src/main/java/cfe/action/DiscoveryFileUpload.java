@@ -3,14 +3,13 @@ package cfe.action;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
@@ -50,6 +49,12 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 	private String diagnosisCode;
 	
 	private String dbFileName;
+	
+	private String outputFile;
+	private String reportFile;
+	
+	private String outputFileName;
+	private String reportFileName;
 	
 	public String initialize() throws Exception {
 		String result = SUCCESS;
@@ -133,6 +138,34 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
 			
 			scriptOutput = this.runCommand(rScriptCommand);
+			
+			//---------------------------------------------------------------
+			// Get the output and report file paths
+			//---------------------------------------------------------------
+		    String outputFilePatternString = "Output file created: (.*)";
+		    String reportFilePatternString = "Report file created: (.*)";
+		    
+		    Pattern outputFilePattern = Pattern.compile(outputFilePatternString);
+		    Pattern reportFilePattern = Pattern.compile(reportFilePatternString);
+		    
+			String lines[] = scriptOutput.split("\\r?\\n");
+			for (String line: lines) {
+			    Matcher outputMatcher = outputFilePattern.matcher(line);
+			    Matcher reportMatcher = reportFilePattern.matcher(line);
+			    
+				if (outputMatcher.find()) {
+				   	outputFile = outputMatcher.group(1).trim();
+				}
+				
+				if (reportMatcher.find()) {
+					reportFile = reportMatcher.group(1).trim();
+				}
+			}
+			
+			outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
+			reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
+		      
+			// Convert newlines to breaks for displaying in HTML
 			scriptOutput = scriptOutput.replaceAll("\n",  "<br/>\n");
 		}
 		return result;
@@ -294,6 +327,38 @@ public class DiscoveryFileUpload extends BaseAction implements SessionAware {
 
 	public void setDiscoveryCsvTempFileName(String discoveryCsvTempFileName) {
 		this.discoveryCsvTempFileName = discoveryCsvTempFileName;
+	}
+
+	public String getOutputFile() {
+		return outputFile;
+	}
+
+	public void setOutputFile(String outputFile) {
+		this.outputFile = outputFile;
+	}
+
+	public String getReportFile() {
+		return reportFile;
+	}
+
+	public void setReportFile(String reportFile) {
+		this.reportFile = reportFile;
+	}
+
+	public String getOutputFileName() {
+		return outputFileName;
+	}
+
+	public void setOutputFileName(String outputFileName) {
+		this.outputFileName = outputFileName;
+	}
+
+	public String getReportFileName() {
+		return reportFileName;
+	}
+
+	public void setReportFileName(String reportFileName) {
+		this.reportFileName = reportFileName;
 	}
 
 }

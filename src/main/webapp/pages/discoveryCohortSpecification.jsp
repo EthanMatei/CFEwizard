@@ -6,6 +6,8 @@
 <tiles:putAttribute name="header">
     <title>CFE Wizard - Database Upload</title>
     <s:head />
+    <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
+    <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
@@ -36,12 +38,20 @@ High cutoff (&ge;): <s:textfield />
 
 Phenes:
 <hr/>
+<div id="tree">
+<ul>
 <s:iterator value="phenes" var="table" status="pstat">
-        <s:property value="key"/> <br />
-        <s:iterator value="value" var="phene">
-            &nbsp;&nbsp;<s:property value="phene"/> <br />
-        </s:iterator>
+        <li><s:property value="key"/>
+            <ul>
+            <s:iterator value="value" var="phene">
+                <li> <s:property value="phene"/> </li>
+            </s:iterator>
+            </ul>
+        </li>
 </s:iterator>
+</ul>
+</div>
+
 
 <s:iterator value="validationMsgs" status="vstat">
     <s:property value="validationMsgs[%{#vstat.index}]" />

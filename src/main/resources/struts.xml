@@ -108,8 +108,46 @@
             </result>
 		</action>
 		
+		<!-- DISCOVERY ======================================================= -->
+		
+		<action name="DiscoveryInitialize" class="cfe.action.DiscoveryAction" method="initialize">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/discoveryDatabaseUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/discoveryDatabaseUpload.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<!--  Upload specified database, and parse it to get values for cohort specification -->
+		<action name="DiscoveryDatabaseUpload" class="cfe.action.DiscoveryAction" method="uploadDatabase">
+		    <interceptor-ref name="fileUploadStack"/>
+	        <result name="success">pages/discoveryCohortSpecification.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/discoveryCohortSpecification.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+				
+		<!--  Upload specified database, and parse it to get values for cohort specification -->
+		<!-- 
+		<action name="DiscoveryCohortSpecification" class="cfe.action.DiscoveryAction" method="cohortSpecification">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/discoveryCohortSpecification.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/discoveryCohortSpecification.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+        -->
+						
+	    <!-- ================================================================== -->
+	    
 		<action name="DiscoveryFileUploadInitialize" class="cfe.action.DiscoveryFileUpload" method="initialize">
-		<interceptor-ref name="basicStack"/>
+		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/discoveryFileUpload.jsp</result>
 			<result name="error">pages/error.jsp</result>
 			<result name="input">pages/discoveryFileUpload.jsp</result>

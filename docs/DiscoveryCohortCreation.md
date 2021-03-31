@@ -1,0 +1,9 @@
+Discovery cohort creation:
+
+1. Display the list of phene tables (or all tables if the phene tables cannot be distinguished).
+2. The user selects the table, and then the phenes in that table are displayed
+3. The user selects the phene
+4. The user specifies low and high cutoffs (use less-than-or-equal and greater-than-or-equal)
+
+
+Protocol Document: PROTOCOLS/INTRA Cohort Creation (OM 7-29-2020) DFL HLNSG 6-26-2020)

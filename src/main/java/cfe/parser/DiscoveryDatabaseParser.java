@@ -18,6 +18,8 @@ import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
 import com.healthmarketscience.jackcess.TableMetaData;
 
+import cfe.utils.ColumnInfo;
+
 public class DiscoveryDatabaseParser {
 	
 	public static final String COHORTS_TABLE = "Cohorts"; 
@@ -56,6 +58,32 @@ public class DiscoveryDatabaseParser {
 		return phenes;
 	}
 	
+	public Map<String,ArrayList<ColumnInfo>> getTableColumnMap(String msAccessFile) throws Exception {
+		Set<String> tableNames = new TreeSet<String>();
+		Map<String,ArrayList<ColumnInfo>> map = new TreeMap<String,ArrayList<ColumnInfo>>();
+		
+		Database db = DatabaseBuilder.open(new File(msAccessFile));
+		
+		tableNames = db.getTableNames();
+		for (String tableName: tableNames) {
+			Table table = db.getTable(tableName);
+			ArrayList<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
+			for (Column col: table.getColumns()) {
+				String columnName = col.getName().trim();
+				DataType colDataType = col.getType();
+				if (!columnName.equalsIgnoreCase("PheneVisit")) {
+					ColumnInfo colInfo = new ColumnInfo();
+					colInfo.setTableName(tableName);
+					colInfo.setColumnName(columnName);
+					colInfo.setColumnType(colDataType.toString());
+				    columnInfos.add(colInfo);
+				}
+			};
+			map.put(tableName, columnInfos);
+		}
+		
+		return map;
+	}	
 	public List<String> getCohorts(String msAccessFile) throws Exception {
 		List<String> cohorts = new ArrayList<String>();
 		

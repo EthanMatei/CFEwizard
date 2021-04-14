@@ -24,14 +24,14 @@
 <s:actionerror />
 
 
-<s:form theme="simple">
+<s:form theme="simple" action="DiscoveryCohortSpecification">
 
 <p>
-Low cutoff (&le;): <s:textfield />
+Low cutoff (&le;): <s:textfield name="lowCutoff"/>
 </p>
 
 <p>
-High cutoff (&ge;): <s:textfield />
+High cutoff (&ge;): <s:textfield name="highCutoff"/>
 </p>
 
 <br/>
@@ -39,23 +39,22 @@ High cutoff (&ge;): <s:textfield />
 Phenes:
 <hr/>
 <div id="tree">
-<ul>
 <s:iterator value="phenes" var="table" status="pstat">
-        <li><s:property value="key"/>
-            <ul>
-            <s:iterator value="value" var="phene">
-                <li> <s:property value="phene"/> </li>
-            </s:iterator>
-            </ul>
-        </li>
+        <s:property value="key"/> <br/>
+        <s:iterator value="value" var="pheneValue">
+            <s:radio name="pheneSelection" list="#{#pheneValue.tableAndColumnName:#pheneValue.columnName}" /> <br/>
+        </s:iterator>
 </s:iterator>
-</ul>
 </div>
 
 
 <s:iterator value="validationMsgs" status="vstat">
     <s:property value="validationMsgs[%{#vstat.index}]" />
 </s:iterator>
+
+<hr />
+
+<s:submit value="Process"/>
 
 </s:form>
 

@@ -20,6 +20,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
 import cfe.utils.Authorization;
+import cfe.utils.ColumnInfo;
 import cfe.utils.WebAppProperties;
 
 public class DiscoveryAction extends BaseAction implements SessionAware {
@@ -62,7 +63,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private Set<String> pheneTables;
 	
-	Map<String,ArrayList<String>> phenes = new TreeMap<String,ArrayList<String>>();
+	private String pheneTable;
+	
+	private String pheneSelection;
+	
+	private int lowCutoff;
+	private int highCutoff;
+	
+	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	
 	public String initialize() throws Exception {
 		String result = SUCCESS;
@@ -90,7 +98,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser();
 			this.pheneTables = dbParser.getPheneTables(this.discoveryDbTempFileName);
 
-			this.phenes = dbParser.getPhenes(this.discoveryDbTempFileName);
+			this.phenes = dbParser.getTableColumnMap(this.discoveryDbTempFileName);
 			
 			/***
 			File discoveryCsvTmp = File.createTempFile("discovery-csv-",  ".csv");
@@ -110,6 +118,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	public String cohortSpecification() throws Exception {
 		String result = SUCCESS;
+		
+		String[] pheneInfo = pheneSelection.split("\\|", 2);
+		this.pheneTable = pheneInfo[0];
+		this.pheneSelection = pheneInfo[1];
 
 		return result;
 	}
@@ -391,12 +403,44 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		this.pheneTables = pheneTables;
 	}
 
-	public Map<String, ArrayList<String>> getPhenes() {
+	public Map<String, ArrayList<ColumnInfo>> getPhenes() {
 		return phenes;
 	}
 
-	public void setPhenes(Map<String, ArrayList<String>> phenes) {
+	public void setPhenes(Map<String, ArrayList<ColumnInfo>> phenes) {
 		this.phenes = phenes;
+	}
+
+	public String getPheneSelection() {
+		return pheneSelection;
+	}
+
+	public void setPheneSelection(String pheneSelection) {
+		this.pheneSelection = pheneSelection;
+	}
+
+	public int getLowCutoff() {
+		return lowCutoff;
+	}
+
+	public void setLowCutoff(int lowCutoff) {
+		this.lowCutoff = lowCutoff;
+	}
+
+	public int getHighCutoff() {
+		return highCutoff;
+	}
+
+	public void setHighCutoff(int highCutoff) {
+		this.highCutoff = highCutoff;
+	}
+
+	public String getPheneTable() {
+		return pheneTable;
+	}
+
+	public void setPheneTable(String pheneTable) {
+		this.pheneTable = pheneTable;
 	}
 
 }

@@ -52,8 +52,6 @@ public class CohortDataTable {
 		while ((row = table.getNextRow()) != null) {
 			String pheneVisit = row.getString(key);
 			
-			log.info("PHENE VISIT = " + pheneVisit);
-			
 			ArrayList<String> dataRow = new ArrayList<String>();
 			for (String column: columns) {
 				
@@ -104,27 +102,131 @@ public class CohortDataTable {
 	
 	public String toCsv() {
 		StringBuffer csv = new StringBuffer();
-		csv.append(this.key);
+		//csv.append(this.key);
+		boolean first = true;
 		for (String column: this.columns) {
-			csv.append("," + column);
+			if (first) {
+			    csv.append(column);
+			    first = false;
+			}
+			else {
+			    csv.append("," + column);
+			}
 		}
 		csv.append("\n");
 		
 	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-	        csv.append(entry.getKey());
+	        //csv.append(entry.getKey());
+	        first = true;
 	        for (String value: entry.getValue()) {
-	        	if (value.matches("-?\\d+")) {
-	        		csv.append("," + value);
-	        	}
-	        	else if (value.matches("dddd-dd-ddTdd:dd")) {
-	        		csv.append("," + value);
+	        	if (first) {
+	        		first = false;
 	        	}
 	        	else {
-	        	    csv.append("," + "\"" + value + "\"");
+	        		csv.append(",");
+	        	}
+	        	
+	        	if (value.matches("-?\\d+")) {
+	        		csv.append(value);
+	        	}
+	        	else if (value.matches("dddd-dd-ddTdd:dd")) {
+	        		csv.append(value);
+	        	}
+	        	else {
+	        	    csv.append("\"" + value + "\"");
 	        	}
 	        }
 	        csv.append("\n");
 	    }
 	    return csv.toString();
+	}
+	
+	/**
+	 * Create 3 columns: PheneVisit, DiscoveryCohort, Date
+	 * 
+	 * DiscoveryCohort is 1 if subject is in cohort, date is the date of the visit.
+	 * 
+	 * @param low
+	 * @param high
+	 * @param phene
+	 */
+	public CohortDataTable getCohort(String phene, int lowCutoff, int highCutoff) {
+		// Get the subject column index
+		int subjectIndex = -1;
+		for (int i = 0; i < this.columns.size(); i++) {
+			if (columns.get(i).trim().equalsIgnoreCase("Subject")) {
+				subjectIndex = i;
+				break;
+			}
+		}
+		
+		// Get the selected phene column index
+		int pheneIndex = -1;
+		for (int i = 0; i < this.columns.size(); i++) {
+			if (columns.get(i).trim().equalsIgnoreCase(phene.trim())) {
+				pheneIndex = i;
+				break;
+			}
+		}
+		
+		// Get the "visit date" column index
+		int visitDateIndex = -1;
+		for (int i = 0; i < this.columns.size(); i++) {
+			if (columns.get(i).trim().equalsIgnoreCase("Visit Date")) {
+				visitDateIndex = i;
+				break;
+			}
+		}
+		
+		// Find subjects with low score and subjects with high score
+		TreeSet<String> lowScoreSubjects = new TreeSet();
+		TreeSet<String> highScoreSubjects = new TreeSet();
+		
+	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+	    	ArrayList<String> row = entry.getValue();
+			String pheneValueString = row.get(pheneIndex);
+			String subject = row.get(subjectIndex);
+			if (pheneValueString != null) {
+				pheneValueString = pheneValueString.trim();
+				if (pheneValueString.matches("\\d+")) {
+					int pheneValue = Integer.parseInt(pheneValueString);
+					if (pheneValue <= lowCutoff) {
+						lowScoreSubjects.add(subject);
+					}
+					if (pheneValue >= highCutoff) {
+						highScoreSubjects.add(subject);
+					}
+				}
+			}
+	    }
+	    
+	    // Set cohort subjects as the intersection of subject sets with low and high phene scores, i.e., 
+	    // subjects with both low and high phene values
+	    TreeSet<String> cohortSubjects = lowScoreSubjects;
+	    cohortSubjects.retainAll(highScoreSubjects);
+	    
+	    CohortDataTable cohort = new CohortDataTable();
+	    
+	    cohort.key = "PheneVisit";
+	    cohort.columns.add("PheneVisit");
+	    cohort.columns.add("DiscoveryCohort");
+	    cohort.columns.add("date");
+	    
+	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+	        ArrayList<String> cohortRow = new ArrayList<String>();
+	        ArrayList<String> row = entry.getValue();
+	        cohortRow.add(entry.getKey());
+	        String subject = row.get(subjectIndex);
+	        if (cohortSubjects.contains(subject)) {
+	        	cohortRow.add("1");
+	        }
+	        else {
+	        	cohortRow.add("0");
+	        }
+	        cohortRow.add(row.get(visitDateIndex));
+	        cohort.data.put(entry.getKey(), cohortRow);
+	    }
+	    
+	    return cohort;
 	}
 }

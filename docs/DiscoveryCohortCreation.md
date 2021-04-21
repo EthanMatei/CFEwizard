@@ -7,3 +7,7 @@ Discovery cohort creation:
 
 
 Protocol Document: PROTOCOLS/INTRA Cohort Creation (OM 7-29-2020) DFL HLNSG 6-26-2020)
+
+Notes:
+* Microarray data table is used to limit the subjects in the cohort to those for which there is gene expression data
+* In the Cohort table, the date is the date of the visit corresponding to the PhenVisit field

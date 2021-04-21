@@ -76,8 +76,13 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private int lowCutoff;
 	private int highCutoff;
 	
-	private String cohortCsv;
+	private String cohortDataCsv;
+	private String cohortDataCsvFile;
+	
 	private String cohortCsvFile;
+	
+	private Set<String> microarrayTables;
+	private String microarrayTable;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	
@@ -108,6 +113,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			this.pheneTables = dbParser.getPheneTables(this.discoveryDbTempFileName);
 
 			this.phenes = dbParser.getTableColumnMap(this.discoveryDbTempFileName);
+			
+			this.microarrayTables = dbParser.getMicroarrayTables(this.discoveryDbTempFileName);
 			
 			/***
 			File discoveryCsvTmp = File.createTempFile("discovery-csv-",  ".csv");
@@ -140,7 +147,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		Table demographics       = db.getTable("Demographics");
 		Table diagnosis          = db.getTable("Diagnosis");
 		Table pheneData          = db.getTable(this.pheneTable);
-		Table chips              = db.getTable("794 chips with Microarray data (HLN6-26-2020)");
+		Table chips              = db.getTable(this.microarrayTable);
 		
 		CohortDataTable subjectIdentifiersData = new CohortDataTable();
 		subjectIdentifiersData.initialize(subjectIdentifiers);
@@ -162,35 +169,21 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		cohortData = cohortData.merge(pheneDataData);
 		cohortData = cohortData.merge(chipsData);
 		
-		this.cohortCsv = cohortData.toCsv();
+		this.cohortDataCsv = cohortData.toCsv();
 		
-		File cohortCsvTempFile = File.createTempFile("cohort-csv-", ".csv");
+		File cohortDataCsvTempFile = File.createTempFile("cohort-data-", ".csv");
+		FileUtils.writeStringToFile(cohortDataCsvTempFile, cohortDataCsv, "UTF-8");
+		this.cohortDataCsvFile = cohortDataCsvTempFile.getAbsolutePath();
+		
+
+		// Create cohort CSV file
+		CohortDataTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
+        String cohortCsv = cohort.toCsv();
+		
+		File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
 		FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
 		this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
-		
-		List<String> tableNames = new ArrayList<String>();
-		tableNames.add("Subject Identifiers");
-		tableNames.add("Demographics");
-		tableNames.add("Diagnosis");
-		tableNames.add(this.pheneTable);
-		tableNames.add("794 chips with Microarray data (HLN6-26-2020)");
-		
-		List<Table> tables = new ArrayList<Table>();
-		ArrayList<String> columns = new ArrayList<String>();
-		
-		for (String tableName: tableNames) {
-		    Table table = db.getTable(tableName);
-		    tables.add(table);
-			
-			for (Column col: table.getColumns()) {
-				String columnName = col.getName();
-				if (columnName.equalsIgnoreCase("PheneVisit")) {
-				    columnName = tableName + "." + columnName;
-				}
-				columns.add(col.getName());
-			}
-		}
-
+        
 		return result;
 	}
 	
@@ -511,12 +504,20 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		this.pheneTable = pheneTable;
 	}
 
-	public String getCohortCsv() {
-		return cohortCsv;
+	public String getCohortDataCsv() {
+		return cohortDataCsv;
 	}
 
-	public void setCohortCsv(String cohortCsv) {
-		this.cohortCsv = cohortCsv;
+	public void setCohortDataCsv(String cohortDataCsv) {
+		this.cohortDataCsv = cohortDataCsv;
+	}
+
+	public String getCohortDataCsvFile() {
+		return cohortDataCsvFile;
+	}
+
+	public void setCohortDataCsvFile(String cohortDataCsvFile) {
+		this.cohortDataCsvFile = cohortDataCsvFile;
 	}
 
 	public String getCohortCsvFile() {
@@ -525,6 +526,22 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setCohortCsvFile(String cohortCsvFile) {
 		this.cohortCsvFile = cohortCsvFile;
+	}
+
+	public Set<String> getMicroarrayTables() {
+		return microarrayTables;
+	}
+
+	public void setMicroarrayTables(Set<String> microarrayTables) {
+		this.microarrayTables = microarrayTables;
+	}
+
+	public String getMicroarrayTable() {
+		return microarrayTable;
+	}
+
+	public void setMicroarrayTable(String microarrayTable) {
+		this.microarrayTable = microarrayTable;
 	}
 
 }

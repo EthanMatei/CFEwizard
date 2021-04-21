@@ -22,27 +22,26 @@ import com.opencsv.CSVReader;
 
 import cfe.action.ActionErrorException;
 import cfe.utils.Authorization;
-import cfe.utils.CsvUtil;
 import cfe.utils.Filter;
 
 /**
- * Struts2 action for displaying CSV files.
+ * Struts2 action for displaying spreadsheet in .xlsx format
  * 
  * @author Jim Mullen
  *
  */
-public class CsvDisplayAction extends BaseAction implements SessionAware {
+public class XlsxDisplayAction extends BaseAction implements SessionAware {
 	
 	private static final long serialVersionUID = 1L;
-	private Log log = LogFactory.getLog(CsvDisplayAction.class);
+	private Log log = LogFactory.getLog(XlsxDisplayAction.class);
 	
 
     @SuppressWarnings("unchecked")
     private Map session;
 
     private String reportName;
-    private String csvFilePath;
-    private String csvFileName;
+    private String spreadsheetFilePath;
+    private String spreadsheetFileName;
     private String reportType;
     
 	private String errorMessage;
@@ -57,7 +56,7 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
     
     private String reportFormat;
 	
-    public CsvDisplayAction() {
+    public XlsxDisplayAction() {
         errorMessage    = "";
         fileName        = "";
         fileContentType = "";
@@ -85,13 +84,13 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
     	}
     	else {
     		//try {
-    		if (csvFilePath == null || csvFilePath.trim().equals("")) {
+    		if (spreadsheetFilePath == null || spreadsheetFilePath.trim().equals("")) {
     			throw new ActionErrorException("No CSV file was specified.");
     		}
 
-    	    Path path = Paths.get(csvFilePath); 
-    	    csvFileName = path.getFileName().toString();
-    	    String csvFileBaseName = FilenameUtils.getBaseName(csvFileName);
+    	    Path path = Paths.get(spreadsheetFilePath); 
+    	    spreadsheetFileName = path.getFileName().toString();
+    	    String spreadsheetFileBaseName = FilenameUtils.getBaseName(spreadsheetFileName);
 
 
     		/*********
@@ -108,7 +107,7 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
     		//try {
     		    log.info("Trying to generate report with name " + reportName + " and format " + reportFormat + ".");
 
-    		    XSSFWorkbook workbook = CsvUtil.csvToXlsx(csvFilePath);
+    		    XSSFWorkbook workbook = new XSSFWorkbook(spreadsheetFilePath);
     		    
     		    ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
     	        workbook.write(byteOut);
@@ -116,7 +115,7 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
     		    
                 fileStream = new ByteArrayInputStream( byteOut.toByteArray() );
     		    if (fileStream == null) {
-    			    throw new Exception("The file \"" + csvFilePath + "\" could not be retrieved.");
+    			    throw new Exception("The file \"" + spreadsheetFilePath + "\" could not be retrieved.");
     		    }
     		//}
     		//catch (Exception exception) {
@@ -124,14 +123,17 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
     		//}
 
    			String fileSuffix = ".xlsx";
-    		fileName = csvFileBaseName + fileSuffix;
+    		fileName = spreadsheetFileBaseName + fileSuffix;
     		fileContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-    		log.info("Generating spreasheet " + fileName + " for csv file \"" + csvFilePath + "\".");
+    		log.info("Generating spreasheet " + fileName + " for file \"" + spreadsheetFilePath + "\".");
     	}
 
     	return result;
     }
+
+
+
 
 	//-----------------------------------------
 	// Getters and Setters
@@ -152,13 +154,6 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
 		this.errorMessage = errorMessage;
 	}
 
-	public String getCsvFilePath() {
-		return csvFilePath;
-	}
-
-	public void setCsvFilePath(String csvFilePath) {
-		this.csvFilePath = csvFilePath;
-	}
 
 	public String getFileName() {
 		return fileName;
@@ -176,12 +171,20 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
 		this.fileContentType = fileContentType;
 	}
 
-	public String getCsvFileName() {
-		return csvFileName;
+	public String getSpreadsheetFilePath() {
+		return spreadsheetFilePath;
 	}
 
-	public void setCsvFileName(String csvFileName) {
-		this.csvFileName = csvFileName;
+	public void setSpreadsheetFilePath(String spreadsheetFilePath) {
+		this.spreadsheetFilePath = spreadsheetFilePath;
+	}
+
+	public String getSpreadsheetFileName() {
+		return spreadsheetFileName;
+	}
+
+	public void setSpreadsheetFileName(String spreadsheetFileName) {
+		this.spreadsheetFileName = spreadsheetFileName;
 	}
 
 	public String getReportType() {

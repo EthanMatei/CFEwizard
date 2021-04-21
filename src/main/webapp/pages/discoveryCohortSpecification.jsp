@@ -36,7 +36,13 @@ Low cutoff (&le;): <s:textfield name="lowCutoff"/>
 High cutoff (&ge;): <s:textfield name="highCutoff"/>
 </p>
 
+<p>
+Microarray table <s:select name="microarrayTable" list="microarrayTables"/>
+</p>
+
 <br/>
+
+
 
 Phenes:
 <hr/>

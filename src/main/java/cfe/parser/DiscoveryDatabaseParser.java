@@ -34,7 +34,23 @@ public class DiscoveryDatabaseParser {
 		
 		return pheneTables;
 	}
-
+	
+	public Set<String> getMicroarrayTables(String msAccessFile) throws Exception {
+		Set<String> microarrayTables = new TreeSet<String>();
+		
+		Database db = DatabaseBuilder.open(new File(msAccessFile));
+		
+		Set<String> tables = db.getTableNames();
+		
+		for (String table: tables) {
+			if (table.toLowerCase().contains("microarray") || table.toLowerCase().contains("chip")) {
+			    microarrayTables.add(table);	
+			}
+		}
+		
+		return microarrayTables;
+	}
+	
 	public Map<String,ArrayList<String>> getPhenes(String msAccessFile) throws Exception {
 		Set<String> pheneTables = new TreeSet<String>();
 		Map<String,ArrayList<String>> phenes = new TreeMap<String,ArrayList<String>>();

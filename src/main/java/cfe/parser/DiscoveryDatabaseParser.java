@@ -59,6 +59,11 @@ public class DiscoveryDatabaseParser {
 	}
 	
 	public Map<String,ArrayList<ColumnInfo>> getTableColumnMap(String msAccessFile) throws Exception {
+	    Set<String> excludedTables = new HashSet<String>();
+	    excludedTables.add("Demographics");
+	    excludedTables.add("Diagnosis");
+	    excludedTables.add("Subject Identifiers");
+	    
 		Set<String> tableNames = new TreeSet<String>();
 		Map<String,ArrayList<ColumnInfo>> map = new TreeMap<String,ArrayList<ColumnInfo>>();
 		
@@ -66,20 +71,22 @@ public class DiscoveryDatabaseParser {
 		
 		tableNames = db.getTableNames();
 		for (String tableName: tableNames) {
-			Table table = db.getTable(tableName);
-			ArrayList<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
-			for (Column col: table.getColumns()) {
-				String columnName = col.getName().trim();
-				DataType colDataType = col.getType();
-				if (!columnName.equalsIgnoreCase("PheneVisit")) {
-					ColumnInfo colInfo = new ColumnInfo();
-					colInfo.setTableName(tableName);
-					colInfo.setColumnName(columnName);
-					colInfo.setColumnType(colDataType.toString());
-				    columnInfos.add(colInfo);
-				}
-			};
-			map.put(tableName, columnInfos);
+			if (!excludedTables.contains(tableName)) {
+			    Table table = db.getTable(tableName);
+			    ArrayList<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
+			    for (Column col: table.getColumns()) {
+				    String columnName = col.getName().trim();
+				    DataType colDataType = col.getType();
+				    if (!columnName.equalsIgnoreCase("PheneVisit")) {
+					    ColumnInfo colInfo = new ColumnInfo();
+					    colInfo.setTableName(tableName);
+					    colInfo.setColumnName(columnName);
+					    colInfo.setColumnType(colDataType.toString());
+				        columnInfos.add(colInfo);
+				    }
+			    };
+			    map.put(tableName, columnInfos);
+			}
 		}
 		
 		return map;
@@ -107,6 +114,7 @@ public class DiscoveryDatabaseParser {
 		
 		Database db = DatabaseBuilder.open(new File(msAccessFile));
 	    Table table = db.getTable(DIAGNOSIS_TABLE);
+		
 	    for (Row row: table) {
 	    	String value = row.getString("Primary DIGS DX");
 	    	String key = row.getString("DxCode");

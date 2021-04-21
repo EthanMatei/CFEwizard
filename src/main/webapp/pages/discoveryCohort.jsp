@@ -28,6 +28,16 @@ Phene: <s:property value="pheneSelection" /> <br />
 Low Cutoff: <s:property value="lowCutoff" /> <br />
 High Cutoff: <s:property value="highCutoff" />
 
+<s:a action="CsvDisplay" title="Download Excel spreadsheet">
+    <s:param name="csvFilePath" value="cohortCsvFile" />
+    <div>
+    <img border="0"
+     style="margin-top: 2px;"
+     src="<s:url includeParams='none' value='/images/application-vnd.ms-excel.png'/>"
+     alt="Report" /> <br />
+    Cohort Data
+    </div>
+</s:a>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

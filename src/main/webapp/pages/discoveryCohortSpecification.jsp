@@ -26,6 +26,8 @@
 
 <s:form theme="simple" action="DiscoveryCohortSpecification">
 
+<s:hidden name="discoveryDbTempFileName"/>
+
 <p>
 Low cutoff (&le;): <s:textfield name="lowCutoff"/>
 </p>

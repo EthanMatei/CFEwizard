@@ -17,9 +17,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
+import com.healthmarketscience.jackcess.Table;
+
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
 import cfe.utils.Authorization;
+import cfe.utils.CohortDataTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.WebAppProperties;
 
@@ -70,6 +76,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private int lowCutoff;
 	private int highCutoff;
 	
+	private String cohortCsv;
+	private String cohortCsvFile;
+	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	
 	public String initialize() throws Exception {
@@ -119,9 +128,68 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	public String cohortSpecification() throws Exception {
 		String result = SUCCESS;
 		
+		// Split phene selection into table and phene
 		String[] pheneInfo = pheneSelection.split("\\|", 2);
 		this.pheneTable = pheneInfo[0];
 		this.pheneSelection = pheneInfo[1];
+		
+		
+		Database db = DatabaseBuilder.open(new File(this.discoveryDbTempFileName));
+		
+		Table subjectIdentifiers = db.getTable("Subject Identifiers");
+		Table demographics       = db.getTable("Demographics");
+		Table diagnosis          = db.getTable("Diagnosis");
+		Table pheneData          = db.getTable(this.pheneTable);
+		Table chips              = db.getTable("794 chips with Microarray data (HLN6-26-2020)");
+		
+		CohortDataTable subjectIdentifiersData = new CohortDataTable();
+		subjectIdentifiersData.initialize(subjectIdentifiers);
+		
+		CohortDataTable demographicsData = new CohortDataTable();
+		demographicsData.initialize(demographics);
+		
+		CohortDataTable diagnosisData = new CohortDataTable();
+		diagnosisData.initialize(diagnosis);
+		
+		CohortDataTable pheneDataData = new CohortDataTable();
+		pheneDataData.initialize(pheneData);
+		
+		CohortDataTable chipsData = new CohortDataTable();
+		chipsData.initialize(chips);
+		
+		CohortDataTable cohortData = subjectIdentifiersData.merge(demographicsData);
+		cohortData = cohortData.merge(diagnosisData);
+		cohortData = cohortData.merge(pheneDataData);
+		cohortData = cohortData.merge(chipsData);
+		
+		this.cohortCsv = cohortData.toCsv();
+		
+		File cohortCsvTempFile = File.createTempFile("cohort-csv-", ".csv");
+		FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
+		this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
+		
+		List<String> tableNames = new ArrayList<String>();
+		tableNames.add("Subject Identifiers");
+		tableNames.add("Demographics");
+		tableNames.add("Diagnosis");
+		tableNames.add(this.pheneTable);
+		tableNames.add("794 chips with Microarray data (HLN6-26-2020)");
+		
+		List<Table> tables = new ArrayList<Table>();
+		ArrayList<String> columns = new ArrayList<String>();
+		
+		for (String tableName: tableNames) {
+		    Table table = db.getTable(tableName);
+		    tables.add(table);
+			
+			for (Column col: table.getColumns()) {
+				String columnName = col.getName();
+				if (columnName.equalsIgnoreCase("PheneVisit")) {
+				    columnName = tableName + "." + columnName;
+				}
+				columns.add(col.getName());
+			}
+		}
 
 		return result;
 	}
@@ -441,6 +509,22 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setPheneTable(String pheneTable) {
 		this.pheneTable = pheneTable;
+	}
+
+	public String getCohortCsv() {
+		return cohortCsv;
+	}
+
+	public void setCohortCsv(String cohortCsv) {
+		this.cohortCsv = cohortCsv;
+	}
+
+	public String getCohortCsvFile() {
+		return cohortCsvFile;
+	}
+
+	public void setCohortCsvFile(String cohortCsvFile) {
+		this.cohortCsvFile = cohortCsvFile;
 	}
 
 }

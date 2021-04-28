@@ -16,7 +16,8 @@ Unless otherwise stated, the setup instructions in this document are for Ubuntu.
 Java
 ---------------------------------------
 
-You need to install Java 1.8. On Ubuntu use:
+You need to install Java 1.8. Java is the primary programming langauge used by the CFE and CFG Wizards.
+On Ubuntu use:
 
 ```shell
 sudo apt install openjdk-8-jdk openjdk-8-jre
@@ -29,7 +30,7 @@ EOF
 MySQL
 -----------------------------------------
 
-MySQL is the database system used by the CFE and CFG Wizards for stogin data.
+MySQL is the database system used by the CFE and CFG Wizards for storing data.
 
 To install MySQL on Ubuntu, use:
 
@@ -39,7 +40,11 @@ sudo apt install mysql-server
 sudo mysql_secure_installation
 ```
 
-Maven (build and dependency management tool)
+Maven
 ---------------------------------------------
-sudo apt install maven
 
+Maven is the tool used for building the Wizards and managing their dependencies.
+
+```shell
+sudo apt install maven
+```

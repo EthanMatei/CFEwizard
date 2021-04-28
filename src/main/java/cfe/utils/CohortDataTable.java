@@ -1,6 +1,9 @@
 package cfe.utils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +13,16 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
+import com.opencsv.CSVReader;
 
 import cfe.action.DiscoveryAction;
 
@@ -139,6 +148,51 @@ public class CohortDataTable {
 	        csv.append("\n");
 	    }
 	    return csv.toString();
+	}
+	
+	public XSSFWorkbook toXlsx() {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("data");
+        
+        CreationHelper createHelper = workbook.getCreationHelper();
+        
+        // Header row
+        int rowNumber = 0;
+        XSSFRow xlsxRow = sheet.createRow(rowNumber);
+        for (int i = 0; i < columns.size(); i++) {
+            xlsxRow.createCell(i).setCellValue(columns.get(i));
+        }
+
+        for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+        	rowNumber++;
+            xlsxRow = sheet.createRow(rowNumber);
+            
+            ArrayList<String> dataRow = entry.getValue();
+            
+            for (int i = 0; i < dataRow.size(); i++){
+            	String value = dataRow.get(i);
+            	
+            	if (value == null) value = "";
+            	
+            	if (value.matches("-?\\d+")) {
+            	    int ivalue = Integer.parseInt(value);
+                    xlsxRow.createCell(i).setCellValue(ivalue);
+            	}
+            	else if (value.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}")) {
+            		LocalDateTime dateTime = LocalDateTime.parse(value);
+            		xlsxRow.createCell(i).setCellValue(dateTime);
+                    CellStyle cellStyle = workbook.createCellStyle();  
+                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yy")); 
+                    		//.getFormat("m/d/yy h:mm"));  
+            		xlsxRow.getCell(i).setCellStyle(cellStyle);
+            	}
+            	else {
+                    xlsxRow.createCell(i).setCellValue(value);
+            	}
+            }
+        }
+
+		return workbook;
 	}
 	
 	/**

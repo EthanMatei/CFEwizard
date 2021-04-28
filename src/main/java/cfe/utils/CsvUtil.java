@@ -28,7 +28,7 @@ public class CsvUtil {
             
         String[] csvRow;
             
-        int rowNumber = 1;
+        int rowNumber = 0;
         while ((csvRow = csvReader.readNext()) != null) {
             XSSFRow xlsxRow = sheet.createRow(rowNumber);
             for (int i = 0; i < csvRow.length; i++){

@@ -29,8 +29,8 @@ Low Cutoff: <s:property value="lowCutoff" /> <br />
 High Cutoff: <s:property value="highCutoff" /> <br />
 Microarray Table: <s:property value="microarrayTable" />
 
-<s:a action="CsvDisplay" title="Download Excel spreadsheet">
-    <s:param name="csvFilePath" value="cohortDataCsvFile" />
+<s:a action="XlsxDisplay" title="Cohort Data Spreadsheet">
+    <s:param name="spreadsheetFilePath" value="cohortDataXlsxFile" />
     <div>
     <img border="0"
      style="margin-top: 2px;"
@@ -40,7 +40,7 @@ Microarray Table: <s:property value="microarrayTable" />
     </div>
 </s:a>
 
-<s:a action="CsvDisplay" title="Download Excel spreadsheet">
+<s:a action="CsvDisplay" title="Cohort Spreadsheet">
     <s:param name="csvFilePath" value="cohortCsvFile" />
     <div>
     <img border="0"
@@ -58,16 +58,22 @@ Microarray Table: <s:property value="microarrayTable" />
 
 <h2>Discovery Processing</h2>
 
-<s:form theme="simple" action="DiscoveryCalculate">
-    Discovery CSV file: <s:file name="discoveryCsv"
-    cssStyle="margin-bottom: 12px;"/>
-     
-    <s:hidden name="diagnosisCode" />
+<s:form theme="simple" action="DiscoveryCalculate" method="post" enctype="multipart/form-data">
+ 
+    <s:hidden name="lowCuttof" />
+    <s:hidden name="highCutoff" />
     <s:hidden name="discoveryDbFileName" />
-    <s:hidden name="discoveryCsvFileName" />
+    <s:hidden name="discoveryCsvTempFileName" />
+    <s:hidden name="discoveryDbTempFileName" />
     <s:hidden name="pheneSelection" />
+    <s:hidden name="pheneTable" />
     
-    <h2>Diagnosis</h2>
+    <div>    
+    Gene Expression CSV File: <s:file name="discoveryCsv"/>
+    </div>
+        
+    <h3>Diagnosis</h3>
+
     <table class="dataTable" style="margin-top: 1em;">
         <tr>
             <th> Diagnosis&nbsp;Code </th>
@@ -80,7 +86,7 @@ Microarray Table: <s:property value="microarrayTable" />
             </tr>
         </s:iterator>
     </table>
-    
+
     <div style="margin-top: 1em; font-weight: bold;">
         <s:submit value="Process" id="processDiscoveryButton" />
     </div>

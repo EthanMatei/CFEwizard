@@ -366,6 +366,21 @@
             <result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>
+		</action>	
+		
+		
+        <!-- XLSX (spreadsheet) file display -->
+		<action name="XlsxDisplay" class="cfe.action.XlsxDisplayAction" method="view">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success" type="stream">
+                <param name="inputName">fileStream</param>
+	            <param name="contentType">${fileContentType}</param>
+                <param name="contentDisposition">attachment; filename="${fileName}"</param>
+            </result>
+            <result name="error">pages/error.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
 		</action>			
 	</package>
 </struts>

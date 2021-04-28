@@ -110,6 +110,118 @@ public class CohortDataTable {
 		
 		return merge;
 	}
+
+	/**
+	 * Create 3 columns: PheneVisit, DiscoveryCohort, Date
+	 * 
+	 * DiscoveryCohort is 1 if subject is in cohort, date is the date of the visit.
+	 * 
+	 * @param low
+	 * @param high
+	 * @param phene
+	 */
+	public CohortDataTable getCohort(String phene, int lowCutoff, int highCutoff) {
+		// Get the subject column index
+		int subjectIndex = -1;
+		for (int i = 0; i < this.columns.size(); i++) {
+			if (columns.get(i).trim().equalsIgnoreCase("Subject")) {
+				subjectIndex = i;
+				break;
+			}
+		}
+		
+		// Get the selected phene column index
+		int pheneIndex = -1;
+		for (int i = 0; i < this.columns.size(); i++) {
+			if (columns.get(i).trim().equalsIgnoreCase(phene.trim())) {
+				pheneIndex = i;
+				break;
+			}
+		}
+		
+		// Get the "visit date" column index
+		int visitDateIndex = -1;
+		for (int i = 0; i < this.columns.size(); i++) {
+			if (columns.get(i).trim().equalsIgnoreCase("Visit Date")) {
+				visitDateIndex = i;
+				break;
+			}
+		}
+		
+		// Find subjects with low score and subjects with high score
+		TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
+		TreeSet<String> highScoreSubjects  = new TreeSet<String>();
+		
+	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+	    	ArrayList<String> row = entry.getValue();
+			String pheneValueString = row.get(pheneIndex);
+			String subject = row.get(subjectIndex);
+			if (pheneValueString != null) {
+				pheneValueString = pheneValueString.trim();
+				if (pheneValueString.matches("\\d+")) {
+					int pheneValue = Integer.parseInt(pheneValueString);
+					
+					if (pheneValue <= lowCutoff) {
+						lowScoreSubjects.add(subject);
+					}
+					
+					if (pheneValue >= highCutoff) {
+						highScoreSubjects.add(subject);
+					}
+				}
+			}
+	    }
+	    
+	    // Set cohort subjects as the intersection of subject sets with low and high phene scores, i.e., 
+	    // subjects with both low and high phene values, minus subjects that have intermediate scores
+	    TreeSet<String> cohortSubjects = lowScoreSubjects;
+	    cohortSubjects.retainAll(highScoreSubjects);    // intersection of sets of users with low and high scores
+	    
+	    CohortDataTable cohort = new CohortDataTable();
+	    
+	    cohort.key = "PheneVisit";
+	    cohort.columns.add("PheneVisit");
+	    cohort.columns.add("DiscoveryCohort");
+	    cohort.columns.add("date");
+	    
+	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+	        ArrayList<String> cohortRow = new ArrayList<String>();
+	        ArrayList<String> cohortDataRow = entry.getValue();
+	        cohortRow.add(entry.getKey());
+	        String subject = cohortDataRow.get(subjectIndex);
+	        if (cohortSubjects.contains(subject)) {
+				String pheneValueString = cohortDataRow.get(pheneIndex);
+				pheneValueString = pheneValueString.trim();
+				
+			  	if (pheneValueString.matches("-?\\d+")) {
+		            int pheneValue = Integer.parseInt(pheneValueString);
+		        
+	        	    if (pheneValue <= lowCutoff) {
+	        	        cohortRow.add("1");
+	        	    }
+	        	    else if (pheneValue >= highCutoff) {
+	        	        cohortRow.add("1");
+	        	    }
+	        	    else {
+	        		    // Intermediate phene value
+	        	        cohortRow.add("0");
+	        	    }
+			  	}
+	        	else {
+	        	    // Blank or non-numeric phene value
+	        	    cohortRow.add("0");
+	        	}
+	        }
+	        else {
+	        	cohortRow.add("0");
+	        }
+	        cohortRow.add(cohortDataRow.get(visitDateIndex));
+	        cohort.data.put(entry.getKey(), cohortRow);
+	    }
+	    
+	    return cohort;
+	}
+	
 	
 	public String toCsv() {
 		StringBuffer csv = new StringBuffer();
@@ -197,101 +309,4 @@ public class CohortDataTable {
 		return workbook;
 	}
 	
-	/**
-	 * Create 3 columns: PheneVisit, DiscoveryCohort, Date
-	 * 
-	 * DiscoveryCohort is 1 if subject is in cohort, date is the date of the visit.
-	 * 
-	 * @param low
-	 * @param high
-	 * @param phene
-	 */
-	public CohortDataTable getCohort(String phene, int lowCutoff, int highCutoff) {
-		// Get the subject column index
-		int subjectIndex = -1;
-		for (int i = 0; i < this.columns.size(); i++) {
-			if (columns.get(i).trim().equalsIgnoreCase("Subject")) {
-				subjectIndex = i;
-				break;
-			}
-		}
-		
-		// Get the selected phene column index
-		int pheneIndex = -1;
-		for (int i = 0; i < this.columns.size(); i++) {
-			if (columns.get(i).trim().equalsIgnoreCase(phene.trim())) {
-				pheneIndex = i;
-				break;
-			}
-		}
-		
-		// Get the "visit date" column index
-		int visitDateIndex = -1;
-		for (int i = 0; i < this.columns.size(); i++) {
-			if (columns.get(i).trim().equalsIgnoreCase("Visit Date")) {
-				visitDateIndex = i;
-				break;
-			}
-		}
-		
-		// Find subjects with low score and subjects with high score
-		TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
-		TreeSet<String> highScoreSubjects  = new TreeSet<String>();
-		TreeSet<String> intermediateScores = new TreeSet<String>();
-		
-		
-	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-	    	ArrayList<String> row = entry.getValue();
-			String pheneValueString = row.get(pheneIndex);
-			String subject = row.get(subjectIndex);
-			if (pheneValueString != null) {
-				pheneValueString = pheneValueString.trim();
-				if (pheneValueString.matches("\\d+")) {
-					int pheneValue = Integer.parseInt(pheneValueString);
-					
-					if (pheneValue <= lowCutoff) {
-						lowScoreSubjects.add(subject);
-					}
-					
-					if (pheneValue >= highCutoff) {
-						highScoreSubjects.add(subject);
-					}
-					
-					if (pheneValue > lowCutoff && pheneValue < highCutoff) {
-						intermediateScores.add(subject);
-					}
-				}
-			}
-	    }
-	    
-	    // Set cohort subjects as the intersection of subject sets with low and high phene scores, i.e., 
-	    // subjects with both low and high phene values, minus subjects that have intermediate scores
-	    TreeSet<String> cohortSubjects = lowScoreSubjects;
-	    cohortSubjects.retainAll(highScoreSubjects);    // intersection of sets of users with low and high scores
-	    cohortSubjects.removeAll(intermediateScores);   // remove users that have intermediate scores
-	    
-	    CohortDataTable cohort = new CohortDataTable();
-	    
-	    cohort.key = "PheneVisit";
-	    cohort.columns.add("PheneVisit");
-	    cohort.columns.add("DiscoveryCohort");
-	    cohort.columns.add("date");
-	    
-	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-	        ArrayList<String> cohortRow = new ArrayList<String>();
-	        ArrayList<String> row = entry.getValue();
-	        cohortRow.add(entry.getKey());
-	        String subject = row.get(subjectIndex);
-	        if (cohortSubjects.contains(subject)) {
-	        	cohortRow.add("1");
-	        }
-	        else {
-	        	cohortRow.add("0");
-	        }
-	        cohortRow.add(row.get(visitDateIndex));
-	        cohort.data.put(entry.getKey(), cohortRow);
-	    }
-	    
-	    return cohort;
-	}
 }

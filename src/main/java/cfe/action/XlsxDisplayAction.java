@@ -18,8 +18,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.ServletActionContext;
 
-import com.opencsv.CSVReader;
-
 import cfe.action.ActionErrorException;
 import cfe.utils.Authorization;
 import cfe.utils.Filter;
@@ -85,7 +83,7 @@ public class XlsxDisplayAction extends BaseAction implements SessionAware {
     	else {
     		//try {
     		if (spreadsheetFilePath == null || spreadsheetFilePath.trim().equals("")) {
-    			throw new ActionErrorException("No CSV file was specified.");
+    			throw new ActionErrorException("No .xslx file was specified.");
     		}
 
     	    Path path = Paths.get(spreadsheetFilePath); 

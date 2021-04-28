@@ -19,7 +19,7 @@
     }
 </script>
 
-<h1>Discovery Cohort</h1>
+<h2>Discovery Cohort</h2>
 
 <s:actionerror />
 
@@ -53,6 +53,45 @@ Microarray Table: <s:property value="microarrayTable" />
 <%--
 <s:property value="cohortCsv" />
 --%>
+
+<hr/>
+
+<h2>Discovery Processing</h2>
+
+<s:form theme="simple" action="DiscoveryCalculate">
+    Discovery CSV file: <s:file name="discoveryCsv"
+    cssStyle="margin-bottom: 12px;"/>
+     
+    <s:hidden name="diagnosisCode" />
+    <s:hidden name="discoveryDbFileName" />
+    <s:hidden name="discoveryCsvFileName" />
+    <s:hidden name="pheneSelection" />
+    
+    <h2>Diagnosis</h2>
+    <table class="dataTable" style="margin-top: 1em;">
+        <tr>
+            <th> Diagnosis&nbsp;Code </th>
+            <th> Examples </th>
+        </tr>
+        <s:iterator value="diagnosisCodes">
+            <tr>
+                <td> <s:radio name="diagnosisCode" list="{key}" /> </td>
+                <td> <s:property value="value"/> </td>
+            </tr>
+        </s:iterator>
+    </table>
+    
+    <div style="margin-top: 1em; font-weight: bold;">
+        <s:submit value="Process" id="processDiscoveryButton" />
+    </div>
+
+    
+    <s:token />
+</s:form>
+
+<p>&nbsp;</p>
+
+
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

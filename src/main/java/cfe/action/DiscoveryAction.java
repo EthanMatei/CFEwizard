@@ -175,19 +175,32 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		FileUtils.writeStringToFile(cohortDataCsvTempFile, cohortDataCsv, "UTF-8");
 		this.cohortDataCsvFile = cohortDataCsvTempFile.getAbsolutePath();
 		
+		db.close();
+		
 
-		// Create cohort CSV file
+		// Create cohort and cohort CSV file
 		CohortDataTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
         String cohortCsv = cohort.toCsv();
+        
+        // Update cohort table in Access database
+        String temp = this.discoveryDbTempFileName;
 		
 		File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
 		FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
 		this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
         
+		// Get diagnosis codes needed for calculation
+		PheneVisitParser pheneVisitParser = new PheneVisitParser();
+	    diagnosisCodes = pheneVisitParser.getDiagnosisCodes(this.discoveryDbTempFileName);
+	    
 		return result;
 	}
 	
-
+	public String calculate() throws Exception {
+		String result = SUCCESS;
+		return result;
+	}
+	
 	public String execute() throws Exception {
 		String result = SUCCESS;
 		

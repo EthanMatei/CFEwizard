@@ -1,6 +1,7 @@
 package cfe.parser;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
 import com.healthmarketscience.jackcess.TableMetaData;
 
+import cfe.utils.CohortDataTable;
 import cfe.utils.ColumnInfo;
 
 public class DiscoveryDatabaseParser {
@@ -106,7 +108,8 @@ public class DiscoveryDatabaseParser {
 		}
 		
 		return map;
-	}	
+	}
+	
 	public List<String> getCohorts(String msAccessFile) throws Exception {
 		List<String> cohorts = new ArrayList<String>();
 		
@@ -151,4 +154,33 @@ public class DiscoveryDatabaseParser {
 	    
         return diagnosisCodes;
 	}
+	
+	public void deleteTableRows(String msAccessFile, String tableName) throws IOException {
+		Database db = DatabaseBuilder.open(new File(msAccessFile));
+	    Table table = db.getTable(tableName);
+	    for (Row row: table) {
+	    	table.deleteRow(row);
+	    }
+	}
+	
+	public void addRows(String msAccessFile, String tableName, List<String[]> rowValues) throws IOException {
+		Database db = DatabaseBuilder.open(new File(msAccessFile));
+	    Table table = db.getTable(tableName);
+
+	    table.addRows(rowValues);
+	}
+
+	/**
+	 * Replaces the current rows in the specified table with the specified row values.
+	 * 
+	 * @param msAccessFile
+	 * @param tableName
+	 * @param rowValues
+	 * @throws IOException
+	 */
+	public void replaceRows(String msAccessFile, String tableName, List<String[]> rowValues) throws IOException {
+		this.deleteTableRows(msAccessFile, tableName);
+		this.addRows(msAccessFile, tableName, rowValues);
+	}
+	
 }

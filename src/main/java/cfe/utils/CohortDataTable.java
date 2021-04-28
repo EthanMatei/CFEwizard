@@ -42,20 +42,14 @@ public class CohortDataTable {
 	public void initialize(Table table) throws IOException {
 		String tableName = table.getName();
 
-		log.info("");
-		log.info("INITIALIZE");
 		for (Column col: table.getColumns()) {
 			String columnName = col.getName();
-			log.info("COLUMN NAME = \"" + columnName + "\"");
 			if (columnName.trim().equalsIgnoreCase("PheneVisit")) {
-				log.info("SETTING KEY...");
 				key = columnName;
 				columnName = tableName + "." + "PheneVisit";
 			}
 		    columns.add(columnName);
 	    }
-		
-		log.info("KEY = " + key);
 		
 		Row row;
 		while ((row = table.getNextRow()) != null) {
@@ -68,11 +62,7 @@ public class CohortDataTable {
 					column = key; // Reset compound PheneVisit columns names for data retrieval
 				}
 				
-				log.info("COLUMN = " + column);
-				
 				Object obj = row.get(column);
-				
-				log.info("OBJ = " + obj);
 				
 				String type = "";
 				String value = "";
@@ -80,13 +70,25 @@ public class CohortDataTable {
 				    type = obj.getClass().getName();
 				    value = obj.toString();
 			    }
-				log.info("VALUE = " + value);
+				
 				//dataRow.add(row.getString(column));
 				dataRow.add(value);
 			}
 			data.put(pheneVisit, dataRow);
 		}
     }
+	
+	public List<String[]> getValuesAsListOfArrays() {
+		List<String[]> values = new ArrayList<String[]>();
+		
+	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+	        ArrayList<String> dataRow = entry.getValue();
+	        String[] row = dataRow.toArray(new String[dataRow.size()]);
+	        values.add(row);
+	    }
+	    
+		return values;
+	}
 	
 	public CohortDataTable merge(CohortDataTable mergeTable) {
 		// Want to be able to merge - add columns and delete any rows that don't have PheneVisit in BOTH tables ???
@@ -233,8 +235,10 @@ public class CohortDataTable {
 		}
 		
 		// Find subjects with low score and subjects with high score
-		TreeSet<String> lowScoreSubjects = new TreeSet();
-		TreeSet<String> highScoreSubjects = new TreeSet();
+		TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
+		TreeSet<String> highScoreSubjects  = new TreeSet<String>();
+		TreeSet<String> intermediateScores = new TreeSet<String>();
+		
 		
 	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
 	    	ArrayList<String> row = entry.getValue();
@@ -244,20 +248,27 @@ public class CohortDataTable {
 				pheneValueString = pheneValueString.trim();
 				if (pheneValueString.matches("\\d+")) {
 					int pheneValue = Integer.parseInt(pheneValueString);
+					
 					if (pheneValue <= lowCutoff) {
 						lowScoreSubjects.add(subject);
 					}
+					
 					if (pheneValue >= highCutoff) {
 						highScoreSubjects.add(subject);
+					}
+					
+					if (pheneValue > lowCutoff && pheneValue < highCutoff) {
+						intermediateScores.add(subject);
 					}
 				}
 			}
 	    }
 	    
 	    // Set cohort subjects as the intersection of subject sets with low and high phene scores, i.e., 
-	    // subjects with both low and high phene values
+	    // subjects with both low and high phene values, minus subjects that have intermediate scores
 	    TreeSet<String> cohortSubjects = lowScoreSubjects;
-	    cohortSubjects.retainAll(highScoreSubjects);
+	    cohortSubjects.retainAll(highScoreSubjects);    // intersection of sets of users with low and high scores
+	    cohortSubjects.removeAll(intermediateScores);   // remove users that have intermediate scores
 	    
 	    CohortDataTable cohort = new CohortDataTable();
 	    

@@ -26,45 +26,46 @@
 
 <s:form theme="simple" action="DiscoveryCohortSpecification">
 
-<s:hidden name="discoveryDbTempFileName"/>
+    <s:hidden name="discoveryDbTempFileName"/>
+    <s:hidden name="discoveryDbFileName" />
+    <s:hidden name="discoveryCsvFileName" />
 
-<p>
-Low cutoff (&le;): <s:textfield name="lowCutoff"/>
-</p>
+    <p>
+    Low cutoff (&le;): <s:textfield name="lowCutoff"/>
+    </p>
 
-<p>
-High cutoff (&ge;): <s:textfield name="highCutoff"/>
-</p>
+    <p>
+    High cutoff (&ge;): <s:textfield name="highCutoff"/>
+    </p>
 
-<p>
-Microarray table <s:select name="microarrayTable" list="microarrayTables"/>
-</p>
+    <p>
+    Microarray table <s:select name="microarrayTable" list="microarrayTables"/>
+    </p>
 
-<br/>
+    <br/>
 
-
-
-Phenes:
-<hr/>
-<div id="tree">
-<s:iterator value="phenes" var="table" status="pstat">
-        <s:property value="key"/> <br/>
-        <s:iterator value="value" var="pheneValue">
-            <s:radio name="pheneSelection" list="#{#pheneValue.tableAndColumnName:#pheneValue.columnName}" /> <br/>
+    Phenes:
+    <hr/>
+    <div id="tree">
+        <s:iterator value="phenes" var="table" status="pstat">
+                <s:property value="key"/> <br/>
+                <s:iterator value="value" var="pheneValue">
+                    <s:radio name="pheneSelection" list="#{#pheneValue.tableAndColumnName:#pheneValue.columnName}" /> <br/>
+                </s:iterator>
         </s:iterator>
-</s:iterator>
-</div>
+    </div>
 
+    <s:iterator value="validationMsgs" status="vstat">
+        <s:property value="validationMsgs[%{#vstat.index}]" />
+    </s:iterator>
 
-<s:iterator value="validationMsgs" status="vstat">
-    <s:property value="validationMsgs[%{#vstat.index}]" />
-</s:iterator>
-
-<hr />
-
-<s:submit value="Process"/>
+    <hr />
+    
+    <s:submit value="Process"/>
 
 </s:form>
+
+<p>&nbsp;</p>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

@@ -140,7 +140,18 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-						
+		
+		<!--  Upload specified CSV file, get Diagnostic input, and calculate values -->
+		<action name="DiscoveryCalculate" class="cfe.action.DiscoveryAction" method="calculate">
+		    <interceptor-ref name="fileUploadStack"/>
+	        <result name="success">pages/discoveryResult.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/discoveryCohort.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+								
 		<!--  Upload specified database, and parse it to get values for cohort specification -->
 		<!-- 
 		<action name="DiscoveryCohortSpecification" class="cfe.action.DiscoveryAction" method="cohortSpecification">

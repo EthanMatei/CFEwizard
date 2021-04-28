@@ -26,7 +26,7 @@ library(dplyr)
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 5) {
+if (length(args) != 5 && length(args) != 6) {
 	print(paste("Incorrect number of arguments: ", length(args)))
 	stop("Incorrect number of arguments to DEdiscovery script")
 }
@@ -36,6 +36,10 @@ cohortParam        <- args[2]
 diagnosisCodeParam <- args[3]
 dbFile             <- args[4]
 csvFile            <- args[5]
+phene              <- ""
+if (length(args) == 6) {
+	phene <- args[6]
+}
 
 if (diagnosisCodeParam == "All") {
 	diagnosisCodeParam <- ""

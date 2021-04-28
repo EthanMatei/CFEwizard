@@ -43,20 +43,23 @@
 
     <br/>
 
-    Phenes:
-    <hr/>
-    <div id="tree">
-        <s:iterator value="phenes" var="table" status="pstat">
-                <s:property value="key"/> <br/>
+    <h3>Phenes:</h3>
+
+    <div class="scrollable" style="height: 240px;">
+        <div id="tree">
+            <s:iterator value="phenes" var="table" status="pstat">
+                <span style="font-weight: bold;"><s:property value="key"/></span> <br/>
                 <s:iterator value="value" var="pheneValue">
                     <s:radio name="pheneSelection" list="#{#pheneValue.tableAndColumnName:#pheneValue.columnName}" /> <br/>
                 </s:iterator>
-        </s:iterator>
+            </s:iterator>
+        </div>
     </div>
 
     <s:iterator value="validationMsgs" status="vstat">
         <s:property value="validationMsgs[%{#vstat.index}]" />
     </s:iterator>
+    
 
     <hr />
     

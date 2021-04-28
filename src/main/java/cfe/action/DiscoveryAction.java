@@ -248,14 +248,24 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             //---------------------------------------
 			// Create R script command
 			//---------------------------------------
-			String[] rScriptCommand = new String[7];
+			String[] rScriptCommand = new String[8];
 			rScriptCommand[0] = WebAppProperties.getRscriptPath();
 			rScriptCommand[1] = scriptFile;
 			rScriptCommand[2] = scriptDir;
-			rScriptCommand[3] = this.cohort;
+			rScriptCommand[3] = this.cohortCsvFile;   // Change - name of cohort CSV File
 			rScriptCommand[4] = this.diagnosisCode;
 			rScriptCommand[5] = this.discoveryDbTempFileName;
 			rScriptCommand[6] = this.discoveryCsvTempFileName;
+			rScriptCommand[7] = this.pheneSelection;
+			
+			// Log a version of the command used for debugging
+			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
+					+ " " + scriptDir 
+					+ " " + "\"" + this.cohortCsvFile + "\"" + " " + "\"" + this.diagnosisCode + "\"" 
+					+ " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"" + this.pheneSelection;
+			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
+			
+			//scriptOutput = this.runCommand(rScriptCommand);
 		}
 		
 		return result;

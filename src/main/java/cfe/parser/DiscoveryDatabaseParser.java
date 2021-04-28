@@ -170,6 +170,7 @@ public class DiscoveryDatabaseParser {
 	    table.addRows(rowValues);
 	}
 
+
 	/**
 	 * Replaces the current rows in the specified table with the specified row values.
 	 * 

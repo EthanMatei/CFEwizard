@@ -60,10 +60,8 @@
         <s:property value="validationMsgs[%{#vstat.index}]" />
     </s:iterator>
     
-
-    <hr />
     
-    <s:submit value="Process"/>
+    <s:submit style="margin-top: 12px;" value="Process"/>
 
 </s:form>
 

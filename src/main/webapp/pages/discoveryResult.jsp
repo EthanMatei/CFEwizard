@@ -93,7 +93,6 @@ Script Output: <s:property value="scriptOutput" escapeHtml="false"/> <br/>
 
 <h3>System Information</h3>
 
-<h3>Inputs</h3>
 <table class="dataTable">
     <tr>
         <th>Phene Visit DB temp file</th>

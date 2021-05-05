@@ -40,8 +40,8 @@ Microarray Table: <s:property value="microarrayTable" />
     </div>
 </s:a>
 
-<s:a action="CsvDisplay" title="Cohort Spreadsheet">
-    <s:param name="csvFilePath" value="cohortCsvFile" />
+<s:a action="XlsxDisplay" title="Cohort Spreadsheet">
+    <s:param name="spreadsheetFilePath" value="cohortXlsxFile" />
     <div>
     <img border="0"
      style="margin-top: 2px;"

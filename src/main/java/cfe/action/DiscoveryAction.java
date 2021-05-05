@@ -82,6 +82,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private String cohortDataXlsxFile;
 	
 	private String cohortCsvFile;
+	private String cohortXlsxFile;
 	
 	private Set<String> microarrayTables;
 	private String microarrayTable;
@@ -134,6 +135,12 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	    return result;
 	}
 	
+	/**
+	 * Processes cohort specification and generates the cohort from it.
+	 *
+	 * @return
+	 * @throws Exception
+	 */
 	public String cohortSpecification() throws Exception {
 		String result = SUCCESS;
 		
@@ -183,6 +190,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		    File cohortDataXlsxTempFile = File.createTempFile("cohort-data-", ".xslx");
 	    	FileOutputStream out = new FileOutputStream(cohortDataXlsxTempFile);
 		    cohortData.toXlsx().write(out);
+		    out.close();
 		    this.cohortDataXlsxFile = cohortDataXlsxTempFile.getAbsolutePath();
 		
 		    File cohortDataCsvTempFile = File.createTempFile("cohort-data-", ".csv");
@@ -197,14 +205,17 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		    CohortDataTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
             String cohortCsv = cohort.toCsv();
         
-            // Update cohort table in Access database
-            String temp = this.discoveryDbTempFileName;
-		    // FINISH...
-        
 		    File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
 		    FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
 		    this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
-        
+		    
+	    	// Create an Xlsx (spreadsheet) version of the cohort data
+		    File cohortXlsxTempFile = File.createTempFile("cohort-", ".xslx");
+	    	out = new FileOutputStream(cohortXlsxTempFile);
+		    cohort.toXlsx().write(out);
+		    out.close();
+		    this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
+		    
 		    //----------------------------------------------------
 		    // Get diagnosis codes needed for calculation
 		    //----------------------------------------------------
@@ -221,7 +232,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		} else {
-			log.info("*** DIAGNOSIS CODE: " + this.diagnosisCode);
+			log.info("Diagnosis code: " + this.diagnosisCode);
 			this.baseDir = WebAppProperties.getRootDir();
 
 			this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
@@ -635,6 +646,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setCohortDataXlsxFile(String cohortDataXlsxFile) {
 		this.cohortDataXlsxFile = cohortDataXlsxFile;
+	}
+
+	public String getCohortXlsxFile() {
+		return cohortXlsxFile;
+	}
+
+	public void setCohortXlsxFile(String cohortXlsxFile) {
+		this.cohortXlsxFile = cohortXlsxFile;
 	}
 
 }

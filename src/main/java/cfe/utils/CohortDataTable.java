@@ -112,7 +112,8 @@ public class CohortDataTable {
 	}
 
 	/**
-	 * Create 3 columns: PheneVisit, DiscoveryCohort, Date
+	 * Create 4 columns: Subject, PheneVisit, DiscoveryCohort, Date
+	 * Sort by Subject, and then PheneVisit
 	 * 
 	 * DiscoveryCohort is 1 if subject is in cohort, date is the date of the visit.
 	 * 
@@ -180,6 +181,7 @@ public class CohortDataTable {
 	    CohortDataTable cohort = new CohortDataTable();
 	    
 	    cohort.key = "PheneVisit";
+	    cohort.columns.add("Subject");
 	    cohort.columns.add("PheneVisit");
 	    cohort.columns.add("DiscoveryCohort");
 	    cohort.columns.add("date");
@@ -187,8 +189,12 @@ public class CohortDataTable {
 	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
 	        ArrayList<String> cohortRow = new ArrayList<String>();
 	        ArrayList<String> cohortDataRow = entry.getValue();
-	        cohortRow.add(entry.getKey());
+	        
 	        String subject = cohortDataRow.get(subjectIndex);
+	        
+	        cohortRow.add(subject);
+	        cohortRow.add(entry.getKey());
+	        
 	        if (cohortSubjects.contains(subject)) {
 				String pheneValueString = cohortDataRow.get(pheneIndex);
 				pheneValueString = pheneValueString.trim();
@@ -204,7 +210,7 @@ public class CohortDataTable {
 	        	    }
 	        	    else {
 	        		    // Intermediate phene value
-	        	        cohortRow.add("0");
+	        	        cohortRow.add("0.5");
 	        	    }
 			  	}
 	        	else {
@@ -249,10 +255,15 @@ public class CohortDataTable {
 	        		csv.append(",");
 	        	}
 	        	
-	        	if (value.matches("-?\\d+")) {
+	        	value = value.trim();
+	        	
+	        	if (value.matches("^-?\\d+$")) {
 	        		csv.append(value);
 	        	}
-	        	else if (value.matches("dddd-dd-ddTdd:dd")) {
+            	else if (value.matches("^-?\\d+\\.\\d*$")) {
+	        		csv.append(value);
+            	}
+	          	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
 	        		csv.append(value);
 	        	}
 	        	else {
@@ -287,12 +298,19 @@ public class CohortDataTable {
             	String value = dataRow.get(i);
             	
             	if (value == null) value = "";
+            	value = value.trim();
             	
-            	if (value.matches("-?\\d+")) {
+            	if (value.matches("^-?\\d+$")) {
+            		// Integer
             	    int ivalue = Integer.parseInt(value);
                     xlsxRow.createCell(i).setCellValue(ivalue);
             	}
-            	else if (value.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}")) {
+            	else if (value.matches("^-?\\d+\\.\\d*$")) {
+            		double dvalue = Double.parseDouble(value);
+            		xlsxRow.createCell(i).setCellValue(dvalue);
+            	}
+            	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
+            		// Timestamp
             		LocalDateTime dateTime = LocalDateTime.parse(value);
             		xlsxRow.createCell(i).setCellValue(dateTime);
                     CellStyle cellStyle = workbook.createCellStyle();  

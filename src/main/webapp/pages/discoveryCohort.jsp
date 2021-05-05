@@ -90,6 +90,10 @@ Number of High Visits for Cohort Subjects: <s:property value="highVisits" />
             <th> Diagnosis&nbsp;Code </th>
             <th> Examples </th>
         </tr>
+        <tr>
+            <td> <s:radio name="diagnosisCode" list="{'All'}" checked="true" style="fontweight:bold;"/> </td>
+            <td> (All diagnosis codes will be processed) </td>
+        </tr>
         <s:iterator value="diagnosisCodes">
             <tr>
                 <td> <s:radio name="diagnosisCode" list="{key}" /> </td>

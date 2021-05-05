@@ -271,7 +271,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             //---------------------------------------------
 			if (this.diagnosisCode == null) this.diagnosisCode = "";
 			this.diagnosisCode = this.diagnosisCode.trim();
-			if (this.diagnosisCode.equals("")) {
+			if (this.diagnosisCode.equals("") || this.diagnosisCode.equalsIgnoreCase("ALL")) {
 				this.diagnosisCode = "All";
 			}
 			
@@ -313,16 +313,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		else {
 			this.baseDir = WebAppProperties.getRootDir();
 			
-			// Runtime.getRuntime().exec("test.sh");
-			
-			this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
-			this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
-			
-			if (this.cohort == null) this.cohort = "";
-			this.cohort = this.cohort.trim();
-			if (this.cohort.equals("")) {
-				this.cohort = "All";
-			}
+
 			
 			if (this.diagnosisCode == null) this.diagnosisCode = "";
 			this.diagnosisCode = this.diagnosisCode.trim();

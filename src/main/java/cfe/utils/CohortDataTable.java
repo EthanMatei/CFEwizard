@@ -26,90 +26,84 @@ import com.opencsv.CSVReader;
 
 import cfe.action.DiscoveryAction;
 
-public class CohortDataTable {
+public class CohortDataTable extends DataTable {
 	
 	private static final Log log = LogFactory.getLog(CohortDataTable.class);
-    
-	String key;
-	List<String> columns;
-	TreeMap<String, ArrayList<String>> data;
 	
 	public CohortDataTable() {
-		columns = new ArrayList<String>();
-		data = new TreeMap<String, ArrayList<String>>();
+		super("PheneVisit");
 	}
 	
 	public void initialize(Table table) throws IOException {
-		String tableName = table.getName();
 
+		// Reset key, because sometimes PheneVisit is misspelled.
 		for (Column col: table.getColumns()) {
 			String columnName = col.getName();
 			if (columnName.trim().equalsIgnoreCase("PheneVisit")) {
-				key = columnName;
-				columnName = tableName + "." + "PheneVisit";
+				this.key = columnName;
+				break;
 			}
-		    columns.add(columnName);
-	    }
+		}
 		
-		Row row;
-		while ((row = table.getNextRow()) != null) {
-			String pheneVisit = row.getString(key);
-			
-			ArrayList<String> dataRow = new ArrayList<String>();
-			for (String column: columns) {
-				
-				if (column.endsWith(".PheneVisit")) {
-					column = key; // Reset compound PheneVisit columns names for data retrieval
-				}
-				
-				Object obj = row.get(column);
-				
-				String type = "";
-				String value = "";
-				if (obj != null) { 
-				    type = obj.getClass().getName();
-				    value = obj.toString();
-			    }
-				
-				//dataRow.add(row.getString(column));
-				dataRow.add(value);
+		super.initialize(table);
+		
+		// Now, after table has been initialized, make sure key and column name are "PheneVisit"
+		this.key = "PheneVisit";
+		for (int i = 0; i < this.columns.size(); i++) {
+			if (columns.get(i).trim().equalsIgnoreCase("PheneVisit")) {
+				columns.set(i, "PheneVisit");
+				break;
 			}
-			data.put(pheneVisit, dataRow);
 		}
     }
 	
-	public List<String[]> getValuesAsListOfArrays() {
-		List<String[]> values = new ArrayList<String[]>();
+	public CohortDataTable merge(CohortDataTable mergeTable) throws Exception {
+		if (this.key == null || mergeTable.key == null) {
+			throw new Exception("Merge of tables without a key defined.");
+		}
 		
-	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-	        ArrayList<String> dataRow = entry.getValue();
-	        String[] row = dataRow.toArray(new String[dataRow.size()]);
-	        values.add(row);
-	    }
-	    
-		return values;
-	}
-	
-	public CohortDataTable merge(CohortDataTable mergeTable) {
-		// Want to be able to merge - add columns and delete any rows that don't have PheneVisit in BOTH tables ???
 		CohortDataTable merge = new CohortDataTable();
-		merge.key = "PheneVisit";
 		
-		merge.columns.addAll(this.columns);
-		merge.columns.addAll(mergeTable.columns);
+		merge.keyIndex = this.keyIndex;
 		
-		Set<String> keys1 = this.data.keySet();
-		Set<String> keys2 = mergeTable.data.keySet();
+		log.info("MERGE KEY INDEX: " + merge.keyIndex);
+		
+		ArrayList<String> columns1 = new ArrayList<String>();
+		for (String columnName: this.columns) {
+			if (columnName.equals(key)) {
+				columnName = this.name + "." + columnName;
+			}
+			columns1.add(columnName);
+		}
+		
+		ArrayList<String> columns2 = new ArrayList<String>();
+		for (String columnName: mergeTable.columns) {
+			if (columnName.equals(key)) {
+				columnName = mergeTable.name + "." + columnName;
+			}
+			columns2.add(columnName);
+		}	
+		
+		merge.columns.addAll(columns1);
+		merge.columns.addAll(columns2);
+		
+		String columnsString = String.join(", ", merge.columns);
+		log.info("Merged columns: " + columnsString);
+		
+		Set<String> keys1 = this.index.keySet();
+		Set<String> keys2 = mergeTable.index.keySet();
 		keys1.retainAll(keys2);
+		
 		for (String key: keys1) {
 			ArrayList<String> mergedRow = new ArrayList<String>();
-			mergedRow.addAll(this.data.get(key));
-			mergedRow.addAll(mergeTable.data.get(key));
-			merge.data.put(key, mergedRow);
+			mergedRow.addAll(this.index.get(key));
+			mergedRow.addAll(mergeTable.index.get(key));
+			merge.addRow(mergedRow);
 		}
 		
 		return merge;
 	}
+	
 
 	/**
 	 * Create 4 columns: Subject, PheneVisit, DiscoveryCohort, Date
@@ -153,8 +147,7 @@ public class CohortDataTable {
 		TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
 		TreeSet<String> highScoreSubjects  = new TreeSet<String>();
 		
-	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-	    	ArrayList<String> row = entry.getValue();
+	    for (ArrayList<String> row : this.data) {
 			String pheneValueString = row.get(pheneIndex);
 			String subject = row.get(subjectIndex);
 			if (pheneValueString != null) {
@@ -186,14 +179,16 @@ public class CohortDataTable {
 	    cohort.columns.add("DiscoveryCohort");
 	    cohort.columns.add("date");
 	    
-	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
+	    log.info("Going to add data rows to cohort...");
+	    
+	    for (ArrayList<String> cohortDataRow: this.data) {
 	        ArrayList<String> cohortRow = new ArrayList<String>();
-	        ArrayList<String> cohortDataRow = entry.getValue();
 	        
 	        String subject = cohortDataRow.get(subjectIndex);
+	        String keyValue = cohortDataRow.get(this.keyIndex);
 	        
 	        cohortRow.add(subject);
-	        cohortRow.add(entry.getKey());
+	        cohortRow.add(keyValue);
 	        
 	        if (cohortSubjects.contains(subject)) {
 				String pheneValueString = cohortDataRow.get(pheneIndex);
@@ -222,109 +217,10 @@ public class CohortDataTable {
 	        	cohortRow.add("0");
 	        }
 	        cohortRow.add(cohortDataRow.get(visitDateIndex));
-	        cohort.data.put(entry.getKey(), cohortRow);
+	        cohort.addRow(cohortRow);
 	    }
 	    
 	    return cohort;
 	}
-	
-	
-	public String toCsv() {
-		StringBuffer csv = new StringBuffer();
-		//csv.append(this.key);
-		boolean first = true;
-		for (String column: this.columns) {
-			if (first) {
-			    csv.append(column);
-			    first = false;
-			}
-			else {
-			    csv.append("," + column);
-			}
-		}
-		csv.append("\n");
 		
-	    for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-	        //csv.append(entry.getKey());
-	        first = true;
-	        for (String value: entry.getValue()) {
-	        	if (first) {
-	        		first = false;
-	        	}
-	        	else {
-	        		csv.append(",");
-	        	}
-	        	
-	        	value = value.trim();
-	        	
-	        	if (value.matches("^-?\\d+$")) {
-	        		csv.append(value);
-	        	}
-            	else if (value.matches("^-?\\d+\\.\\d*$")) {
-	        		csv.append(value);
-            	}
-	          	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
-	        		csv.append(value);
-	        	}
-	        	else {
-	        	    csv.append("\"" + value + "\"");
-	        	}
-	        }
-	        csv.append("\n");
-	    }
-	    return csv.toString();
-	}
-	
-	public XSSFWorkbook toXlsx() {
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("data");
-        
-        CreationHelper createHelper = workbook.getCreationHelper();
-        
-        // Header row
-        int rowNumber = 0;
-        XSSFRow xlsxRow = sheet.createRow(rowNumber);
-        for (int i = 0; i < columns.size(); i++) {
-            xlsxRow.createCell(i).setCellValue(columns.get(i));
-        }
-
-        for (Map.Entry<String, ArrayList<String>> entry : this.data.entrySet()) {
-        	rowNumber++;
-            xlsxRow = sheet.createRow(rowNumber);
-            
-            ArrayList<String> dataRow = entry.getValue();
-            
-            for (int i = 0; i < dataRow.size(); i++){
-            	String value = dataRow.get(i);
-            	
-            	if (value == null) value = "";
-            	value = value.trim();
-            	
-            	if (value.matches("^-?\\d+$")) {
-            		// Integer
-            	    int ivalue = Integer.parseInt(value);
-                    xlsxRow.createCell(i).setCellValue(ivalue);
-            	}
-            	else if (value.matches("^-?\\d+\\.\\d*$")) {
-            		double dvalue = Double.parseDouble(value);
-            		xlsxRow.createCell(i).setCellValue(dvalue);
-            	}
-            	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
-            		// Timestamp
-            		LocalDateTime dateTime = LocalDateTime.parse(value);
-            		xlsxRow.createCell(i).setCellValue(dateTime);
-                    CellStyle cellStyle = workbook.createCellStyle();  
-                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yy")); 
-                    		//.getFormat("m/d/yy h:mm"));  
-            		xlsxRow.getCell(i).setCellStyle(cellStyle);
-            	}
-            	else {
-                    xlsxRow.createCell(i).setCellValue(value);
-            	}
-            }
-        }
-
-		return workbook;
-	}
-	
 }

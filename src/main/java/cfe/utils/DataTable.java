@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +38,7 @@ public class DataTable {
     
 	protected String name; // name of the table
 	protected String key;  // primary key column name
+	protected int keyIndex; // primary key column number
 	protected Map<String, ArrayList<String>> index; // primary key index
 	protected List<String> columns;
 	protected List<ArrayList<String>> data;
@@ -47,6 +50,7 @@ public class DataTable {
 		this.index = new TreeMap<String, ArrayList<String>>();
 	}
 	
+	
 	/**
 	 * Initializes with MS Access table.
 	 * 
@@ -56,9 +60,14 @@ public class DataTable {
 	public void initialize(Table table) throws IOException {
 		this.name = table.getName();
 
+		int columnIndex = 0;
 		for (Column col: table.getColumns()) {
 			String columnName = col.getName();
 		    columns.add(columnName);
+		    if (columnName.equals(this.key)) {
+		    	this.keyIndex = columnIndex;
+		    }
+		    columnIndex++;
 	    }
 		
 		String keyValue = null;
@@ -76,7 +85,7 @@ public class DataTable {
 				if (obj != null) { 
 				    type = obj.getClass().getName();
 				    value = obj.toString();
-					if (key != null && column.contentEquals(key)) {
+					if (key != null && column.equals(key)) {
 						keyValue = value;
 					}
 			    }
@@ -85,12 +94,21 @@ public class DataTable {
 				dataRow.add(value);
 			}
 			
-			if (keyValue != null) {
-			    this.index.put(keyValue, dataRow);
-			}
-			data.add(dataRow);
+			this.addRow(dataRow);
 		}
     }
+	
+	public void addRow(ArrayList<String> row) {
+		data.add(row);
+		
+		// Update index
+		if (this.key != null) {
+			String keyValue = row.get(this.keyIndex);
+		    if (keyValue != null) {
+		        this.index.put(keyValue, row);
+		    }
+		}
+	}
 	
 	public List<String[]> getValuesAsListOfArrays() {
 		List<String[]> values = new ArrayList<String[]>();
@@ -103,6 +121,35 @@ public class DataTable {
 		return values;
 	}
 	
+	public void sort(String columnName)
+	{
+		int index = this.columns.indexOf(columnName);
+		
+        Collections.sort(this.data, new Comparator<ArrayList<String>>() {
+	            @Override
+	            public int compare(ArrayList<String> row1, ArrayList<String> row2) {
+	                return row1.get(index).compareTo(row2.get(index));
+	            }
+	        });
+	}
+
+	public void sort(String column1, String column2)
+	{
+		int index1 = this.columns.indexOf(column1);
+		int index2 = this.columns.indexOf(column2);
+		
+        Collections.sort(this.data, new Comparator<ArrayList<String>>() {
+	            @Override
+	            public int compare(ArrayList<String> row1, ArrayList<String> row2) {
+	            	int compare = row1.get(index1).compareTo(row2.get(index1));
+	            	if (compare == 0) {
+	            		compare = row1.get(index2).compareTo(row2.get(index2));
+	            	}
+	                return compare;
+	            }
+	        });
+	}
+
 	/**
 	 * Merges data tables based on key. Key columns are renamed to be prefixed with the table name.
 	 * @param mergeTable
@@ -114,6 +161,7 @@ public class DataTable {
 		}
 		
 		DataTable merge = new DataTable(this.key);
+		merge.keyIndex = this.keyIndex;
 		
 		ArrayList<String> columns1 = new ArrayList<String>();
 		for (String columnName: this.columns) {
@@ -126,7 +174,7 @@ public class DataTable {
 		ArrayList<String> columns2 = new ArrayList<String>();
 		for (String columnName: mergeTable.columns) {
 			if (columnName.equals(key)) {
-				columnName = this.name + "." + columnName;
+				columnName = mergeTable.name + "." + columnName;
 			}
 			columns2.add(columnName);
 		}
@@ -176,10 +224,15 @@ public class DataTable {
 	        		csv.append(",");
 	        	}
 	        	
-	        	if (value.matches("-?\\d+")) {
+	        	value = value.trim();
+	        	
+	        	if (value.matches("^-?\\d+$")) {
 	        		csv.append(value);
 	        	}
-            	else if (value.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}")) {
+            	else if (value.matches("^-?\\d+\\.\\d*$")) {
+	        		csv.append(value);
+            	}
+	          	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
 	        		csv.append(value);
 	        	}
 	        	else {
@@ -212,12 +265,17 @@ public class DataTable {
             	String value = dataRow.get(i);
             	
             	if (value == null) value = "";
+            	value = value.trim();
             	
-            	if (value.matches("-?\\d+")) {
+            	if (value.matches("^-?\\d+$")) {
             	    int ivalue = Integer.parseInt(value);
                     xlsxRow.createCell(i).setCellValue(ivalue);
             	}
-            	else if (value.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}")) {
+            	else if (value.matches("^-?\\d+\\.\\d*$")) {
+            		double dvalue = Double.parseDouble(value);
+            		xlsxRow.createCell(i).setCellValue(dvalue);
+            	}
+            	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
             		LocalDateTime dateTime = LocalDateTime.parse(value);
             		xlsxRow.createCell(i).setCellValue(dateTime);
                     CellStyle cellStyle = workbook.createCellStyle();  

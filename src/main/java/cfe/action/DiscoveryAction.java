@@ -42,7 +42,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private String discoveryCsvFileName;
 	
 	private File discoveryDb;
-	private String discoverDbContentType;
+	private String discoveryDbContentType;
 	private String discoveryDbFileName;
 	
 	private String discoveryDbTempFileName;
@@ -86,6 +86,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private Set<String> microarrayTables;
 	private String microarrayTable;
+	
+	private String errorMessage;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	
@@ -141,86 +143,93 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	 * @return
 	 * @throws Exception
 	 */
-	public String cohortSpecification() throws Exception {
+	public String cohortSpecification() {
 		String result = SUCCESS;
-		
+
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		} else {
-		    // Split phene selection into table and phene
-		    String[] pheneInfo = pheneSelection.split("\\|", 2);
-		    this.pheneTable = pheneInfo[0];
-		    this.pheneSelection = pheneInfo[1];
-		    log.info("Phene \"" + pheneSelection + "\" selected from table \"" + pheneTable + "\"");
-		
-		    //-------------------------------------------------
-		    // Create the chort data table
-		    //-------------------------------------------------
-		    Database db = DatabaseBuilder.open(new File(this.discoveryDbTempFileName));
-		
-		    Table subjectIdentifiers = db.getTable("Subject Identifiers");
-		    Table demographics       = db.getTable("Demographics");
-		    Table diagnosis          = db.getTable("Diagnosis");
-		    Table pheneData          = db.getTable(this.pheneTable);
-		    Table chips              = db.getTable(this.microarrayTable);
-		
-	    	CohortDataTable subjectIdentifiersData = new CohortDataTable();
-		    subjectIdentifiersData.initialize(subjectIdentifiers);
-		
-		    CohortDataTable demographicsData = new CohortDataTable();
-		    demographicsData.initialize(demographics);
-		
-		    CohortDataTable diagnosisData = new CohortDataTable();
-		    diagnosisData.initialize(diagnosis);
-		
-		    CohortDataTable pheneDataData = new CohortDataTable();
-		    pheneDataData.initialize(pheneData);
-		
-		    CohortDataTable chipsData = new CohortDataTable();
-		    chipsData.initialize(chips);
-		
-		    CohortDataTable cohortData = subjectIdentifiersData.merge(demographicsData);
-		    cohortData = cohortData.merge(diagnosisData);
-		    cohortData = cohortData.merge(pheneDataData);
-		    cohortData = cohortData.merge(chipsData);
-		
-		    this.cohortDataCsv = cohortData.toCsv();
-		
-	    	// Create an Xlsx (spreadsheet) version of the cohort data
-		    File cohortDataXlsxTempFile = File.createTempFile("cohort-data-", ".xslx");
-	    	FileOutputStream out = new FileOutputStream(cohortDataXlsxTempFile);
-		    cohortData.toXlsx().write(out);
-		    out.close();
-		    this.cohortDataXlsxFile = cohortDataXlsxTempFile.getAbsolutePath();
-		
-		    File cohortDataCsvTempFile = File.createTempFile("cohort-data-", ".csv");
-		    FileUtils.writeStringToFile(cohortDataCsvTempFile, cohortDataCsv, "UTF-8");
-		    this.cohortDataCsvFile = cohortDataCsvTempFile.getAbsolutePath();
-		
-		    db.close();
-		
-            //-------------------------------------------
-		    // Create cohort and cohort CSV file
-		    //-------------------------------------------
-		    CohortDataTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
-            String cohortCsv = cohort.toCsv();
-        
-		    File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
-		    FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
-		    this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
-		    
-	    	// Create an Xlsx (spreadsheet) version of the cohort data
-		    File cohortXlsxTempFile = File.createTempFile("cohort-", ".xslx");
-	    	out = new FileOutputStream(cohortXlsxTempFile);
-		    cohort.toXlsx().write(out);
-		    out.close();
-		    this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
-		    
-		    //----------------------------------------------------
-		    // Get diagnosis codes needed for calculation
-		    //----------------------------------------------------
-		    PheneVisitParser pheneVisitParser = new PheneVisitParser();
-	        diagnosisCodes = pheneVisitParser.getDiagnosisCodes(this.discoveryDbTempFileName);
+			try {
+				// Split phene selection into table and phene
+				String[] pheneInfo = pheneSelection.split("\\|", 2);
+				this.pheneTable = pheneInfo[0];
+				this.pheneSelection = pheneInfo[1];
+				log.info("Phene \"" + pheneSelection + "\" selected from table \"" + pheneTable + "\"");
+
+				//-------------------------------------------------
+				// Create the chort data table
+				//-------------------------------------------------
+				Database db = DatabaseBuilder.open(new File(this.discoveryDbTempFileName));
+
+				Table subjectIdentifiers = db.getTable("Subject Identifiers");
+				Table demographics       = db.getTable("Demographics");
+				Table diagnosis          = db.getTable("Diagnosis");
+				Table pheneData          = db.getTable(this.pheneTable);
+				Table chips              = db.getTable(this.microarrayTable);
+
+				CohortDataTable subjectIdentifiersData = new CohortDataTable();
+				subjectIdentifiersData.initialize(subjectIdentifiers);
+
+				CohortDataTable demographicsData = new CohortDataTable();
+				demographicsData.initialize(demographics);
+
+				CohortDataTable diagnosisData = new CohortDataTable();
+				diagnosisData.initialize(diagnosis);
+
+				CohortDataTable pheneDataData = new CohortDataTable();
+				pheneDataData.initialize(pheneData);
+
+				CohortDataTable chipsData = new CohortDataTable();
+				chipsData.initialize(chips);
+
+				CohortDataTable cohortData = subjectIdentifiersData.merge(demographicsData);
+				cohortData = cohortData.merge(diagnosisData);
+				cohortData = cohortData.merge(pheneDataData);
+				cohortData = cohortData.merge(chipsData);
+				
+				this.cohortDataCsv = cohortData.toCsv();
+
+				// Create an Xlsx (spreadsheet) version of the cohort data
+				File cohortDataXlsxTempFile = File.createTempFile("cohort-data-", ".xslx");
+				FileOutputStream out = new FileOutputStream(cohortDataXlsxTempFile);
+				cohortData.toXlsx().write(out);
+				out.close();
+				this.cohortDataXlsxFile = cohortDataXlsxTempFile.getAbsolutePath();
+
+				File cohortDataCsvTempFile = File.createTempFile("cohort-data-", ".csv");
+				FileUtils.writeStringToFile(cohortDataCsvTempFile, cohortDataCsv, "UTF-8");
+				this.cohortDataCsvFile = cohortDataCsvTempFile.getAbsolutePath();
+
+				db.close();
+
+				//-------------------------------------------
+				// Create cohort and cohort CSV file
+				//-------------------------------------------
+				CohortDataTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
+				cohort.sort("Subject", "PheneVisit");
+				String cohortCsv = cohort.toCsv();
+
+				File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
+				FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
+				this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
+
+				// Create an Xlsx (spreadsheet) version of the cohort data
+				File cohortXlsxTempFile = File.createTempFile("cohort-", ".xslx");
+				out = new FileOutputStream(cohortXlsxTempFile);
+				cohort.toXlsx().write(out);
+				out.close();
+				this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
+
+				//----------------------------------------------------
+				// Get diagnosis codes needed for calculation
+				//----------------------------------------------------
+				PheneVisitParser pheneVisitParser = new PheneVisitParser();
+				diagnosisCodes = pheneVisitParser.getDiagnosisCodes(this.discoveryDbTempFileName);
+			} catch (Exception exception) {
+				result = ERROR;
+				log.error("*** ERROR: " + exception.getMessage());
+				errorMessage = exception.getLocalizedMessage();
+			}
 		}
 		
 		return result;
@@ -439,12 +448,12 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		this.discoveryDb = discoveryDb;
 	}
 
-	public String getDiscoverDbContentType() {
-		return discoverDbContentType;
+	public String getDiscoveryDbContentType() {
+		return discoveryDbContentType;
 	}
 
-	public void setDiscoverDbContentType(String discoverDbContentType) {
-		this.discoverDbContentType = discoverDbContentType;
+	public void setDiscoveryDbContentType(String discoverDbContentType) {
+		this.discoveryDbContentType = discoverDbContentType;
 	}
 
 	public String getDiscoveryDbFileName() {
@@ -654,6 +663,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setCohortXlsxFile(String cohortXlsxFile) {
 		this.cohortXlsxFile = cohortXlsxFile;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 
 }

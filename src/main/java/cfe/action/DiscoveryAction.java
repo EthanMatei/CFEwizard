@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private int numberOfSubjects;
 	private int lowVisits;
 	private int highVisits;
+	
+	private String scriptOutputTextFile;
 	
 	private String errorMessage;
 	
@@ -278,15 +281,16 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             //---------------------------------------
 			// Create R script command
 			//---------------------------------------
-			String[] rScriptCommand = new String[8];
-			rScriptCommand[0] = WebAppProperties.getRscriptPath();
-			rScriptCommand[1] = scriptFile;
+			String[] rScriptCommand = new String[9];
+			rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
+			rScriptCommand[1] = scriptFile;     // The R script to run
 			rScriptCommand[2] = scriptDir;
 			rScriptCommand[3] = this.cohortCsvFile;   // Change - name of cohort CSV File
 			rScriptCommand[4] = this.diagnosisCode;
 			rScriptCommand[5] = this.discoveryDbTempFileName;
 			rScriptCommand[6] = this.discoveryCsvTempFileName;
 			rScriptCommand[7] = this.pheneSelection;
+			rScriptCommand[8] = this.pheneTable;
 			
 			// Log a version of the command used for debugging
 			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
@@ -295,7 +299,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 					+ " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"" + this.pheneSelection;
 			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
 			
-			//scriptOutput = this.runCommand(rScriptCommand);
+			scriptOutput = this.runCommand(rScriptCommand);
+			
+			File scriptOutputTextTempFile = File.createTempFile("discovery-r-script-output-", ".txt");
+			FileOutputStream out = new FileOutputStream(scriptOutputTextTempFile);
+			PrintWriter writer = new PrintWriter(out);
+			writer.write(scriptOutput);
+			writer.close();
+			this.scriptOutputTextFile = scriptOutputTextTempFile.getAbsolutePath();
+			log.info("script output text file: " + scriptOutputTextFile);
 		}
 		
 		return result;
@@ -382,10 +394,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		StringBuilder output = new StringBuilder();
 		
         //Process process = Runtime.getRuntime().exec(command);
+		
+		log.info("run command: " + String.join(" ", command));
         
 		// This allows debugging:
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true); // redirect standard error to standard output
+        
+        log.info("*** Before process start");
         Process process = processBuilder.start();
 
 
@@ -397,11 +413,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	        output.append(line + "\n");
 	    }
 
+	    log.info("*** Going to wait for process...");
 	    int status = process.waitFor();
 	    if (status != 0) {
             //throw new Exception("Command \"" + command + "\" exited with code " + status);
 	    }
-
+	    
+	    reader.close();
+        log.info("*** reader closed");
 		return output.toString();
 	}
 	
@@ -696,6 +715,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setHighVisits(int highVisits) {
 		this.highVisits = highVisits;
+	}
+
+	public String getScriptOutputTextFile() {
+		return scriptOutputTextFile;
+	}
+
+	public void setScriptOutputTextFile(String scriptOutputTextFile) {
+		this.scriptOutputTextFile = scriptOutputTextFile;
 	}
 
 }

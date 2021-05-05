@@ -52,16 +52,14 @@ Diagnosis Code:<s:property value="diagnosisCode"/> <br />
 <h3>Results</h3>
 
 
-<p>
 Output file: <s:property value="outputFile"/>
-</p>
 
 <s:a action="CsvDisplay" title="Download Excel spreadsheet">
     <s:param name="csvFilePath" value="outputFile" />
     <div>
     <img border="0"
      style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/application-vnd.ms-excel.png'/>"
+     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
      alt="Output" /> <br />
     <s:property value="outputFileName"/>
     </div>
@@ -69,17 +67,14 @@ Output file: <s:property value="outputFile"/>
 
 <br/>
 
-
-<p>
 Report file: <s:property value="reportFile"/>
-</p>
 
 <s:a action="CsvDisplay" title="Download Excel spreadsheet">
     <s:param name="csvFilePath" value="reportFile" />
     <div>
     <img border="0"
      style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/application-vnd.ms-excel.png'/>"
+     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
      alt="Report" /> <br />
     <s:property value="reportFileName"/>
     </div>
@@ -87,7 +82,19 @@ Report file: <s:property value="reportFile"/>
 
 
 <br/>
-Script Output: <s:property value="scriptOutput" escapeHtml="false"/> <br/>
+Script Output:
+
+<s:a action="TextFileDisplay" title="Script output file">
+    <s:param name="textFilePath" value="scriptOutputTextFile" />
+    <div>
+    <img border="0"
+     style="margin-top: 2px;"
+     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
+     alt="R Script Output" /> <br />
+    <s:property value="reportFileName"/>
+    </div>
+</s:a>
+
 
 <hr style="margin-top: 12px;"/>
 

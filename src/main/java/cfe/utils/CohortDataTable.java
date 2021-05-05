@@ -26,6 +26,12 @@ import com.opencsv.CSVReader;
 
 import cfe.action.DiscoveryAction;
 
+/**
+ * Class for storing the the merged data tables used to construct the Discovery cohort.
+ * 
+ * @author Jim Mullen
+ *
+ */
 public class CohortDataTable extends DataTable {
 	
 	private static final Log log = LogFactory.getLog(CohortDataTable.class);
@@ -115,7 +121,7 @@ public class CohortDataTable extends DataTable {
 	 * @param high
 	 * @param phene
 	 */
-	public CohortDataTable getCohort(String phene, int lowCutoff, int highCutoff) {
+	public CohortTable getCohort(String phene, int lowCutoff, int highCutoff) {
 		// Get the subject column index
 		int subjectIndex = -1;
 		for (int i = 0; i < this.columns.size(); i++) {
@@ -146,7 +152,7 @@ public class CohortDataTable extends DataTable {
 		// Find subjects with low score and subjects with high score
 		TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
 		TreeSet<String> highScoreSubjects  = new TreeSet<String>();
-		
+
 	    for (ArrayList<String> row : this.data) {
 			String pheneValueString = row.get(pheneIndex);
 			String subject = row.get(subjectIndex);
@@ -171,7 +177,40 @@ public class CohortDataTable extends DataTable {
 	    TreeSet<String> cohortSubjects = lowScoreSubjects;
 	    cohortSubjects.retainAll(highScoreSubjects);    // intersection of sets of users with low and high scores
 	    
-	    CohortDataTable cohort = new CohortDataTable();
+	    //---------------------------------------------------------------------------
+	    // Calculate the number of low and high visits for subjects in the cohort
+	    //---------------------------------------------------------------------------
+		int lowVisits          = 0;
+		int highVisits         = 0;
+		
+	    for (ArrayList<String> row : this.data) {
+			String pheneValueString = row.get(pheneIndex);
+			String subject = row.get(subjectIndex);
+			if (cohortSubjects.contains(subject) && pheneValueString != null) {
+				pheneValueString = pheneValueString.trim();
+				// If the phene value is an integer
+				if (pheneValueString.matches("\\d+")) {
+					int pheneValue = Integer.parseInt(pheneValueString);
+					
+					if (pheneValue <= lowCutoff) {
+						lowVisits++;
+					}
+					
+					if (pheneValue >= highCutoff) {
+						highVisits++;
+					}
+				}
+			}
+	    }
+	    
+	    //-----------------------------------------
+	    // Create the cohort table
+	    //-----------------------------------------
+	    CohortTable cohort = new CohortTable();
+	    
+	    cohort.setSubjects(cohortSubjects);
+	    cohort.setLowVisits(lowVisits);
+	    cohort.setHighVisits(highVisits);
 	    
 	    cohort.key = "PheneVisit";
 	    cohort.columns.add("Subject");

@@ -27,6 +27,7 @@ import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
+import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.WebAppProperties;
 
@@ -86,6 +87,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private Set<String> microarrayTables;
 	private String microarrayTable;
+	
+	private int numberOfSubjects;
+	private int lowVisits;
+	private int highVisits;
 	
 	private String errorMessage;
 	
@@ -205,8 +210,13 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				//-------------------------------------------
 				// Create cohort and cohort CSV file
 				//-------------------------------------------
-				CohortDataTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
+				CohortTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
 				cohort.sort("Subject", "PheneVisit");
+				
+				this.numberOfSubjects = cohort.getNumberOfSubjects();
+				this.lowVisits = cohort.getLowVisits();
+				this.highVisits = cohort.getHighVisits();
+				
 				String cohortCsv = cohort.toCsv();
 
 				File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
@@ -671,6 +681,30 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+
+	public int getNumberOfSubjects() {
+		return numberOfSubjects;
+	}
+
+	public void setNumberOfSubjects(int numberOfSubjects) {
+		this.numberOfSubjects = numberOfSubjects;
+	}
+
+	public int getLowVisits() {
+		return lowVisits;
+	}
+
+	public void setLowVisits(int lowVisits) {
+		this.lowVisits = lowVisits;
+	}
+
+	public int getHighVisits() {
+		return highVisits;
+	}
+
+	public void setHighVisits(int highVisits) {
+		this.highVisits = highVisits;
 	}
 
 }

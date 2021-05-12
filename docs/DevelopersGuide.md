@@ -98,6 +98,15 @@ Then a release should be created in GitHub with the name "CFE Wizard _release-nu
 with a description of the major changes for this release.
 
 
+#### GitHub Workflow
+
+The CFE Wizard code is stored in an IU GitHub repository. This repository needs to be cloned to your personal
+computer, and changes made there. Once changes are complete, they can be pushed to the IU GitHub repository.
+In general, development is done on the **develop** branch, or a branch off of the develop branch.
+When a new version is complete, the branch it was developed on is merged with the **master** branch, and
+the version is numbered and tagged (see above).
+
+![CFE GitHub Workflow](cfe-github.png "CFE GitHub Workflow")
 
 
 

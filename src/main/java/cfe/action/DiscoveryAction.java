@@ -98,6 +98,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private String errorMessage;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
+	private String scriptOutputTextFileName;
 	
 	public String initialize() throws Exception {
 		String result = SUCCESS;
@@ -281,7 +282,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             //---------------------------------------
 			// Create R script command
 			//---------------------------------------
-			String[] rScriptCommand = new String[9];
+			String[] rScriptCommand = new String[11];
 			rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
 			rScriptCommand[1] = scriptFile;     // The R script to run
 			rScriptCommand[2] = scriptDir;
@@ -291,6 +292,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			rScriptCommand[6] = this.discoveryCsvTempFileName;
 			rScriptCommand[7] = this.pheneSelection;
 			rScriptCommand[8] = this.pheneTable;
+			rScriptCommand[9] = this.lowCutoff + "";
+			rScriptCommand[10] = this.highCutoff + "";
 			
 			// Log a version of the command used for debugging
 			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
@@ -301,55 +304,17 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			
 			scriptOutput = this.runCommand(rScriptCommand);
 			
+			//-------------------------------------------------------
+			// Set up script output file log
+			//-------------------------------------------------------
 			File scriptOutputTextTempFile = File.createTempFile("discovery-r-script-output-", ".txt");
 			FileOutputStream out = new FileOutputStream(scriptOutputTextTempFile);
 			PrintWriter writer = new PrintWriter(out);
 			writer.write(scriptOutput);
 			writer.close();
 			this.scriptOutputTextFile = scriptOutputTextTempFile.getAbsolutePath();
+			this.scriptOutputTextFileName = "script-output.xlsx";
 			log.info("script output text file: " + scriptOutputTextFile);
-		}
-		
-		return result;
-	}
-	
-	/*
-	 * NOT USED CURRENTLY, but code here may be needed
-	 */
-	public String execute() throws Exception {
-		String result = SUCCESS;
-		
-		if (!Authorization.isAdmin(webSession)) {
-			result = LOGIN;
-		}
-		else {
-			this.baseDir = WebAppProperties.getRootDir();
-			
-
-			
-			if (this.diagnosisCode == null) this.diagnosisCode = "";
-			this.diagnosisCode = this.diagnosisCode.trim();
-			if (this.diagnosisCode.equals("")) {
-				this.diagnosisCode = "All";
-			}
-
-			String[] rScriptCommand = new String[7];
-			rScriptCommand[0] = WebAppProperties.getRscriptPath();
-			rScriptCommand[1] = scriptFile;
-			rScriptCommand[2] = scriptDir;
-			rScriptCommand[3] = this.cohort;
-			rScriptCommand[4] = this.diagnosisCode;
-			rScriptCommand[5] = this.discoveryDbTempFileName;
-			rScriptCommand[6] = this.discoveryCsvTempFileName;
-			
-			// Log a version of the command used for debugging
-			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
-					+ " " + scriptDir 
-					+ " " + "\"" + this.cohort + "\"" + " " + "\"" + this.diagnosisCode + "\"" 
-					+ " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"";
-			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
-			
-			scriptOutput = this.runCommand(rScriptCommand);
 			
 			//---------------------------------------------------------------
 			// Get the output and report file paths
@@ -376,12 +341,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			
 			outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
 			reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
-		      
-			// Convert newlines to breaks for displaying in HTML
-			scriptOutput = scriptOutput.replaceAll("\n",  "<br/>\n");
 		}
+		
 		return result;
 	}
+	
 
 	/** 
 	 * Executes the specified command and returns the output from the command.
@@ -723,6 +687,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setScriptOutputTextFile(String scriptOutputTextFile) {
 		this.scriptOutputTextFile = scriptOutputTextFile;
+	}
+
+	public String getScriptOutputTextFileName() {
+		return scriptOutputTextFileName;
+	}
+
+	public void setScriptOutputTextFileName(String scriptOutputTextFileName) {
+		this.scriptOutputTextFileName = scriptOutputTextFileName;
 	}
 
 }

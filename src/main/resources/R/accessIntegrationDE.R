@@ -1,10 +1,20 @@
 
+# data - MS Access database
+# cohort - cohort CSV File
+# dxCode - diagnosis code
+prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
 
-prepAccessData <- function(data, cohort, dxCode) {
+  cohortDataFrame = read.csv(cohort);
   
   #specify all the names of the tables you want to pull from access
-  cohortTbl <- "Cohorts"
-  tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers", cohortTbl)
+  ### cohortTbl <- "Cohorts"
+  #tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers", cohortTbl)
+  tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers")
+  
+  if (!(pheneTable %in% tblsNeeded)) {
+	  tblsNeeded <- c(tblsNeeded, pheneTable)
+  }
+  
   
   varName <- NULL #instantiate varNames holder
   
@@ -38,7 +48,18 @@ prepAccessData <- function(data, cohort, dxCode) {
 	# OLD CODE:
 	# bigData <- merge(bigData,sqlFetch(data, i, na.strings=c("na","NA","", "<NA>", "Na", "N/A")), by="PheneVisit")
   }
+  
+  # Merge the Cohort data
+  bigData <-merge(bigData, cohortDataFrame, by="PheneVisit")
 
+  # Reset phene to phene dataframe variable name, which may be different from the 
+  # phene database column name, because R changes some special characters (e.g., "-" and " ") to "."
+  #pheneColumnIndex =  which(colnames(bigData) == phene)
+  #print(colnames(bigData))
+  #phene <- colnames(bigData)[pheneColumnIndex]
+  #print(pheneColumnIndex)
+  #print(c("PHENE:", phene))
+  #print("-----------------------------------------------------------------------\n")
   
   #define function that gets all characters of string x minus the last n characters
   substrLeft <- function(x, n){
@@ -131,9 +152,16 @@ prepAccessData <- function(data, cohort, dxCode) {
   
   bigData["Hallucinations"] <- as.numeric(bigData["P3 Hallucinations (1-7)"] >= 4)
 
+  #print(c("PHENE:", phene))
+  #str(bigData, list.len=ncol(bigData));   # print column types
+  #print(bigData$phene)
+  #write.csv(bigData, "/opt/tomcat/temp/bigData.csv", row.names = FALSE)
+  # Make sure that phehe column has numeric type
+  #bigData$phene <- as.numeric(bigData$phene)
+  
   #get names of cohorts
   # OLD: cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
-  cohortColumns <- dbGetFields(data, cohortTbl)$COLUMN_NAME
+  cohortColumns <- colnames(cohortDataFrame)
   
   #drop the subject header column
   cohortColumns <- cohortColumns[-1]
@@ -157,7 +185,7 @@ prepAccessData <- function(data, cohort, dxCode) {
   
   #subset data by cohort
   # OLD: bigData <- bigData[bigData[cohortColumns[cohortPreference]] == 1,]
-  bigData <- bigData[bigData[cohort] == 1,]
+  bigData <- bigData[bigData["DiscoveryCohort"] == 1,]
   
   # OLD CODE (get this from web app now):
   #dxCodeString <- ""

@@ -26,7 +26,7 @@ library(dplyr)
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 7) {
+if (length(args) != 9) {
 	print(paste("Incorrect number of arguments: ", length(args)))
 	stop("Incorrect number of arguments to DEdiscovery script")
 }
@@ -36,8 +36,10 @@ cohortCsvFile      <- args[2]
 diagnosisCodeParam <- args[3]
 dbFile             <- args[4]
 csvFile            <- args[5]
-phene              <- args[6]
+pheneSelection     <- args[6]
 pheneTable         <- args[7]
+lowCutoff          <- args[8]
+highCutoff         <- args[9]
 
 print(pheneTable)
 
@@ -85,14 +87,15 @@ accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
 source(accessIntegrationScript)
 
 ##get processed access data
-accessIntegrationOutput <- prepAccessData(PheneData, cohortParam, diagnosisCodeParam)
+accessIntegrationOutput <- prepAccessData(PheneData, cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable)
 
 PheneData <- accessIntegrationOutput[[1]]
 dxChoice <- accessIntegrationOutput[[2]]
 cohortChoice <- accessIntegrationOutput[[3]]
 rm(accessIntegrationOutput)
 
-PHENE <- "SI"   # This is your dependent variable
+# PHENE <- "SI"   # This is your dependent variable
+PHENE <- pheneSelection
 
 print(paste("PHENE", PHENE))
 
@@ -227,12 +230,13 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
         
         
         ")
-    
-    
-    
   
-    
-    pheneChange <- x[visit + 1,PHENE] - x[visit,PHENE] #change in phene state
+    print(c("PHENE = ", PHENE, "   ", " visit = ", visit, " class: ", class(visit)))
+	print(c("x[visit + 1,PHENE]: ", x[visit + 1,PHENE]))
+	theResult = x[visit,PHENE]
+	print(c("x[visit,PHENE]", x[visit,PHENE], class(theResult)))
+	
+    pheneChange <- strtoi(x[visit + 1,PHENE]) - strtoi(x[visit,PHENE]) #change in phene state
     
     
 
@@ -488,11 +492,11 @@ Max changes downward")
     THISISYOUROUTPUT <- t(THISISYOUROUTPUT)
 
 
-outputFile <- paste("/tmp/output",PHENE, cohortChoice, dxChoice, Sys.Date(),"Suicide.csv")
+outputFile <- paste("/tmp/output", PHENE, dxChoice, Sys.Date(),".csv")
 write.csv(THISISYOUROUTPUT, outputFile)
 cat("\nOutput file created: ", outputFile, "\n")
 
-reportFile <- paste("/tmp/output",PHENE, cohortChoice, dxChoice, Sys.Date()," REPORT SUMMARY.csv")
+reportFile <- paste("/tmp/output", PHENE, dxChoice, Sys.Date()," REPORT SUMMARY.csv")
 write.csv(summaryResultsTable,reportFile)
 cat("Report file created: ", reportFile, "\n")
 

@@ -91,7 +91,7 @@ Script Output:
      style="margin-top: 2px;"
      src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
      alt="R Script Output" /> <br />
-    <s:property value="reportFileName"/>
+    <s:property value="scriptOutputTextFileName"/>
     </div>
 </s:a>
 
@@ -104,6 +104,10 @@ Script Output:
     <tr>
         <th>Phene Visit DB temp file</th>
         <td> <s:property value="discoveryDbTempFileName" /> </td>
+    </tr>
+    <tr>
+        <th>Cohort CSV temp file</th>
+        <td> <s:property value="cohortCsvFile" /> </td>
     </tr>
     <tr>
         <th>Gene Expression CSV temp file</th>

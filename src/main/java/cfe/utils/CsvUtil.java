@@ -39,6 +39,10 @@ public class CsvUtil {
             	    int ivalue = Integer.parseInt(value);
                     xlsxRow.createCell(i).setCellValue(ivalue);
             	}
+            	else if (value.matches("^-?\\d+\\.\\d*$")) {
+            		double dvalue = Double.parseDouble(value);
+	        		xlsxRow.createCell(i).setCellValue(dvalue);
+            	}
             	else if (value.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}")) {
             		LocalDateTime dateTime = LocalDateTime.parse(value);
             		xlsxRow.createCell(i).setCellValue(dateTime);

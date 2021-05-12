@@ -21,8 +21,11 @@
     </s:if>
     
     <li><s:a action="ScoringWeights">Calculate Scores</s:a></li>
-     
+    
+    <%-- 
     <li><s:a action="DiscoveryFileUploadInitialize">Discovery File Upload</s:a></li>
+    --%>
+    
 </ul>
 
 <ul>

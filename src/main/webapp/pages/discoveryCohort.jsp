@@ -29,9 +29,11 @@ Low Cutoff: <s:property value="lowCutoff" /> <br />
 High Cutoff: <s:property value="highCutoff" /> <br />
 Microarray Table: <s:property value="microarrayTable" />
 
-<p>&nbsp;</p>
 
 <%--
+<p>&nbsp;</p>
+
+
 <s:a action="XlsxDisplay" title="Cohort Data Spreadsheet">
     <s:param name="spreadsheetFilePath" value="cohortDataXlsxFile" />
     <div>
@@ -51,7 +53,7 @@ Microarray Table: <s:property value="microarrayTable" />
     <div>
     <img border="0"
      style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/application-vnd.ms-excel.png'/>"
+     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
      alt="Report" /> <br />
     Cohort
     </div>

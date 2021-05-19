@@ -204,6 +204,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				cohortData = cohortData.merge(pheneDataData);
 				cohortData = cohortData.merge(chipsData);
 				
+				cohortData.enhance(pheneSelection, lowCutoff, highCutoff);
+				
 				// How to add a column (name, position, value):
 				//cohortData.addColumnBefore("testColumn", 2, "123");
 				
@@ -249,6 +251,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				cohortTables.put("info", infoTable);
 				
 				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
+				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
 				
 				File cohortXlsxTempFile = File.createTempFile("cohort-", ".xslx");
 				out = new FileOutputStream(cohortXlsxTempFile);
@@ -266,6 +269,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				result = ERROR;
 				log.error("*** ERROR: " + exception.getMessage());
 				errorMessage = exception.getLocalizedMessage();
+				exception.printStackTrace();
 			}
 		}
 		
@@ -372,8 +376,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
     public DataTable createCohortInfoTable()
     {
 		DataTable infoTable = new DataTable("attribute");
-		infoTable.addColumn("attribute", 0, "");
-		infoTable.addColumn("value",  1,  "");
+		infoTable.insertColumn("attribute", 0, "");
+		infoTable.insertColumn("value",  1,  "");
 		
 		ArrayList<String> row = new ArrayList<String>();
 		row.add("CFE Version");
@@ -383,6 +387,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		row = new ArrayList<String>();
 		row.add("Time Generated");
 		row.add(LocalDateTime.now().toString());
+		infoTable.addRow(row);
+		
+		row = new ArrayList<String>();
+		row.add("Phene Table");
+		row.add(this.pheneTable);
 		infoTable.addRow(row);
 		
 		row = new ArrayList<String>();

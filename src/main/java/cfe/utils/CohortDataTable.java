@@ -15,6 +15,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -261,12 +265,83 @@ public class CohortDataTable extends DataTable {
 	    
 	    return cohort;
 	}
-	
+	/*
 	public XSSFWorkbook toXlsx(String phene, int lowCutoff, int highCutoff) {
         XSSFWorkbook workbook = super.toXlsx();
+        
+        this.getColumnIndex(phene);
         
         
         return workbook;
 	}
+	
+	public XSSFSheet addToWorkbook(XSSFWorkbook workbook, String sheetName) {
+		XSSFSheet sheet = super.addToWorkbook(workbook, sheetName);
+		return sheet;
+	}
+	*/
+	
+	public void enhance(String phene, int lowCutoff, int highCutoff) {
+		int pheneIndex = this.getColumnIndex(phene);
 		
+		this.insertColumn("INTRA", pheneIndex, "");
+		this.insertColumn(phene + " <= " + lowCutoff, pheneIndex, "");
+		this.insertColumn(phene + " >= " + highCutoff, pheneIndex, "");
+		
+	}
+	
+	public void enhanceCohortDataSheet(XSSFWorkbook workbook, String sheetName, String phene, int lowCutoff, int highCutoff) {
+        XSSFSheet sheet = workbook.getSheet(sheetName);
+        
+		CellStyle lowCellStyle = workbook.createCellStyle();
+		lowCellStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+		lowCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
+		CellStyle neutralCellStyle = workbook.createCellStyle();
+		neutralCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+		neutralCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
+		CellStyle highCellStyle = workbook.createCellStyle();
+		highCellStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+		highCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+		CellStyle intraCellStyle = workbook.createCellStyle();
+		intraCellStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+		intraCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
+		int pheneIndex = this.getColumnIndex(phene);
+		
+		int intraIndex = pheneIndex -1;
+		int lowIndex   = pheneIndex -2;
+		int highIndex  = pheneIndex -3;
+		
+        XSSFRow header = sheet.getRow(0);
+        header.getCell(lowIndex).setCellStyle(lowCellStyle);
+        header.getCell(highIndex).setCellStyle(highCellStyle);
+        header.getCell(intraIndex).setCellStyle(intraCellStyle);
+        
+		for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+			XSSFRow row = sheet.getRow(i);
+			XSSFCell cell = row.getCell(pheneIndex);
+
+			try {
+			    double dvalue = cell.getNumericCellValue();
+                int value = (int) (dvalue + 0.5); // round to the nearest int
+                
+				if (value <= lowCutoff) {
+                    cell.setCellStyle(lowCellStyle);
+				}
+				else if (value < highCutoff) {
+                    cell.setCellStyle(neutralCellStyle);
+				} 
+				else {
+					// high value
+	                cell.setCellStyle(highCellStyle);
+				}
+			} catch (Exception exception) {
+				; // Ignore; this is a non-numeric value (perhaps blank or "NA")
+			}
+		}
+	}
+
 }

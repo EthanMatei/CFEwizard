@@ -8,12 +8,14 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   
   #specify all the names of the tables you want to pull from access
   ### cohortTbl <- "Cohorts"
-  #tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers", cohortTbl)
-  tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers")
   
-  if (!(pheneTable %in% tblsNeeded)) {
-	  tblsNeeded <- c(tblsNeeded, pheneTable)
-  }
+  # ORIG: tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers", cohortTbl)
+  # OLD: tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers")
+  tblsNeeded <- c(pheneTable,"PANSS", "Demographics","Diagnosis", "Subject Identifiers")
+  
+  #if (!(pheneTable %in% tblsNeeded)) {
+  #  tblsNeeded <- c(tblsNeeded, pheneTable)
+  #}
   
   
   varName <- NULL #instantiate varNames holder
@@ -75,86 +77,13 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   #write.csv(bigData, "/tmp/bigData.csv", row.names = FALSE)
 
   
-  sasColumns = c("SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch ",
-		  "SAS Uncertainty (0-100)",
-		  "SAS Fear (0-100)",
-		  "SAS Anger (0-100)")
-
-  bigData[sasColumns] <- lapply(sasColumns, as.numeric)
-  ##calculate raw SAS score
-  bigData["sasScore"] <- rowMeans(bigData[sasColumns])
-					
-  ##calculate raw SMS score
-  smsColumns = c(
-    "SMS Mood (0-100)",
-    "SMS Motivation (0-100)",
-	"SMS Movement (0-100)",
-	"SMS Thinking (0-100)",
-	"SMS Self-esteem (0-100)",
-	"SMS Interest (0-100)",
-	"SMS Appetite (0-100)"
-  )
-  bigData[smsColumns] <- lapply(smsColumns, as.numeric)
-  
-  bigData["smsScore"] <- rowMeans(bigData[smsColumns])
-  
-  ##calculate raw SMSmood score
-  bigData["SMSmood"] <- rowMeans(bigData[c("SMS Mood (0-100)")])
-                                            
-  
-  ##calculate SASS composite
-  # bigData["SASS"] <- bigData["sasScore"] - bigData["smsScore"]
-  
-  
-  ##calculate CFI score
-  bigData["cfiscore"] <- rowMeans(sapply(bigData[c("1 Psychiatric",
-                                            "2 Compliance",
-                                            "3 Familial",
-                                            "4 Example",
-                                            "5 Abuse",
-                                            "6 Medical",
-                                            "7 Losses",
-                                            "8 Useless",
-                                            "9 Introverted",
-                                            "10 Dissatisfied",
-                                            "11 Hopeless",
-                                            "12 Addiction",
-                                            "13 History",
-                                            "14 Non-religious",
-                                            "15 Rejection",
-                                            "16 Isolation",
-                                            "17 Impulsive",
-                                            "18 Non-coping",
-                                            "19 Childless",
-                                            "20 Hallucinations",
-                                            "21 Age",
-                                            "22  Gender")], as.numeric), na.rm=TRUE)
-  
   ##Re-encode gender as a string ("M" or "F")
   bigData["Gender"] <- lapply(bigData["Gender(M/F)"], as.character)
 			
   #---------------------------------------
-  # Calculation phenes
+  # Calculation phene
   #---------------------------------------
-  ##define Phene as people who scored a 2 or greater on the ideation item of HAMD
-  bigData["SI"] <- as.numeric(bigData["HAMD SI"] >= 2)
-  
-  bigData["STRESS"] <- as.numeric(bigData["SSS- Life Stress (0-100)"] >= 67)
-  
-  bigData["Anxiety"] <- as.numeric(bigData["SAS Anxiety (0-100); ~ 4/14/11 don't reverse scores; 1st switch "] >= 60)
-  
-  bigData["MOOD"] <- as.numeric(bigData["SMS Mood (0-100)"] >= 67)
-  
-  bigData["Appetite"] <- as.numeric(bigData["SMS Appetite (0-100)"] >= 60)
-  
-  bigData["PAIN"] <- as.numeric(bigData["Pain Scale"] >= 6)
-  
-  bigData["Delusions"] <- as.numeric(bigData["P1 Delusions (1-7)"] >= 4)
-  
-  bigData["Hallucinations"] <- as.numeric(bigData["P3 Hallucinations (1-7)"] >= 4)
-
-
-
+  bigData[, phene] <- as.numeric(bigData[, phene] >= highCutoff)
 
   #get names of cohorts
   # OLD: cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
@@ -163,19 +92,6 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   #drop the subject header column
   cohortColumns <- cohortColumns[-1]
   
-  #cohortString <- "" #initiate variable for prompt
-  #for (i in 1:length(cohortColumns)) {
-  #  entry <- paste0("(",i,") ",cohortColumns[i])
-  #  cohortString <- paste(cohortString,entry, sep="\n")
-  #}
-  
-
-  #cohortPreference <- ginput(message = paste("Enter the number corresponding with the cohort that you want to use.",cohortString), 
-  #                         icon="question",
-  #                         title="Choose a cohort")
-  
-  #make sure the user entered a choice of cohort
-  #stopifnot(!(cohortPreference == ""))
   
   #Convert string to integer
   #cohortPreference <- strtoi(cohortPreference)

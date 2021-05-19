@@ -104,13 +104,13 @@ public class DataTable {
     }
 	
 	/**
-	 * Adds the column at the specified position.
+	 * Inserts the column at the specified position.
 	 * 
 	 * @param name the name of the column to add.
 	 * @param position the position to place the column.
 	 * @param initialValue
 	 */
-	public void addColumn(String name, int position, String initialValue) {
+	public void insertColumn(String name, int position, String initialValue) {
 	    this.columns.add(position, name);
 	    for (ArrayList<String> row: this.data) {
 	    	row.add(position, initialValue);
@@ -286,7 +286,7 @@ public class DataTable {
 	 * @param workbook
 	 * @param sheetName
 	 */
-	public void addToWorkbook(XSSFWorkbook workbook, String sheetName) {
+	public XSSFSheet addToWorkbook(XSSFWorkbook workbook, String sheetName) {
         XSSFSheet sheet = workbook.createSheet(sheetName);
         
         CreationHelper createHelper = workbook.getCreationHelper();
@@ -303,14 +303,6 @@ public class DataTable {
         headerCellStyle.setBorderBottom(BorderStyle.THIN);
         headerCellStyle.setBorderLeft(BorderStyle.THIN);
         headerCellStyle.setBorderRight(BorderStyle.THIN);
-        
-        //headerCellStyle.setFont( boldFont );
-        //headerCellStyle.setBorderBottom( BorderStyle.THIN );
-        //headerCellStyle.setVerticalAlignment( VerticalAlignment.BOTTOM );
-        //headerCellStyle.setAlignment( HorizontalAlignment.CENTER );
-        //headerCellStyle.setWrapText( true );
-        //headerCellStyle.setFillForegroundColor( IndexedColors.PALE_BLUE.getIndex() );
-        //headerCellStyle.setFillPattern( FillPatternType.SOLID_FOREGROUND );
 
         // Header row
         int rowNumber = 0;
@@ -361,6 +353,7 @@ public class DataTable {
             	}
             }
         }
+	    return sheet;
 	}
 	
 	public XSSFWorkbook toXlsx() {
@@ -374,6 +367,29 @@ public class DataTable {
 	int getColumnIndex(String columnName) {
 		int index = this.columns.indexOf(columnName);
 		return index;
+	}
+	
+	/**
+	 * Gets the spreadsheet letter(s) index for the column, e.g., "A" for column 0, "AA" for column 26.
+	 * 
+	 * @param columnName
+	 * @return
+	 */
+	String getColumnLetters(String columnName) {
+        String letters = "";
+		int index = this.getColumnIndex(columnName);
+		
+	    do {
+	        int current = (index % 26);
+	        letters = ((char) ('A' + current)) + letters;
+	        index = (index / 26) - 1;
+	    } while (index >= 0);
+	
+		return letters;
+	}
+	
+	int getNumberOfRows() {
+		return this.data.size();
 	}
 	
 }

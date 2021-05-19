@@ -261,5 +261,12 @@ public class CohortDataTable extends DataTable {
 	    
 	    return cohort;
 	}
+	
+	public XSSFWorkbook toXlsx(String phene, int lowCutoff, int highCutoff) {
+        XSSFWorkbook workbook = super.toXlsx();
+        
+        
+        return workbook;
+	}
 		
 }

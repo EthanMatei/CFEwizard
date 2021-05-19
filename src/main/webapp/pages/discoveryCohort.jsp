@@ -31,6 +31,7 @@ Microarray Table: <s:property value="microarrayTable" />
 
 <p>&nbsp;</p>
 
+<%--
 <s:a action="XlsxDisplay" title="Cohort Data Spreadsheet">
     <s:param name="spreadsheetFilePath" value="cohortDataXlsxFile" />
     <div>
@@ -41,6 +42,7 @@ Microarray Table: <s:property value="microarrayTable" />
     Cohort Data
     </div>
 </s:a>
+--%>
 
 <p>&nbsp;</p>
 

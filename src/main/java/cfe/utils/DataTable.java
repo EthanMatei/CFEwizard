@@ -15,8 +15,13 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -97,6 +102,20 @@ public class DataTable {
 			this.addRow(dataRow);
 		}
     }
+	
+	/**
+	 * Adds the column at the specified position.
+	 * 
+	 * @param name the name of the column to add.
+	 * @param position the position to place the column.
+	 * @param initialValue
+	 */
+	public void addColumn(String name, int position, String initialValue) {
+	    this.columns.add(position, name);
+	    for (ArrayList<String> row: this.data) {
+	    	row.add(position, initialValue);
+	    }
+	}
 	
 	public void addRow(ArrayList<String> row) {
 		data.add(row);
@@ -244,17 +263,63 @@ public class DataTable {
 	    return csv.toString();
 	}
 	
-	public XSSFWorkbook toXlsx() {
+	/**
+	 * Creates a workbook from multiple DataTable objects, where each DataTable
+	 * is on a separate sheet in the workbook.
+	 *
+	 * @param tables
+	 * @return
+	 */
+	public static XSSFWorkbook createWorkbook(Map<String, DataTable> tables) {
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("data");
+        
+        for (String sheetName: tables.keySet()) {
+        	DataTable table = tables.get(sheetName);
+            table.addToWorkbook(workbook, sheetName);
+        }
+        return workbook;
+	}
+	
+	/**
+	 * Adds a sheet representing the data table to the specified workbook.
+	 * 
+	 * @param workbook
+	 * @param sheetName
+	 */
+	public void addToWorkbook(XSSFWorkbook workbook, String sheetName) {
+        XSSFSheet sheet = workbook.createSheet(sheetName);
         
         CreationHelper createHelper = workbook.getCreationHelper();
+
+        //--------------------------------------
+        // Column header format
+        //--------------------------------------
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        //headerCellStyle.setFont(font);
+        headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerCellStyle.setBorderBottom(BorderStyle.THIN);
+        headerCellStyle.setBorderLeft(BorderStyle.THIN);
+        headerCellStyle.setBorderRight(BorderStyle.THIN);
         
+        //headerCellStyle.setFont( boldFont );
+        //headerCellStyle.setBorderBottom( BorderStyle.THIN );
+        //headerCellStyle.setVerticalAlignment( VerticalAlignment.BOTTOM );
+        //headerCellStyle.setAlignment( HorizontalAlignment.CENTER );
+        //headerCellStyle.setWrapText( true );
+        //headerCellStyle.setFillForegroundColor( IndexedColors.PALE_BLUE.getIndex() );
+        //headerCellStyle.setFillPattern( FillPatternType.SOLID_FOREGROUND );
+
         // Header row
         int rowNumber = 0;
         XSSFRow xlsxRow = sheet.createRow(rowNumber);
         for (int i = 0; i < columns.size(); i++) {
-            xlsxRow.createCell(i).setCellValue(columns.get(i));
+        	XSSFCell cell;
+            cell = xlsxRow.createCell(i);
+            cell.setCellStyle(headerCellStyle);
+            cell.setCellValue(columns.get(i));
         }
 
 	    for (ArrayList<String> dataRow: this.data) {
@@ -283,13 +348,32 @@ public class DataTable {
                     		//.getFormat("m/d/yy h:mm"));  
             		xlsxRow.getCell(i).setCellStyle(cellStyle);
             	}
+            	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}$")) {
+            		LocalDateTime dateTime = LocalDateTime.parse(value);
+            		xlsxRow.createCell(i).setCellValue(dateTime);
+                    CellStyle cellStyle = workbook.createCellStyle();  
+                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yy HH:mm:ss")); 
+                    		//.getFormat("m/d/yy h:mm"));  
+            		xlsxRow.getCell(i).setCellStyle(cellStyle);
+            	}
             	else {
                     xlsxRow.createCell(i).setCellValue(value);
             	}
             }
         }
-
+	}
+	
+	public XSSFWorkbook toXlsx() {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        String sheetName = "data";
+        this.addToWorkbook(workbook, sheetName);
+ 
 		return workbook;
+	}
+	
+	int getColumnIndex(String columnName) {
+		int index = this.columns.indexOf(columnName);
+		return index;
 	}
 	
 }

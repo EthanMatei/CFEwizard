@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,19 +20,24 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Table;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
+import cfe.model.VersionNumber;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
+import cfe.utils.DataTable;
 import cfe.utils.WebAppProperties;
 
 public class DiscoveryAction extends BaseAction implements SessionAware {
@@ -196,6 +204,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				cohortData = cohortData.merge(pheneDataData);
 				cohortData = cohortData.merge(chipsData);
 				
+				// How to add a column (name, position, value):
+				//cohortData.addColumnBefore("testColumn", 2, "123");
+				
 				this.cohortDataCsv = cohortData.toCsv();
 
 				// Create an Xlsx (spreadsheet) version of the cohort data
@@ -228,9 +239,21 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
 
 				// Create an Xlsx (spreadsheet) version of the cohort data
+				ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+				
+				DataTable infoTable = this.createCohortInfoTable();
+				
+				LinkedHashMap<String, DataTable> cohortTables = new LinkedHashMap<String, DataTable>();
+				cohortTables.put("cohort",  cohort);
+				cohortTables.put("cohort data", cohortData);
+				cohortTables.put("info", infoTable);
+				
+				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
+				
 				File cohortXlsxTempFile = File.createTempFile("cohort-", ".xslx");
 				out = new FileOutputStream(cohortXlsxTempFile);
-				cohort.toXlsx().write(out);
+				//cohort.toXlsx().write(out);
+				cohortWorkbook.write(out);
 				out.close();
 				this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
 
@@ -346,7 +369,45 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		return result;
 	}
 	
-
+    public DataTable createCohortInfoTable()
+    {
+		DataTable infoTable = new DataTable("attribute");
+		infoTable.addColumn("attribute", 0, "");
+		infoTable.addColumn("value",  1,  "");
+		
+		ArrayList<String> row = new ArrayList<String>();
+		row.add("CFE Version");
+		row.add(VersionNumber.VERSION_NUMBER);
+		infoTable.addRow(row);
+		
+		row = new ArrayList<String>();
+		row.add("Time Generated");
+		row.add(LocalDateTime.now().toString());
+		infoTable.addRow(row);
+		
+		row = new ArrayList<String>();
+		row.add("Phene");
+		row.add(this.pheneSelection);
+		infoTable.addRow(row);
+		
+		row = new ArrayList<String>();
+		row.add("Low Cutoff");
+		row.add(this.lowCutoff + "");
+		infoTable.addRow(row);
+		
+		row = new ArrayList<String>();
+		row.add("High Cutoff");
+		row.add(this.highCutoff + "");
+		infoTable.addRow(row);
+		
+		row = new ArrayList<String>();
+		row.add("Microarray Table");
+		row.add(this.microarrayTable);
+		infoTable.addRow(row);
+		
+		return infoTable;
+    }
+    
 	/** 
 	 * Executes the specified command and returns the output from the command.
 	 *

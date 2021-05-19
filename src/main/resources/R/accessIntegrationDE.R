@@ -103,7 +103,7 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
                                             
   
   ##calculate SASS composite
-  bigData["SASS"] <- bigData["sasScore"] - bigData["smsScore"]
+  # bigData["SASS"] <- bigData["sasScore"] - bigData["smsScore"]
   
   
   ##calculate CFI score
@@ -130,8 +130,12 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
                                             "21 Age",
                                             "22  Gender")], as.numeric), na.rm=TRUE)
   
-
-
+  ##Re-encode gender as a string ("M" or "F")
+  bigData["Gender"] <- lapply(bigData["Gender(M/F)"], as.character)
+			
+  #---------------------------------------
+  # Calculation phenes
+  #---------------------------------------
   ##define Phene as people who scored a 2 or greater on the ideation item of HAMD
   bigData["SI"] <- as.numeric(bigData["HAMD SI"] >= 2)
   
@@ -143,22 +147,15 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   
   bigData["Appetite"] <- as.numeric(bigData["SMS Appetite (0-100)"] >= 60)
   
-  ##Re-encode gender as a string ("M" or "F")
-  bigData["Gender"] <- lapply(bigData["Gender(M/F)"], as.character)
-  
   bigData["PAIN"] <- as.numeric(bigData["Pain Scale"] >= 6)
   
   bigData["Delusions"] <- as.numeric(bigData["P1 Delusions (1-7)"] >= 4)
   
   bigData["Hallucinations"] <- as.numeric(bigData["P3 Hallucinations (1-7)"] >= 4)
 
-  #print(c("PHENE:", phene))
-  #str(bigData, list.len=ncol(bigData));   # print column types
-  #print(bigData$phene)
-  #write.csv(bigData, "/opt/tomcat/temp/bigData.csv", row.names = FALSE)
-  # Make sure that phehe column has numeric type
-  #bigData$phene <- as.numeric(bigData$phene)
-  
+
+
+
   #get names of cohorts
   # OLD: cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
   cohortColumns <- colnames(cohortDataFrame)

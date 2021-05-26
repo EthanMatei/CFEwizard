@@ -1,59 +1,49 @@
-
+#-----------------------------------
 # data - MS Access database
 # cohort - cohort CSV File
 # dxCode - diagnosis code
+#-----------------------------------
 prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
-
-  cohortDataFrame = read.csv(cohort);
-  
-  #specify all the names of the tables you want to pull from access
-  ### cohortTbl <- "Cohorts"
   
   # ORIG: tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers", cohortTbl)
-  # OLD: tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers")
-  tblsNeeded <- c(pheneTable,"PANSS", "Demographics","Diagnosis", "Subject Identifiers")
-  
-  #if (!(pheneTable %in% tblsNeeded)) {
-  #  tblsNeeded <- c(tblsNeeded, pheneTable)
-  #}
-  
+  tblsNeeded <- c(pheneTable, "Demographics", "Diagnosis", "Subject Identifiers")
   
   varName <- NULL #instantiate varNames holder
   
   #pull all the sql keys to use as a base for merging
   ###bigData <- sqlFetch(data,tblsNeeded[1])$PheneVisit # Reads tables in database into a data frame
   
-  # It appears that the table name needs to be escaped if it has a hyphen
-  tableName <- paste("`", tblsNeeded[1], "`", sep="")
-  
+  #---------------------------------------------------------
+  # Set bigData to have the PheneVisit as its first column
+  #---------------------------------------------------------
+  tableName <- paste("`", tblsNeeded[1], "`", sep="")    # Name needs to be escaped in case it has special character, such as hyphen
   bigData <- dbReadTable(data, tableName)$PheneVisit # Reads tables in database into a data frame
-
   bigData <- data.frame(bigData)
-
   colnames(bigData) <- "PheneVisit"
   
   for (i in tblsNeeded){
     # collect all the tables you want and merge them together sequentially
     
-	# New code
-	tableName = paste("`", i, "`", sep="")
-	tableData = dbReadTable(data, tableName)
-	
-	vars <- names(tableData)
-	tableData[vars] <- lapply(
-			tableData[vars],
-			function(x) replace(x,x %in% c("na","NA","", "<NA>", "Na", "n/a", "N/A"), NA)
-	)
-
+    # New code
+    tableName = paste("`", i, "`", sep="")
+    tableData = dbReadTable(data, tableName)
+    
+    vars <- names(tableData)
+    tableData[vars] <- lapply(
+        tableData[vars],
+        function(x) replace(x,x %in% c("na","NA","", "<NA>", "Na", "n/a", "N/A"), NA)
+    )
+    
     bigData <- merge(bigData, tableData, by="PheneVisit")
     
-	# OLD CODE:
-	# bigData <- merge(bigData,sqlFetch(data, i, na.strings=c("na","NA","", "<NA>", "Na", "N/A")), by="PheneVisit")
+    # OLD CODE:
+    # bigData <- merge(bigData,sqlFetch(data, i, na.strings=c("na","NA","", "<NA>", "Na", "N/A")), by="PheneVisit")
   }
   
   # Merge the Cohort data
+  cohortDataFrame = read.csv(cohort);
   bigData <-merge(bigData, cohortDataFrame, by="PheneVisit")
-
+  
   # Reset phene to phene dataframe variable name, which may be different from the 
   # phene database column name, because R changes some special characters (e.g., "-" and " ") to "."
   #pheneColumnIndex =  which(colnames(bigData) == phene)
@@ -73,18 +63,18 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   
   colnames(bigData)[length(bigData)] <- "Subject"
   
-
+  
   #write.csv(bigData, "/tmp/bigData.csv", row.names = FALSE)
-
+  
   
   ##Re-encode gender as a string ("M" or "F")
   bigData["Gender"] <- lapply(bigData["Gender(M/F)"], as.character)
-			
+  
   #---------------------------------------
   # Calculation phene
   #---------------------------------------
   bigData[, phene] <- as.numeric(bigData[, phene] >= highCutoff)
-
+  
   #get names of cohorts
   # OLD: cohortColumns <- sqlColumns(data,cohortTbl)$COLUMN_NAME
   cohortColumns <- colnames(cohortDataFrame)
@@ -98,7 +88,8 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   
   #subset data by cohort
   # OLD: bigData <- bigData[bigData[cohortColumns[cohortPreference]] == 1,]
-  bigData <- bigData[bigData["DiscoveryCohort"] == 1,]
+  # bigData <- bigData[bigData["DiscoveryCohort"] == 1,]
+  bigData <- bigData[bigData["DiscoveryCohort"] > 0.4,]   # Cohort intermediate values changed from 1 to 0.5
   
   # OLD CODE (get this from web app now):
   #dxCodeString <- ""
@@ -115,13 +106,11 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   ##clear up ram
   gc()
   
-  #close database
-  #close(data)
-  dbDisconnect(data)  # RJDBC (equivalent call for close)
+  dbDisconnect(data)  # close the database connection
   
   # OLD: output <- list(bigData, dxCode, cohortColumns[cohortPreference])
   output <- list(bigData, dxCode, cohort)  
-
+  
   return(output)
 }
-  
+

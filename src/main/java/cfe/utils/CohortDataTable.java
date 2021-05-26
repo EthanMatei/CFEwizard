@@ -337,10 +337,13 @@ public class CohortDataTable extends DataTable {
 				else {
 					// high value
 	                cell.setCellStyle(highCellStyle);
-				}
+				}		
 			} catch (Exception exception) {
 				; // Ignore; this is a non-numeric value (perhaps blank or "NA")
 			}
+			
+			cell = row.getCell(highIndex);
+			// cell.setCellFormula("1 * 2 *3");
 		}
 	}
 

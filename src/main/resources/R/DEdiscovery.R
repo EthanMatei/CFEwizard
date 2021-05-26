@@ -26,7 +26,7 @@ library(dplyr)
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 9) {
+if (length(args) != 10) {
 	print(paste("Incorrect number of arguments: ", length(args)))
 	stop("Incorrect number of arguments to DEdiscovery script")
 }
@@ -40,6 +40,7 @@ pheneSelection     <- args[6]
 pheneTable         <- args[7]
 lowCutoff          <- args[8]
 highCutoff         <- args[9]
+tempDir            <- args[10]
 
 print(pheneTable)
 
@@ -492,11 +493,11 @@ Max changes downward")
     THISISYOUROUTPUT <- t(THISISYOUROUTPUT)
 
 
-outputFile <- paste("/tmp/output", PHENE, dxChoice, Sys.Date(),".csv")
+outputFile <- paste(tempDir, "/output_", PHENE, "_", dxChoice, "_", Sys.Date(),".csv", sep="")
 write.csv(THISISYOUROUTPUT, outputFile)
 cat("\nOutput file created: ", outputFile, "\n")
 
-reportFile <- paste("/tmp/output", PHENE, dxChoice, Sys.Date()," REPORT SUMMARY.csv")
+reportFile <- paste(tempDir, "/output_", PHENE, "_", dxChoice, "_", Sys.Date(),"_REPORT SUMMARY.csv", sep="")
 write.csv(summaryResultsTable,reportFile)
 cat("Report file created: ", reportFile, "\n")
 

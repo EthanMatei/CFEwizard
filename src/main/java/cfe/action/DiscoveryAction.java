@@ -103,6 +103,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private String scriptOutputTextFile;
 	
+	private String tempDir;
+	
 	private String errorMessage;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
@@ -253,9 +255,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
 				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
 				
+				
 				File cohortXlsxTempFile = File.createTempFile("cohort-", ".xslx");
 				out = new FileOutputStream(cohortXlsxTempFile);
-				//cohort.toXlsx().write(out);
 				cohortWorkbook.write(out);
 				out.close();
 				this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
@@ -288,6 +290,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
 			this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
 			
+			this.tempDir = System.getProperty("java.io.tmpdir");
+			
 	        //------------------------------------------------------
 	        // Get the gene expression CSV file
 	        //------------------------------------------------------
@@ -309,7 +313,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             //---------------------------------------
 			// Create R script command
 			//---------------------------------------
-			String[] rScriptCommand = new String[11];
+			String[] rScriptCommand = new String[12];
 			rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
 			rScriptCommand[1] = scriptFile;     // The R script to run
 			rScriptCommand[2] = scriptDir;
@@ -321,6 +325,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			rScriptCommand[8] = this.pheneTable;
 			rScriptCommand[9] = this.lowCutoff + "";
 			rScriptCommand[10] = this.highCutoff + "";
+			rScriptCommand[11] = this.tempDir;
 			
 			// Log a version of the command used for debugging
 			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
@@ -765,6 +770,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setScriptOutputTextFileName(String scriptOutputTextFileName) {
 		this.scriptOutputTextFileName = scriptOutputTextFileName;
+	}
+
+	public String getTempDir() {
+		return tempDir;
+	}
+
+	public void setTempDir(String tempDir) {
+		this.tempDir = tempDir;
 	}
 
 }

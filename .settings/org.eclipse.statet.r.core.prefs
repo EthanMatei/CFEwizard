@@ -1,0 +1,16 @@
+codestyle/r/Indent.Block.depth=1
+codestyle/r/Indent.Default.type=SPACES
+codestyle/r/Indent.Group.depth=1
+codestyle/r/Indent.ReplaceStrategy=false
+codestyle/r/Indent.ReplaceTabs.enable=true
+codestyle/r/Indent.Spaces.count=2
+codestyle/r/Indent.WrappedCommand.depth=2
+codestyle/r/NewLine.FDef.BodyBlock.before=false
+codestyle/r/Tab.size=2
+codestyle/r/Whitespace.ArgAssign.after=true
+codestyle/r/Whitespace.ArgAssign.before=true
+codestyle/r/Whitespace.Assign.after=true
+codestyle/r/Whitespace.Assign.before=true
+codestyle/r/Whitespace.OtherOp.after=true
+codestyle/r/Whitespace.OtherOp.before=true
+eclipse.preferences.version=1

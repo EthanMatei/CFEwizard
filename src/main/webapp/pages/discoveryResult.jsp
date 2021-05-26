@@ -102,6 +102,10 @@ Script Output:
 
 <table class="dataTable">
     <tr>
+        <th>Temp Directory</th>
+        <td> <s:property value="tempDir" /> </td>
+    </tr>
+    <tr>
         <th>Phene Visit DB temp file</th>
         <td> <s:property value="discoveryDbTempFileName" /> </td>
     </tr>

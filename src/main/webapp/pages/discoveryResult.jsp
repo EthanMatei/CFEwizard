@@ -45,6 +45,11 @@ Diagnosis Code:<s:property value="diagnosisCode"/> <br />
     <tr>
         <th>Gene Expression CSV File</th>
         <td><s:property value="discoveryCsvFileName" /></td>
+    </tr>
+    <tr>
+        <th>Microarray Table</th>
+        <td><s:property value="microarrayTable" /></td>
+    </tr>    
 </table>
 
 <hr style="margin-top: 12px;"/>

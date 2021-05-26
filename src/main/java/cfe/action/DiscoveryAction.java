@@ -377,13 +377,12 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
 			
 			//--------------------------------------------
-			// Create result workbook
+			// Create results workbook
 			//--------------------------------------------
-			DataTable infoTable = this.createCohortInfoTable();
+			DataTable infoTable = this.createResultsInfoTable();
             
 			DataTable outputDataTable = new DataTable(null);
             outputDataTable.initializeToCsv(outputFile);
-            log.info("***** OUTPUT DATA TABLE NUMBER OF ROWS: " + outputDataTable.getNumberOfRows());
 			
             DataTable reportDataTable = new DataTable(null);
             reportDataTable.initializeToCsv(reportFile);
@@ -403,6 +402,18 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		}
 		
 		return result;
+	}
+	
+	public DataTable createResultsInfoTable()
+	{
+	    DataTable infoTable = this.createCohortInfoTable();
+	    
+        ArrayList<String> row = new ArrayList<String>();
+        row.add("Diagnosis Code");
+        row.add(this.diagnosisCode);
+        infoTable.addRow(row);
+        
+	    return infoTable;
 	}
 	
     public DataTable createCohortInfoTable()

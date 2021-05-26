@@ -64,7 +64,6 @@ public class DataTable {
 		CSVReader csvReader = new CSVReader(reader);  
 		
 		String[] header = csvReader.readNext();
-		log.info("*** HEADER SIZE: " + header.length);
 		
 		if (header != null && header.length > 0) {
 		    for (String columnName: header) {

@@ -389,7 +389,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             DataTable cohortDataTable = new DataTable(null);
             cohortDataTable.initializeToCsv(cohortCsvFile);
             
-            DataTable cohortDataDataTable = new DataTable(null);
+            CohortDataTable cohortDataDataTable = new CohortDataTable();
             cohortDataDataTable.initializeToCsv(cohortDataCsvFile);            
             
             DataTable infoTable = this.createResultsInfoTable();
@@ -403,6 +403,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			resultsTables.put("info", infoTable);
 			
 			XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
+			cohortDataDataTable.enhanceCohortDataSheet(resultsWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
+			
             File resultsXlsxTempFile = File.createTempFile("discovery-results-", ".xslx");
             FileOutputStream resultsOut = new FileOutputStream(resultsXlsxTempFile);
             resultsWorkbook.write(resultsOut);

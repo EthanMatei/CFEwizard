@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -140,6 +141,16 @@ public class DataTable {
 	    	row.add(position, initialValue);
 	    }
 	}
+
+	/**
+	 * Adds column to end of table.
+	 * 
+	 * @param name
+	 * @param initialValue
+	 */
+	public void addColumn(String name, String initialValue) {
+	    this.insertColumn(name, this.columns.size(), initialValue);
+	}
 	
 	public void addRow(String[] row) {
 	    ArrayList<String> rowAsList = new ArrayList<String>(Arrays.asList(row));
@@ -156,6 +167,15 @@ public class DataTable {
 		        this.index.put(keyValue, row);
 		    }
 		}
+	}
+	
+	public void deleteColumn(String columnName) {
+	    int columnIndex = this.getColumnIndex(columnName);
+	    this.columns.remove(columnIndex);
+        
+        for (ArrayList<String> dataRow : this.data) {
+            dataRow.remove(columnIndex);
+        }
 	}
 	
 	public List<String[]> getValuesAsListOfArrays() {
@@ -196,6 +216,33 @@ public class DataTable {
 	                return compare;
 	            }
 	        });
+	}
+	
+	/**
+	 * Sorts by multiple columns.
+	 * 
+	 * @param sortColumns
+	 */
+	public void sort(String[] sortColumns) {
+	    Map<String, Integer> indexMap = new HashMap<String,Integer>();
+	    for (String sortColumn: sortColumns) {
+	        int index = this.getColumnIndex(sortColumn);
+	        indexMap.put(sortColumn, index);
+	    }
+	    
+        Collections.sort(this.data, new Comparator<ArrayList<String>>() {
+            @Override
+            public int compare(ArrayList<String> row1, ArrayList<String> row2) {
+                int compare = 0;
+                for (String sortColumn: sortColumns) {
+                    int index = indexMap.get(sortColumn);
+                    compare = row1.get(index).compareTo(row2.get(index));
+                    if (compare != 0) break;
+                }
+
+                return compare;
+            }
+        });	    
 	}
 
 	/**
@@ -393,11 +440,23 @@ public class DataTable {
 		return workbook;
 	}
 	
-	int getColumnIndex(String columnName) {
+	public int getColumnIndex(String columnName) {
 		int index = this.columns.indexOf(columnName);
 		return index;
 	}
 	
+	   
+    public int getColumnIndexTrimAndIgnoreCase(String columnName) {
+        columnName = columnName.trim();
+        int index = -1;
+        for (int i = 0; i < this.columns.size(); i++) {
+            if (columns.get(i).trim().equalsIgnoreCase(columnName)) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
 	/**
 	 * Gets the spreadsheet letter(s) index for the column, e.g., "A" for column 0, "AA" for column 26.
 	 * 
@@ -408,13 +467,21 @@ public class DataTable {
         String letters = "";
 		int index = this.getColumnIndex(columnName);
 		
-	    do {
-	        int current = (index % 26);
-	        letters = ((char) ('A' + current)) + letters;
-	        index = (index / 26) - 1;
-	    } while (index >= 0);
+		letters = DataTable.columnLetter(index);
 	
 		return letters;
+	}
+	
+	public static String columnLetter(int index) {
+        String letters = "";
+        
+        do {
+            int current = (index % 26);
+            letters = ((char) ('A' + current)) + letters;
+            index = (index / 26) - 1;
+        } while (index >= 0);
+    
+        return letters;	    
 	}
 	
 	public int getNumberOfRows() {

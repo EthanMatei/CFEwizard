@@ -113,8 +113,42 @@ public class CohortDataTable extends DataTable {
 		
 		return merge;
 	}
-	
 
+	public TreeSet<String> getCohortSubjects(String phene, int lowCutoff, int highCutoff) {
+        
+	    int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
+        int pheneIndex   = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
+
+	    // Find subjects with low score and subjects with high score
+	    TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
+	    TreeSet<String> highScoreSubjects  = new TreeSet<String>();
+
+	    for (ArrayList<String> row : this.data) {
+	        String pheneValueString = row.get(pheneIndex);
+	        String subject = row.get(subjectIndex);
+	        if (pheneValueString != null) {
+	            pheneValueString = pheneValueString.trim();
+	            if (pheneValueString.matches("\\d+")) {
+	                int pheneValue = Integer.parseInt(pheneValueString);
+
+	                if (pheneValue <= lowCutoff) {
+	                    lowScoreSubjects.add(subject);
+	                }
+
+	                if (pheneValue >= highCutoff) {
+	                    highScoreSubjects.add(subject);
+	                }
+	            }
+	        }
+	    }
+
+	    // Set cohort subjects as the intersection of subject sets with low and high phene scores, i.e., 
+	    // subjects with both low and high phene values, minus subjects that have intermediate scores
+	    TreeSet<String> cohortSubjects = lowScoreSubjects;
+	    cohortSubjects.retainAll(highScoreSubjects);    // intersection of sets of users with low and high scores
+	    return cohortSubjects;
+	}
+	
 	/**
 	 * Create 4 columns: Subject, PheneVisit, DiscoveryCohort, Date
 	 * Sort by Subject, and then PheneVisit
@@ -127,59 +161,15 @@ public class CohortDataTable extends DataTable {
 	 */
 	public CohortTable getCohort(String phene, int lowCutoff, int highCutoff) {
 		// Get the subject column index
-		int subjectIndex = -1;
-		for (int i = 0; i < this.columns.size(); i++) {
-			if (columns.get(i).trim().equalsIgnoreCase("Subject")) {
-				subjectIndex = i;
-				break;
-			}
-		}
-		
+	   	int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
+       
 		// Get the selected phene column index
-		int pheneIndex = -1;
-		for (int i = 0; i < this.columns.size(); i++) {
-			if (columns.get(i).trim().equalsIgnoreCase(phene.trim())) {
-				pheneIndex = i;
-				break;
-			}
-		}
+		int pheneIndex = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
 		
 		// Get the "visit date" column index
-		int visitDateIndex = -1;
-		for (int i = 0; i < this.columns.size(); i++) {
-			if (columns.get(i).trim().equalsIgnoreCase("Visit Date")) {
-				visitDateIndex = i;
-				break;
-			}
-		}
-		
-		// Find subjects with low score and subjects with high score
-		TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
-		TreeSet<String> highScoreSubjects  = new TreeSet<String>();
+		int visitDateIndex = this.getColumnIndexTrimAndIgnoreCase("Visit Date");
 
-	    for (ArrayList<String> row : this.data) {
-			String pheneValueString = row.get(pheneIndex);
-			String subject = row.get(subjectIndex);
-			if (pheneValueString != null) {
-				pheneValueString = pheneValueString.trim();
-				if (pheneValueString.matches("\\d+")) {
-					int pheneValue = Integer.parseInt(pheneValueString);
-					
-					if (pheneValue <= lowCutoff) {
-						lowScoreSubjects.add(subject);
-					}
-					
-					if (pheneValue >= highCutoff) {
-						highScoreSubjects.add(subject);
-					}
-				}
-			}
-	    }
-	    
-	    // Set cohort subjects as the intersection of subject sets with low and high phene scores, i.e., 
-	    // subjects with both low and high phene values, minus subjects that have intermediate scores
-	    TreeSet<String> cohortSubjects = lowScoreSubjects;
-	    cohortSubjects.retainAll(highScoreSubjects);    // intersection of sets of users with low and high scores
+		TreeSet<String> cohortSubjects = this.getCohortSubjects(phene, lowCutoff, highCutoff);
 	    
 	    //---------------------------------------------------------------------------
 	    // Calculate the number of low and high visits for subjects in the cohort
@@ -284,9 +274,50 @@ public class CohortDataTable extends DataTable {
 	public void enhance(String phene, int lowCutoff, int highCutoff) {
 		int pheneIndex = this.getColumnIndex(phene);
 		
+		int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
+		
 		this.insertColumn("INTRA", pheneIndex, "");
 		this.insertColumn(phene + " <= " + lowCutoff, pheneIndex, "");
 		this.insertColumn(phene + " >= " + highCutoff, pheneIndex, "");
+		
+		// Re-calculate phene index
+		pheneIndex = this.getColumnIndex(phene);
+		
+		this.addColumn("intra_sort", "");
+		this.addColumn("is_intermediate", "");
+		
+		int intraSortIndex = this.getColumnIndex("intra_sort");
+		int isIntermediateIndex = this.getColumnIndex("is_intermediate");
+		
+		TreeSet<String> cohortSubjects = this.getCohortSubjects(phene, lowCutoff, highCutoff);
+
+		for (ArrayList<String> dataRow: this.data) {
+		    if (cohortSubjects.contains(dataRow.get(subjectIndex))) {
+		        dataRow.set(intraSortIndex, "a");
+		        String value = dataRow.get(pheneIndex);
+		        //log.info("*** PHENE INDEX: " + pheneIndex);
+		        //log.info("*** PHENE VALUE: \"" + value + "\"");
+		        try {
+		            int ivalue = Integer.parseInt(value);
+		            log.info("   PHENE IVALUE: " + ivalue);
+		            if (ivalue <= lowCutoff || ivalue >= highCutoff) {
+		                dataRow.set(isIntermediateIndex, "n");
+		            } else {
+		                dataRow.set(isIntermediateIndex, "y");
+		            }
+		        } catch (NumberFormatException exception) {
+		            dataRow.set(isIntermediateIndex, "y");
+		        }
+		    } else {
+		        dataRow.set(intraSortIndex, "b");
+		    }
+		}
+		
+		String[] sortColumns = {"intra_sort", "is_intermediate", "Subject", "Subject Identifiers.PheneVisit"};
+		this.sort(sortColumns);
+		
+		this.deleteColumn("intra_sort");
+		this.deleteColumn("is_intermediate");
 		
 	}
 	
@@ -310,6 +341,7 @@ public class CohortDataTable extends DataTable {
 		intraCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		
 		int pheneIndex = this.getColumnIndex(phene);
+		int subjectIndex = this.getColumnIndex("Subject");
 		
 		int intraIndex = pheneIndex -1;
 		int lowIndex   = pheneIndex -2;
@@ -343,7 +375,41 @@ public class CohortDataTable extends DataTable {
 			}
 			
 			cell = row.getCell(highIndex);
-			// cell.setCellFormula("1 * 2 *3");
+			int rowNumber = i + 1;
+			int lastRow = sheet.getLastRowNum() + 1;
+			String subjectCol = DataTable.columnLetter(subjectIndex);
+			String pheneCol   = DataTable.columnLetter(pheneIndex);
+			String highFormula = "COUNTIFS("
+			        + "$" + subjectCol + "$2" + ":" + "$" + subjectCol + "$" + lastRow 
+			        + "," + subjectCol + rowNumber 
+			        + "," 
+			        + "$" + pheneCol + "$2" + ":" + "$" + pheneCol + "$" + lastRow
+			        + "," + "\">="+ highCutoff + "\""
+			        + ")";
+			cell.setCellFormula(highFormula);
+			
+			cell = row.getCell(lowIndex);
+			String lowFormula = "IF(" + pheneCol + rowNumber + "=\"\"," + "0" + ","
+			        + "COUNTIFS("
+                    + "$" + subjectCol + "$2" + ":" + "$" + subjectCol + "$" + lastRow 
+                    + "," + subjectCol + rowNumber 
+                    + "," 
+                    + "$" + pheneCol + "$2" + ":" + "$" + pheneCol + "$" + lastRow
+                    + "," + "\"<="+ lowCutoff + "\""
+                    + ")"
+                    + ")";
+			cell.setCellFormula(lowFormula);
+			
+			String lowCol = DataTable.columnLetter(lowIndex);
+			String highCol = DataTable.columnLetter(highIndex);
+			String intraFormula = "IF("
+			        + "AND(" + lowCol + rowNumber + ">0" + "," + highCol + rowNumber + ">0)"
+			        + "," + "\"INTRA\""
+			        + "," + "\"no\""
+			        + ")"
+			        ;
+	         cell = row.getCell(intraIndex);
+	         cell.setCellFormula(intraFormula);	
 		}
 	}
 

@@ -12,10 +12,6 @@
 
 <h2>Discovery Results</h2>
 
-Diagnosis Code:<s:property value="diagnosisCode"/> <br />
-        
-<hr/>
-
 <h3>Inputs</h3>
 <table class="dataTable">
     <tr>

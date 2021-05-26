@@ -88,8 +88,7 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   
   #subset data by cohort
   # OLD: bigData <- bigData[bigData[cohortColumns[cohortPreference]] == 1,]
-  # bigData <- bigData[bigData["DiscoveryCohort"] == 1,]
-  bigData <- bigData[bigData["DiscoveryCohort"] > 0.4,]   # Cohort intermediate values changed from 1 to 0.5
+  bigData <- bigData[bigData["DiscoveryCohort"] == 1,]
   
   # OLD CODE (get this from web app now):
   #dxCodeString <- ""

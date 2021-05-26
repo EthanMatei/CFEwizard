@@ -83,6 +83,7 @@ Number of High Visits for Cohort Subjects: <s:property value="highVisits" />
     <s:hidden name="discoveryDbTempFileName" />
     <s:hidden name="pheneSelection" />
     <s:hidden name="pheneTable" />
+    <s:hidden name="microarrayTable" />
     
     <div>    
     Gene Expression CSV File: <s:file name="discoveryCsv"/>

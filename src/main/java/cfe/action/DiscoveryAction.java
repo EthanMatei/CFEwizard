@@ -103,6 +103,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private String scriptOutputTextFile;
 	
+	private String resultsXlsxFile;
+	
 	private String tempDir;
 	
 	private String errorMessage;
@@ -373,6 +375,31 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			
 			outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
 			reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
+			
+			//--------------------------------------------
+			// Create result workbook
+			//--------------------------------------------
+			DataTable infoTable = this.createCohortInfoTable();
+            
+			DataTable outputDataTable = new DataTable(null);
+            outputDataTable.initializeToCsv(outputFile);
+            log.info("***** OUTPUT DATA TABLE NUMBER OF ROWS: " + outputDataTable.getNumberOfRows());
+			
+            DataTable reportDataTable = new DataTable(null);
+            reportDataTable.initializeToCsv(reportFile);
+            
+            LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
+
+			resultsTables.put("output", outputDataTable);
+			resultsTables.put("report", reportDataTable);
+			resultsTables.put("info", infoTable);
+			
+			XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
+            File resultsXlsxTempFile = File.createTempFile("discovery-results-", ".xslx");
+            FileOutputStream resultsOut = new FileOutputStream(resultsXlsxTempFile);
+            resultsWorkbook.write(resultsOut);
+            resultsOut.close();
+            this.resultsXlsxFile = resultsXlsxTempFile.getAbsolutePath();
 		}
 		
 		return result;
@@ -772,7 +799,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		this.scriptOutputTextFileName = scriptOutputTextFileName;
 	}
 
-	public String getTempDir() {
+	public String getResultsXlsxFile() {
+        return resultsXlsxFile;
+    }
+
+    public void setResultsXlsxFile(String resultsXlsxFile) {
+        this.resultsXlsxFile = resultsXlsxFile;
+    }
+
+    public String getTempDir() {
 		return tempDir;
 	}
 

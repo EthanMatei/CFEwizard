@@ -3,8 +3,12 @@ package cfe.utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -53,6 +57,27 @@ public class DataTable {
 		data = new ArrayList<ArrayList<String>>();
 		this.key = key;
 		this.index = new TreeMap<String, ArrayList<String>>();
+	}
+	
+    public void initializeToCsv(String csvFile) throws IOException {
+        Reader reader = Files.newBufferedReader(Paths.get(csvFile));
+		CSVReader csvReader = new CSVReader(reader);  
+		
+		String[] header = csvReader.readNext();
+		log.info("*** HEADER SIZE: " + header.length);
+		
+		if (header != null && header.length > 0) {
+		    for (String columnName: header) {
+		        this.columns.add(columnName);    
+		    }
+		    
+		    String[] line;
+	        while ((line = csvReader.readNext()) != null) {
+	            this.addRow(line);
+	        }
+		}
+		
+		csvReader.close();
 	}
 	
 	
@@ -115,6 +140,11 @@ public class DataTable {
 	    for (ArrayList<String> row: this.data) {
 	    	row.add(position, initialValue);
 	    }
+	}
+	
+	public void addRow(String[] row) {
+	    ArrayList<String> rowAsList = new ArrayList<String>(Arrays.asList(row));
+	    this.addRow(rowAsList);    
 	}
 	
 	public void addRow(ArrayList<String> row) {
@@ -388,7 +418,7 @@ public class DataTable {
 		return letters;
 	}
 	
-	int getNumberOfRows() {
+	public int getNumberOfRows() {
 		return this.data.size();
 	}
 	

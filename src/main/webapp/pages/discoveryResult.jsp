@@ -51,7 +51,7 @@ Diagnosis Code:<s:property value="diagnosisCode"/> <br />
 
 <h3>Results</h3>
 
-
+<%--
 Output file: <s:property value="outputFile"/>
 
 <s:a action="CsvDisplay" title="Download Excel spreadsheet">
@@ -80,6 +80,22 @@ Report file: <s:property value="reportFile"/>
     </div>
 </s:a>
 
+
+<br/>
+--%>
+
+Discovery Results:
+
+<s:a action="XlsxDisplay" title="Discovery Results">
+    <s:param name="spreadsheetFilePath" value="resultsXlsxFile" />
+    <div>
+    <img border="0"
+     style="margin-top: 2px;"
+     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+     alt="Output" /> <br />
+    <s:property value="outputFileName"/>
+    </div>
+</s:a>
 
 <br/>
 Script Output:

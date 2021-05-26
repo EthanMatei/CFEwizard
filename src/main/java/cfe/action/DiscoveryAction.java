@@ -379,18 +379,27 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			//--------------------------------------------
 			// Create results workbook
 			//--------------------------------------------
-			DataTable infoTable = this.createResultsInfoTable();
-            
+
 			DataTable outputDataTable = new DataTable(null);
             outputDataTable.initializeToCsv(outputFile);
 			
             DataTable reportDataTable = new DataTable(null);
             reportDataTable.initializeToCsv(reportFile);
             
+            DataTable cohortDataTable = new DataTable(null);
+            cohortDataTable.initializeToCsv(cohortCsvFile);
+            
+            DataTable cohortDataDataTable = new DataTable(null);
+            cohortDataDataTable.initializeToCsv(cohortDataCsvFile);            
+            
+            DataTable infoTable = this.createResultsInfoTable();
+            
             LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
 
 			resultsTables.put("output", outputDataTable);
 			resultsTables.put("report", reportDataTable);
+			resultsTables.put("cohort", cohortDataTable);
+	        resultsTables.put("cohort data", cohortDataDataTable);
 			resultsTables.put("info", infoTable);
 			
 			XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);

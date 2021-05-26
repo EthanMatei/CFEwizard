@@ -78,6 +78,7 @@ Number of High Visits for Cohort Subjects: <s:property value="highVisits" />
     <s:hidden name="lowCutoff" />
     <s:hidden name="highCutoff" />
     <s:hidden name="cohortCsvFile" />
+    <s:hidden name="cohortDataCsvFile" />
     <s:hidden name="discoveryDbFileName" />
     <s:hidden name="discoveryCsvTempFileName" />
     <s:hidden name="discoveryDbTempFileName" />

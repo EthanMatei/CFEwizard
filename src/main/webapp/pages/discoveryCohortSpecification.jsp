@@ -23,6 +23,11 @@
 
 <s:actionerror />
 
+<s:if test="!errorMessage.trim().isEmpty()">
+    <div class="cfeError">
+        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+    </div>
+</s:if>
 
 <s:form theme="simple" action="DiscoveryCohortSpecification">
 

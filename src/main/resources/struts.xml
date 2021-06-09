@@ -41,7 +41,7 @@
 
 
     	<global-results>
-     		<result name="error">pages/error.jsp</result>
+     		<!-- <result name="error">pages/error.jsp</result> -->
      		<result name="invalid.token">pages/error.html</result>
 		</global-results>
 
@@ -124,8 +124,8 @@
 		<action name="DiscoveryDatabaseUpload" class="cfe.action.DiscoveryAction" method="uploadDatabase">
 		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/discoveryCohortSpecification.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discoveryCohortSpecification.jsp</result>
+			<result name="error">pages/discoveryDatabaseUpload.jsp</result>
+			<result name="input">pages/discoveryDatabaseUpload.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>
@@ -145,8 +145,8 @@
 		<action name="DiscoveryCalculate" class="cfe.action.DiscoveryAction" method="calculate">
 		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/discoveryResult.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discoveryCohort.jsp</result>
+			<result name="error">pages/error.jsp</result>	
+			<result name="input">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>
@@ -167,6 +167,9 @@
 						
 	    <!-- ================================================================== -->
 	    
+	    <!-- ==================================================================
+	    DISCOVERY COHORT CREATION AND CALCULATION PHASE
+	    =================================================================== -->
 		<action name="DiscoveryFileUploadInitialize" class="cfe.action.DiscoveryFileUpload" method="initialize">
 		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/discoveryFileUpload.jsp</result>
@@ -191,7 +194,7 @@
 		<action name="DiscoveryFileUpload" class="cfe.action.DiscoveryFileUpload">
 		<interceptor-ref name="basicStack"/>
 			<result name="success">pages/discoveryFileUploadStatus.jsp</result>
-			<result name="error">pages/error.jsp</result>
+			<result name="error">pages/discoveryFileUpload2.jsp</result>
 			<result name="input">pages/discoveryFileUpload.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
@@ -353,7 +356,19 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>	
-
+		
+        <!--  ==================================================================================== -->
+        
+        <!-- Discovery Results -->
+		<action name="DiscoveryResults" class="cfe.action.DiscoveryResultsAction">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/discoveryAllResults.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+		        
         <!-- CSV file display -->
 		<action name="CsvDisplay" class="cfe.action.CsvDisplayAction" method="view">
 			<interceptor-ref name="basicStack"/>

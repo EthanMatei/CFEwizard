@@ -17,12 +17,15 @@
     }
 </script>
 
-<h1>Discovery<br> 
-</h1>
-<p>
-Please select the files to upload:
-</p>
+<h1>Discovery Database Upload</h1>
 
+        
+<s:if test="!errorMessage.trim().isEmpty()">
+    <div class="cfeError">
+        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+    </div>
+</s:if>
+        
 <s:actionerror />
 
 <s:form id ="discoveryUploadForm" theme="simple" name="discoveryUploadForm"

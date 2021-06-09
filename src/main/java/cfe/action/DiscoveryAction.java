@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
@@ -74,9 +75,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private String outputFile;
 	private String reportFile;
+	private String timingFile;
 	
 	private String outputFileName;
 	private String reportFileName;
+	private String timingFileName;
 	
 	private Set<String> pheneTables;
 	
@@ -126,34 +129,39 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
-		} else {
-			// Copy the upload files to temporary files, because the upload files get deleted
-			// and they are needed beyond this method
-			File discoveryDbTmp = File.createTempFile("discovery-db-", ".accdb");
-			FileUtils.copyFile(this.discoveryDb, discoveryDbTmp);
-			this.discoveryDbTempFileName = discoveryDbTmp.getAbsolutePath();
+		}
+		else if (this.discoveryDb == null || this.discoveryDbFileName == null) {
+		    this.errorMessage = "No discovery database was specified.";
+		    result = ERROR;
+		}
+		else if (!this.discoveryDbFileName.endsWith(".accdb")) {
+		    this.errorMessage = "Discovery database file \"" + discoveryDbFileName
+		            + "\" does not have MS Access database file extension \".accdb\".";
+		    result = ERROR;
+		}
+		else {
+		    try {
+			    // Copy the upload files to temporary files, because the upload files get deleted
+			    // and they are needed beyond this method
+			    File discoveryDbTmp = File.createTempFile("discovery-db-", ".accdb");
+			    FileUtils.copyFile(this.discoveryDb, discoveryDbTmp);
+			    this.discoveryDbTempFileName = discoveryDbTmp.getAbsolutePath();
 			
-			this.dbFileName = discoveryDb.getAbsolutePath();
+			    this.dbFileName = discoveryDb.getAbsolutePath();
 
-			DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser();
-			this.pheneTables = dbParser.getPheneTables(this.discoveryDbTempFileName);
+			    DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.discoveryDbTempFileName);
+			
+	            dbParser.checkCoreTables();
+	         
+			    this.pheneTables = dbParser.getPheneTables();
 
-			this.phenes = dbParser.getTableColumnMap(this.discoveryDbTempFileName);
+			    this.phenes = dbParser.getTableColumnMap();
 			
-			this.microarrayTables = dbParser.getMicroarrayTables(this.discoveryDbTempFileName);
-			
-			/***
-			File discoveryCsvTmp = File.createTempFile("discovery-csv-",  ".csv");
-            FileUtils.copyFile(this.discoveryCsv, discoveryCsvTmp);
-            this.discoveryCsvTempFileName = discoveryCsvTmp.getAbsolutePath();
-            
-			// NEED TO GET THE COHORT AND DIAGNOSIS CODES
-			PheneVisitParser pheneVisitParser = new PheneVisitParser();
-		    cohorts = pheneVisitParser.getCohorts(discoveryDb.getAbsolutePath());
-		    //cohorts.add(0, "All");
-		    
-		    diagnosisCodes = pheneVisitParser.getDiagnosisCodes(discoveryDb.getAbsolutePath());
-		    ***/
+			    this.microarrayTables = dbParser.getMicroarrayTables();
+		    } catch (Exception exception) {
+		        this.errorMessage = "The Discovery database could not be processed. " + exception.getLocalizedMessage();
+		        result = ERROR;
+		    }
 		}
 	    return result;
 	}
@@ -171,16 +179,20 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			result = LOGIN;
 		} else {
 			try {
+		        DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.discoveryDbTempFileName);
+		         
 				// Split phene selection into table and phene
 				String[] pheneInfo = pheneSelection.split("\\|", 2);
 				this.pheneTable = pheneInfo[0];
 				this.pheneSelection = pheneInfo[1];
 				log.info("Phene \"" + pheneSelection + "\" selected from table \"" + pheneTable + "\"");
 
+				dbParser.checkPheneTable(pheneTable);
+				
 				//-------------------------------------------------
 				// Create the chort data table
 				//-------------------------------------------------
-				Database db = DatabaseBuilder.open(new File(this.discoveryDbTempFileName));
+				Database db = dbParser.getDatabase();
 
 				Table subjectIdentifiers = db.getTable("Subject Identifiers");
 				Table demographics       = db.getTable("Demographics");
@@ -283,135 +295,175 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	public String calculate() throws Exception {
 		String result = SUCCESS;
 		
+		log.info("Discovery calculation phase started");
+		
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
-		} else {
-			log.info("Diagnosis code: " + this.diagnosisCode);
-			this.baseDir = WebAppProperties.getRootDir();
-
-			this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
-			this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
-			
-			this.tempDir = System.getProperty("java.io.tmpdir");
-			
-	        //------------------------------------------------------
-	        // Get the gene expression CSV file
-	        //------------------------------------------------------
-		    File discoveryCsvTmp = File.createTempFile("discovery-csv-",  ".csv");
-		    if (this.discoveryCsv != null) {
-                FileUtils.copyFile(this.discoveryCsv, discoveryCsvTmp);
-		    }
-            this.discoveryCsvTempFileName = discoveryCsvTmp.getAbsolutePath();
-            
-            //---------------------------------------------
-            // Process diagnosis code
-            //---------------------------------------------
-			if (this.diagnosisCode == null) this.diagnosisCode = "";
-			this.diagnosisCode = this.diagnosisCode.trim();
-			if (this.diagnosisCode.equals("") || this.diagnosisCode.equalsIgnoreCase("ALL")) {
-				this.diagnosisCode = "All";
-			}
-			
-            //---------------------------------------
-			// Create R script command
-			//---------------------------------------
-			String[] rScriptCommand = new String[12];
-			rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
-			rScriptCommand[1] = scriptFile;     // The R script to run
-			rScriptCommand[2] = scriptDir;
-			rScriptCommand[3] = this.cohortCsvFile;   // Change - name of cohort CSV File
-			rScriptCommand[4] = this.diagnosisCode;
-			rScriptCommand[5] = this.discoveryDbTempFileName;
-			rScriptCommand[6] = this.discoveryCsvTempFileName;
-			rScriptCommand[7] = this.pheneSelection;
-			rScriptCommand[8] = this.pheneTable;
-			rScriptCommand[9] = this.lowCutoff + "";
-			rScriptCommand[10] = this.highCutoff + "";
-			rScriptCommand[11] = this.tempDir;
-			
-			// Log a version of the command used for debugging
-			String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
-					+ " " + scriptDir 
-					+ " " + "\"" + this.cohortCsvFile + "\"" + " " + "\"" + this.diagnosisCode + "\"" 
-					+ " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"" + this.pheneSelection;
-			log.info("RSCRIPT COMMAND: " + logRScriptCommand);
-			
-			scriptOutput = this.runCommand(rScriptCommand);
-			
-			//-------------------------------------------------------
-			// Set up script output file log
-			//-------------------------------------------------------
-			File scriptOutputTextTempFile = File.createTempFile("discovery-r-script-output-", ".txt");
-			FileOutputStream out = new FileOutputStream(scriptOutputTextTempFile);
-			PrintWriter writer = new PrintWriter(out);
-			writer.write(scriptOutput);
-			writer.close();
-			this.scriptOutputTextFile = scriptOutputTextTempFile.getAbsolutePath();
-			this.scriptOutputTextFileName = "script-output.xlsx";
-			log.info("script output text file: " + scriptOutputTextFile);
-			
-			//---------------------------------------------------------------
-			// Get the output and report file paths
-			//---------------------------------------------------------------
-		    String outputFilePatternString = "Output file created: (.*)";
-		    String reportFilePatternString = "Report file created: (.*)";
-		    
-		    Pattern outputFilePattern = Pattern.compile(outputFilePatternString);
-		    Pattern reportFilePattern = Pattern.compile(reportFilePatternString);
-		    
-			String lines[] = scriptOutput.split("\\r?\\n");
-			for (String line: lines) {
-			    Matcher outputMatcher = outputFilePattern.matcher(line);
-			    Matcher reportMatcher = reportFilePattern.matcher(line);
-			    
-				if (outputMatcher.find()) {
-				   	outputFile = outputMatcher.group(1).trim();
-				}
-				
-				if (reportMatcher.find()) {
-					reportFile = reportMatcher.group(1).trim();
-				}
-			}
-			
-			outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
-			reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
-			
-			//--------------------------------------------
-			// Create results workbook
-			//--------------------------------------------
-
-			DataTable outputDataTable = new DataTable(null);
-            outputDataTable.initializeToCsv(outputFile);
-			
-            DataTable reportDataTable = new DataTable(null);
-            reportDataTable.initializeToCsv(reportFile);
-            
-            DataTable cohortDataTable = new DataTable(null);
-            cohortDataTable.initializeToCsv(cohortCsvFile);
-            
-            CohortDataTable cohortDataDataTable = new CohortDataTable();
-            cohortDataDataTable.initializeToCsv(cohortDataCsvFile);            
-            
-            DataTable infoTable = this.createResultsInfoTable();
-            
-            LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
-
-			resultsTables.put("output", outputDataTable);
-			resultsTables.put("report", reportDataTable);
-			resultsTables.put("cohort", cohortDataTable);
-	        resultsTables.put("cohort data", cohortDataDataTable);
-			resultsTables.put("info", infoTable);
-			
-			XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
-			cohortDataDataTable.enhanceCohortDataSheet(resultsWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
-			
-            File resultsXlsxTempFile = File.createTempFile("discovery-results-", ".xslx");
-            FileOutputStream resultsOut = new FileOutputStream(resultsXlsxTempFile);
-            resultsWorkbook.write(resultsOut);
-            resultsOut.close();
-            this.resultsXlsxFile = resultsXlsxTempFile.getAbsolutePath();
 		}
-		
+		else if (this.discoveryCsv == null || this.discoveryCsvFileName == null) {
+	        this.errorMessage = "No gene expression CSV file was specified.";
+	        result = ERROR;
+	    }
+	    else if (!this.discoveryCsvFileName.endsWith(".csv")) {
+	        this.errorMessage = "Gene expression file \"" + discoveryCsvFileName
+	                + "\" is not a \".csv\" file.";
+	        result = ERROR;
+	    }			
+        else {
+            try {
+                log.info("Starting Discovery calculation");
+                log.info("Diagnosis code: " + this.diagnosisCode);
+                this.baseDir = WebAppProperties.getRootDir();
+
+                this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
+                this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
+
+                this.tempDir = System.getProperty("java.io.tmpdir");
+
+                //------------------------------------------------------
+                // Get the gene expression CSV file
+                //------------------------------------------------------
+                File discoveryCsvTmp = File.createTempFile("discovery-csv-",  ".csv");
+                if (this.discoveryCsv != null) {
+                    FileUtils.copyFile(this.discoveryCsv, discoveryCsvTmp);
+                }
+                this.discoveryCsvTempFileName = discoveryCsvTmp.getAbsolutePath();
+
+                //---------------------------------------------
+                // Process diagnosis code
+                //---------------------------------------------
+                if (this.diagnosisCode == null) this.diagnosisCode = "";
+                this.diagnosisCode = this.diagnosisCode.trim();
+                if (this.diagnosisCode.equals("") || this.diagnosisCode.equalsIgnoreCase("ALL")) {
+                    this.diagnosisCode = "All";
+                }
+
+                //---------------------------------------
+                // Create R script command
+                //---------------------------------------
+                String[] rScriptCommand = new String[12];
+                rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
+                rScriptCommand[1] = scriptFile;     // The R script to run
+                rScriptCommand[2] = scriptDir;
+                rScriptCommand[3] = this.cohortCsvFile;   // Change - name of cohort CSV File
+                rScriptCommand[4] = this.diagnosisCode;
+                rScriptCommand[5] = this.discoveryDbTempFileName;
+                rScriptCommand[6] = this.discoveryCsvTempFileName;
+                rScriptCommand[7] = this.pheneSelection;
+                rScriptCommand[8] = this.pheneTable;
+                rScriptCommand[9] = this.lowCutoff + "";
+                rScriptCommand[10] = this.highCutoff + "";
+                rScriptCommand[11] = this.tempDir;
+
+                // Log a version of the command used for debugging
+                String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
+                        + " " + scriptDir 
+                        + " " + "\"" + this.cohortCsvFile + "\"" + " " + "\"" + this.diagnosisCode + "\"" 
+                        + " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"" + this.pheneSelection;
+                log.info("RSCRIPT COMMAND: " + logRScriptCommand);
+
+                scriptOutput = this.runCommand(rScriptCommand);
+
+                //-------------------------------------------------------
+                // Set up script output file log
+                //-------------------------------------------------------
+                File scriptOutputTextTempFile = File.createTempFile("discovery-r-script-output-", ".txt");
+                FileOutputStream out = new FileOutputStream(scriptOutputTextTempFile);
+                PrintWriter writer = new PrintWriter(out);
+                writer.write(scriptOutput);
+                writer.close();
+                this.scriptOutputTextFile = scriptOutputTextTempFile.getAbsolutePath();
+                this.scriptOutputTextFileName = "script-output.txt";
+                log.info("script output text file: " + scriptOutputTextFile);
+
+                //---------------------------------------------------------------
+                // Get the output, report and timing file paths
+                //---------------------------------------------------------------
+                String outputFilePatternString = "Output file created: (.*)";
+                String reportFilePatternString = "Report file created: (.*)";
+                //String timingFilePatternString = "Timing file created: (.*)";
+
+                Pattern outputFilePattern = Pattern.compile(outputFilePatternString);
+                Pattern reportFilePattern = Pattern.compile(reportFilePatternString);
+                //Pattern timingFilePattern = Pattern.compile(timingFilePatternString);
+
+                String lines[] = scriptOutput.split("\\r?\\n");
+                for (String line: lines) {
+                    Matcher outputMatcher = outputFilePattern.matcher(line);
+                    Matcher reportMatcher = reportFilePattern.matcher(line);
+                    //Matcher timingMatcher = timingFilePattern.matcher(line);
+
+                    if (outputMatcher.find()) {
+                        outputFile = outputMatcher.group(1).trim();
+                    }
+
+                    if (reportMatcher.find()) {
+                        reportFile = reportMatcher.group(1).trim();
+                    }
+
+                    //if (timingMatcher.find()) {
+                    //    timingFile = timingMatcher.group(1).trim();
+                    //}				
+                }
+
+                outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
+                reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
+                //timingFileName = FilenameUtils.getBaseName(timingFile) + ".csv";
+
+                //--------------------------------------------
+                // Create results workbook
+                //--------------------------------------------
+
+                DataTable outputDataTable = new DataTable(null);
+                outputDataTable.initializeToCsv(outputFile);
+
+                DataTable reportDataTable = new DataTable(null);
+                reportDataTable.initializeToCsv(reportFile);
+
+                DataTable cohortDataTable = new DataTable(null);
+                cohortDataTable.initializeToCsv(cohortCsvFile);
+
+                CohortDataTable cohortDataDataTable = new CohortDataTable();
+                cohortDataDataTable.initializeToCsv(cohortDataCsvFile);            
+
+                DataTable infoTable = this.createResultsInfoTable();
+
+                LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
+
+                resultsTables.put("output", outputDataTable);
+                resultsTables.put("report", reportDataTable);
+                resultsTables.put("cohort", cohortDataTable);
+                resultsTables.put("cohort data", cohortDataDataTable);
+                resultsTables.put("info", infoTable);
+
+                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
+                cohortDataDataTable.enhanceCohortDataSheet(resultsWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
+
+                File resultsXlsxTempFile = File.createTempFile("discovery-results-", ".xslx");
+                FileOutputStream resultsOut = new FileOutputStream(resultsXlsxTempFile);
+                resultsWorkbook.write(resultsOut);
+                resultsOut.close();
+                this.resultsXlsxFile = resultsXlsxTempFile.getAbsolutePath();
+
+                // Timing CSV (WORK IN PROGRESS)
+                /*
+                DataTable timingTable = new DataTable(null);
+                timingTable.initializeToCsv(timingFile);
+                File timingCsvTempFile = File.createTempFile("discovery-timing-", ".csv");
+                FileOutputStream timingOut = new FileOutputStream(timingCsvTempFile);
+                timingOut.close();
+                 */
+            }
+            catch (Exception exception) {
+                result = ERROR;
+                if (exception != null) {
+                    this.setErrorMessage(exception.getLocalizedMessage());
+                    String stackTrace = ExceptionUtils.getStackTrace(exception);
+                    this.setExceptionStack(stackTrace);
+                }
+            }
+        }
+
 		return result;
 	}
 	
@@ -613,7 +665,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	}
 
 	public String getDiagnosisCode() {
-		log.info("*** Getter diagnosis code: " + this.diagnosisCode);
 		return diagnosisCode;
 	}
 

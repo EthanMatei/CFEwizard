@@ -28,8 +28,10 @@
     
 </ul>
 
+<h2>Discovery</h2>
 <ul>
     <li><s:a action="DiscoveryInitialize">Discovery</s:a></li>
+    <li><s:a action="DiscoveryResults">Past Results</s:a></li>
 </ul>
 
 <s:if test="#session.username==adminUser">

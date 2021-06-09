@@ -73,6 +73,13 @@ Number of High Visits for Cohort Subjects: <s:property value="highVisits" />
 
 <h2>Discovery Processing</h2>
 
+
+<s:if test="!errorMessage.trim().isEmpty()">
+    <div class="cfeError">
+        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+    </div>
+</s:if>
+
 <s:form theme="simple" action="DiscoveryCalculate" method="post" enctype="multipart/form-data">
  
     <s:hidden name="lowCutoff" />

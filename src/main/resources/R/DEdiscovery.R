@@ -1,9 +1,8 @@
 
-
-
-### wants <- c("RODBC","RODBCext","gWidgets", "tcltk", "plyr", "gtools", "dplyr")
+startTime <- Sys.time()
 
 # Packages
+# -----------------
 # RJDBC - for accessing MS Access
 # plyr - "Tools for Splitting, Applying and Combining Data"
 # dplyr - tool for working with data frame like objects
@@ -11,16 +10,20 @@
 
 wants <- c("RJDBC", "plyr", "gtools", "dplyr")
 has   <- wants %in% rownames(installed.packages())
-if(any(!has)) install.packages(wants[!has])
+if (any(!has)) install.packages(wants[!has])
 
-### library(RODBC)
-### require(gWidgets)
-### require(tcltk)
 library(RJDBC)
 library(gtools)
 library(plyr)
 library(dplyr)
-### options(guiToolkit="tcltk") 
+ 
+
+#--------------------------------------------------
+# Create data frame for storing timing information
+#--------------------------------------------------
+timingColumns <- c("task","time","description") 
+timing <- data.frame(matrix(nrow = 0, ncol = length(timingColumns))) 
+colnames(timing) <- timingColumns
 
 #-------------------------------------------------
 # Process command line arguments

@@ -19,6 +19,15 @@ body  {
  .darkColor {color: #5A79A5;}
  .lightColor {color: #9CAAC6;}
  .veryLightColor{color: #DEE7EF;}
+
+
+div.cfeError {
+	border: 2px solid #CC0000;
+	background-color: #FFCCCC;
+	padding: 7px;
+	margin-top: 7px;
+	margin-bottom: 20px;
+}
  
 /***********************************************/
 /* Page links                                  */
@@ -94,6 +103,7 @@ div#login {
 div#login td {
 	padding: 4px;
 }
+
 
 /***********************/
 /* scrollable div      */

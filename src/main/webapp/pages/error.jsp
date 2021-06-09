@@ -11,17 +11,17 @@
 <H1>Error!</H1>
 <s:actionerror />
 
-<h4>The application has malfunctioned.</h4>
- 
-<p>Please contact technical support with the following information:</p>
- 
-<h4>Exception Name: <s:property value="exception" /> </h4>
- 
-<h4>Exception Details: <s:property value="exceptionStack" /></h4> 
-
 <s:if test="errorMessage != ''">
-    ERROR: <s:property value="errorMessage" />
+    <div class="cfeError">
+        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+    </div>
 </s:if>
+
+<s:if test="exceptionStack != ''">
+    <h4>Exception Details</h4>
+    <s:property value="exceptionStack" /> 
+</s:if>
+
 </body>
 
 </html>

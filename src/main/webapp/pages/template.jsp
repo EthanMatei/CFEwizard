@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!DOCTYPE HTML>
       
 <%-- 
 CFE Template
@@ -8,7 +9,7 @@ CFE Template
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
 
- <html>
+ <html lang="en">
     <head>
         <link rel="stylesheet"  type="text/css" href="<s:url includeParams="none" value='/css/cfe.css'/>" />
         <tiles:insertAttribute name="header" />
@@ -17,7 +18,7 @@ CFE Template
         <%-- Page Header --%>
 
         <div id="logo">
-            <h2 style="margin-bottom: 4px; margin-top: 4px;"">CFE Wizard Scoring Program</h2>
+            <h2 style="margin-bottom: 4px; margin-top: 4px;">CFE Wizard Scoring Program</h2>
             <h4 style="margin-top:2px; margin-bottom:4px">version <s:property value="@cfe.model.VersionNumber@VERSION_NUMBER" /> </h4>
         </div>
         
@@ -31,7 +32,8 @@ CFE Template
         </s:if>
         
         <hr />
-                    
+
+            
         <%-- Content --%>
     	<div class="content">
             <tiles:insertAttribute name="content" />

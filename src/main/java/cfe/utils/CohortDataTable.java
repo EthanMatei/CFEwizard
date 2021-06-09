@@ -76,8 +76,6 @@ public class CohortDataTable extends DataTable {
 		
 		merge.keyIndex = this.keyIndex;
 		
-		log.info("MERGE KEY INDEX: " + merge.keyIndex);
-		
 		ArrayList<String> columns1 = new ArrayList<String>();
 		for (String columnName: this.columns) {
 			if (columnName.equals(key)) {
@@ -97,8 +95,7 @@ public class CohortDataTable extends DataTable {
 		merge.columns.addAll(columns1);
 		merge.columns.addAll(columns2);
 		
-		String columnsString = String.join(", ", merge.columns);
-		log.info("Merged columns: " + columnsString);
+		//String columnsString = String.join(", ", merge.columns);
 		
 		Set<String> keys1 = this.index.keySet();
 		Set<String> keys2 = mergeTable.index.keySet();
@@ -299,7 +296,7 @@ public class CohortDataTable extends DataTable {
 		        //log.info("*** PHENE VALUE: \"" + value + "\"");
 		        try {
 		            int ivalue = Integer.parseInt(value);
-		            log.info("   PHENE IVALUE: " + ivalue);
+		            
 		            if (ivalue <= lowCutoff || ivalue >= highCutoff) {
 		                dataRow.set(isIntermediateIndex, "n");
 		            } else {

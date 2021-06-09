@@ -16,14 +16,17 @@ uses the following technologies:
 For information on setting up a development environment (with Ubuntu examples),
 see [Development Environment Setup](./DevelopmentEnvironmentSetup.md)
 
-### Checking for out of date dependencies
+
+Checking for out of date dependencies
+---------------------------------------
 
 To check for out of date dependencies, run the following command in the
 top-level directory of your project:
 
    mvn versions:display-dependency-updates
 
-### Building the CFE Wizard
+Building the CFE Wizard
+--------------------------
 
 To build run the following command in the top-level directory:
 
@@ -31,7 +34,8 @@ To build run the following command in the top-level directory:
 
 This will create the web archive file **target/CFE.war**
 
-### Installing the CFE Wizard on a New Server
+Installing the CFE Wizard on a New Server
+---------------------------------------------
 
 You need to have the following software installed on the server:
 
@@ -39,7 +43,7 @@ You need to have the following software installed on the server:
 * Tomcat - or a similar web application server
 * MySQL - version 5.7 has been successfully used
 
-#### Database Setup
+### Database Setup
 
 A database and database user need to be set up for the CFE Wizard in the MySQL database. For example,
 the following commands could be used within MySQL:
@@ -52,7 +56,7 @@ Note that Flyway will take care of setting up the database tables needed by the 
 is run for the first time on a new server.
 
 
-#### CFE Properties File Setup
+### CFE Properties File Setup
 
 You need to create a CFE properties file, named **.cfe.properties** in the home directory of the account that Tomcat runs
 under, e.g., /home/tomcat/. This is a template for this file showing what properties need to be set:
@@ -76,14 +80,14 @@ Note that the **serverTimezone** argument in the **db.host** property is needed 
 If it is removed, the application will fail to start, and an error message will be printed to the
 Tomcat log file.
 
-#### CFE Wizard Installation/Update
+### CFE Wizard Installation/Update
 After the properties file has been created, to install the CFE Wizard on a new server, copy the
 **CFE.war** file (see above) to the **webapps/** directory of Tomcat. This step is also what needs
 to be done to update the CFE Wizard. Tomcat should automatically install the WAR (Web ARchive) file
 after it has been copied to the webapps directory.
 
 
-#### Making a New Release
+### Making a New Release
 
 The VERSION_NUMBER in the following file should be updated for the new release:
 
@@ -98,7 +102,8 @@ Then a release should be created in GitHub with the name "CFE Wizard _release-nu
 with a description of the major changes for this release.
 
 
-#### GitHub Workflow
+GitHub Workflow
+---------------------------------------
 
 The CFE Wizard code is stored in an IU GitHub repository. This repository needs to be cloned to your personal
 computer, and changes made there. Once changes are complete, they can be pushed to the IU GitHub repository.

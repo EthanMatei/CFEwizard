@@ -228,7 +228,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				this.cohortDataCsv = cohortData.toCsv();
 
 				// Create an Xlsx (spreadsheet) version of the cohort data
-				File cohortDataXlsxTempFile = File.createTempFile("cohort-data-", ".xslx");
+				File cohortDataXlsxTempFile = File.createTempFile("cohort-data-", ".xlsx");
 				FileOutputStream out = new FileOutputStream(cohortDataXlsxTempFile);
 				cohortData.toXlsx().write(out);
 				out.close();
@@ -270,7 +270,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
 				
 				
-				File cohortXlsxTempFile = File.createTempFile("cohort-", ".xslx");
+				File cohortXlsxTempFile = File.createTempFile("cohort-", ".xlsx");
 				out = new FileOutputStream(cohortXlsxTempFile);
 				cohortWorkbook.write(out);
 				out.close();
@@ -360,8 +360,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                         + " " + scriptDir 
                         + " " + "\"" + this.cohortCsvFile + "\"" + " " + "\"" + this.diagnosisCode + "\"" 
                         + " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"" + this.pheneSelection;
-                log.info("RSCRIPT COMMAND: " + logRScriptCommand);
+                log.info("LOG RSCRIPT COMMAND: " + logRScriptCommand);
 
+                log.info("RSCRIPT COMMAND: " + rScriptCommand);
+                
                 scriptOutput = this.runCommand(rScriptCommand);
 
                 //-------------------------------------------------------
@@ -381,17 +383,17 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //---------------------------------------------------------------
                 String outputFilePatternString = "Output file created: (.*)";
                 String reportFilePatternString = "Report file created: (.*)";
-                //String timingFilePatternString = "Timing file created: (.*)";
+                String timingFilePatternString = "Timing file created: (.*)";
 
                 Pattern outputFilePattern = Pattern.compile(outputFilePatternString);
                 Pattern reportFilePattern = Pattern.compile(reportFilePatternString);
-                //Pattern timingFilePattern = Pattern.compile(timingFilePatternString);
+                Pattern timingFilePattern = Pattern.compile(timingFilePatternString);
 
                 String lines[] = scriptOutput.split("\\r?\\n");
                 for (String line: lines) {
                     Matcher outputMatcher = outputFilePattern.matcher(line);
                     Matcher reportMatcher = reportFilePattern.matcher(line);
-                    //Matcher timingMatcher = timingFilePattern.matcher(line);
+                    Matcher timingMatcher = timingFilePattern.matcher(line);
 
                     if (outputMatcher.find()) {
                         outputFile = outputMatcher.group(1).trim();
@@ -401,14 +403,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                         reportFile = reportMatcher.group(1).trim();
                     }
 
-                    //if (timingMatcher.find()) {
-                    //    timingFile = timingMatcher.group(1).trim();
-                    //}				
+                    if (timingMatcher.find()) {
+                        timingFile = timingMatcher.group(1).trim();
+                    }				
                 }
 
                 outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
                 reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
-                //timingFileName = FilenameUtils.getBaseName(timingFile) + ".csv";
+                timingFileName = FilenameUtils.getBaseName(timingFile) + ".csv";
 
                 //--------------------------------------------
                 // Create results workbook
@@ -439,20 +441,18 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
                 cohortDataDataTable.enhanceCohortDataSheet(resultsWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
 
-                File resultsXlsxTempFile = File.createTempFile("discovery-results-", ".xslx");
+                File resultsXlsxTempFile = File.createTempFile("discovery-results-", ".xlsx");
                 FileOutputStream resultsOut = new FileOutputStream(resultsXlsxTempFile);
                 resultsWorkbook.write(resultsOut);
                 resultsOut.close();
                 this.resultsXlsxFile = resultsXlsxTempFile.getAbsolutePath();
 
                 // Timing CSV (WORK IN PROGRESS)
-                /*
-                DataTable timingTable = new DataTable(null);
-                timingTable.initializeToCsv(timingFile);
-                File timingCsvTempFile = File.createTempFile("discovery-timing-", ".csv");
-                FileOutputStream timingOut = new FileOutputStream(timingCsvTempFile);
-                timingOut.close();
-                 */
+                //DataTable timingTable = new DataTable(null);
+                //timingTable.initializeToCsv(timingFile);
+                //File timingCsvTempFile = File.createTempFile("discovery-timing-", ".csv");
+                //FileOutputStream timingOut = new FileOutputStream(timingCsvTempFile);
+                //timingOut.close();
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -887,5 +887,21 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	public void setTempDir(String tempDir) {
 		this.tempDir = tempDir;
 	}
+
+    public String getTimingFile() {
+        return timingFile;
+    }
+
+    public void setTimingFile(String timingFile) {
+        this.timingFile = timingFile;
+    }
+
+    public String getTimingFileName() {
+        return timingFileName;
+    }
+
+    public void setTimingFileName(String timingFileName) {
+        this.timingFileName = timingFileName;
+    }
 
 }

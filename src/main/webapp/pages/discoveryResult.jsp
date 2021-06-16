@@ -52,38 +52,6 @@
 
 <h3>Results</h3>
 
-<%--
-Output file: <s:property value="outputFile"/>
-
-<s:a action="CsvDisplay" title="Download Excel spreadsheet">
-    <s:param name="csvFilePath" value="outputFile" />
-    <div>
-    <img border="0"
-     style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-     alt="Output" /> <br />
-    <s:property value="outputFileName"/>
-    </div>
-</s:a>
-
-<br/>
-
-Report file: <s:property value="reportFile"/>
-
-<s:a action="CsvDisplay" title="Download Excel spreadsheet">
-    <s:param name="csvFilePath" value="reportFile" />
-    <div>
-    <img border="0"
-     style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-     alt="Report" /> <br />
-    <s:property value="reportFileName"/>
-    </div>
-</s:a>
-
-
-<br/>
---%>
 
 Discovery Results:
 
@@ -93,7 +61,7 @@ Discovery Results:
     <img border="0"
      style="margin-top: 2px;"
      src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-     alt="Output" /> <br />
+     alt="Discovery Results" /> <br />
     <s:property value="outputFileName"/>
     </div>
 </s:a>
@@ -101,17 +69,30 @@ Discovery Results:
 <br/>
 Script Output:
 
-<s:a action="TextFileDisplay" title="Script output file">
+<s:a action="TextFileDisplay" title="Discovery R script output file">
     <s:param name="textFilePath" value="scriptOutputTextFile" />
     <div>
     <img border="0"
      style="margin-top: 2px;"
      src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
-     alt="R Script Output" /> <br />
+     alt="Discovery R Script Output" /> <br />
     <s:property value="scriptOutputTextFileName"/>
     </div>
 </s:a>
 
+<br/>
+Timing:
+
+<s:a action="CsvDisplay" title="Discovery Timing">
+    <s:param name="csvFilePath" value="timingFile" />
+    <div>
+    <img border="0"
+     style="margin-top: 2px;"
+     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+     alt="Discovery Timing" /> <br />
+    <s:property value="timingFileName"/>
+    </div>
+</s:a>
 
 <hr style="margin-top: 12px;"/>
 

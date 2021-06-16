@@ -89,13 +89,13 @@
 
     
     <!-- 
-        Increase the session timeout to 1 hour on inactivity
+        Increase the session timeout to 2 hours on inactivity
         to try to prevent form submissions from
         being messed up
         10 min
     -->
     <session-config>
-        <session-timeout>60</session-timeout>
+        <session-timeout>120</session-timeout>
     </session-config>
   
   

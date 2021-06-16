@@ -83,7 +83,7 @@ public class XlsxDisplayAction extends BaseAction implements SessionAware {
     	else {
     		//try {
     		if (spreadsheetFilePath == null || spreadsheetFilePath.trim().equals("")) {
-    			throw new ActionErrorException("No .xslx file was specified.");
+    			throw new ActionErrorException("No .xlsx file was specified.");
     		}
 
     	    Path path = Paths.get(spreadsheetFilePath); 

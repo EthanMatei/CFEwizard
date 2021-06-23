@@ -8,6 +8,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
 
+import cfe.services.ServiceException;
+
 import cfe.utils.HibernateUtils;
 
 

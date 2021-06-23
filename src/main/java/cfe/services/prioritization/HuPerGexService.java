@@ -6,6 +6,8 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import cfe.services.ServiceException;
+
 import cfe.dao.prioritization.HuPerGexDao;
 import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.HuPerGex;

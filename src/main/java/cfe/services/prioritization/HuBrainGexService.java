@@ -8,6 +8,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import cfe.services.ServiceException;
+
 import cfe.dao.prioritization.HuBrainGexDao;
 import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.HuBrainGex;

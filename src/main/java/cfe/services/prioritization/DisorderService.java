@@ -12,6 +12,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import cfe.services.ServiceException;
+
 import cfe.dao.prioritization.DisorderDao;
 import cfe.dao.prioritization.HuBrainGexDao;
 import cfe.dao.prioritization.HuBrainMetDao;

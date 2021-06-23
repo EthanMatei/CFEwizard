@@ -52,7 +52,7 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 		    this.tableMap = new TreeMap<String,TableInfo>();
 
 		    for (Tables t: Tables.values()) {
-		    	String className = "cfg.model." + t.getClassname();
+		    	String className = "cfe.model.prioritization" + t.getClassname();
 		    	long count = TableInfoService.getCount(className);
 		    	TableInfo tableInfo = new TableInfo(className, count, t.getTblName());
 		        tableMap.put(t.getLabel(), tableInfo);
@@ -76,10 +76,10 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 		}
 		else {
 		    for (Tables t: Tables.values()) {
-		    	String className = "cfg.model." + t.getClassname();
+		    	String className = "cfe.model.prioritization" + t.getClassname();
 		    	TableInfoService.deleteAll(className);
 		    }
-		    TableInfoService.deleteAll("cfg.model.Disorder");
+		    TableInfoService.deleteAll("cfe.model.prioritization.Disorder");
 	    }
 
         return result;        

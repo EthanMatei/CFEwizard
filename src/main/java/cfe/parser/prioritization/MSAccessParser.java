@@ -127,7 +127,7 @@ public class MSAccessParser implements IParser {
 				 * 
 				 * Parser<HuGeneLinkage> parser = new Parser<HuGeneLinkage>();
 				 * 
-				 * parser.parseTable(db, tablename, "cfg.model.HuGeneLinkage", hbps);
+				 * parser.parseTable(db, tablename, "cfe.model.prioritization.HuGeneLinkage", hbps);
 				 * validationMsgs.addAll(parser.getValidationMsgs());
 				 * 
 				 * Transaction tx = session.beginTransaction(); HuGeneLinkageDao hbgDao = new
@@ -329,7 +329,7 @@ public class MSAccessParser implements IParser {
 		
 		Parser<T> parser = new Parser<T>();
 		
-		parser.parseTable(db, tablename, "cfg.model." + table.getClassname(), hbgs);
+		parser.parseTable(db, tablename, "cfe.model.prioritization" + table.getClassname(), hbgs);
 		
 		validationMsgs.addAll(parser.getValidationMsgs());
 		

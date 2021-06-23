@@ -357,7 +357,136 @@
             </result>
 		</action>	
 		
-        <!--  ==================================================================================== -->
+		
+    <!-- PRIORITIZATION ===================================================================== -->
+    
+	<!-- Upload database flow -->
+	
+		<!-- Step 1 -->
+		<action name="PrioritizationDBSelectionInitialize" class="cfe.action.prioritization.DBSelection" method="initialize">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/prioritization/dbSelection.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+
+        <!-- Step 2 -->		
+		<action name="PrioritizationDBSelection" class="cfe.action.prioritization.DBSelection">
+			<result name="success">pages/prioritization/fileUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/dbSelection.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<!-- Step 3 -->
+		<action name="PrioritizationFileUpload" class="cfe.action.prioritization.FileUploadSerial">
+			<interceptor-ref name="fileUploadStack"/>
+	    	<result name="success">pages/prioritization/dbUploadStatus.jsp</result>
+	    	<!-- <result name="error">pages/error.jsp</result> -->
+	        <result name="error">pages/prioritization/dbUploadStatus.jsp</result>
+	    	<result name="input">pages/prioritization/fileUpload.jsp</result>
+	    	<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>   	
+		</action>
+		
+		<!-- SCORES CALCULATION -->
+	
+		<!-- Step 1 -->	
+		
+		<!-- does not work with pages namespace -->
+	    <action name="PrioritizationGeneListUpload" class="cfe.action.prioritization.GeneListUpload" method="initialize">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/prioritization/geneListUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result> 
+		</action>
+		
+		<action name="PrioritizationGeneListUploadProcess" class="cfe.action.prioritization.GeneListUpload">
+		    <interceptor-ref name="cfeStack"/>
+			<result name="success" type="redirectAction">
+            	<param name="actionName">PrioritizationScoringWeights</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result> 			
+		</action>
+
+		<!-- Step 2 -->	
+		<action name="PrioritizationScoringWeights" class="cfe.action.prioritization.ScoringWeights" method="initialize">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/prioritization/scoringWeights.jsp</result>	
+			<result name="error">pages/error.jsp</result>   
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<action name="PrioritizationScoringWeightsProcess" class="cfe.action.prioritization.ScoringWeights">
+			<interceptor-ref name="cfeStack"/>
+			<result name="success" type="redirectAction">
+                <param name="actionName">PrioritizationDiseaseSelection</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/prioritization/scoringWeights.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>			    
+		</action>
+
+		<!--  Step 3 -->
+		<action name="PrioritizationDiseaseSelection" class="cfe.action.prioritization.DiseaseSelectionAction" method="initialize">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/prioritization/diseaseSelection.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+
+		<action name="PrioritizationDiseaseSelectionProcess" class="cfe.action.prioritization.DiseaseSelectionAction" method="execute">
+			<interceptor-ref name="cfeStack"/>
+			<result name="success" type="redirectAction">
+                <param name="actionName">PrioritizationCalculateScores</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<!--  Step 4 -->
+		<action name="PrioritizationCalculateScores" class="cfe.action.prioritization.CalculateScores">
+				<interceptor-ref name="basicStack"/>
+			    <result name="success">pages/prioritization/calculatedScores.jsp</result>
+			    <result name="error">/pages/error.jsp</result>
+			    <result name="login" type="redirectAction">
+                    <param name="actionName">LoginAction</param>
+                </result>
+		</action>
+		
+		<!--  Step 5 -->
+		<action name="PrioritizationReport" class="cfe.action.prioritization.ReportAction" method="view">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success" type="stream">
+                <param name="inputName">fileStream</param>
+	            <param name="contentType">${fileContentType}</param>
+                <param name="contentDisposition">attachment; filename="${fileName}"</param>
+            </result>
+            <result name="error">pages/error.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+        <!-- ==================================================================================== -->
         
         <!-- Discovery Results -->
 		<action name="DiscoveryResults" class="cfe.action.DiscoveryResultsAction">

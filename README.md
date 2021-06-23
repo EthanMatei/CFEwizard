@@ -60,7 +60,7 @@ Table: **Discovery**
 
 ---
 
-Priortization Database
+Prioritization Database
 ----------------------
 
  Table: **Prioritization**

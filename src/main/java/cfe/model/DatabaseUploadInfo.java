@@ -9,7 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import cfe.enums.Tables.TblNames;
+import cfe.enums.CfeTables.TblNames;
 
 @Entity
 @Table(name=TblNames.DATABASE_UPLOAD_INFO)

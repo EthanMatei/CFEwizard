@@ -16,7 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
-import cfe.enums.Databases;
+import cfe.enums.CfeDatabases;
 import cfe.model.DatabaseUploadInfo;
 import cfe.parser.MSAccessParser;
 import cfe.services.DatabaseUploadInfoService;
@@ -187,7 +187,7 @@ public class FileUploadSerial extends BaseAction implements SessionAware {
 	    			}
 	    			
 	    			DatabaseUploadInfo info = new DatabaseUploadInfo();
-	    			String dbName = Databases.fromLabel( dbnames.get(i) ).toString();
+	    			String dbName = CfeDatabases.fromLabel( dbnames.get(i) ).toString();
 	    			
 	    			log.info("dbName: " + dbName);
 	    			info.setDatabaseName(dbName);

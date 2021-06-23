@@ -70,7 +70,7 @@ public class MSAccessParser implements IParser {
 
 		    try {
 				
-				if (tablename.contains(cfe.enums.Tables.DISCOVERY.getLabel())) {
+				if (tablename.contains(cfe.enums.CfeTables.DISCOVERY.getLabel())) {
 					// DISCOVERY DATABASE TABLE
 					Discovery entity = new Discovery();
 					Set<String> fieldNames = entity.getDataFieldNames();
@@ -79,10 +79,10 @@ public class MSAccessParser implements IParser {
 					Transaction tx = session.beginTransaction();
 					DiscoveryDao discoveryDao = new DiscoveryDao(session, tx);
 
-					discoveryDao.deleteAll(cfe.enums.Tables.DISCOVERY.getTblName());
+					discoveryDao.deleteAll(cfe.enums.CfeTables.DISCOVERY.getTblName());
 					discoveryDao.saveAll(discoveries);
 				} 
-				else if (tablename.contains(cfe.enums.Tables.PRIORITIZATION.getLabel())) {
+				else if (tablename.contains(cfe.enums.CfeTables.PRIORITIZATION.getLabel())) {
 					// PRIORITIZATION DATABASE TABLE
 					Prioritization entity = new Prioritization();
 					Set<String> fieldNames = entity.getDataFieldNames();
@@ -91,10 +91,10 @@ public class MSAccessParser implements IParser {
 					Transaction tx = session.beginTransaction();
 					PrioritizationDao prioritizationDao = new PrioritizationDao(session, tx);
 
-					prioritizationDao.deleteAll(cfe.enums.Tables.PRIORITIZATION.getTblName());
+					prioritizationDao.deleteAll(cfe.enums.CfeTables.PRIORITIZATION.getTblName());
 					prioritizationDao.saveAll(prioritizations);
 				}
-				else if (tablename.contains(cfe.enums.Tables.VALIDATION.getLabel())) {
+				else if (tablename.contains(cfe.enums.CfeTables.VALIDATION.getLabel())) {
 					// VALIDATION DATABASE TABLE
 					Validation entity = new Validation();
 					Set<String> fieldNames = entity.getDataFieldNames();
@@ -103,10 +103,10 @@ public class MSAccessParser implements IParser {
 					Transaction tx = session.beginTransaction();
 					ValidationDao validationDao = new ValidationDao(session, tx);
 
-					validationDao.deleteAll(cfe.enums.Tables.VALIDATION.getTblName());
+					validationDao.deleteAll(cfe.enums.CfeTables.VALIDATION.getTblName());
 					validationDao.saveAll(validations);
 				}
-				else if (tablename.contains(cfe.enums.Tables.TESTING.getLabel())) {
+				else if (tablename.contains(cfe.enums.CfeTables.TESTING.getLabel())) {
 					// TESTING DATABASE TABLE
 					Testing entity = new Testing();
 					Set<String> fieldNames = entity.getDataFieldNames();
@@ -115,7 +115,7 @@ public class MSAccessParser implements IParser {
 					Transaction tx = session.beginTransaction();
 					TestingDao testingDao = new TestingDao(session, tx);
 
-					testingDao.deleteAll(cfe.enums.Tables.TESTING.getTblName());
+					testingDao.deleteAll(cfe.enums.CfeTables.TESTING.getTblName());
 					testingDao.saveAll(testings);
 				} 
 				else {

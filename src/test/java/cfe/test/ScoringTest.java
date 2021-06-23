@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
 import cfe.action.CalculateScores;
-import cfe.enums.ScoringWeights;
+import cfe.enums.CfeScoringWeights;
 
 
 /**
@@ -29,7 +29,7 @@ public class ScoringTest {
 	
 		Map<String, Object> userSession = new HashMap<String,Object>();
 		
-		List<ScoringWeights> weights = getWeights();
+		List<CfeScoringWeights> weights = getWeights();
 	
 		
 		CalculateScores calculateScores = new CalculateScores();
@@ -41,22 +41,22 @@ public class ScoringTest {
 	
 	
 	
-	private List<ScoringWeights> getWeights() {
-		List<ScoringWeights> weights = new ArrayList<ScoringWeights>();
-		ScoringWeights weight;
-		weight = cfe.enums.ScoringWeights.DISCOVERY;
+	private List<CfeScoringWeights> getWeights() {
+		List<CfeScoringWeights> weights = new ArrayList<CfeScoringWeights>();
+		CfeScoringWeights weight;
+		weight = cfe.enums.CfeScoringWeights.DISCOVERY;
 		weight.setWeight( 1.0 );
 	    weights.add(weight);
 		
-		weight = cfe.enums.ScoringWeights.PRIORITIZATION;
+		weight = cfe.enums.CfeScoringWeights.PRIORITIZATION;
 		weight.setWeight( 1.0 );
 	    weights.add(weight);
 
-		weight = cfe.enums.ScoringWeights.VALIDATION;
+		weight = cfe.enums.CfeScoringWeights.VALIDATION;
 		weight.setWeight( 1.0 );
 	    weights.add(weight);
 	    
-		weight = cfe.enums.ScoringWeights.TESTING;
+		weight = cfe.enums.CfeScoringWeights.TESTING;
 		weight.setWeight( 1.0 );
 	    weights.add(weight);
 

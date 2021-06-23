@@ -4,7 +4,7 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import cfe.enums.Tables.TblNames;
+import cfe.enums.CfeTables.TblNames;
 
 @Entity
 @Table(name=TblNames.TESTING)

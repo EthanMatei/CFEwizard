@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
-import cfe.enums.Tables;
+import cfe.enums.CfeTables;
 import cfe.services.TableInfoService;
 import cfe.utils.Authorization;
 import cfe.utils.TableInfo;
@@ -49,7 +49,7 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 
 		    this.tableMap = new TreeMap<String,TableInfo>();
 
-		    for (Tables t: Tables.values()) {
+		    for (CfeTables t: CfeTables.values()) {
 		    	String className = "cfe.model." + t.getClassname();
 		    	long count = TableInfoService.getCount(className);
 		    	TableInfo tableInfo = new TableInfo(className, count, t.getTblName());
@@ -73,7 +73,7 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 			result = LOGIN;
 		}
 		else {
-		    for (Tables t: Tables.values()) {
+		    for (CfeTables t: CfeTables.values()) {
 		    	String className = "cfe.model." + t.getClassname();
 		    	TableInfoService.deleteAll(className);
 		    }

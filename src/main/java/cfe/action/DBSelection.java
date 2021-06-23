@@ -35,7 +35,7 @@ public class DBSelection extends BaseAction implements SessionAware {
 		    log.info("List of selected databases:");
 		
 		    for (int i = 0; i < dbnames.length; i++)	{
-			    dbnames[i] = cfe.enums.Databases.valueOf(dbnames[i]).getLabel();	
+			    dbnames[i] = cfe.enums.CfeDatabases.valueOf(dbnames[i]).getLabel();	
 			    log.info(dbnames[i]);
 		    }
 

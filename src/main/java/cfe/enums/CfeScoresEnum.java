@@ -1,6 +1,6 @@
 package cfe.enums;
 
-public enum Scores {
+public enum CfeScoresEnum {
 	
 	SUICIDE("Suicide"),
 	MOOD("Mood"),
@@ -10,7 +10,7 @@ public enum Scores {
 	;
 	
 	private String myLabel;
-	private Scores (String label){ this.myLabel = label; }
+	private CfeScoresEnum (String label){ this.myLabel = label; }
 	
 	public String getLabel(){ return this.myLabel; }
 	

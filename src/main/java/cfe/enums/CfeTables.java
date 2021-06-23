@@ -6,7 +6,7 @@ package cfe.enums;
  * @author mtavares
  *
  */
-public enum Tables {
+public enum CfeTables {
 	
 	// MS Access table name, CFE MySQL table name, class name
 	DISCOVERY("Discovery", TblNames.DISCOVERY, "Discovery"),
@@ -17,13 +17,13 @@ public enum Tables {
 	
 	// Used for sanity check in HibernateUtils
 	// All the tables should be here
-	public static final int size = Tables.values().length;
+	public static final int size = CfeTables.values().length;
 	
 	private final String label;
 	private final String tblname;
 	private final String classname;
 	
-	private Tables (String label, String tblname, String classname){ 
+	private CfeTables (String label, String tblname, String classname){ 
 		this.label = label; 
 		this.tblname = tblname;
 		this.classname = classname;

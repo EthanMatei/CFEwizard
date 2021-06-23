@@ -7,7 +7,7 @@ package cfe.enums;
  * @author Jim Mullen
  *
  */
-public enum Databases {
+public enum CfeDatabases {
 	DISCOVERY("Discovery"),
 	PRIORITIZATION("Prioritization"),
 	VALIDATION("Validation"),
@@ -15,16 +15,16 @@ public enum Databases {
 	;
 	
 	private String label;
-	private Databases (String label){ this.label = label; }
+	private CfeDatabases (String label){ this.label = label; }
 	
 	public String getLabel() {
 		return this.label; 
 	}
 	
-	public static Databases fromLabel(String label) {
-		Databases theDb = null;
+	public static CfeDatabases fromLabel(String label) {
+		CfeDatabases theDb = null;
 		if (label != null) {
-			for (Databases db : Databases.values()) {
+			for (CfeDatabases db : CfeDatabases.values()) {
 				if (label.equalsIgnoreCase(db.label)) {
 					theDb = db;
 					break;

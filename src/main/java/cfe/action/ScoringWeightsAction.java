@@ -33,7 +33,7 @@ public class ScoringWeightsAction extends BaseAction implements SessionAware {
 	private double validationWeight;
 	private double testingWeight;
 
-	private List<cfe.enums.ScoringWeights> weights;
+	private List<cfe.enums.CfeScoringWeights> weights;
 	
 	
 	public String initialize() {
@@ -69,22 +69,22 @@ public class ScoringWeightsAction extends BaseAction implements SessionAware {
 				//------------------------------------------------------------------
 				// Store the selected scoring weights in the session
 				//------------------------------------------------------------------
-				List<cfe.enums.ScoringWeights> weights = new ArrayList<cfe.enums.ScoringWeights>();
-				cfe.enums.ScoringWeights weight;
+				List<cfe.enums.CfeScoringWeights> weights = new ArrayList<cfe.enums.CfeScoringWeights>();
+				cfe.enums.CfeScoringWeights weight;
 
-				weight = cfe.enums.ScoringWeights.DISCOVERY;
+				weight = cfe.enums.CfeScoringWeights.DISCOVERY;
 				weight.setWeight( this.discoveryWeight );
 				weights.add(weight);
 
-				weight = cfe.enums.ScoringWeights.PRIORITIZATION;
+				weight = cfe.enums.CfeScoringWeights.PRIORITIZATION;
 				weight.setWeight( this.prioritizationWeight);
 				weights.add(weight);
 
-				weight = cfe.enums.ScoringWeights.VALIDATION;
+				weight = cfe.enums.CfeScoringWeights.VALIDATION;
 				weight.setWeight( this.validationWeight);
 				weights.add(weight);
 
-				weight = cfe.enums.ScoringWeights.TESTING;
+				weight = cfe.enums.CfeScoringWeights.TESTING;
 				weight.setWeight( this.testingWeight );
 				weights.add(weight);
 

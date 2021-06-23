@@ -8,8 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import cfe.action.CalculateScores;
-import cfe.enums.ScoringWeights;
-import cfe.enums.ValidationWeights;
+import cfe.enums.CfeScoringWeights;
+import cfe.enums.CfeValidationWeights;
 
 //import org.hibernate.annotations.Index;
 
@@ -24,7 +24,7 @@ public class CfeScores {
 	private static final Log log = LogFactory.getLog(CfeScores.class);
 	
 	private Map<String, CfeScore> scores;
-	private List<ScoringWeights> weights;
+	private List<CfeScoringWeights> weights;
 	
 	private double discoveryWeight;
 	private double prioritizationWeight;
@@ -45,9 +45,9 @@ public class CfeScores {
 		this.testingWeight        = 1.0;
 	}
 	
-	public void setWeights(List<ScoringWeights> weights) {
+	public void setWeights(List<CfeScoringWeights> weights) {
 		
-		for (ScoringWeights weight: weights) {
+		for (CfeScoringWeights weight: weights) {
 			switch (weight) {
 			    case DISCOVERY:
 			    	this.discoveryWeight = weight.getWeight();
@@ -65,9 +65,9 @@ public class CfeScores {
 		}
 	}
 	
-	public void setValidationWeights(List<ValidationWeights> weights) {
+	public void setValidationWeights(List<CfeValidationWeights> weights) {
 		
-		for (ValidationWeights weight: weights) {
+		for (CfeValidationWeights weight: weights) {
 			switch (weight) {
 			    case NON_STEPWISE:
 			    	this.nonStepwiseWeight = weight.getWeight();
@@ -85,7 +85,7 @@ public class CfeScores {
 		}
 	}
 	
-	public void setDiscovery(Discovery discovery, List<ScoringWeights> weights) {
+	public void setDiscovery(Discovery discovery, List<CfeScoringWeights> weights) {
 		String probeset = discovery.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
 		
@@ -111,7 +111,7 @@ public class CfeScores {
 	}
 
 	
-	public void setPrioritization(Prioritization prioritization, List<ScoringWeights> weights) {
+	public void setPrioritization(Prioritization prioritization, List<CfeScoringWeights> weights) {
 		String probeset = prioritization.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
 		
@@ -146,7 +146,7 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 	
-	public void setValidation(Validation validation, List<ScoringWeights> weights) throws Exception {
+	public void setValidation(Validation validation, List<CfeScoringWeights> weights) throws Exception {
 		String probeset = validation.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
 		
@@ -195,7 +195,7 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 
-	public void setTesting(Testing testing, List<ScoringWeights> weights) throws Exception {
+	public void setTesting(Testing testing, List<CfeScoringWeights> weights) throws Exception {
 		String probeset = testing.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
 		
@@ -224,7 +224,7 @@ public class CfeScores {
 		this.setScore(cfeScore);		
 	}
 
-	public void calculateTotalScores(List<ScoringWeights> weights) {
+	public void calculateTotalScores(List<CfeScoringWeights> weights) {
 		
 	    for (CfeScore score: this.scores.values()) {
 	    	score.setTotalScore(

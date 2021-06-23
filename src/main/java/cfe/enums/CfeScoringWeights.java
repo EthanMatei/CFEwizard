@@ -1,21 +1,21 @@
 package cfe.enums;
 
-public enum ValidationWeights {
+public enum CfeScoringWeights {
 	
-	NON_STEPWISE("Non-stepwise", "nonStepwiseWeight", 0.0), 
-	STEPWISE("Stepwise", "stepwiseWeight", 2.0),
-	NOMINAL("Nominal", "nominalWeight", 4.0),
-	BONFERRONI("Bonferroni", "bonferroniWeight", 6.0)
+	DISCOVERY("Discovery", "discoveryWeight", 1.0), 
+	PRIORITIZATION("Prioritization", "prioritizationWeight", 1.0),
+	VALIDATION("Validation", "validationWeight", 1.0),
+	TESTING("Testing", "testingWeight", 1.0)
 	;
 	
 	private String label;
 	private double weight;
 	private String name; // This must be in synch with cfe.action.ScoringWeights
 	
-	private ValidationWeights (String label){ this.label = label; }	
+	private CfeScoringWeights (String label){ this.label = label; }	
 	public String getLabel(){ return this.label; }
 	
-	private ValidationWeights(String label, String name, double weight) {
+	private CfeScoringWeights(String label, String name, double weight) {
 		this.weight = weight;
 		this.label = label;
 		this.name = name;

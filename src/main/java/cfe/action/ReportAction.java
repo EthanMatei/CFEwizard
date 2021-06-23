@@ -86,9 +86,9 @@ public class ReportAction extends BaseAction implements SessionAware {
     		Object cfeScoresObject = session.get("cfeScores");
     		CfeScores cfeScores = (CfeScores) cfeScoresObject;
 
-    		List<cfe.enums.ScoringWeights> weights = (List<cfe.enums.ScoringWeights>) session.get("weights");
-    		List<cfe.enums.ValidationWeights> validationWeights =
-    				(List<cfe.enums.ValidationWeights>) session.get("validationWeights");
+    		List<cfe.enums.CfeScoringWeights> weights = (List<cfe.enums.CfeScoringWeights>) session.get("weights");
+    		List<cfe.enums.CfeValidationWeights> validationWeights =
+    				(List<cfe.enums.CfeValidationWeights>) session.get("validationWeights");
     		
     		/*
     		Map<String, ScoreResults> scores;

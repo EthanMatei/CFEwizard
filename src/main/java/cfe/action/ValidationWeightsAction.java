@@ -32,7 +32,7 @@ public class ValidationWeightsAction extends BaseAction implements SessionAware 
     private double nominalWeight;
     private double bonferroniWeight;
 
-	private List<cfe.enums.ScoringWeights> weights;
+	private List<cfe.enums.CfeScoringWeights> weights;
 	
 	
 	public String initialize() {
@@ -64,22 +64,22 @@ public class ValidationWeightsAction extends BaseAction implements SessionAware 
 				//------------------------------------------------------------------
 				// Store the selected scoring weights in the session
 				//------------------------------------------------------------------
-				List<cfe.enums.ValidationWeights> weights = new ArrayList<cfe.enums.ValidationWeights>();
-				cfe.enums.ValidationWeights weight;
+				List<cfe.enums.CfeValidationWeights> weights = new ArrayList<cfe.enums.CfeValidationWeights>();
+				cfe.enums.CfeValidationWeights weight;
 
-				weight = cfe.enums.ValidationWeights.NON_STEPWISE;
+				weight = cfe.enums.CfeValidationWeights.NON_STEPWISE;
 				weight.setWeight( this.nonStepwiseWeight );
 				weights.add(weight);
 
-				weight = cfe.enums.ValidationWeights.STEPWISE;
+				weight = cfe.enums.CfeValidationWeights.STEPWISE;
 				weight.setWeight( this.stepwiseWeight );
 				weights.add(weight);
 
-				weight = cfe.enums.ValidationWeights.NOMINAL;
+				weight = cfe.enums.CfeValidationWeights.NOMINAL;
 				weight.setWeight( this.nominalWeight );
 				weights.add(weight);
 
-				weight = cfe.enums.ValidationWeights.BONFERRONI;
+				weight = cfe.enums.CfeValidationWeights.BONFERRONI;
 				weight.setWeight( this.bonferroniWeight );
 				weights.add(weight);
 

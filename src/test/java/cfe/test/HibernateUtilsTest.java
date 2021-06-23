@@ -68,14 +68,14 @@ public class HibernateUtilsTest {
 			
 			// Did we forget to add models?
 			// 2 to include GeneList and ScoringModel
-			if (HibernateUtils.getNumModels() != cfe.enums.Tables.size + 4)
+			if (HibernateUtils.getNumModels() != cfe.enums.CfeTables.size + 4)
 				throw new Exception("HibernateUtils.getNumModels() != cfe.enums.Tables.size");
 			// Create index on genecardSymbol
 			sess = HibernateUtils.getSession();
 			
 			HibernateUtils.setCreateSchema(false);
 			
-			for (cfe.enums.Tables tbl : cfe.enums.Tables.values())
+			for (cfe.enums.CfeTables tbl : cfe.enums.CfeTables.values())
 				System.out.println("SELECT genecardSymbol, descriptiveName, pubMedID, psychiatricDomain, subDomain, relevantDisorder FROM " + tbl.getTblName() + " LIMIT 0, 3;");
 			System.out.println("GRANT INSERT, DELETE, UPDATE, SELECT, EXECUTE ON cfe.* TO 'cfeUser'@'localhost';");
 			System.out.println("SET lower_case_table_names=2;");

@@ -10,9 +10,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
-import cfe.enums.Scores;
-import cfe.enums.ScoringWeights;
-import cfe.enums.ValidationWeights;
+import cfe.enums.CfeScoresEnum;
+import cfe.enums.CfeScoringWeights;
+import cfe.enums.CfeValidationWeights;
 import cfe.model.CfeScore;
 import cfe.model.CfeScores;
 
@@ -68,7 +68,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 			}
 			else {
 
-				List<ScoringWeights> weights = (List<ScoringWeights>) weightsObject;
+				List<CfeScoringWeights> weights = (List<CfeScoringWeights>) weightsObject;
 				/*
 				for (ScoringWeights weight: weights) {
 					if (weight == ScoringWeights.DISCOVERY) {
@@ -77,7 +77,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				}
 				*/
 				
-				List<ValidationWeights> validationWeights = (List<ValidationWeights>) validationWeightsObject;
+				List<CfeValidationWeights> validationWeights = (List<CfeValidationWeights>) validationWeightsObject;
 			    
 			    this.cfeScores = new CfeScores();
 			    

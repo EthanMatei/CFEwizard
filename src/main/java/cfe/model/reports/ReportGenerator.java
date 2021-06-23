@@ -12,7 +12,7 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import cfe.enums.ScoringWeights;
+import cfe.enums.CfeScoringWeights;
 import cfe.model.CfeScore;
 import cfe.model.CfeScores;
 import cfe.model.VersionNumber;
@@ -44,8 +44,8 @@ public class ReportGenerator {
 	 * @throws ReportException
 	 */
 	public static InputStream generate(String reportName, String reportFormat,
-			CfeScores cfeScores, List<cfe.enums.ScoringWeights> weights,
-			List<cfe.enums.ValidationWeights>validationWeights ) throws ReportException {
+			CfeScores cfeScores, List<cfe.enums.CfeScoringWeights> weights,
+			List<cfe.enums.CfeValidationWeights>validationWeights ) throws ReportException {
 		InputStream fileStream = null;
 
 		log.info("############### GENERATE: " + reportName);
@@ -71,7 +71,7 @@ public class ReportGenerator {
 	 * @return an InputStream for the generated spreadsheet.
 	 */
 	private static InputStream generateScoresReport(String reportFormat, CfeScores cfeScores,
-			List<cfe.enums.ScoringWeights> weights, List<cfe.enums.ValidationWeights>validationWeights ) {
+			List<cfe.enums.CfeScoringWeights> weights, List<cfe.enums.CfeValidationWeights>validationWeights ) {
 
 		log.info("############### IN GENERATE SCORES REPORT: " + reportFormat);
 		Report report = new Report();
@@ -347,7 +347,7 @@ public class ReportGenerator {
 	}
 	
 	
-	private static ReportSheet getScoringWeightsSheet(String reportFormat, List<cfe.enums.ScoringWeights> weights) {
+	private static ReportSheet getScoringWeightsSheet(String reportFormat, List<cfe.enums.CfeScoringWeights> weights) {
 
 		ReportSheet sheet = new ReportSheet();
 
@@ -363,7 +363,7 @@ public class ReportGenerator {
 		sheet.setColumnTypes(columnTypes);
 
 
-		for (cfe.enums.ScoringWeights weight: weights) {
+		for (cfe.enums.CfeScoringWeights weight: weights) {
 		    List<String> row = new ArrayList<String>();
 
 		    row.add( weight.getLabel() );
@@ -376,7 +376,7 @@ public class ReportGenerator {
 	}
 	
 	
-	private static ReportSheet getValidationWeightsSheet(String reportFormat, List<cfe.enums.ValidationWeights> weights) {
+	private static ReportSheet getValidationWeightsSheet(String reportFormat, List<cfe.enums.CfeValidationWeights> weights) {
 
 		ReportSheet sheet = new ReportSheet();
 
@@ -392,7 +392,7 @@ public class ReportGenerator {
 		sheet.setColumnTypes(columnTypes);
 
 
-		for (cfe.enums.ValidationWeights weight: weights) {
+		for (cfe.enums.CfeValidationWeights weight: weights) {
 		    List<String> row = new ArrayList<String>();
 
 		    row.add( weight.getLabel() );

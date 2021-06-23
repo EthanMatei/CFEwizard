@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.enums.CfeTables;
+import cfe.enums.prioritization.Tables;
 import cfe.services.TableInfoService;
 import cfe.utils.Authorization;
 import cfe.utils.TableInfo;
@@ -32,6 +33,7 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 	private Map<String, Object> webSession;
 	
     private Map<String,TableInfo> tableMap;
+    private Map<String,TableInfo> prioritizationTableMap;
     
     private String dbHost;
     private String dbUser;
@@ -55,6 +57,16 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 		    	TableInfo tableInfo = new TableInfo(className, count, t.getTblName());
 		        tableMap.put(t.getLabel(), tableInfo);
 		    }
+		    
+		    
+	        this.prioritizationTableMap = new TreeMap<String,TableInfo>();
+	        
+            for (Tables t: Tables.values()) {
+                String className = "cfe.model.prioritization." + t.getClassname();
+                long count = TableInfoService.getCount(className);
+                TableInfo tableInfo = new TableInfo(className, count, t.getTblName());
+                prioritizationTableMap.put(t.getLabel(), tableInfo);
+            }
 	    }
 
         return result;
@@ -77,6 +89,11 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 		    	String className = "cfe.model." + t.getClassname();
 		    	TableInfoService.deleteAll(className);
 		    }
+	        
+		    for (Tables t: Tables.values()) {
+	            String className = "cfe.model.prioritization." + t.getClassname();
+	            TableInfoService.deleteAll(className);
+	        }
 	    }
 
         return result;        
@@ -102,4 +119,9 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
 	public Map<String, TableInfo> getTableMap() {
 	    return this.tableMap;
 	}
+
+    public Map<String, TableInfo> getPrioritizationTableMap() {
+        return prioritizationTableMap;
+    }
+	
 }

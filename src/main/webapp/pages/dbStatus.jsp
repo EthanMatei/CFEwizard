@@ -30,8 +30,26 @@
   <p>
   <span style="font-weight: bold;">Database User:</span> <s:property value="dbUser"/>
   </p>
-
-  <h3>Database Table Map</h3>
+  
+  <h3>Prioritization Database Table Map</h3>
+  
+  <table class="dataTable" style="margin-bottom: 14px;">
+  <tr> <th>MS Access Table</th> <th>CFG MySQL Table</th> <th>CFG MySQL Table Rows</th> </tr>
+  <s:iterator value="prioritizationTableMap">
+    <tr>
+      <td><s:property value="key"/></td>
+      <td><s:property value="value.tableName"/></td>
+      <td style="text-align: right"><s:number name="value.count" groupingUsed="true"/></td>
+    </tr>
+  </s:iterator>
+  </table>
+  
+  <p>
+  Note: MS Access tables not shown in the database table map
+  above, and the linkage tables shown above, are ignored by the CFG Wizard.
+  </p>
+  
+  <h3>Prototype Database Table Map</h3>
   
   <table class="dataTable" style="margin-bottom: 14px;">
   <tr> <th>MS Access Table</th> <th>CFE MySQL Table</th> <th>CFE MySQL Table Rows</th> </tr>

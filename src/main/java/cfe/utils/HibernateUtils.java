@@ -91,11 +91,53 @@ public class HibernateUtils {
 			Configuration conf = new Configuration();
 			
 			Class<?>[] models = {
+			        // CFE Prototype
 					cfe.model.DatabaseUploadInfo.class,
 					cfe.model.Discovery.class,
 					cfe.model.Prioritization.class,
 					cfe.model.Validation.class,
-					cfe.model.Testing.class
+					cfe.model.Testing.class,
+					
+					//------------------------------------------
+					// Prioritization
+					//------------------------------------------
+				    cfe.model.prioritization.Disorder.class,
+	                    
+	                // Human Brain Database contains these three tables
+	                cfe.model.prioritization.HuBrainGex.class , 
+	                cfe.model.prioritization.HuBrainProt.class, 
+	                cfe.model.prioritization.HuBrainMet.class,
+	                    
+	                // Human Gene Database contains these three tables
+	                cfe.model.prioritization.HuGeneCNV.class,
+	                cfe.model.prioritization.HuGeneAssoc.class,
+	                cfe.model.prioritization.HuGeneLinkage.class,
+	                    
+	                // Human Per Database contains these three tables
+	                cfe.model.prioritization.HuPerGex.class,
+	                cfe.model.prioritization.HuPerProt.class, 
+	                cfe.model.prioritization.HuPerMet.class,
+	                    
+	                    
+	                // Non Human Brain Database contains these three tables
+	                cfe.model.prioritization.NhBrainGex.class, 
+	                cfe.model.prioritization.NhBrainProt.class, 
+	                cfe.model.prioritization.NhBrainMet.class, 
+	                                    
+	                // Non Human Per Database contains these three tables
+	                cfe.model.prioritization.NhPerGex.class,
+	                cfe.model.prioritization.NhPerProt.class,
+	                cfe.model.prioritization.NhPerMet.class,
+	                    
+	                cfe.model.prioritization.NhGeneCNV.class,
+	                cfe.model.prioritization.NhGeneAssoc.class,
+	                cfe.model.prioritization.NhGeneLinkage.class,
+	                    
+	                // Gene list
+	                cfe.model.prioritization.GeneList.class,
+	                    
+	                // Summary data
+	                cfe.model.prioritization.ScoringData.class             
 			};
 			for( Class<?> model: models)
 				conf.addAnnotatedClass(model);

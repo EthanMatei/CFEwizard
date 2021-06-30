@@ -122,6 +122,8 @@ colnames(DEdata)[length(DEdata)] <- "VisitNumber" #name the column
 
 DEdata["PheneVisit"] <- rownames(DEdata) #make "PheneVisit" column from row IDs
 
+DEdata <- as.data.frame(unclass(DEdata), stringsAsFactors = TRUE)   # default changed to FALSE in R 4
+
 gc(TRUE)
 
 stringColumns <- c("PheneVisit","Subject","date", PHENE)

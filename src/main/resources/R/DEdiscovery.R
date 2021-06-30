@@ -103,13 +103,14 @@ PHENE <- pheneSelection
 
 print(paste("PHENE", PHENE))
 
-DEdata <- read.csv(csvFile) #location of RMA data #location of RMA data
+DEdata <- read.csv(csvFile, check.names = FALSE) #location of RMA data #location of RMA data
+
 
 rownames(DEdata) <- DEdata[,1] #make the first row into headers
 DEdata <- DEdata[, -1] #delete the now-redundant first row
 
 #transpose data to set the subject visits as rows
-DEdata <- as.data.frame(t(DEdata), stringsAsFactors = TRUE)
+DEdata <- as.data.frame(t(DEdata), stringsAsFactors = TRUE, check.names = FALSE)
 
 #define function that gets the last n characters of a string x
 substrRight <- function(x, n){
@@ -122,12 +123,11 @@ colnames(DEdata)[length(DEdata)] <- "VisitNumber" #name the column
 
 DEdata["PheneVisit"] <- rownames(DEdata) #make "PheneVisit" column from row IDs
 
-DEdata <- as.data.frame(unclass(DEdata), stringsAsFactors = TRUE)   # default changed to FALSE in R 4
+DEdata <- as.data.frame(unclass(DEdata), stringsAsFactors = TRUE, check.names = FALSE)   # default for strings changed to FALSE in R 4
 
 gc(TRUE)
 
 stringColumns <- c("PheneVisit","Subject","date", PHENE)
-
 
 data <- join(DEdata,PheneData[stringColumns], #merge to get SI row
     by = "PheneVisit", #merge on phene visit
@@ -465,7 +465,6 @@ startPostProcessingTime <- Sys.time()
 
 THISISYOUROUTPUT <- data["DEscores",]
 THISISYOUROUTPUT <- t(THISISYOUROUTPUT)
-
 
 outputFile <- paste(tempDir, "/output_", PHENE, "_", dxChoice, "_", Sys.Date(),".csv", sep="")
 write.csv(THISISYOUROUTPUT, outputFile)

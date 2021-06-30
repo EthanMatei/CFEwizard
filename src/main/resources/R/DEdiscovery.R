@@ -258,6 +258,14 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     #changes in gene states (don't do this to factor columns)
     cat("\nCalculating gene changes for",length(x) - length(stringColumns),"probe sets
             ...")
+    cat("\n----------------------------geneChange INPUT----------------------------------------\n")
+    cat("x (",class(x),"):\n")
+    print(x)
+    cat("\n- - - - - - - - - - - - - - - - - - - -\n")
+    cat("stringColumns (",class(stringColumns),"):\n")
+    print(stringColumns)
+    cat("\n----------------------------------------------------------------------\n")
+    
     geneChange <- x[visit + 1,! names(x) %in% stringColumns] / x[visit,! names(x) %in% stringColumns] 
 
     

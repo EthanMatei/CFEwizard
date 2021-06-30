@@ -133,10 +133,6 @@ data <- join(DEdata,PheneData[stringColumns], #merge to get SI row
     by = "PheneVisit", #merge on phene visit
     type="inner") #drop unmatched (i.e., out-of-cohort) cases 
 
-cat("\n---------------------------- data initial ----------------------------------------\n")     # DEBUG
-cat("data (",class(data$VisitNumber),"):\n")
-print(data$VisitNumber)
-cat("\n----------------------------------------------------------------------\n")
 
 rownames(data) <- as.matrix(data["PheneVisit"]) #make row names
 
@@ -188,11 +184,6 @@ list.of.unique.subjects <- list.of.unique.subjects[!is.na(list.of.unique.subject
 
 
 wormShape <- subjectDEscore
-
-cat("\n========================================== wormShape ================================\n")    # DEBUG
-print(wormShape)
-cat("\n=============================================================\n\n")
-
 
 cat("You selected cohort",cohortChoice,"and diagnosis:",ifelse(dxChoice != "", dxChoice, "everyone"))
 

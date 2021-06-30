@@ -376,28 +376,38 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
           }
         }
         
+        cat("\n\nDEBUG OUTPUT-------------------------------------------------------------\n")
+        print(wormShape)    # DEBUG
+        print(pointsVector) # DEBUG
+        cat("-----------------------------------------------------------------------------\n")
+        
         for ( i in (comparison+1):nrow(lookAround)){
+          
+          cat("\nLOOP 2 - COMPARISON: ", i, "\n")    # DEBUG
           
           if ( (i < (nrow(lookAround)+1)) & (comparison != nrow(lookAround)  )){
             
             
             cat("\nLooking right to comparison",i)
+            cat("\nPHENE VALUE: ", pheneValue)   # DEBUG
             if (pheneValue == 1 ){
               tempWorm <- wormShape
               if (addAsymmetry ){
                 tempWorm[i, (pointsVector == 0) & (tempWorm[i,] == 0.5 )] <- 1
-                
               }
               
               pointsVector[,pointsVector == 0 ] <- (tempWorm[i, pointsVector == 0])*-1
-              
             }
             
             if (pheneValue == 0 ){
               tempWorm <- wormShape
               if (addAsymmetry ){
+                cat("\nBEFORE ASSIGNMENT TO 1\n");    # DEBUG
+                cat("\nCLASS tempworm", class(tempWorm), "\n")    # DEBUG
+                print(tempWorm)     # DEBUG
+                cat("\n") # DEBUG
                 tempWorm[i, (pointsVector == 0) & (tempWorm[i,] == 0.5 )] <- 1
-                
+                cat("\nAFTER ASSIGNMENT TO 1\n")    # DEBUG
               }
               pointsVector[,pointsVector == 0 ] <- tempWorm[i, pointsVector == 0]
             }

@@ -146,16 +146,6 @@ data <- rbind(data,rep(NA,ncol(data)))
 
 rownames(data)[nrow(data)] <- "DEscores"
 
-cat("\n---------------------------- data 0 ----------------------------------------\n")     # DEBUG
-cat("data (",class(data),"):\n")
-print(data$VisitNumber)
-cat("\n----------------------------------------------------------------------\n")
-
-cat("\n++++++++ stringColumns ++++++++++++++++\n") # DEBUG
-print(stringColumns)
-cat("\n- - - - - - - -\n")
-print(names(data))
-cat("\n++++++++++\n")
 
 data[, ! names(data) %in% stringColumns] <- lapply(data[, ! names(data) %in% stringColumns], as.numeric)
 cat("\n---------------------------- data 1 ----------------------------------------\n")     # DEBUG

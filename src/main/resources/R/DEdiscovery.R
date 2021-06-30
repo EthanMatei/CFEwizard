@@ -227,10 +227,6 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
   
 
   x <- data[which(data["Subject"] == uniqueSubject),]
-  cat("\n----------------------------x initial----------------------------------------\n")     # DEBUG
-  cat("x (",class(x),"):\n")
-  print(x)
-  cat("\n----------------------------------------------------------------------\n")
   
   x  <-  x [ order( as.Date(x$date) ), ] # order by visit
   
@@ -270,21 +266,8 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     #changes in gene states (don't do this to factor columns)
     cat("\nCalculating gene changes for",length(x) - length(stringColumns),"probe sets
             ...")
-    cat("\n----------------------------geneChange INPUT----------------------------------------\n")     # DEBUG
-    cat("x (",class(x),"):\n")
-    print(x)
-    cat("\n- - - - - - - - - - - - - - - - - - - -\n")
-    cat("stringColumns (",class(stringColumns),"):\n")
-    print(stringColumns)
-    cat("\n----------------------------------------------------------------------\n")
-    
+ 
     geneChange <- x[visit + 1,! names(x) %in% stringColumns] / x[visit,! names(x) %in% stringColumns] 
-
-    
-    cat("\n========================================== geneChange ================================\n")
-    cat("geneChange class: ", class(geneChange), "\n\n")
-    print(geneChange)
-    cat("\n=============================================================\n\n")
     
     ## set fold changes. ORDER MATTERS here.
     cat("\n\nConverting continuous fold changes to categorical values:

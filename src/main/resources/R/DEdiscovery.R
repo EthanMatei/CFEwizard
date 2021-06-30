@@ -246,10 +246,10 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
             
             ")
     
-    print(c("PHENE = ", PHENE, "   ", " visit = ", visit, " class: ", class(visit)))
-    print(c("x[visit + 1,PHENE]: ", x[visit + 1,PHENE]))
+    #print(c("PHENE = ", PHENE, "   ", " visit = ", visit, " class: ", class(visit)))
+    #print(c("x[visit + 1,PHENE]: ", x[visit + 1,PHENE]))
     theResult = x[visit,PHENE]
-    print(c("x[visit,PHENE]", x[visit,PHENE], class(theResult)))
+    #print(c("x[visit,PHENE]", x[visit,PHENE], class(theResult)))
     
     pheneChange <- strtoi(x[visit + 1,PHENE]) - strtoi(x[visit,PHENE]) #change in phene state
     
@@ -279,10 +279,6 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     cat("\n...")
     pheneValue <- x[visit + 1,PHENE]
     
-    cat("\n========================================== geneChange ================================\n")
-    print(geneChange)
-    cat("\n=============================================================\n\n")
-    
     if (visit == 1){
       lookAround <- data.frame(pheneChange, stringsAsFactors = TRUE)
       wormShape <- subjectDEscore[-(1:2), ]
@@ -291,9 +287,6 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     }
     wormShape <- rbind(wormShape, geneChange)
     
-    cat("\n========================================== wormShape ================================\n")
-    print(wormShape)
-    cat("\n=============================================================\n\n")
     
     if (totalVisits > 2){
       cat("\nCalculating perfection

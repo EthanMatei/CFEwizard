@@ -132,7 +132,7 @@ data <- join(DEdata,PheneData[stringColumns], #merge to get SI row
     type="inner") #drop unmatched (i.e., out-of-cohort) cases 
 
 cat("\n---------------------------- data initial ----------------------------------------\n")     # DEBUG
-cat("data (",class(data),"):\n")
+cat("data (",class(data$VisitNumber),"):\n")
 print(data$VisitNumber)
 cat("\n----------------------------------------------------------------------\n")
 
@@ -144,6 +144,16 @@ data <- rbind(data,rep(NA,ncol(data)))
 
 rownames(data)[nrow(data)] <- "DEscores"
 
+cat("\n---------------------------- data 0 ----------------------------------------\n")     # DEBUG
+cat("data (",class(data),"):\n")
+print(data$VisitNumber)
+cat("\n----------------------------------------------------------------------\n")
+
+cat("\n++++++++ stringColumns ++++++++++++++++\n") # DEBUG
+print(stringColumns)
+cat("\n- - - - - - - -\n")
+print(names(data))
+cat("\n++++++++++\n")
 
 data[, ! names(data) %in% stringColumns] <- lapply(data[, ! names(data) %in% stringColumns], as.numeric)
 cat("\n---------------------------- data 1 ----------------------------------------\n")     # DEBUG

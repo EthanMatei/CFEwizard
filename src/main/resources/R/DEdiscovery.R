@@ -173,6 +173,10 @@ list.of.unique.subjects <- list.of.unique.subjects[!is.na(list.of.unique.subject
 
 wormShape <- subjectDEscore
 
+cat("\n========================================== wormShape ================================\n")    # DEBUG
+print(wormShape)
+cat("\n=============================================================\n\n")
+
 
 cat("You selected cohort",cohortChoice,"and diagnosis:",ifelse(dxChoice != "", dxChoice, "everyone"))
 
@@ -255,6 +259,12 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     cat("\nCalculating gene changes for",length(x) - length(stringColumns),"probe sets
             ...")
     geneChange <- x[visit + 1,! names(x) %in% stringColumns] / x[visit,! names(x) %in% stringColumns] 
+
+    
+    cat("\n========================================== geneChange ================================\n")
+    cat("geneChange class: ", class(geneChange), "\n\n")
+    print(geneChange)
+    cat("\n=============================================================\n\n")
     
     ## set fold changes. ORDER MATTERS here.
     cat("\n\nConverting continuous fold changes to categorical values:
@@ -275,6 +285,9 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     cat("\n...")
     pheneValue <- x[visit + 1,PHENE]
     
+    cat("\n========================================== geneChange ================================\n")
+    print(geneChange)
+    cat("\n=============================================================\n\n")
     
     if (visit == 1){
       lookAround <- data.frame(pheneChange, stringsAsFactors = TRUE)
@@ -284,6 +297,9 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     }
     wormShape <- rbind(wormShape, geneChange)
     
+    cat("\n========================================== wormShape ================================\n")
+    print(wormShape)
+    cat("\n=============================================================\n\n")
     
     if (totalVisits > 2){
       cat("\nCalculating perfection
@@ -378,6 +394,7 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
         
         cat("\n\nDEBUG OUTPUT-------------------------------------------------------------\n")
         print(wormShape)    # DEBUG
+        cat("\n- - - - - - - - - - - - - - - - - - - - - -\n")
         print(pointsVector) # DEBUG
         cat("-----------------------------------------------------------------------------\n")
         

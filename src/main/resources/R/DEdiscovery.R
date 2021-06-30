@@ -131,19 +131,33 @@ data <- join(DEdata,PheneData[stringColumns], #merge to get SI row
     by = "PheneVisit", #merge on phene visit
     type="inner") #drop unmatched (i.e., out-of-cohort) cases 
 
+cat("\n---------------------------- data initial ----------------------------------------\n")     # DEBUG
+cat("data (",class(data),"):\n")
+print(data$VisitNumber)
+cat("\n----------------------------------------------------------------------\n")
+
 rownames(data) <- as.matrix(data["PheneVisit"]) #make row names
 
 
-##add empty row to hold AP scores
+##add empty row to hold DE scores
 data <- rbind(data,rep(NA,ncol(data)))
 
 rownames(data)[nrow(data)] <- "DEscores"
 
 
 data[, ! names(data) %in% stringColumns] <- lapply(data[, ! names(data) %in% stringColumns], as.numeric)
+cat("\n---------------------------- data 1 ----------------------------------------\n")     # DEBUG
+cat("data (",class(data),"):\n")
+print(data$VisitNumber)
+cat("\n----------------------------------------------------------------------\n")
+
 #set initial DEscore values to 0 on full data.frame
 data["DEscores", ! names(data) %in% stringColumns] <- 0
 
+cat("\n---------------------------- data 2 ----------------------------------------\n")     # DEBUG
+cat("data (",class(data),"):\n")
+print(data$VisitNumber)
+cat("\n----------------------------------------------------------------------\n")
 
 #### test data for practice
 # i <- 1

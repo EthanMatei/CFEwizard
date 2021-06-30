@@ -12,49 +12,6 @@
 
 <h2>Discovery Results</h2>
 
-<h3>Inputs</h3>
-<table class="dataTable">
-    <tr>
-        <th> Phene </th>
-        <td> <s:property value="pheneSelection"/> </td>
-    </tr>
-    <tr>
-        <th> Phene Table </th>
-        <td> <s:property value="pheneTable"/> </td>
-    </tr>
-    <tr>
-        <th>Phene Low Cutoff</th>
-        <td> <s:property value="lowCutoff" /> </td>
-    </tr>
-    <tr>
-        <th>Phene High Cutoff</th>
-        <td> <s:property value="highCutoff" /> </td>
-    </tr>
-    <tr>
-        <th> Diagnosis Code </th>
-        <td> <s:property value="diagnosisCode"/> </td>
-    </tr>
-    <tr>
-        <th>Phene Vist Database File</th>
-        <td><s:property value="discoveryDbFileName" /></td>
-    </tr>
-    <tr>
-        <th>Gene Expression CSV File</th>
-        <td><s:property value="discoveryCsvFileName" /></td>
-    </tr>
-    <tr>
-        <th>Microarray Table</th>
-        <td><s:property value="microarrayTable" /></td>
-    </tr>    
-</table>
-
-<hr style="margin-top: 12px;"/>
-
-<h3>Results</h3>
-
-
-Discovery Results:
-
 <s:a action="XlsxDisplay" title="Discovery Results">
     <s:param name="spreadsheetFilePath" value="resultsXlsxFile" />
     <div>
@@ -93,6 +50,45 @@ Timing:
     <s:property value="timingFileName"/>
     </div>
 </s:a>
+
+<hr style="margin-top: 12px;"/>
+
+<h3>Inputs</h3>
+<table class="dataTable">
+    <tr>
+        <th> Phene </th>
+        <td> <s:property value="pheneSelection"/> </td>
+    </tr>
+    <tr>
+        <th> Phene Table </th>
+        <td> <s:property value="pheneTable"/> </td>
+    </tr>
+    <tr>
+        <th>Phene Low Cutoff</th>
+        <td> <s:property value="lowCutoff" /> </td>
+    </tr>
+    <tr>
+        <th>Phene High Cutoff</th>
+        <td> <s:property value="highCutoff" /> </td>
+    </tr>
+    <tr>
+        <th> Diagnosis Code </th>
+        <td> <s:property value="diagnosisCode"/> </td>
+    </tr>
+    <tr>
+        <th>Phene Visit Database File</th>
+        <td><s:property value="discoveryDbFileName" /></td>
+    </tr>
+    <tr>
+        <th>Gene Expression CSV File</th>
+        <td><s:property value="discoveryCsvFileName" /></td>
+    </tr>
+    <tr>
+        <th>Microarray Table</th>
+        <td><s:property value="microarrayTable" /></td>
+    </tr>    
+</table>
+
 
 <hr style="margin-top: 12px;"/>
 

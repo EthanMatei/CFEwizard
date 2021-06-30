@@ -23,47 +23,41 @@
 
 <s:actionerror />
 
-Phene Table: <s:property value="pheneTable" /> <br />
-Phene: <s:property value="pheneSelection" /> <br />
-Low Cutoff: <s:property value="lowCutoff" /> <br />
-High Cutoff: <s:property value="highCutoff" /> <br />
-Microarray Table: <s:property value="microarrayTable" />
+<table class="dataTable">
+  <tr> <th>Data</th> <th>Inputs</th> <th>Stats</th> </tr>
+  <tr>
+    <td>
+      <s:a action="XlsxDisplay" title="Cohort Spreadsheet">
+        <s:param name="spreadsheetFilePath" value="cohortXlsxFile" />
+        <div>
+          <img border="0"
+               style="margin-top: 2px;"
+               src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+               alt="Report" /> <br />
+          Cohort
+        </div>
+      </s:a>
+    </td>
+    
+    <td>
+      Phene Table: <s:property value="pheneTable" /> <br />
+      Phene: <s:property value="pheneSelection" /> <br />
+      Low Cutoff: <s:property value="lowCutoff" /> <br />
+      High Cutoff: <s:property value="highCutoff" /> <br />
+      Microarray Table: <s:property value="microarrayTable" />
+    </td>
+    
+    <td style="vertical-align: top;">
+      Number of Cohort Subjects: <s:property value="numberOfSubjects" /> <br />
+      Number of Low Visits for Cohort Subjects: <s:property value="lowVisits" /> <br />
+      Number of High Visits for Cohort Subjects: <s:property value="highVisits" />
+    </td>
+  </tr>
+</table>
 
 
-<%--
-<p>&nbsp;</p>
 
 
-<s:a action="XlsxDisplay" title="Cohort Data Spreadsheet">
-    <s:param name="spreadsheetFilePath" value="cohortDataXlsxFile" />
-    <div>
-    <img border="0"
-     style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/application-vnd.ms-excel.png'/>"
-     alt="Report" /> <br />
-    Cohort Data
-    </div>
-</s:a>
---%>
-
-<p>&nbsp;</p>
-
-<s:a action="XlsxDisplay" title="Cohort Spreadsheet">
-    <s:param name="spreadsheetFilePath" value="cohortXlsxFile" />
-    <div>
-    <img border="0"
-     style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-     alt="Report" /> <br />
-    Cohort
-    </div>
-</s:a>
-
-<p>
-Number of Cohort Subjects: <s:property value="numberOfSubjects" /> <br />
-Number of Low Visits for Cohort Subjects: <s:property value="lowVisits" /> <br />
-Number of High Visits for Cohort Subjects: <s:property value="highVisits" />
-</p>
 
 <%--
 <s:property value="cohortCsv" />
@@ -79,6 +73,7 @@ Number of High Visits for Cohort Subjects: <s:property value="highVisits" />
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
     </div>
 </s:if>
+
 
 <s:form theme="simple" action="DiscoveryCalculate" method="post" enctype="multipart/form-data">
  
@@ -96,7 +91,11 @@ Number of High Visits for Cohort Subjects: <s:property value="highVisits" />
     <div>    
     Gene Expression CSV File: <s:file name="discoveryCsv"/>
     </div>
-        
+    
+    <div>
+    Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
+    </div>
+    
     <h3>Diagnosis</h3>
 
     <table class="dataTable" style="margin-top: 1em;">

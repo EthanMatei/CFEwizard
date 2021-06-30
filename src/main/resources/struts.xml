@@ -141,7 +141,8 @@
             </result>
 		</action>
 		
-		<!--  Upload specified CSV file, get Diagnostic input, and calculate values -->
+		<!--  Upload specified CSV file, upload probeset to Genecards symbol mapping DB,
+		      get Diagnostic input, and calculate values -->
 		<action name="DiscoveryCalculate" class="cfe.action.DiscoveryAction" method="calculate">
 		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/discoveryResult.jsp</result>
@@ -152,54 +153,9 @@
             </result>
 		</action>
 								
-		<!--  Upload specified database, and parse it to get values for cohort specification -->
-		<!-- 
-		<action name="DiscoveryCohortSpecification" class="cfe.action.DiscoveryAction" method="cohortSpecification">
-		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/discoveryCohortSpecification.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discoveryCohortSpecification.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-        -->
 						
 	    <!-- ================================================================== -->
 	    
-	    <!-- ==================================================================
-	    DISCOVERY COHORT CREATION AND CALCULATION PHASE
-	    =================================================================== -->
-		<action name="DiscoveryFileUploadInitialize" class="cfe.action.DiscoveryFileUpload" method="initialize">
-		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/discoveryFileUpload.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discoveryFileUpload.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-
-		<action name="DiscoveryFileUploadGetParameters" class="cfe.action.DiscoveryFileUpload" method="getParameters">
-		<interceptor-ref name="fileUploadStack"/>
-	        <result name="success">pages/discoveryFileUpload2.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discoveryFileUpload2.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-				
-				
-		<action name="DiscoveryFileUpload" class="cfe.action.DiscoveryFileUpload">
-		<interceptor-ref name="basicStack"/>
-			<result name="success">pages/discoveryFileUploadStatus.jsp</result>
-			<result name="error">pages/discoveryFileUpload2.jsp</result>
-			<result name="input">pages/discoveryFileUpload.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
 				
 		<action name="DatabaseStatusAction" class="cfe.action.DatabaseStatusAction">
 			<interceptor-ref name="basicStack"/>
@@ -229,7 +185,9 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-		
+
+    <!-- PROTOTYPE ===================================================================== -->
+    		
    		<!-- Step 1 -->
    		<!--  Action for database upload log
 		<action name="DatabaseList" class="cfe.action.DatabaseList" method="initialize">

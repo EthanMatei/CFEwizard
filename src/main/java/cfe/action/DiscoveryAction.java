@@ -34,6 +34,7 @@ import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 import cfe.model.VersionNumber;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
+import cfe.parser.ProbesetMappingParser;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.CohortTable;
@@ -55,6 +56,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private File discoveryDb;
 	private String discoveryDbContentType;
 	private String discoveryDbFileName;
+	
+	private File probesetMappingDb;
+	private String probesetMappingDbContentType;
+	private String probesetMappingDbFileName;
 	
 	private String discoveryDbTempFileName;
 	private String discoveryCsvTempFileName;
@@ -308,8 +313,17 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	        this.errorMessage = "Gene expression file \"" + discoveryCsvFileName
 	                + "\" is not a \".csv\" file.";
 	        result = ERROR;
-	    }			
-        else {
+	    }
+	    else if (this.probesetMappingDb == null || this.probesetMappingDb == null) {
+	        this.errorMessage = "No probeset to gene mapping database file was specified.";
+	        result = ERROR;
+	    }
+	    else if (!this.probesetMappingDbFileName.endsWith(".accdb")) {
+	        this.errorMessage = "Probeset to gene mapping database file \"" + probesetMappingDbFileName
+	                + "\" is not a \".accdb\" (MS Access) file.";
+	        result = ERROR;
+	    }
+	    else {
             try {
                 log.info("Starting Discovery calculation");
                 log.info("Diagnosis code: " + this.diagnosisCode);
@@ -329,6 +343,16 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 }
                 this.discoveryCsvTempFileName = discoveryCsvTmp.getAbsolutePath();
 
+                //------------------------------------------------------------
+                // Get the probeset to mapping information
+                //------------------------------------------------------------
+                String key = "Probe Set ID";
+                DataTable probesetMapping = new DataTable(key);
+                
+                ProbesetMappingParser dbParser = new ProbesetMappingParser(this.probesetMappingDb.getAbsolutePath());
+                Table table = dbParser.getMappingTable();
+                probesetMapping.initialize(table);
+                
                 //---------------------------------------------
                 // Process diagnosis code
                 //---------------------------------------------
@@ -418,6 +442,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
                 DataTable outputDataTable = new DataTable(null);
                 outputDataTable.initializeToCsv(outputFile);
+                // Add Genecards Symbols
+                outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
+                outputDataTable.setColumnName(0, ProbesetMappingParser.PROBE_SET_ID_COLUMN);
+                
+                for (int rowIndex = 0; rowIndex < outputDataTable.getNumberOfRows(); rowIndex++) {
+                    String keyValue = outputDataTable.getValue(rowIndex, 0);
+                    String genecardsSymbol = probesetMapping.getValue(keyValue, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
+                    outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
+                }
 
                 DataTable reportDataTable = new DataTable(null);
                 reportDataTable.initializeToCsv(reportFile);
@@ -623,8 +656,35 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	public void setDiscoveryDbFileName(String dicoveryDbFileName) {
 		this.discoveryDbFileName = dicoveryDbFileName;
 	}
+	
+	
+	public File getProbesetMappingDb() {
+        return probesetMappingDb;
+    }
 
-	public String getBaseDir() {
+    public void setProbesetMappingDb(File probesetMappingDb) {
+        this.probesetMappingDb = probesetMappingDb;
+    }
+
+    public String getProbesetMappingDbContentType() {
+        return probesetMappingDbContentType;
+    }
+
+    public void setProbesetMappingDbContentType(String probesetMappingDbContentType) {
+        this.probesetMappingDbContentType = probesetMappingDbContentType;
+    }
+
+    public String getProbesetMappingDbFileName() {
+        return probesetMappingDbFileName;
+    }
+
+    public void setProbesetMappingDbFileName(String probesetMappingDbFileName) {
+        this.probesetMappingDbFileName = probesetMappingDbFileName;
+    }
+
+    
+    
+    public String getBaseDir() {
 		return baseDir;
 	}	
 	

@@ -488,4 +488,94 @@ public class DataTable {
 		return this.data.size();
 	}
 	
+	/**
+	 * Gets the value for the specified key value (row) and column name. Returns null
+	 * if no row with the specified key exists.
+	 * 
+	 * @param keyValue
+	 * @param columnName
+	 * @return
+	 * @throws Exception If the data table does not have a key, or the specified column
+	 *     name does not exist in the table.
+	 */
+	public String getValue(String keyValue, String columnName) throws Exception {
+	    String value = null;
+   
+        ArrayList<String> row = this.getRow(keyValue);
+        
+	    int columnIndex = this.getColumnIndex(columnName);
+	    
+	    if (columnIndex < 0) {
+	        throw new Exception("Attempt to retrieve value from data table for non-existent column \"" + columnName + "\".");
+	    }
+
+	    
+	    if (row != null && !row.isEmpty()) {
+	        value = row.get(columnIndex);
+	    }
+	    
+	    return value;
+	}
+
+	public void setValue(String keyValue, String columnName, String value) throws Exception {
+	    ArrayList<String> row = this.getRow(keyValue);
+
+	    int columnIndex = this.getColumnIndex(columnName);
+
+	    if (columnIndex < 0) {
+	        throw new Exception("Attempt to retrieve value from data table for non-existent column \"" + columnName + "\".");
+	    }
+
+	    if (row == null && row.isEmpty()) {
+	        throw new Exception("Attempt to set non-existent data table row with key \"" + keyValue + "\".");
+	    }
+	    else {
+	        row.set(columnIndex, value);
+	    }
+	}
+	
+	public void setValue(int rowIndex, String columnName, String value) {
+	    int columnIndex = this.getColumnIndex(columnName);
+	    this.data.get(rowIndex).set(columnIndex, value);
+	}
+
+    public ArrayList<String> getRow(String keyValue) throws Exception {
+
+        if (this.key == null || this.key.equals("")) {
+            throw new Exception("Attempt to retrieve row from data table without a key.");
+        }
+        
+        ArrayList<String> row = this.index.get(keyValue);
+        
+        return row;
+    }
+    
+    /**
+     * Gets the set of keys for the data table, if a key has been defined, and returns null otherwise.
+     * 
+     * @return
+     */
+    public Set<String> getKeys() {
+        Set<String> keys = null;
+        if (this.index != null) {
+            keys = this.index.keySet();
+        }
+        return keys;
+    }
+    
+    public void setColumnName(int index, String columnName) throws Exception {
+        if (index < 0 || index >= this.columns.size()) {
+            throw new Exception("Column index " + index + " does not exist.");    
+        }
+        
+        this.columns.set(index,  columnName);
+    }
+    
+    public String getValue(int rowNumber, int columnNumber) {
+        String value = null;
+        ArrayList<String> row = this.data.get(rowNumber);
+        value = row.get(columnNumber);
+        return value;
+    }
+
 }

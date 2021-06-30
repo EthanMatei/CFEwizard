@@ -218,8 +218,13 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
           ")
   loopNumber <- loopNumber + 1
   
-  
+
   x <- data[which(data["Subject"] == uniqueSubject),]
+  cat("\n----------------------------x initial----------------------------------------\n")     # DEBUG
+  cat("x (",class(x),"):\n")
+  print(x)
+  cat("\n----------------------------------------------------------------------\n")
+  
   x  <-  x [ order( as.Date(x$date) ), ] # order by visit
   
   cat("\n...")
@@ -258,7 +263,7 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     #changes in gene states (don't do this to factor columns)
     cat("\nCalculating gene changes for",length(x) - length(stringColumns),"probe sets
             ...")
-    cat("\n----------------------------geneChange INPUT----------------------------------------\n")
+    cat("\n----------------------------geneChange INPUT----------------------------------------\n")     # DEBUG
     cat("x (",class(x),"):\n")
     print(x)
     cat("\n- - - - - - - - - - - - - - - - - - - -\n")

@@ -144,18 +144,9 @@ rownames(data)[nrow(data)] <- "DEscores"
 
 
 data[, ! names(data) %in% stringColumns] <- lapply(data[, ! names(data) %in% stringColumns], as.numeric)
-cat("\n---------------------------- data 1 ----------------------------------------\n")     # DEBUG
-cat("data (",class(data),"):\n")
-print(data$VisitNumber)
-cat("\n----------------------------------------------------------------------\n")
 
 #set initial DEscore values to 0 on full data.frame
 data["DEscores", ! names(data) %in% stringColumns] <- 0
-
-cat("\n---------------------------- data 2 ----------------------------------------\n")     # DEBUG
-cat("data (",class(data),"):\n")
-print(data$VisitNumber)
-cat("\n----------------------------------------------------------------------\n")
 
 #### test data for practice
 # i <- 1
@@ -394,22 +385,14 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
             }
           }
         }
-        
-        cat("\n\nDEBUG OUTPUT-------------------------------------------------------------\n")
-        print(wormShape)    # DEBUG
-        cat("\n- - - - - - - - - - - - - - - - - - - - - -\n")
-        print(pointsVector) # DEBUG
-        cat("-----------------------------------------------------------------------------\n")
+
         
         for ( i in (comparison+1):nrow(lookAround)){
-          
-          cat("\nLOOP 2 - COMPARISON: ", i, "\n")    # DEBUG
           
           if ( (i < (nrow(lookAround)+1)) & (comparison != nrow(lookAround)  )){
             
             
             cat("\nLooking right to comparison",i)
-            cat("\nPHENE VALUE: ", pheneValue)   # DEBUG
             if (pheneValue == 1 ){
               tempWorm <- wormShape
               if (addAsymmetry ){
@@ -422,12 +405,7 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
             if (pheneValue == 0 ){
               tempWorm <- wormShape
               if (addAsymmetry ){
-                cat("\nBEFORE ASSIGNMENT TO 1\n");    # DEBUG
-                cat("\nCLASS tempworm", class(tempWorm), "\n")    # DEBUG
-                print(tempWorm)     # DEBUG
-                cat("\n") # DEBUG
                 tempWorm[i, (pointsVector == 0) & (tempWorm[i,] == 0.5 )] <- 1
-                cat("\nAFTER ASSIGNMENT TO 1\n")    # DEBUG
               }
               pointsVector[,pointsVector == 0 ] <- tempWorm[i, pointsVector == 0]
             }

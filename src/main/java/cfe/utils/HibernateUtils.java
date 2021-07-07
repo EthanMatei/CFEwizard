@@ -91,12 +91,19 @@ public class HibernateUtils {
 			Configuration conf = new Configuration();
 			
 			Class<?>[] models = {
+			        //-----------------------------
 			        // CFE Prototype
+			        //-----------------------------
 					cfe.model.DatabaseUploadInfo.class,
 					cfe.model.Discovery.class,
 					cfe.model.Prioritization.class,
 					cfe.model.Validation.class,
 					cfe.model.Testing.class,
+					
+					//---------------------------------------
+					// Discovery
+					//---------------------------------------
+					cfe.model.discovery.DiscoveryResults.class,
 					
 					//------------------------------------------
 					// Prioritization

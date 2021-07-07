@@ -1,6 +1,7 @@
 package cfe.action;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -8,6 +9,7 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +34,11 @@ import com.healthmarketscience.jackcess.Table;
 import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 import cfe.model.VersionNumber;
+import cfe.model.discovery.DiscoveryResults;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
 import cfe.parser.ProbesetMappingParser;
+import cfe.services.discovery.DiscoveryResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.CohortTable;
@@ -114,6 +118,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private String resultsXlsxFile;
 	
 	private String tempDir;
+	
+	private Date cohortGeneratedTime;
+	private Date scoresGeneratedTime;
 	
 	private String errorMessage;
 	
@@ -249,7 +256,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				// Create cohort and cohort CSV file
 				//-------------------------------------------
 				CohortTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
-				cohort.sort("Subject", "PheneVisit");
+				cohort.sort("Subject", "PheneVisit"); 
+                this.cohortGeneratedTime = new Date();
 				
 				this.numberOfSubjects = cohort.getNumberOfSubjects();
 				this.lowVisits = cohort.getLowVisits();
@@ -263,13 +271,13 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 				// Create an Xlsx (spreadsheet) version of the cohort data
 				ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-				
+                
 				DataTable infoTable = this.createCohortInfoTable();
 				
 				LinkedHashMap<String, DataTable> cohortTables = new LinkedHashMap<String, DataTable>();
 				cohortTables.put("cohort",  cohort);
 				cohortTables.put("cohort data", cohortData);
-				cohortTables.put("info", infoTable);
+				cohortTables.put("cohort info", infoTable);
 				
 				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
 				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
@@ -281,7 +289,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				out.close();
 				this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
 
-				//----------------------------------------------------
+                //----------------------------------------------------
 				// Get diagnosis codes needed for calculation
 				//----------------------------------------------------
 				PheneVisitParser pheneVisitParser = new PheneVisitParser();
@@ -297,6 +305,13 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		return result;
 	}
 	
+	/**
+	 * Calculates the discovery results.
+	 * 
+	 * @return the status of this action.
+	 * 
+	 * @throws Exception
+	 */
 	public String calculate() throws Exception {
 		String result = SUCCESS;
 		
@@ -389,6 +404,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 log.info("RSCRIPT COMMAND: " + String.join(" ", rScriptCommand));
                 
                 scriptOutput = this.runCommand(rScriptCommand);
+                
+                this.scoresGeneratedTime = new Date();
 
                 //-------------------------------------------------------
                 // Set up script output file log
@@ -486,6 +503,28 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //File timingCsvTempFile = File.createTempFile("discovery-timing-", ".csv");
                 //FileOutputStream timingOut = new FileOutputStream(timingCsvTempFile);
                 //timingOut.close();
+                
+                // Save the results in the database
+                DiscoveryResults discoveryResults = new DiscoveryResults();
+ 
+                discoveryResults.setGeneratedTime(this.scoresGeneratedTime);
+                
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                resultsWorkbook.write(bos);
+                bos.close();
+                byte[] bytes = bos.toByteArray();
+                discoveryResults.setResults(bytes);
+                
+                /*
+                discoveryResults.setRScriptLog(scriptOutput);
+                */
+                discoveryResults.setPhene(this.pheneSelection);
+                discoveryResults.setLowCutoff(lowCutoff);
+                discoveryResults.setHighCutoff(highCutoff);
+                
+                log.info("Before discovery results save");
+                DiscoveryResultsService.save(discoveryResults);
+                log.info("After discovery results save");
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -509,6 +548,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         row.add(this.diagnosisCode);
         infoTable.addRow(row);
         
+        row = new ArrayList<String>();
+        row.add("Time Scores Generated");
+        row.add(this.scoresGeneratedTime.toString());
+        infoTable.addRow(row);
+        
 	    return infoTable;
 	}
 	
@@ -524,8 +568,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		infoTable.addRow(row);
 		
 		row = new ArrayList<String>();
-		row.add("Time Generated");
-		row.add(LocalDateTime.now().toString());
+		row.add("Time Cohort Generated");
+		row.add(this.cohortGeneratedTime.toString());
 		infoTable.addRow(row);
 		
 		row = new ArrayList<String>();
@@ -962,6 +1006,22 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
     public void setTimingFileName(String timingFileName) {
         this.timingFileName = timingFileName;
+    }
+
+    public Date getScoresGeneratedTime() {
+        return scoresGeneratedTime;
+    }
+
+    public void setScoresGeneratedTime(Date scoresGeneratedTime) {
+        this.scoresGeneratedTime = scoresGeneratedTime;
+    }
+
+    public Date getCohortGeneratedTime() {
+        return cohortGeneratedTime;
+    }
+
+    public void setCohortGeneratedTime(Date cohortGeneratedTime) {
+        this.cohortGeneratedTime = cohortGeneratedTime;
     }
 
 }

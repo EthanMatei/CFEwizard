@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @param <T>
  */
-public abstract class AbstractDao<T> extends BaseDao{
+public abstract class AbstractDao<T> extends BaseDao {
 	
 	// check out:
 	// http://www.hiberbook.com/HiberBookWeb/learn.jsp?tutorial=21advanceddaos

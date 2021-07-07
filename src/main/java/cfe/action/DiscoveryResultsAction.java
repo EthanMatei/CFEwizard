@@ -32,8 +32,10 @@ import com.healthmarketscience.jackcess.Table;
 import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 import cfe.model.VersionNumber;
+import cfe.model.discovery.DiscoveryResults;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
+import cfe.services.discovery.DiscoveryResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.CohortTable;
@@ -62,7 +64,8 @@ public class DiscoveryResultsAction extends BaseAction implements SessionAware {
 
 	private File[] files;
 
-	
+    private List<DiscoveryResults> discoveryResults;
+    
 	public String execute() throws Exception {
 		String result = SUCCESS;
 		
@@ -71,6 +74,8 @@ public class DiscoveryResultsAction extends BaseAction implements SessionAware {
 		}
 		else {
 		    try {
+		        this.discoveryResults = DiscoveryResultsService.getAllMetadata();
+		        
 		        this.tempDir = System.getProperty("java.io.tmpdir");
 		        
 		        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
@@ -132,6 +137,14 @@ public class DiscoveryResultsAction extends BaseAction implements SessionAware {
 
     public void setFiles(File[] files) {
         this.files = files;
+    }
+
+    public List<DiscoveryResults> getDiscoveryResults() {
+        return discoveryResults;
+    }
+
+    public void setDiscoveryResults(List<DiscoveryResults> discoveryResults) {
+        this.discoveryResults = discoveryResults;
     }
 
 }

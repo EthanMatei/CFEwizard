@@ -87,15 +87,27 @@
     <s:hidden name="pheneSelection" />
     <s:hidden name="pheneTable" />
     <s:hidden name="microarrayTable" />
+    <s:hidden name="cohortGeneratedTime" />
     
-    <div>    
-    Gene Expression CSV File: <s:file name="discoveryCsv"/>
-    </div>
+    <div id="container">
+        <div id="input-files" style="float: left;">
+            <div>    
+            Gene Expression CSV File: <s:file name="discoveryCsv"/>
+            </div>
     
-    <div>
-    Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
-    </div>
+            <div>
+            Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
+            </div>
+        </div> <%-- input-file --%>
     
+        <div style="margin-left: 4em; font-weight: bold; float: left;">
+            <s:submit value="Process" id="processDiscoveryButton" style="font-weight: bold; padding-left: 2em; padding-right: 2em;"/>
+        </div>
+    
+        <div style="clear: both;"></div>
+    </div> <%-- container --%>
+    
+        
     <h3>Diagnosis</h3>
 
     <table class="dataTable" style="margin-top: 1em;">
@@ -115,9 +127,6 @@
         </s:iterator>
     </table>
 
-    <div style="margin-top: 1em; font-weight: bold;">
-        <s:submit value="Process" id="processDiscoveryButton" />
-    </div>
 
     
     <s:token />

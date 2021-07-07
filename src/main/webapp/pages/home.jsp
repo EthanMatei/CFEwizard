@@ -38,6 +38,8 @@
     <li><s:a action="PrioritizationGeneListUpload">Calculate Scores</s:a></li>
 </ul>
 
+<h2>Validation</h2>
+
 
 
 <s:if test="#session.username==adminUser">
@@ -52,7 +54,7 @@
 
 <hr/>
 
-<h2>Prototype Process</h2>
+<h3>Prototype Process</h3>
 <ul>  
     
  <%-- Only allow admins see and make database uploads --%>

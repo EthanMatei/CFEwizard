@@ -146,7 +146,7 @@
 		<action name="DiscoveryCalculate" class="cfe.action.DiscoveryAction" method="calculate">
 		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/discoveryResult.jsp</result>
-			<result name="error">pages/error.jsp</result>	
+			<result name="error">pages/discoveryResult.jsp</result>	
 			<result name="input">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
@@ -445,7 +445,43 @@
 		</action>
 		
         <!-- ==================================================================================== -->
+ 
+        <!-- Validation/Testing Cohort Creation -->
         
+		<action name="ValidationTestingCohortDiscoveryCohortSelection"
+		        class="cfe.action.ValidationTestingCohortAction"
+		        method="initialize">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/validationTestingCohortDiscoveryCohortSelection.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+        
+		<action name="ValidationTestingCohortSpecification"
+		        class="cfe.action.ValidationTestingCohortAction"
+		        method="specification">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/validationTestingCohortSpecification.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+           
+		<action name="ValidationTestingCohortProcess"
+		        class="cfe.action.ValidationTestingCohortAction"
+		        method="process">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/validationTestingCohort.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>           
+        <!-- ==================================================================================== -->
+                
         <!-- Discovery Results -->
 		<action name="DiscoveryResults" class="cfe.action.DiscoveryResultsAction">
 			<interceptor-ref name="basicStack"/>
@@ -455,7 +491,17 @@
                 <param name="actionName">LoginAction</param>
             </result>
         </action>
-		        
+        
+        <!-- Delete Discovery Results -->
+		<action name="DeleteDiscoveryResults" class="cfe.action.DeleteDiscoveryResultsAction">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/discoveryAllResults.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+        		        
         <!-- CSV file display -->
 		<action name="CsvDisplay" class="cfe.action.CsvDisplayAction" method="view">
 			<interceptor-ref name="basicStack"/>
@@ -499,7 +545,7 @@
 		</action>
 		
 		<!-- Discovery Results XLSX (spreadsheet) file display -->
-		<action name="DiscoveryResultsXlsxDisplay" class="cfe.action.DiscoveryResultsXlsxDisplayAction" method="view">
+		<action name="CfeResultsXlsxDisplay" class="cfe.action.CfeResultsXlsxDisplayAction" method="view">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success" type="stream">
                 <param name="inputName">fileStream</param>

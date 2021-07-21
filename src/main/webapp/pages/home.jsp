@@ -40,7 +40,9 @@
 
 <h2>Validation</h2>
 
-
+<ul>
+    <li> <s:a action="ValidationTestingCohortDiscoveryCohortSelection">Validation and Testing Cohorts Creation</s:a> </li>
+</ul>
 
 <s:if test="#session.username==adminUser">
 <hr />

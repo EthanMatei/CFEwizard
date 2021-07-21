@@ -21,7 +21,9 @@ import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -79,6 +81,38 @@ public class DataTable {
 		
 		csvReader.close();
 	}
+    
+    public void initializeToWorkbookSheet(XSSFSheet sheet) {
+        XSSFRow header = sheet.getRow(0);
+        for (int cellIndex = 0; cellIndex < header.getLastCellNum(); cellIndex++) {
+            Cell cell = header.getCell(cellIndex);
+            String columnName = cell.getStringCellValue();
+            this.addColumn(columnName, "");
+        }
+        
+        for (int rowIndex = 1; rowIndex < sheet.getLastRowNum(); rowIndex++) {
+            XSSFRow row = sheet.getRow(rowIndex);
+            ArrayList<String> dataRow = new ArrayList<String>();
+            
+            for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
+                Cell cell = row.getCell(cellIndex);
+                CellType cellType = cell.getCellType();
+                String value = "";
+                if (cellType == CellType.BOOLEAN) {
+                    value = cell.getBooleanCellValue() + "";
+                }
+                else if (cellType == CellType.NUMERIC) {
+                    value = cell.getNumericCellValue() + "";
+                }
+                else if (cellType == CellType.STRING) {
+                    value = cell.getStringCellValue();
+                }
+                dataRow.add(value);
+            }
+            
+            this.addRow(dataRow);
+        }
+    }
 	
 	
 	/**
@@ -173,6 +207,20 @@ public class DataTable {
 	    int columnIndex = this.getColumnIndex(columnName);
 	    this.columns.remove(columnIndex);
         
+        for (ArrayList<String> dataRow : this.data) {
+            dataRow.remove(columnIndex);
+        }
+	}
+	
+	/**
+	 * Deletes the last occurrence of the specified column in the data table.
+	 *
+	 * @param columnName
+	 */
+	public void deleteLastColumn(String columnName) {
+	    int columnIndex = this.getLastColumnIndex(columnName);
+	    this.columns.remove(columnIndex);
+	    
         for (ArrayList<String> dataRow : this.data) {
             dataRow.remove(columnIndex);
         }
@@ -440,9 +488,19 @@ public class DataTable {
 		return workbook;
 	}
 	
+	/**
+	 * Gets the index of the first occurrence of the specified column name.
+	 * @param columnName
+	 * @return
+	 */
 	public int getColumnIndex(String columnName) {
 		int index = this.columns.indexOf(columnName);
 		return index;
+	}
+	
+	public int getLastColumnIndex(String columnName) {
+	    int index = this.columns.lastIndexOf(columnName);
+	    return index;
 	}
 	
 	   
@@ -563,6 +621,10 @@ public class DataTable {
         return keys;
     }
     
+    public String getColumnName(int index) {
+        return this.columns.get(index);    
+    }
+    
     public void setColumnName(int index, String columnName) throws Exception {
         if (index < 0 || index >= this.columns.size()) {
             throw new Exception("Column index " + index + " does not exist.");    
@@ -576,6 +638,29 @@ public class DataTable {
         ArrayList<String> row = this.data.get(rowNumber);
         value = row.get(columnNumber);
         return value;
+    }
+    
+    public String getKey() {
+        return this.key;
+    }
+    
+    /**
+     * Sets the key column. This can be used to set the key after data has been added, or to reset the key.
+     * 
+     * @param key
+     */
+    public void setKey(String key) throws Exception {
+        if (!this.columns.contains(key)) {
+            throw new Exception("Failed to set key for data table to non-existant field \"" + key + "\"");
+        }
+        this.key = key;
+        this.keyIndex = this.getColumnIndex(key);
+        
+        this.index = new TreeMap<String, ArrayList<String>>();
+        for (ArrayList<String> row: this.data) {
+            String keyValue = row.get(this.keyIndex);
+            this.index.put(keyValue, row);
+        }
     }
 
 }

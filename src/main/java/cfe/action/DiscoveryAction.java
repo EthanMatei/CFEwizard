@@ -33,12 +33,12 @@ import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Table;
 import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
+import cfe.model.CfeResults;
 import cfe.model.VersionNumber;
-import cfe.model.discovery.DiscoveryResults;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
 import cfe.parser.ProbesetMappingParser;
-import cfe.services.discovery.DiscoveryResultsService;
+import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.CohortTable;
@@ -228,6 +228,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				chipsData.initialize(chips);
 
 				CohortDataTable cohortData = subjectIdentifiersData.merge(demographicsData);
+				
 				cohortData = cohortData.merge(diagnosisData);
 				cohortData = cohortData.merge(pheneDataData);
 				cohortData = cohortData.merge(chipsData);
@@ -289,6 +290,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				out.close();
 				this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
 
+				// Save the discovery cohort results in the CFE database
+                CfeResults cfeResults = new CfeResults(cohortWorkbook, this.cohortGeneratedTime, this.pheneSelection,
+                        lowCutoff, highCutoff);
+                CfeResultsService.save(cfeResults);
+                
                 //----------------------------------------------------
 				// Get diagnosis codes needed for calculation
 				//----------------------------------------------------
@@ -458,6 +464,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //--------------------------------------------
 
                 DataTable outputDataTable = new DataTable(null);
+                if (outputFile == null) {
+                    throw new Exception("No output file generated for discovery calculation.");
+                }
                 outputDataTable.initializeToCsv(outputFile);
                 // Add Genecards Symbols
                 outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
@@ -505,31 +514,19 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //timingOut.close();
                 
                 // Save the results in the database
-                DiscoveryResults discoveryResults = new DiscoveryResults();
- 
-                discoveryResults.setGeneratedTime(this.scoresGeneratedTime);
-                
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                resultsWorkbook.write(bos);
-                bos.close();
-                byte[] bytes = bos.toByteArray();
-                discoveryResults.setResults(bytes);
+                CfeResults cfeResults = new CfeResults(resultsWorkbook, this.scoresGeneratedTime, this.pheneSelection,
+                        lowCutoff, highCutoff);
                 
                 /*
-                discoveryResults.setRScriptLog(scriptOutput);
+                cfeResults.setRScriptLog(scriptOutput);
                 */
-                discoveryResults.setPhene(this.pheneSelection);
-                discoveryResults.setLowCutoff(lowCutoff);
-                discoveryResults.setHighCutoff(highCutoff);
                 
-                log.info("Before discovery results save");
-                DiscoveryResultsService.save(discoveryResults);
-                log.info("After discovery results save");
+                CfeResultsService.save(cfeResults);
             }
             catch (Exception exception) {
                 result = ERROR;
                 if (exception != null) {
-                    this.setErrorMessage(exception.getLocalizedMessage());
+                    this.setErrorMessage("Discovery calculation failed: " + exception.getLocalizedMessage());
                     String stackTrace = ExceptionUtils.getStackTrace(exception);
                     this.setExceptionStack(stackTrace);
                 }

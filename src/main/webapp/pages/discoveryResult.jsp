@@ -12,19 +12,39 @@
 
 <h2>Discovery Results</h2>
 
-<s:a action="XlsxDisplay" title="Discovery Results">
-    <s:param name="spreadsheetFilePath" value="resultsXlsxFile" />
-    <div>
-    <img border="0"
-     style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-     alt="Discovery Results" /> <br />
-    <s:property value="outputFileName"/>
+<s:if test="errorMessage != null && errorMessage != ''">
+    <div style="color: #CC0000; border: 1px solid #CC0000; padding: 7px;">
+        ERROR: <s:property value="errorMessage" />
+        <%--
+        <p>
+        <s:if test="exceptionStack != ''">
+            <s:property value="exceptionStack" />
+        </s:if>
+        </p>
+        --%>
     </div>
-</s:a>
+</s:if>
 
+<s:if test="outputFile != null">
+    <s:a action="XlsxDisplay" title="Discovery Results">
+        <s:param name="spreadsheetFilePath" value="resultsXlsxFile" />
+        <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+                 alt="Discovery Results" /> <br />
+            <s:property value="outputFileName"/>
+
+        </div>
+    </s:a>
+</s:if>
+<s:else>
+    <p>No results generated</p>
+</s:else>
+    
 <br/>
 Script Output:
+
 
 <s:a action="TextFileDisplay" title="Discovery R script output file">
     <s:param name="textFilePath" value="scriptOutputTextFile" />
@@ -37,19 +57,22 @@ Script Output:
     </div>
 </s:a>
 
+
 <br/>
 Timing:
 
-<s:a action="CsvDisplay" title="Discovery Timing">
-    <s:param name="csvFilePath" value="timingFile" />
-    <div>
-    <img border="0"
-     style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-     alt="Discovery Timing" /> <br />
-    <s:property value="timingFileName"/>
-    </div>
-</s:a>
+<s:if test="timingFile != null">
+    <s:a action="CsvDisplay" title="Discovery Timing">
+        <s:param name="csvFilePath" value="timingFile" />
+        <div>
+        <img border="0"
+         style="margin-top: 2px;"
+         src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+         alt="Discovery Timing" /> <br />
+        <s:property value="timingFileName"/>
+        </div>
+    </s:a>
+</s:if>
 
 <hr style="margin-top: 12px;"/>
 

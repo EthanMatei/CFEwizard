@@ -108,6 +108,8 @@ public class CohortDataTable extends DataTable {
 			merge.addRow(mergedRow);
 		}
 		
+		//merge.deleteLastColumn(key);
+		
 		return merge;
 	}
 
@@ -408,6 +410,21 @@ public class CohortDataTable extends DataTable {
 	         cell = row.getCell(intraIndex);
 	         cell.setCellFormula(intraFormula);	
 		}
+	}
+	
+	public ArrayList<String> getPhenes() {
+	    ArrayList<String> phenes = new ArrayList<String>();
+	    int startIndex = this.getColumnIndex("INTRA") + 1;
+	    for (int index = startIndex; index < columns.size(); index++) {
+	        String column = this.getColumnName(index);
+	        if (column.contains("PheneVisit")) {
+	            break;
+	        }
+	        else {
+	            phenes.add(column);
+	        }
+	    }
+	    return phenes;
 	}
 
 }

@@ -103,7 +103,7 @@ public class HibernateUtils {
 					//---------------------------------------
 					// Discovery
 					//---------------------------------------
-					cfe.model.discovery.DiscoveryResults.class,
+					cfe.model.CfeResults.class,
 					
 					//------------------------------------------
 					// Prioritization

@@ -1,0 +1,71 @@
+<%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+ 
+<tiles:insertTemplate template="/pages/template.jsp" flush="true">
+
+<tiles:putAttribute name="header">
+    <title>CFE Wizard - Validation and Testing Cohort Specification</title>
+    <s:head />
+    <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
+    <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
+</tiles:putAttribute>
+<tiles:putAttribute name="content">
+
+
+<h2>Validation and Testing Cohort Specification</h2>
+
+<s:actionerror />
+
+<table class="dataTable" style="margin-bottom: 20px;">
+    <tr> <th>Discovery Phene</th> <th>Low Cutoff</th> <th>High Cutoff</th> </tr>
+    <tr>
+        <td style="text-align: right;"> <s:property value="discoveryPhene"/> </td>
+        <td style="text-align: right;"> <s:property value="discoveryLowCutoff"/> </td>
+        <td style="text-align: right;"> <s:property value="discoveryHighCutoff"/> </td>
+</table>
+
+<div style="border: 1px solid #222222; border-radius: 10px; maring-top: 20px; padding: 10px;">
+
+    <p style="font-weight: bold; margin-top: 12px;">Additional Validation and Testing Cohort Constraints</p>
+    <s:form theme="simple" action="ValidationTestingCohortProcess">
+        <s:hidden name="discoveryId"/>
+        <s:hidden name="discoveryPhene"/>
+        <s:hidden name="discoveryLowCutoff"/>
+        <s:hidden name="discoveryHighCutoff"/>
+    
+        <table class="dataTable">
+            <tr> <th>Phene</th> <th>Relation</th> <th>Value</th> </tr>
+            <tr>
+                <td> <s:select name="phene1" list="phenes" /> </td>
+                <td style="text-align: center"> <s:select name="operator1" list="operators" /> </td>
+                <td> <s:textfield name="value1" value="" size="4"  style="text-align: right;"/> </td>
+            </tr>
+            <tr>
+                <td> <s:select name="phene2" list="phenes" /> </td>
+                <td style="text-align: center"> <s:select name="operator2" list="operators" /> </td>
+                <td> <s:textfield name="value2" value="" size="4" style="text-align: right;"/> </td>
+            </tr>
+            <tr>
+                <td> <s:select name="phene3" list="phenes" /> </td>
+                <td style="text-align: center"> <s:select name="operator3" list="operators" /> </td>
+                <td> <s:textfield name="value3" value="" size="4" style="text-align: right;"/> </td>
+            </tr>
+        </table>
+    
+        <div style="margin-top: 14px; margin-bottom: 14px;">
+            % Subjects in Validation Cohort:
+            <s:textfield name="percentInValidationCohort" value="50" size="4" style="text-align: right;"/>
+        </div>
+    
+        <div>
+        <s:submit value="Process" style="padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+        </div>
+    
+    </s:form>
+
+</div>
+
+<br/>
+
+</tiles:putAttribute>
+</tiles:insertTemplate>

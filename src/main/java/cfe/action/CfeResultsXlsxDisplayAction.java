@@ -19,28 +19,28 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.ServletActionContext;
 
 import cfe.action.ActionErrorException;
-import cfe.model.discovery.DiscoveryResults;
-import cfe.services.discovery.DiscoveryResultsService;
+import cfe.model.CfeResults;
+import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.Filter;
 
 /**
- * Struts2 action for displaying spreadsheet in .xlsx format
+ * Struts2 action for displaying CFE results spreadsheet in .xlsx format
  * 
  * @author Jim Mullen
  *
  */
-public class DiscoveryResultsXlsxDisplayAction extends BaseAction implements SessionAware {
+public class CfeResultsXlsxDisplayAction extends BaseAction implements SessionAware {
 	
 	private static final long serialVersionUID = 1L;
-	private Log log = LogFactory.getLog(DiscoveryResultsXlsxDisplayAction.class);
+	private Log log = LogFactory.getLog(CfeResultsXlsxDisplayAction.class);
 	
 
     @SuppressWarnings("unchecked")
     private Map session;
 
     private String reportName;
-    private Integer discoveryResultsId;
+    private Long cfeResultsId;
     
 	private String errorMessage;
 	private String fileName;
@@ -52,7 +52,7 @@ public class DiscoveryResultsXlsxDisplayAction extends BaseAction implements Ses
     private int month;
     private int year;
 	
-    public DiscoveryResultsXlsxDisplayAction() {
+    public CfeResultsXlsxDisplayAction() {
         errorMessage    = "";
         fileName        = "";
         fileContentType = "";
@@ -80,19 +80,19 @@ public class DiscoveryResultsXlsxDisplayAction extends BaseAction implements Ses
     	}
     	else {
     		//try {
-    		if (discoveryResultsId == null) {
+    		if (cfeResultsId == null) {
     			throw new ActionErrorException("No Discovery Results ID was specified.");
     		}
     		
-    		log.info("discoveryResultsId: " + discoveryResultsId);
-    		DiscoveryResults discoveryResults = DiscoveryResultsService.get(discoveryResultsId);
+    		log.info("cfeResultsId: " + cfeResultsId);
+    		CfeResults cfeResults = CfeResultsService.get(cfeResultsId);
 
     		//try {
     		    
-                fileStream = new ByteArrayInputStream( discoveryResults.getResults() );
+                fileStream = new ByteArrayInputStream( cfeResults.getResults() );
     		    if (fileStream == null) {
     			    throw new Exception("The dicovery results with ID \""
-    		            + discoveryResultsId + "\" could not be retrieved.");
+    		            + cfeResultsId + "\" could not be retrieved.");
     		    }
     		//}
     		//catch (Exception exception) {
@@ -122,12 +122,12 @@ public class DiscoveryResultsXlsxDisplayAction extends BaseAction implements Ses
 		this.fileStream = fileStream;
 	}
 
-	public Integer getDiscoveryResultsId() {
-        return discoveryResultsId;
+	public Long getCfeResultsId() {
+        return cfeResultsId;
     }
 
-    public void setDiscoveryResultsId(Integer discoveryResultsId) {
-        this.discoveryResultsId = discoveryResultsId;
+    public void setCfeResultsId(Long cfeResultsId) {
+        this.cfeResultsId = cfeResultsId;
     }
 
     public String getErrorMessage() {

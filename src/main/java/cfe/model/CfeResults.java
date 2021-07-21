@@ -1,7 +1,11 @@
-package cfe.model.discovery;
+package cfe.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,15 +17,18 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @Entity
-@Table(name="DiscoveryResults")
-public class DiscoveryResults implements Serializable {
+@Table(name="CfeResults")
+public class CfeResults implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Id @GeneratedValue(strategy=IDENTITY)
-    private Long discoveryResultsId;
+    private Long cfeResultsId;
 
 	private Date generatedTime;
 
@@ -33,13 +40,14 @@ public class DiscoveryResults implements Serializable {
 	private Integer lowCutoff;
 	private Integer highCutoff;
 	
-	public DiscoveryResults() {
-		this.discoveryResultsId = null;
+	public CfeResults() {
+		this.cfeResultsId = null;
 	}
 
+    public CfeResults(Long resultsId, Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff) {
 
-    public DiscoveryResults(Long discoveryResultsId, Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff) {
-        this.discoveryResultsId = discoveryResultsId;
+        this.cfeResultsId = resultsId;
+        
         this.generatedTime      = generatedTime;
         this.phene              = phene;
         this.lowCutoff          = lowCutoff;
@@ -47,17 +55,31 @@ public class DiscoveryResults implements Serializable {
         
         this.results = null;
     }
+
+    public CfeResults(XSSFWorkbook resultsWorkbook, Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff)
+            throws IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        resultsWorkbook.write(bos);
+        bos.close();
+        this.results = bos.toByteArray();
+        
+        this.generatedTime      = generatedTime;
+        this.phene              = phene;
+        this.lowCutoff          = lowCutoff;
+        this.highCutoff         = highCutoff;
+    }
             
     //-----------------------------------------------------------------
     // Getters and Setters
     //-----------------------------------------------------------------
 
     public Long getDiscoveryResultsId() {
-        return discoveryResultsId;
+        return cfeResultsId;
     }
 
     public void setDiscoveryResultsId(Long discoveryResultsId) {
-        this.discoveryResultsId = discoveryResultsId;
+        this.cfeResultsId = discoveryResultsId;
     }
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -79,6 +101,14 @@ public class DiscoveryResults implements Serializable {
 
     public void setResults(byte[] results) {
         this.results = results;
+    }
+    
+    @Transient
+    public XSSFWorkbook getResultsSpreadsheet() throws Exception {
+        InputStream fileStream;
+        fileStream = new ByteArrayInputStream( this.results );
+        XSSFWorkbook workbook = new XSSFWorkbook(fileStream);
+        return workbook;
     }
 
     /*

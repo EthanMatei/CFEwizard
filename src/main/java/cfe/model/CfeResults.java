@@ -33,6 +33,9 @@ public class CfeResults implements Serializable {
 	private Date generatedTime;
 
 	private byte[] results;
+	
+	private String resultsType;
+	
 	/*
 	private String rScriptLog;
 	*/
@@ -44,9 +47,21 @@ public class CfeResults implements Serializable {
 		this.cfeResultsId = null;
 	}
 
-    public CfeResults(Long resultsId, Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff) {
+	/**
+	 * Constructor needed to retrieve results data without the spreadsheet (to speed up display in table form).
+	 * 
+	 * @param resultsId
+	 * @param resultsType
+	 * @param generatedTime
+	 * @param phene
+	 * @param lowCutoff
+	 * @param highCutoff
+	 */
+    public CfeResults(Long resultsId, String resultsType,Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff) {
 
         this.cfeResultsId = resultsId;
+        
+        this.resultsType = resultsType;
         
         this.generatedTime      = generatedTime;
         this.phene              = phene;
@@ -56,13 +71,21 @@ public class CfeResults implements Serializable {
         this.results = null;
     }
 
-    public CfeResults(XSSFWorkbook resultsWorkbook, Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff)
-            throws IOException {
+    public CfeResults(
+            XSSFWorkbook resultsWorkbook,
+            String resultsType, 
+            Date generatedTime,
+            String phene,
+            Integer lowCutoff,
+            Integer highCutoff
+        ) throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         resultsWorkbook.write(bos);
         bos.close();
         this.results = bos.toByteArray();
+        
+        this.resultsType = resultsType;
         
         this.generatedTime      = generatedTime;
         this.phene              = phene;
@@ -120,8 +143,17 @@ public class CfeResults implements Serializable {
         this.rScriptLog = rScriptLog;
     }
 */
+    
     public String getPhene() {
         return phene;
+    }
+
+    public String getResultsType() {
+        return resultsType;
+    }
+
+    public void setResultsType(String resultsType) {
+        this.resultsType = resultsType;
     }
 
     public void setPhene(String phene) {

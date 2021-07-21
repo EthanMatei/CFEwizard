@@ -14,7 +14,11 @@
 
 
 <table class="dataTable">
-    <tr> <th>Results</th> <th>Time Generated</th> <th>Phene</th> <th>Phene Low Cutoff</th> <th>Phene High Cutoff</th> <th>Delete</th> </tr>
+    <tr>
+        <th>Results</th> <th>Results Type</th>
+        <th>Time Generated</th>
+        <th>Phene</th> <th>Phene Low Cutoff</th> <th>Phene High Cutoff</th> <th>Delete</th>
+    </tr>
     <s:iterator value="discoveryResults" var="result">
         <tr>
             <td>
@@ -23,6 +27,7 @@
                     results.xlsx
                  </s:a>
             </td>
+            <td> <s:property value="resultsType"/> </td>
             <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
             <td> <s:property value="phene"/> </td>
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>

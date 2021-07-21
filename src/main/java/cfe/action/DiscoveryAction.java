@@ -34,6 +34,7 @@ import com.healthmarketscience.jackcess.Table;
 import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.PheneVisitParser;
@@ -291,7 +292,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
 
 				// Save the discovery cohort results in the CFE database
-                CfeResults cfeResults = new CfeResults(cohortWorkbook, this.cohortGeneratedTime, this.pheneSelection,
+                CfeResults cfeResults = new CfeResults(cohortWorkbook, CfeResultsType.DISCOVERY_COHORT,
+                        this.cohortGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
                 CfeResultsService.save(cfeResults);
                 
@@ -514,7 +516,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //timingOut.close();
                 
                 // Save the results in the database
-                CfeResults cfeResults = new CfeResults(resultsWorkbook, this.scoresGeneratedTime, this.pheneSelection,
+                CfeResults cfeResults = new CfeResults(resultsWorkbook, CfeResultsType.DISCOVERY,
+                        this.scoresGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
                 
                 /*

@@ -23,7 +23,7 @@ public class CfeResultsDao extends AbstractDao<CfeResults> {
 	public List<CfeResults> getAllMetadata() {
 	    List<CfeResults> results = null;
 	    
-	    String queryString = "Select new CfeResults(cfeResultsId, generatedTime, phene, lowCutoff, highCutoff)"
+	    String queryString = "Select new CfeResults(cfeResultsId, resultsType, generatedTime, phene, lowCutoff, highCutoff)"
 	        + " from CfeResults";
 	    
         Query<CfeResults> query = sess.createQuery(queryString);

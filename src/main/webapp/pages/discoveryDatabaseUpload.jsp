@@ -32,7 +32,7 @@
         action="DiscoveryDatabaseUpload"
         method="post" enctype="multipart/form-data">
 
-    Discovery database: <s:file name="discoveryDb" label="Discovery Database" />
+    Database: <s:file name="discoveryDb" label="Discovery Database" />
     <s:hidden name="discoveryDbTempFileName" /> 
     
     <br />

@@ -68,6 +68,13 @@
 <br/>
 <hr/>
 
+<p>
+    <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+        results.xlsx
+    </s:a>
+</p>
+                 
 <h4>Validation Cohort</h4>
 <s:iterator value="validationSubjects" var="subject">
     <s:property value="subject"/> <br/>

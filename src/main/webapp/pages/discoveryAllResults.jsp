@@ -23,7 +23,7 @@
         <tr>
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
-                    <s:param name="cfeResultsId" value="discoveryResultsId" />
+                    <s:param name="cfeResultsId" value="cfeResultsId" />
                     results.xlsx
                  </s:a>
             </td>
@@ -34,7 +34,7 @@
             <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
             <td>
                 <s:url var="deleteUrl" action="DeleteDiscoveryResults">
-                    <s:param name="cfeResultsId" value="discoveryResultsId"/>
+                    <s:param name="cfeResultsId" value="cfeResultsId"/>
                 </s:url>
                 <s:a href="%{deleteUrl}">delete</s:a>
             </td>

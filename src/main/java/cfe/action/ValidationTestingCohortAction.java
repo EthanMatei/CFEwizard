@@ -57,6 +57,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 	private String value3;
 	
 	private String discoveryPhene;
+	private String discoveryPheneTable;
 	private Integer discoveryLowCutoff;
 	private Integer discoveryHighCutoff;
 	
@@ -65,6 +66,8 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 	TreeSet<String> cohortSubjects;
 	TreeSet<String> validationSubjects;
 	TreeSet<String> testingSubjects;
+	
+	private Long cfeResultsId;
 	
 	public ValidationTestingCohortAction() {
 	    this.cohortSubjects     = new TreeSet<String>();
@@ -97,9 +100,25 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             this.discoveryHighCutoff = discoveryResults.getHighCutoff();
             
             XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
-            XSSFSheet sheet = workbook.getSheet("cohort data");
-            CohortDataTable cohortData = new CohortDataTable();
-            cohortData.initializeToWorkbookSheet(sheet);
+            
+            // Get the discovery database phene table name
+            XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
+            DataTable cohortInfo = new DataTable("attribute");
+            cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+            ArrayList<String> row = cohortInfo.getRow("Phene Table");
+            if (row == null) {
+                throw new Exception("Unable to find Phene Table row in sheet \""
+                        + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+            }
+            this.discoveryPheneTable = row.get(1);
+            if (this.discoveryPheneTable == null || this.discoveryPheneTable.isEmpty()) {
+                throw new Exception("Could not get phene table information from workbook sheet \""
+                        + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+            }       
+            
+            XSSFSheet cohortDataSheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+            CohortDataTable cohortData = new CohortDataTable(this.discoveryPheneTable);
+            cohortData.initializeToWorkbookSheet(cohortDataSheet);
             cohortData.setKey("Subject Identifiers.PheneVisit");
             
             phenes = new ArrayList<String>();
@@ -112,114 +131,119 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
     public String process() throws Exception {
         String result = SUCCESS;
         
-        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-        this.discoveryResults = CfeResultsService.get(discoveryId);
+        if (!Authorization.isAdmin(webSession)) {
+            result = LOGIN;
+        } else {
+            ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+            this.discoveryResults = CfeResultsService.get(discoveryId);
 
-        XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
-        XSSFSheet sheet = workbook.getSheet("cohort data");
-        CohortDataTable cohortData = new CohortDataTable();
-        cohortData.initializeToWorkbookSheet(sheet);
-        cohortData.setKey("Subject Identifiers.PheneVisit");
-        
-        int value;
-        PheneCondition pheneCondition;
-        List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
-        
-        if (phene1 != null && !phene1.isEmpty() && value1 != null && !value1.isEmpty()) {
-            value = Integer.parseInt(value1);
-            pheneCondition = new PheneCondition(phene1, operator1, value);
-            pheneConditions.add(pheneCondition);
-        }
-        
-        if (phene2 != null && !phene2.isEmpty() && value2 != null && !value2.isEmpty()) {
-            value = Integer.parseInt(value2);
-            pheneCondition = new PheneCondition(phene2, operator2, value);
-            pheneConditions.add(pheneCondition);
-        }
-        
-        if (phene3 != null && !phene3.isEmpty() && value3 != null && !value3.isEmpty()) {
-            value = Integer.parseInt(value3);
-            pheneCondition = new PheneCondition(phene3, operator3, value);
-            pheneConditions.add(pheneCondition);
-        }
-        
-        this.cohortSubjects = cohortData.getValidationAndTestingCohortSubjects(
-            discoveryPhene, discoveryLowCutoff, discoveryHighCutoff, pheneConditions
-        );
-        
-        List<String> subjects = new ArrayList<String>();
-        subjects.addAll(cohortSubjects);
-        
-        Random rand = new Random(RANDOM_SEED);
-        Collections.shuffle(subjects, rand);
-        int count = subjects.size();
-        
-        for (int i = 0; i < count; i++) {
-            double percent = (i + 1.0) / count;
-            double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
-            
-            if (percent <= percentInValidation) {
-                this.validationSubjects.add(subjects.get(i));
+            XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
+            XSSFSheet sheet = workbook.getSheet("cohort data");
+            CohortDataTable cohortData = new CohortDataTable();
+            cohortData.initializeToWorkbookSheet(sheet);
+            cohortData.setKey("Subject Identifiers.PheneVisit");
+
+            int value;
+            PheneCondition pheneCondition;
+            List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
+
+            if (phene1 != null && !phene1.isEmpty() && value1 != null && !value1.isEmpty()) {
+                value = Integer.parseInt(value1);
+                pheneCondition = new PheneCondition(phene1, operator1, value);
+                pheneConditions.add(pheneCondition);
             }
-            else {
-                this.testingSubjects.add(subjects.get(i));
+
+            if (phene2 != null && !phene2.isEmpty() && value2 != null && !value2.isEmpty()) {
+                value = Integer.parseInt(value2);
+                pheneCondition = new PheneCondition(phene2, operator2, value);
+                pheneConditions.add(pheneCondition);
             }
-        }
-        
 
-        //-------------------------------------------------------------------------------
-        // Create new CFE results that has all the cohorts plus previous information
-        //-------------------------------------------------------------------------------
-        XSSFWorkbook resultsWorkbook = new XSSFWorkbook();
-        
-        DataTable discoveryCohort = new DataTable(null);
-        discoveryCohort.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
-        discoveryCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT);
+            if (phene3 != null && !phene3.isEmpty() && value3 != null && !value3.isEmpty()) {
+                value = Integer.parseInt(value3);
+                pheneCondition = new PheneCondition(phene3, operator3, value);
+                pheneConditions.add(pheneCondition);
+            }
 
-        // Create validation cohort data table
-        DataTable validationCohort = new DataTable("Subject");
-        validationCohort.addColumn("Subject",  "");
-        for (String subject: validationSubjects) {
-            ArrayList<String> row = new ArrayList<String>();
-            row.add(subject);
-            validationCohort.addRow(row);
-        }
-        validationCohort.addToWorkbook(resultsWorkbook, "validation cohort");
-        
-        // Create testing cohort data table
-        DataTable testingCohort = new DataTable("Subject");
-        testingCohort.addColumn("Subject",  "");
-        for (String subject: testingSubjects) {
-            ArrayList<String> row = new ArrayList<String>();
-            row.add(subject);
-            testingCohort.addRow(row);
-        }
-        testingCohort.addToWorkbook(resultsWorkbook, "testing cohort");
+            this.cohortSubjects = cohortData.getValidationAndTestingCohortSubjects(
+                    discoveryPhene, discoveryLowCutoff, discoveryHighCutoff, pheneConditions
+                    );
 
-        CohortDataTable cohortDataDataTable = new CohortDataTable();
-        cohortDataDataTable.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.COHORT_DATA));
-        cohortDataDataTable.addCohort("validation", validationSubjects);
-        cohortDataDataTable.addCohort("testing", testingSubjects);
-        String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
-        cohortDataDataTable.sortWithBlanksLast(sortColumns);
-        cohortDataDataTable.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
-        
-        CfeResults cfeResults = new CfeResults();
-        
-        if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
-            cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
+            List<String> subjects = new ArrayList<String>();
+            subjects.addAll(cohortSubjects);
+
+            Random rand = new Random(RANDOM_SEED);
+            Collections.shuffle(subjects, rand);
+            int count = subjects.size();
+
+            for (int i = 0; i < count; i++) {
+                double percent = (i + 1.0) / count;
+                double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
+
+                if (percent <= percentInValidation) {
+                    this.validationSubjects.add(subjects.get(i));
+                }
+                else {
+                    this.testingSubjects.add(subjects.get(i));
+                }
+            }
+
+
+            //-------------------------------------------------------------------------------
+            // Create new CFE results that has all the cohorts plus previous information
+            //-------------------------------------------------------------------------------
+            XSSFWorkbook resultsWorkbook = new XSSFWorkbook();
+
+            DataTable discoveryCohort = new DataTable(null);
+            discoveryCohort.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
+            discoveryCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT);
+
+            // Create validation cohort data table
+            DataTable validationCohort = new DataTable("Subject");
+            validationCohort.addColumn("Subject",  "");
+            for (String subject: validationSubjects) {
+                ArrayList<String> row = new ArrayList<String>();
+                row.add(subject);
+                validationCohort.addRow(row);
+            }
+            validationCohort.addToWorkbook(resultsWorkbook, "validation cohort");
+
+            // Create testing cohort data table
+            DataTable testingCohort = new DataTable("Subject");
+            testingCohort.addColumn("Subject",  "");
+            for (String subject: testingSubjects) {
+                ArrayList<String> row = new ArrayList<String>();
+                row.add(subject);
+                testingCohort.addRow(row);
+            }
+            testingCohort.addToWorkbook(resultsWorkbook, "testing cohort");
+
+            CohortDataTable cohortDataDataTable = new CohortDataTable();
+            cohortDataDataTable.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.COHORT_DATA));
+            cohortDataDataTable.addCohort("validation", validationSubjects);
+            cohortDataDataTable.addCohort("testing", testingSubjects);
+            String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
+            cohortDataDataTable.sortWithBlanksLast(sortColumns);
+            cohortDataDataTable.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
+
+            CfeResults cfeResults = new CfeResults();
+
+            if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
+                cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
+            }
+            else if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
+                cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+            }
+
+            cfeResults.setResultsSpreadsheet(resultsWorkbook);
+            cfeResults.setPhene(discoveryPhene);
+            cfeResults.setLowCutoff(discoveryLowCutoff);
+            cfeResults.setHighCutoff(discoveryHighCutoff);
+            cfeResults.setGeneratedTime(new Date());
+
+            CfeResultsService.save(cfeResults);
+            this.cfeResultsId = cfeResults.getCfeResultsId();
         }
-        else if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
-            cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
-        }
-        
-        cfeResults.setResultsSpreadsheet(resultsWorkbook);
-        cfeResults.setPhene(discoveryPhene);
-        cfeResults.setLowCutoff(discoveryLowCutoff);
-        cfeResults.setHighCutoff(discoveryHighCutoff);
-        cfeResults.setGeneratedTime(new Date());
-        
-        CfeResultsService.save(cfeResults);
         
         return result;
     }
@@ -366,6 +390,14 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
         this.discoveryPhene = discoveryPhene;
     }
 
+    public String getDiscoveryPheneTable() {
+        return discoveryPheneTable;
+    }
+
+    public void setDiscoveryPheneTable(String discoveryPheneTable) {
+        this.discoveryPheneTable = discoveryPheneTable;
+    }
+
     public Integer getDiscoveryLowCutoff() {
         return discoveryLowCutoff;
     }
@@ -412,6 +444,14 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 
     public void setTestingSubjects(TreeSet<String> testingSubjects) {
         this.testingSubjects = testingSubjects;
+    }
+
+    public Long getCfeResultsId() {
+        return cfeResultsId;
+    }
+
+    public void setCfeResultsId(Long cfeResultsId) {
+        this.cfeResultsId = cfeResultsId;
     }
 
 }

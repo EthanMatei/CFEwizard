@@ -607,9 +607,19 @@ public class CohortDataTable extends DataTable {
 		}
 	}
 	
-	public ArrayList<String> getPhenes() {
+	public ArrayList<String> getPhenes() throws Exception {
 	    ArrayList<String> phenes = new ArrayList<String>();
-	    int startIndex = this.getColumnIndex(this.pheneTable + ".PheneVisit") + 1;
+	    String pheneTablePheneVisitColumn = this.pheneTable + ".PheneVisit";
+	    
+	    int startIndex = this.getColumnIndex(pheneTablePheneVisitColumn);
+	    if (startIndex == -1) {
+	        throw new Exception("Could not find phene table PheneVisit column\""
+	            + pheneTablePheneVisitColumn + "\" in the cohort data table."
+	        );
+	    }
+	    
+	    startIndex += 1;
+	    
 	    for (int index = startIndex; index < columns.size(); index++) {
 	        String column = this.getColumnName(index);
 	        if (column.contains("PheneVisit")) {

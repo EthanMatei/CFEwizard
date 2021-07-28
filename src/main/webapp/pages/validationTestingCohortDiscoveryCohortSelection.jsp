@@ -34,11 +34,11 @@ Select a Discovery Cohort:
     <s:iterator value="discoveryResultsList" var="result">
         <tr>
             <td>
-                 <s:radio name="discoveryId" list="{discoveryResultsId}"/>
+                 <s:radio name="discoveryId" list="{cfeResultsId}"/>
             </td>
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
-                    <s:param name="cfeResultsId" value="discoveryResultsId" />
+                    <s:param name="cfeResultsId" value="cfeResultsId" />
                     discovery-results.xlsx
                  </s:a>
             </td>

@@ -57,9 +57,9 @@ public class CfeResults implements Serializable {
 	 * @param lowCutoff
 	 * @param highCutoff
 	 */
-    public CfeResults(Long resultsId, String resultsType,Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff) {
+    public CfeResults(Long cfeResultsId, String resultsType,Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff) {
 
-        this.cfeResultsId = resultsId;
+        this.cfeResultsId = cfeResultsId;
         
         this.resultsType = resultsType;
         
@@ -97,12 +97,12 @@ public class CfeResults implements Serializable {
     // Getters and Setters
     //-----------------------------------------------------------------
 
-    public Long getDiscoveryResultsId() {
+    public Long getCfeResultsId() {
         return cfeResultsId;
     }
 
-    public void setDiscoveryResultsId(Long discoveryResultsId) {
-        this.cfeResultsId = discoveryResultsId;
+    public void setCfeResultsId(Long cfeResultsId) {
+        this.cfeResultsId = cfeResultsId;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

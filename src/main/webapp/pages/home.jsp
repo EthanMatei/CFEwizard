@@ -14,7 +14,6 @@
 <h2>Discovery</h2>
 <ul>
     <li><s:a action="DiscoveryInitialize">Discovery</s:a></li>
-    <li><s:a action="DiscoveryResults">Past Results</s:a></li>
 </ul>
 
 <h2>Prioritization</h2>
@@ -42,6 +41,11 @@
 
 <ul>
     <li> <s:a action="ValidationTestingCohortDiscoveryCohortSelection">Validation and Testing Cohorts Creation</s:a> </li>
+</ul>
+
+<h2>Results</h2>
+<ul>
+    <li><s:a action="CfeResults">Saved Results</s:a></li>
 </ul>
 
 <s:if test="#session.username==adminUser">

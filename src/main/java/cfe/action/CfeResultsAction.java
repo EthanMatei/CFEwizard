@@ -44,21 +44,25 @@ import cfe.utils.DataTable;
 import cfe.utils.WebAppProperties;
 
 /**
- * Action for deleting previously calculated discovery results.
+ * Action for viewing previously calculated discovery results.
  * 
  * @author Jim Mullen
  *
  */
-public class DeleteDiscoveryResultsAction extends BaseAction implements SessionAware {
+public class CfeResultsAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-	private static final Log log = LogFactory.getLog(DeleteDiscoveryResultsAction.class);
+	private static final Log log = LogFactory.getLog(CfeResultsAction.class);
 
 	private Map<String, Object> webSession;
 	
+    private List<String> fileNames;
+	
+	private String tempDir;
+	
 	private String errorMessage;
 
-	private Long cfeResultsId;
+	private File[] files;
 
     private List<CfeResults> discoveryResults;
     
@@ -70,8 +74,19 @@ public class DeleteDiscoveryResultsAction extends BaseAction implements SessionA
 		}
 		else {
 		    try {
-		        CfeResultsService.deleteById(cfeResultsId);
 		        this.discoveryResults = CfeResultsService.getAllMetadata();
+		        
+		        this.tempDir = System.getProperty("java.io.tmpdir");
+		        
+		        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+		        
+		        File dir = new File(tempDir);
+		        this.files = dir.listFiles((d, name) -> name.startsWith("discovery-results-"));
+		        
+		        this.fileNames = new ArrayList<String>();
+		        for (File file: files) {
+		            this.fileNames.add(file.getAbsolutePath());
+		        }
 		    } catch (Exception exception) {
 		        this.errorMessage = "The Discovery database could not be processed. " + exception.getLocalizedMessage();
 		        result = ERROR;
@@ -100,20 +115,36 @@ public class DeleteDiscoveryResultsAction extends BaseAction implements SessionA
 		this.errorMessage = errorMessage;
 	}
 
+    public String getTempDir() {
+		return tempDir;
+	}
+
+	public void setTempDir(String tempDir) {
+		this.tempDir = tempDir;
+	}
+
+    public List<String> getFileNames() {
+        return fileNames;
+    }
+
+    public void setFileNames(List<String> fileNames) {
+        this.fileNames = fileNames;
+    }
+
+    public File[] getFiles() {
+        return files;
+    }
+
+    public void setFiles(File[] files) {
+        this.files = files;
+    }
+
     public List<CfeResults> getDiscoveryResults() {
         return discoveryResults;
     }
 
     public void setDiscoveryResults(List<CfeResults> discoveryResults) {
         this.discoveryResults = discoveryResults;
-    }
-
-    public Long getCfeResultsId() {
-        return cfeResultsId;
-    }
-
-    public void setCfeResultsId(Long cfeResultsId) {
-        this.cfeResultsId = cfeResultsId;
     }
 
 }

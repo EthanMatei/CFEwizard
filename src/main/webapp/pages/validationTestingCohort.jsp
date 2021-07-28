@@ -68,13 +68,20 @@
 <br/>
 <hr/>
 
-<p>
-    <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
-        <s:param name="cfeResultsId" value="cfeResultsId" />
+
+<s:a action="CfeResultsXlsxDisplay" title="Cohort Spreadsheet">
+    <s:param name="cfeResultsId" value="cfeResultsId" />
+    <div>
+        <img border="0"
+             style="margin-top: 2px;"
+             src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+             alt="Report" /> <br />
         results.xlsx
-    </s:a>
-</p>
-                 
+    </div>
+</s:a>
+         
+
+<%--       
 <h4>Validation Cohort</h4>
 <s:iterator value="validationSubjects" var="subject">
     <s:property value="subject"/> <br/>
@@ -84,6 +91,7 @@
 <s:iterator value="testingSubjects" var="subject">
     <s:property value="subject"/> <br/>
 </s:iterator>
+--%>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

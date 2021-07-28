@@ -4,20 +4,23 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard</title>
+    <title>CFE Wizard - Results</title>
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
 <%-- User: <s:property value="#session.username" /> --%>
 
-<h2>Discovery Results</h2>
+<h2>CFE Saved Results</h2>
 
 
 <table class="dataTable">
     <tr>
         <th>Results</th> <th>Results Type</th>
         <th>Time Generated</th>
-        <th>Phene</th> <th>Phene Low Cutoff</th> <th>Phene High Cutoff</th> <th>Delete</th>
+        <th>Phene</th> <th>Phene Low Cutoff</th> <th>Phene High Cutoff</th>
+        <s:if test="#session.username==adminUser">
+            <th>Delete</th>
+        </s:if>
     </tr>
     <s:iterator value="discoveryResults" var="result">
         <tr>
@@ -32,12 +35,14 @@
             <td> <s:property value="phene"/> </td>
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
             <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
-            <td>
-                <s:url var="deleteUrl" action="DeleteDiscoveryResults">
-                    <s:param name="cfeResultsId" value="cfeResultsId"/>
-                </s:url>
-                <s:a href="%{deleteUrl}">delete</s:a>
-            </td>
+            <s:if test="#session.username==adminUser">
+                <td>
+                    <s:url var="deleteUrl" action="CfeResultsDelete">
+                        <s:param name="cfeResultsId" value="cfeResultsId"/>
+                    </s:url>
+                    <s:a href="%{deleteUrl}">delete</s:a>
+                </td>
+            </s:if>
         </tr>
     </s:iterator>
 </table>

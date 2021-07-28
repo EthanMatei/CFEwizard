@@ -193,11 +193,17 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             // Create new CFE results that has all the cohorts plus previous information
             //-------------------------------------------------------------------------------
             XSSFWorkbook resultsWorkbook = new XSSFWorkbook();
-
+            
+            // Discovery cohort table
             DataTable discoveryCohort = new DataTable(null);
             discoveryCohort.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
             discoveryCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT);
 
+            // Discovery cohort info table
+            DataTable discoveryCohortInfo = new DataTable(null);
+            discoveryCohortInfo.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO));
+            discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
+            
             // Create validation cohort data table
             DataTable validationCohort = new DataTable("Subject");
             validationCohort.addColumn("Subject",  "");
@@ -206,7 +212,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
                 row.add(subject);
                 validationCohort.addRow(row);
             }
-            validationCohort.addToWorkbook(resultsWorkbook, "validation cohort");
+            validationCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT);
 
             // Create testing cohort data table
             DataTable testingCohort = new DataTable("Subject");
@@ -216,8 +222,42 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
                 row.add(subject);
                 testingCohort.addRow(row);
             }
-            testingCohort.addToWorkbook(resultsWorkbook, "testing cohort");
+            testingCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT);
 
+            // Create cohort constraints table
+            DataTable cohortConstraints = new DataTable("Phene");
+            cohortConstraints.addColumn("Phene", "");
+            cohortConstraints.addColumn("Operator", "");
+            cohortConstraints.addColumn("Value", "");
+            
+            ArrayList<String> row;
+            if (!this.phene1.isEmpty() && !this.value1.isEmpty()) {
+                row = new ArrayList<String>();
+                row.add(this.phene1);
+                row.add(this.operator1);
+                row.add(this.value1);
+                cohortConstraints.addRow(row);
+            }
+            
+            if (!this.phene2.isEmpty() && !this.value2.isEmpty()) {
+                row = new ArrayList<String>();
+                row.add(this.phene2);
+                row.add(this.operator2);
+                row.add(this.value2);
+                cohortConstraints.addRow(row);
+            }            
+            
+            if (!this.phene3.isEmpty() && !this.value3.isEmpty()) {
+                row = new ArrayList<String>();
+                row.add(this.phene3);
+                row.add(this.operator3);
+                row.add(this.value3);
+                cohortConstraints.addRow(row);
+            }
+            
+            cohortConstraints.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_CONSTRAINTS);
+            
+            // Create (all) cohort data table
             CohortDataTable cohortDataDataTable = new CohortDataTable();
             cohortDataDataTable.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.COHORT_DATA));
             cohortDataDataTable.addCohort("validation", validationSubjects);

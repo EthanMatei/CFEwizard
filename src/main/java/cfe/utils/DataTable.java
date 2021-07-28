@@ -99,6 +99,13 @@ public class DataTable {
                 Cell cell = row.getCell(cellIndex);
                 CellType cellType = cell.getCellType();
                 String value = "";
+
+                DataFormatter formatter = new DataFormatter();
+                String stringValue = formatter.formatCellValue(cell);
+                
+                value = stringValue;
+                
+                /*
                 if (cellType == CellType.BOOLEAN) {
                     value = cell.getBooleanCellValue() + "";
                 }
@@ -111,6 +118,8 @@ public class DataTable {
                 else if (cellType == CellType.STRING) {
                     value = cell.getStringCellValue();
                 }
+                */
+                
                 dataRow.add(value);
             }
             

@@ -7,6 +7,7 @@ package cfe.model;
  */
 public class CfeResultsSheets {
     public static final String COHORT_DATA            = "cohort data";
+    public static final String COHORT_CONSTRAINTS     = "cohort constraints";
     public static final String DISCOVERY_COHORT       = "discovery cohort";
     public static final String DISCOVERY_COHORT_INFO  = "discovery cohort info";
     public static final String DISCOVERY_REPORT       = "discovery report";

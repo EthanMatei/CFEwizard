@@ -104,6 +104,49 @@ public class CfeResultsService {
         return results;
     }	
     
+    public static List<CfeResults> getMetadata(String resultsType) {
+        List<CfeResults> results = null;
+        
+        Session session = HibernateUtils.getSession();      
+        Transaction tx = session.beginTransaction();
+        CfeResultsDao cfeResultsDao = new CfeResultsDao(session, tx);
+        
+        try {
+            results = cfeResultsDao.getMetadata(resultsType);
+            tx.commit();
+        }
+        catch (Exception exception) {
+            tx.rollback();
+        }
+        finally {
+            session.close();
+        }
+        
+        return results;
+    }
+    
+    
+    public static List<CfeResults> getMetadata(String resultsType1, String resultsType2) {
+        List<CfeResults> results = null;
+        
+        Session session = HibernateUtils.getSession();      
+        Transaction tx = session.beginTransaction();
+        CfeResultsDao cfeResultsDao = new CfeResultsDao(session, tx);
+        
+        try {
+            results = cfeResultsDao.getMetadata(resultsType1, resultsType2);
+            tx.commit();
+        }
+        catch (Exception exception) {
+            tx.rollback();
+        }
+        finally {
+            session.close();
+        }
+        
+        return results;
+    }    
+    
     public static void deleteById(Long cfeResultsId) {
         
         Session session = HibernateUtils.getSession();      

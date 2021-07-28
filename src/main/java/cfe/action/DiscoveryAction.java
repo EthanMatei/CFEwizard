@@ -222,7 +222,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				CohortDataTable diagnosisData = new CohortDataTable();
 				diagnosisData.initialize(diagnosis);
 
-				CohortDataTable pheneDataData = new CohortDataTable();
+				CohortDataTable pheneDataData = new CohortDataTable(this.pheneTable);
 				pheneDataData.initialize(pheneData);
 
 				CohortDataTable chipsData = new CohortDataTable();
@@ -277,9 +277,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				DataTable infoTable = this.createCohortInfoTable();
 				
 				LinkedHashMap<String, DataTable> cohortTables = new LinkedHashMap<String, DataTable>();
-				cohortTables.put("cohort",  cohort);
+				cohortTables.put("discovery cohort",  cohort);
 				cohortTables.put("cohort data", cohortData);
-				cohortTables.put("cohort info", infoTable);
+				cohortTables.put("discovery cohort info", infoTable);
 				
 				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
 				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
@@ -516,7 +516,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //timingOut.close();
                 
                 // Save the results in the database
-                CfeResults cfeResults = new CfeResults(resultsWorkbook, CfeResultsType.DISCOVERY,
+                CfeResults cfeResults = new CfeResults(resultsWorkbook, CfeResultsType.DISCOVERY_SCORES,
                         this.scoresGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
                 

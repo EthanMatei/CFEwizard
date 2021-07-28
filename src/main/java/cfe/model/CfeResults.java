@@ -133,7 +133,19 @@ public class CfeResults implements Serializable {
         XSSFWorkbook workbook = new XSSFWorkbook(fileStream);
         return workbook;
     }
-
+    
+    @Transient
+    public void setResultsSpreadsheet(XSSFWorkbook workbook) throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            workbook.write(bos);
+        } finally {
+            bos.close();
+        }
+        byte[] bytes = bos.toByteArray();
+        this.results = bytes;
+    }
+    
     /*
     public String getRScriptLog() {
         return rScriptLog;

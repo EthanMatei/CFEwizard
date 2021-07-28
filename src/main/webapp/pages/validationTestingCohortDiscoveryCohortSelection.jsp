@@ -24,6 +24,7 @@ Select a Discovery Cohort:
     <tr> 
         <th>ID</th>
         <th>Results</th>
+        <th>Results Type</th>
         <th>Time Generated</th>
         <th>Phene</th>
         <th>Phene Low Cutoff</th>
@@ -36,11 +37,12 @@ Select a Discovery Cohort:
                  <s:radio name="discoveryId" list="{discoveryResultsId}"/>
             </td>
             <td>
-                <s:a action="DiscoveryResultsXlsxDisplay" title="Discovery Results">
-                    <s:param name="discoveryResultsId" value="discoveryResultsId" />
+                <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
+                    <s:param name="cfeResultsId" value="discoveryResultsId" />
                     discovery-results.xlsx
                  </s:a>
             </td>
+            <td> <s:property value="resultsType"/>
             <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
             <td> <s:property value="phene"/> </td>
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>

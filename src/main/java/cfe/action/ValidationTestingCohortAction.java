@@ -1,8 +1,12 @@
 package cfe.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,9 +16,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsSheets;
+import cfe.model.CfeResultsType;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
+import cfe.utils.DataTable;
+import cfe.utils.PheneCondition;
 
 public class ValidationTestingCohortAction extends BaseAction implements SessionAware {
 
@@ -23,6 +31,8 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 
 	private Map<String, Object> webSession;
     
+	public static final Long RANDOM_SEED = 10972359723095792L;
+	
 	private List<CfeResults> discoveryResultsList;
 	private CfeResults discoveryResults;
 	
@@ -52,13 +62,23 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 	
 	private String percentInValidationCohort;
 	
+	TreeSet<String> cohortSubjects;
+	TreeSet<String> validationSubjects;
+	TreeSet<String> testingSubjects;
+	
+	public ValidationTestingCohortAction() {
+	    this.cohortSubjects     = new TreeSet<String>();
+	    this.validationSubjects = new TreeSet<String>();
+	    this.testingSubjects    = new TreeSet<String>();
+	}
+	
 	public String initialize() throws Exception {
 		String result = SUCCESS;
 		
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		} else {
-            this.discoveryResultsList = CfeResultsService.getAllMetadata();
+            this.discoveryResultsList = CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.DISCOVERY_SCORES);
 		}
 	    return result;
 	}
@@ -100,6 +120,106 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
         CohortDataTable cohortData = new CohortDataTable();
         cohortData.initializeToWorkbookSheet(sheet);
         cohortData.setKey("Subject Identifiers.PheneVisit");
+        
+        int value;
+        PheneCondition pheneCondition;
+        List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
+        
+        if (phene1 != null && !phene1.isEmpty() && value1 != null && !value1.isEmpty()) {
+            value = Integer.parseInt(value1);
+            pheneCondition = new PheneCondition(phene1, operator1, value);
+            pheneConditions.add(pheneCondition);
+        }
+        
+        if (phene2 != null && !phene2.isEmpty() && value2 != null && !value2.isEmpty()) {
+            value = Integer.parseInt(value2);
+            pheneCondition = new PheneCondition(phene2, operator2, value);
+            pheneConditions.add(pheneCondition);
+        }
+        
+        if (phene3 != null && !phene3.isEmpty() && value3 != null && !value3.isEmpty()) {
+            value = Integer.parseInt(value3);
+            pheneCondition = new PheneCondition(phene3, operator3, value);
+            pheneConditions.add(pheneCondition);
+        }
+        
+        this.cohortSubjects = cohortData.getValidationAndTestingCohortSubjects(
+            discoveryPhene, discoveryLowCutoff, discoveryHighCutoff, pheneConditions
+        );
+        
+        List<String> subjects = new ArrayList<String>();
+        subjects.addAll(cohortSubjects);
+        
+        Random rand = new Random(RANDOM_SEED);
+        Collections.shuffle(subjects, rand);
+        int count = subjects.size();
+        
+        for (int i = 0; i < count; i++) {
+            double percent = (i + 1.0) / count;
+            double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
+            
+            if (percent <= percentInValidation) {
+                this.validationSubjects.add(subjects.get(i));
+            }
+            else {
+                this.testingSubjects.add(subjects.get(i));
+            }
+        }
+        
+
+        //-------------------------------------------------------------------------------
+        // Create new CFE results that has all the cohorts plus previous information
+        //-------------------------------------------------------------------------------
+        XSSFWorkbook resultsWorkbook = new XSSFWorkbook();
+        
+        DataTable discoveryCohort = new DataTable(null);
+        discoveryCohort.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
+        discoveryCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT);
+
+        // Create validation cohort data table
+        DataTable validationCohort = new DataTable("Subject");
+        validationCohort.addColumn("Subject",  "");
+        for (String subject: validationSubjects) {
+            ArrayList<String> row = new ArrayList<String>();
+            row.add(subject);
+            validationCohort.addRow(row);
+        }
+        validationCohort.addToWorkbook(resultsWorkbook, "validation cohort");
+        
+        // Create testing cohort data table
+        DataTable testingCohort = new DataTable("Subject");
+        testingCohort.addColumn("Subject",  "");
+        for (String subject: testingSubjects) {
+            ArrayList<String> row = new ArrayList<String>();
+            row.add(subject);
+            testingCohort.addRow(row);
+        }
+        testingCohort.addToWorkbook(resultsWorkbook, "testing cohort");
+
+        CohortDataTable cohortDataDataTable = new CohortDataTable();
+        cohortDataDataTable.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.COHORT_DATA));
+        cohortDataDataTable.addCohort("validation", validationSubjects);
+        cohortDataDataTable.addCohort("testing", testingSubjects);
+        String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
+        cohortDataDataTable.sortWithBlanksLast(sortColumns);
+        cohortDataDataTable.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
+        
+        CfeResults cfeResults = new CfeResults();
+        
+        if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
+            cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
+        }
+        else if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
+            cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+        }
+        
+        cfeResults.setResultsSpreadsheet(resultsWorkbook);
+        cfeResults.setPhene(discoveryPhene);
+        cfeResults.setLowCutoff(discoveryLowCutoff);
+        cfeResults.setHighCutoff(discoveryHighCutoff);
+        cfeResults.setGeneratedTime(new Date());
+        
+        CfeResultsService.save(cfeResults);
         
         return result;
     }
@@ -268,6 +388,30 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 
     public void setPercentInValidationCohort(String percentInValidationCohort) {
         this.percentInValidationCohort = percentInValidationCohort;
+    }
+
+    public TreeSet<String> getCohortSubjects() {
+        return cohortSubjects;
+    }
+
+    public void setCohortSubjects(TreeSet<String> cohortSubjects) {
+        this.cohortSubjects = cohortSubjects;
+    }
+
+    public TreeSet<String> getValidationSubjects() {
+        return validationSubjects;
+    }
+
+    public void setValidationSubjects(TreeSet<String> validationSubjects) {
+        this.validationSubjects = validationSubjects;
+    }
+
+    public TreeSet<String> getTestingSubjects() {
+        return testingSubjects;
+    }
+
+    public void setTestingSubjects(TreeSet<String> testingSubjects) {
+        this.testingSubjects = testingSubjects;
     }
 
 }

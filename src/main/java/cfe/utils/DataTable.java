@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -102,7 +103,10 @@ public class DataTable {
                     value = cell.getBooleanCellValue() + "";
                 }
                 else if (cellType == CellType.NUMERIC) {
+                    DataFormatter fmt = new DataFormatter();
+                    String formatValue = fmt.formatCellValue(cell);
                     value = cell.getNumericCellValue() + "";
+                    log.info("    **** FORMAT VALUE for double cell (" + value + "): " + formatValue);
                 }
                 else if (cellType == CellType.STRING) {
                     value = cell.getStringCellValue();
@@ -293,6 +297,39 @@ public class DataTable {
         });	    
 	}
 
+	   public void sortWithBlanksLast(String[] sortColumns) {
+	        Map<String, Integer> indexMap = new HashMap<String,Integer>();
+	        for (String sortColumn: sortColumns) {
+	            int index = this.getColumnIndex(sortColumn);
+	            indexMap.put(sortColumn, index);
+	        }
+	        
+	        Collections.sort(this.data, new Comparator<ArrayList<String>>() {
+	            @Override
+	            public int compare(ArrayList<String> row1, ArrayList<String> row2) {
+	                int compare = 0;
+	                for (String sortColumn: sortColumns) {
+	                    int index = indexMap.get(sortColumn);
+	                    String string1 = row1.get(index);
+	                    String string2 = row2.get(index);
+	                    if (string1.isEmpty() && !string2.isEmpty()) {
+	                        compare = 1;
+	                    }
+	                    else if (!string1.isEmpty() && string2.isEmpty()) {
+	                        compare = -1;
+	                    }
+	                    else {
+	                        compare = row1.get(index).compareTo(row2.get(index));
+	                    }
+	                    
+	                    if (compare != 0) break;
+	                }
+
+	                return compare;
+	            }
+	        });     
+	    }
+	   
 	/**
 	 * Merges data tables based on key. Key columns are renamed to be prefixed with the table name.
 	 * @param mergeTable
@@ -606,6 +643,30 @@ public class DataTable {
         ArrayList<String> row = this.index.get(keyValue);
         
         return row;
+    }
+
+    /**
+     * Gets a map from column name to column value for the specified row.
+     * 
+     * @param keyValue the key value for the row to retrieve.
+     * @return
+     * @throws Exception
+     */
+    public Map<String, String> getRowMap(String keyValue) throws Exception {
+
+        if (this.key == null || this.key.equals("")) {
+            throw new Exception("Attempt to retrieve row from data table without a key.");
+        }
+        
+        Map<String,String> rowMap = new HashMap<String,String>();
+        
+        ArrayList<String> row = this.index.get(keyValue);
+        
+        for (int i = 0; i < this.columns.size(); i++) {
+            rowMap.put(this.columns.get(i), row.get(i)); 
+        }
+        
+        return rowMap;
     }
     
     /**

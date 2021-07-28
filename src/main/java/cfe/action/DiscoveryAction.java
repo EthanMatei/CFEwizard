@@ -203,7 +203,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				dbParser.checkPheneTable(pheneTable);
 				
 				//-------------------------------------------------
-				// Create the chort data table
+				// Create the cohort data table
 				//-------------------------------------------------
 				Database db = dbParser.getDatabase();
 

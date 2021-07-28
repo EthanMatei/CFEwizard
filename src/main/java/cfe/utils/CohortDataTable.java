@@ -245,16 +245,32 @@ public class CohortDataTable extends DataTable {
 	 * @param high
 	 * @param phene
 	 */
-	public CohortTable getCohort(String phene, int lowCutoff, int highCutoff) {
+	public CohortTable getCohort(String phene, int lowCutoff, int highCutoff) throws Exception {
 		// Get the subject column index
 	   	int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
-       
+	    if (subjectIndex == -1) {
+	        throw new Exception("Subject column could not be found in cohort data table.");
+	    }
+	     
 		// Get the selected phene column index
 		int pheneIndex = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
+		if (pheneIndex == -1) {
+		    throw new Exception("Phene column \"" + phene + "\" could not be found in the cohort data table.");
+		}
+		
+		int pheneVisitIndex = this.getColumnIndexTrimAndIgnoreCase("Subject Identifiers.PheneVisit");
+		if (pheneVisitIndex == -1) {
+		    throw new Exception("PheneVisit column could not be found in cohort data table.");    
+		}
 		
 		// Get the "visit date" column index
 		int visitDateIndex = this.getColumnIndexTrimAndIgnoreCase("Visit Date");
+		if (visitDateIndex == -1) {
+		    throw new Exception("VisitDate column could not be found in cohort data table.");
+		}
 
+
+		
 		TreeSet<String> cohortSubjects = this.getCohortSubjects(phene, lowCutoff, highCutoff);
 	    
 	    //---------------------------------------------------------------------------
@@ -305,9 +321,10 @@ public class CohortDataTable extends DataTable {
 	        
 	        String subject = cohortDataRow.get(subjectIndex);
 	        String keyValue = cohortDataRow.get(this.keyIndex);
+	        String pheneVisit = cohortDataRow.get(pheneVisitIndex);
 	        
 	        cohortRow.add(subject);
-	        cohortRow.add(keyValue);
+	        cohortRow.add(pheneVisit);
 	        
 	        if (cohortSubjects.contains(subject)) {
 				String pheneValueString = cohortDataRow.get(pheneIndex);

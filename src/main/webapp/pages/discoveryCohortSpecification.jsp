@@ -29,7 +29,7 @@
     </div>
 </s:if>
 
-<s:form theme="simple" action="DiscoveryCohortSpecification">
+<s:form theme="simple" action="DiscoveryCohort">
 
     <s:hidden name="discoveryDbFileName" />
     <s:hidden name="discoveryDbTempFileName"/>

@@ -110,7 +110,7 @@
 		
 		<!-- DISCOVERY ======================================================= -->
 		
-		<action name="DiscoveryInitialize" class="cfe.action.DiscoveryAction" method="initialize">
+		<action name="DiscoveryDbUpload" class="cfe.action.DiscoveryAction" method="initialize">
 		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/discoveryDatabaseUpload.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -121,7 +121,7 @@
 		</action>
 		
 		<!--  Upload specified database, and parse it to get values for cohort specification -->
-		<action name="DiscoveryDatabaseUpload" class="cfe.action.DiscoveryAction" method="uploadDatabase">
+		<action name="DiscoveryCohortSpecification" class="cfe.action.DiscoveryAction" method="uploadDatabase">
 		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/discoveryCohortSpecification.jsp</result>
 			<result name="error">pages/discoveryDatabaseUpload.jsp</result>
@@ -131,7 +131,7 @@
             </result>
 		</action>
 		
-		<action name="DiscoveryCohortSpecification" class="cfe.action.DiscoveryAction" method="cohortSpecification">
+		<action name="DiscoveryCohort" class="cfe.action.DiscoveryAction" method="cohortSpecification">
 		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/discoveryCohort.jsp</result>
 			<result name="error">pages/error.jsp</result>
@@ -141,6 +141,17 @@
             </result>
 		</action>
 		
+
+		<action name="DiscoveryCohortSelection" class="cfe.action.DiscoveryAction" method="cohortSelection">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/discoveryCohortSelection.jsp</result>
+			<result name="error">pages/discoveryCohortSelection.jsp</result>	
+			<result name="input">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+			
 		<!--  Upload specified CSV file, upload probeset to Genecards symbol mapping DB,
 		      get Diagnostic input, and calculate values -->
 		<action name="DiscoveryCalculate" class="cfe.action.DiscoveryAction" method="calculate">

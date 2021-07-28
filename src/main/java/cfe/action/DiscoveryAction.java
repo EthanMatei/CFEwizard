@@ -123,6 +123,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private Date cohortGeneratedTime;
 	private Date scoresGeneratedTime;
 	
+	private List<CfeResults> discoveryCohortResultsList;
+	private int discoveryId;
+	
 	private String errorMessage;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
@@ -311,6 +314,24 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Select discovery cohort creation for scoring
+	 * @return
+	 * @throws Exception
+	 */
+	public String cohortSelection() throws Exception {
+	    String result = SUCCESS;
+	    
+	    if (!Authorization.isAdmin(webSession)) {
+	        result = LOGIN;
+	    } else {
+	        this.discoveryCohortResultsList =
+	                CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT);
+	    }
+	    
+	    return result;
 	}
 	
 	/**
@@ -1022,6 +1043,22 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
     public void setCohortGeneratedTime(Date cohortGeneratedTime) {
         this.cohortGeneratedTime = cohortGeneratedTime;
+    }
+
+    public List<CfeResults> getDiscoveryCohortResultsList() {
+        return discoveryCohortResultsList;
+    }
+
+    public void setDiscoveryCohortResultsList(List<CfeResults> discoveryCohortResultsList) {
+        this.discoveryCohortResultsList = discoveryCohortResultsList;
+    }
+
+    public int getDiscoveryId() {
+        return discoveryId;
+    }
+
+    public void setDiscoveryId(int discoveryId) {
+        this.discoveryId = discoveryId;
     }
 
 }

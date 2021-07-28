@@ -13,7 +13,8 @@
 
 <h2>Discovery</h2>
 <ul>
-    <li><s:a action="DiscoveryInitialize">Discovery</s:a></li>
+    <li><s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a></li>
+    <li><s:a action="DiscoveryCohortSelection">Discovery Scoring</s:a></li>
 </ul>
 
 <h2>Prioritization</h2>

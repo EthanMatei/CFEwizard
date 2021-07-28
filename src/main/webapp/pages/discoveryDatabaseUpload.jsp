@@ -29,7 +29,7 @@
 <s:actionerror />
 
 <s:form id ="discoveryUploadForm" theme="simple" name="discoveryUploadForm"
-        action="DiscoveryDatabaseUpload"
+        action="DiscoveryCohortSpecification"
         method="post" enctype="multipart/form-data">
 
     Database: <s:file name="discoveryDb" label="Discovery Database" />

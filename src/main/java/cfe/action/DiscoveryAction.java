@@ -34,6 +34,7 @@ import com.healthmarketscience.jackcess.Table;
 import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
 import cfe.parser.DiscoveryDatabaseParser;
@@ -280,9 +281,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				DataTable infoTable = this.createCohortInfoTable();
 				
 				LinkedHashMap<String, DataTable> cohortTables = new LinkedHashMap<String, DataTable>();
-				cohortTables.put("discovery cohort",  cohort);
-				cohortTables.put("cohort data", cohortData);
-				cohortTables.put("discovery cohort info", infoTable);
+				cohortTables.put(CfeResultsSheets.DISCOVERY_COHORT,  cohort);
+				cohortTables.put(CfeResultsSheets.COHORT_DATA, cohortData);
+				cohortTables.put(CfeResultsSheets.DISCOVERY_COHORT_INFO, infoTable);
 				
 				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
 				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);

@@ -18,6 +18,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
+import cfe.model.VersionNumber;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
@@ -224,38 +225,50 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             }
             testingCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT);
 
-            // Create cohort constraints table
-            DataTable cohortConstraints = new DataTable("Phene");
-            cohortConstraints.addColumn("Phene", "");
-            cohortConstraints.addColumn("Operator", "");
-            cohortConstraints.addColumn("Value", "");
+            // Create validation cohort info table
+            DataTable validationCohortInfo = new DataTable("attribute");
+            validationCohortInfo.addColumn("attribute", "");
+            validationCohortInfo.addColumn("value", "");
             
             ArrayList<String> row;
+            
+            row = new ArrayList<String>();
+            row.add("CFE Version");
+            row.add(VersionNumber.VERSION_NUMBER);
+            validationCohortInfo.addRow(row);
+            
+            row = new ArrayList<String>();
+            row.add("Time Cohort Generated");
+            row.add(new Date().toString());
+            validationCohortInfo.addRow(row);
+            
+            row = new ArrayList<String>();
+            row.add("constraint1");
             if (!this.phene1.isEmpty() && !this.value1.isEmpty()) {
-                row = new ArrayList<String>();
-                row.add(this.phene1);
-                row.add(this.operator1);
-                row.add(this.value1);
-                cohortConstraints.addRow(row);
+                row.add(this.phene1 + " " + this.operator1 + " " + this.value1);
             }
+            validationCohortInfo.addRow(row);
             
+            row = new ArrayList<String>();
+            row.add("constraint2");
             if (!this.phene2.isEmpty() && !this.value2.isEmpty()) {
-                row = new ArrayList<String>();
-                row.add(this.phene2);
-                row.add(this.operator2);
-                row.add(this.value2);
-                cohortConstraints.addRow(row);
-            }            
-            
-            if (!this.phene3.isEmpty() && !this.value3.isEmpty()) {
-                row = new ArrayList<String>();
-                row.add(this.phene3);
-                row.add(this.operator3);
-                row.add(this.value3);
-                cohortConstraints.addRow(row);
+                row.add(this.phene2 + " " + this.operator2 + " " + this.value2);
             }
+            validationCohortInfo.addRow(row);            
+
+            row = new ArrayList<String>();
+            row.add("constraint3");
+            if (!this.phene3.isEmpty() && !this.value3.isEmpty()) {
+                row.add(this.phene3 + " " + this.operator3 + " " + this.value3);
+            }
+            validationCohortInfo.addRow(row);
             
-            cohortConstraints.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_CONSTRAINTS);
+            row = new ArrayList<String>();
+            row.add("% in validation cohort specified");
+            row.add(this.percentInValidationCohort);
+            validationCohortInfo.addRow(row);
+            
+            validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT_INFO);
             
             // Create (all) cohort data table
             CohortDataTable cohortDataDataTable = new CohortDataTable();

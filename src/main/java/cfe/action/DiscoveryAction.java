@@ -261,7 +261,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				//-------------------------------------------
 				// Create cohort and cohort CSV file
 				//-------------------------------------------
-				CohortTable cohort = cohortData.getCohort(pheneSelection, lowCutoff, highCutoff);
+				CohortTable cohort = cohortData.getDiscoveryCohort(pheneSelection, lowCutoff, highCutoff);
 				cohort.sort("Subject", "PheneVisit"); 
                 this.cohortGeneratedTime = new Date();
 				

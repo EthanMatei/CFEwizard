@@ -306,39 +306,39 @@ public class DataTable {
         });	    
 	}
 
-	   public void sortWithBlanksLast(String[] sortColumns) {
-	        Map<String, Integer> indexMap = new HashMap<String,Integer>();
-	        for (String sortColumn: sortColumns) {
-	            int index = this.getColumnIndex(sortColumn);
-	            indexMap.put(sortColumn, index);
-	        }
-	        
-	        Collections.sort(this.data, new Comparator<ArrayList<String>>() {
-	            @Override
-	            public int compare(ArrayList<String> row1, ArrayList<String> row2) {
-	                int compare = 0;
-	                for (String sortColumn: sortColumns) {
-	                    int index = indexMap.get(sortColumn);
-	                    String string1 = row1.get(index);
-	                    String string2 = row2.get(index);
-	                    if (string1.isEmpty() && !string2.isEmpty()) {
-	                        compare = 1;
-	                    }
-	                    else if (!string1.isEmpty() && string2.isEmpty()) {
-	                        compare = -1;
-	                    }
-	                    else {
-	                        compare = row1.get(index).compareTo(row2.get(index));
-	                    }
-	                    
-	                    if (compare != 0) break;
+	public void sortWithBlanksLast(String[] sortColumns) {
+	    Map<String, Integer> indexMap = new HashMap<String,Integer>();
+	    for (String sortColumn: sortColumns) {
+	        int index = this.getColumnIndex(sortColumn);
+	        indexMap.put(sortColumn, index);
+	    }
+
+	    Collections.sort(this.data, new Comparator<ArrayList<String>>() {
+	        @Override
+	        public int compare(ArrayList<String> row1, ArrayList<String> row2) {
+	            int compare = 0;
+	            for (String sortColumn: sortColumns) {
+	                int index = indexMap.get(sortColumn);
+	                String string1 = row1.get(index);
+	                String string2 = row2.get(index);
+	                if (string1.isEmpty() && !string2.isEmpty()) {
+	                    compare = 1;
+	                }
+	                else if (!string1.isEmpty() && string2.isEmpty()) {
+	                    compare = -1;
+	                }
+	                else {
+	                    compare = row1.get(index).compareTo(row2.get(index));
 	                }
 
-	                return compare;
+	                if (compare != 0) break;
 	            }
-	        });     
-	    }
-	   
+
+	            return compare;
+	        }
+	    });     
+	}
+
 	/**
 	 * Merges data tables based on key. Key columns are renamed to be prefixed with the table name.
 	 * @param mergeTable
@@ -588,6 +588,30 @@ public class DataTable {
         return letters;	    
 	}
 	
+	/**
+	 * Gets a data table that has only the specified columns.
+	 * @param columns
+	 * @return
+	 */
+	public DataTable filter(String key, List<String> columns) throws Exception {
+	    DataTable dataTable = new DataTable(key);
+	    
+	    for (String column: columns) {
+	        int columnIndex = this.getColumnIndex(column);
+	        if (columnIndex == -1) {
+	            throw new Exception("Column \"" + column + "\", used for filtering a data table, does not exits.");
+	        }
+	        dataTable.addColumn(column, "");
+	    }
+	    
+	    ArrayList<String> row = new ArrayList<String>();
+	    for (int i = 0; i < this.getNumberOfRows(); i++) {
+	        row = this.filterRow(i, columns);
+	        dataTable.addRow(row);
+	    }
+	    return dataTable;
+	}
+	
 	public int getNumberOfRows() {
 		return this.data.size();
 	}
@@ -654,6 +678,33 @@ public class DataTable {
         return row;
     }
 
+
+    /**
+     * Get the specified row with only the specified columns.
+     * 
+     * @param index
+     * @param columns
+     * @return
+     * @throws Exception
+     */
+    public ArrayList<String> filterRow(int index, List<String> columns) throws Exception {
+
+        if (index < 0 || index >= this.getNumberOfRows()) {
+            throw new Exception("Row index value " + index + " for filtering row is out of bounds.");
+        }
+        
+        ArrayList<String> row = this.data.get(index);
+        ArrayList<String> filteredRow = new ArrayList<String>();
+        
+        // Transfer column values to filtered row in the order specified. 
+        for (String column: columns) {
+            int columnIndex = this.getColumnIndex(column);
+            filteredRow.add(row.get(columnIndex));
+        }
+        
+        return filteredRow;
+    }
+    
     /**
      * Gets a map from column name to column value for the specified row.
      * 

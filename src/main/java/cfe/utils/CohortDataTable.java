@@ -236,6 +236,8 @@ public class CohortDataTable extends DataTable {
     }
     
 	/**
+	 * Gets the Discovery cohort.
+	 * 
 	 * Create 4 columns: Subject, PheneVisit, DiscoveryCohort, Date
 	 * Sort by Subject, and then PheneVisit
 	 * 
@@ -245,7 +247,7 @@ public class CohortDataTable extends DataTable {
 	 * @param high
 	 * @param phene
 	 */
-	public CohortTable getCohort(String phene, int lowCutoff, int highCutoff) throws Exception {
+	public CohortTable getDiscoveryCohort(String phene, int lowCutoff, int highCutoff) throws Exception {
 		// Get the subject column index
 	   	int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
 	    if (subjectIndex == -1) {
@@ -375,14 +377,10 @@ public class CohortDataTable extends DataTable {
 	*/
 	
     public void enhance(String phene, int lowCutoff, int highCutoff) {
-        int pheneIndex = this.getColumnIndex(phene);
-        
         int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         
         this.insertColumn("Cohort", 1, "");
         
-        // Re-calculate phene index
-        pheneIndex = this.getColumnIndex(phene);
         int cohortIndex = this.getColumnIndex("Cohort");
         
         TreeSet<String> cohortSubjects = this.getCohortSubjects(phene, lowCutoff, highCutoff);
@@ -391,6 +389,26 @@ public class CohortDataTable extends DataTable {
             if (cohortSubjects.contains(dataRow.get(subjectIndex))) {
                 dataRow.set(cohortIndex, "discovery");
             }
+        }
+        
+        // Add and set "Visit Number" column
+        int visitNumberIndex = 2;
+        this.insertColumn("Visit Number", visitNumberIndex, "");
+        String[] visitNumberSortColumns = {"Subject", "Visit Date"};
+        this.sort(visitNumberSortColumns);
+        
+        int visitDateIndex = this.getColumnIndex("Visit Date");
+        String lastSubject = "";
+        int visit = 0;
+        for (ArrayList<String> row: this.data) {
+            String subject = row.get(subjectIndex);
+            if (subject.equals(lastSubject)) {
+                visit++;
+            } else {
+                visit = 1;
+                lastSubject = subject;
+            }
+            row.set(visitNumberIndex, visit + "");
         }
         
         String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};

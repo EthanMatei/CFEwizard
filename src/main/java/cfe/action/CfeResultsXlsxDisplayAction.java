@@ -100,7 +100,7 @@ public class CfeResultsXlsxDisplayAction extends BaseAction implements SessionAw
     		//}
 
    			String fileSuffix = ".xlsx";
-    		fileName = "discovery-results" + fileSuffix;
+    		fileName = "cfe-results" + fileSuffix;
     		reportName = fileName;
     		fileContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     	}

@@ -243,21 +243,36 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             validationCohortInfo.addRow(row);
             
             row = new ArrayList<String>();
-            row.add("constraint1");
+            row.add("Phene");
+            row.add(this.discoveryPhene);
+            validationCohortInfo.addRow(row);
+            
+            row = new ArrayList<String>();
+            row.add("Low Cutoff");
+            row.add(this.discoveryLowCutoff + "");
+            validationCohortInfo.addRow(row);
+            
+            row = new ArrayList<String>();
+            row.add("High Cutoff");
+            row.add(this.discoveryHighCutoff + "");
+            validationCohortInfo.addRow(row);
+            
+            row = new ArrayList<String>();
+            row.add("Constraint 1");
             if (!this.phene1.isEmpty() && !this.value1.isEmpty()) {
                 row.add(this.phene1 + " " + this.operator1 + " " + this.value1);
             }
             validationCohortInfo.addRow(row);
             
             row = new ArrayList<String>();
-            row.add("constraint2");
+            row.add("Constraint 2");
             if (!this.phene2.isEmpty() && !this.value2.isEmpty()) {
                 row.add(this.phene2 + " " + this.operator2 + " " + this.value2);
             }
             validationCohortInfo.addRow(row);            
 
             row = new ArrayList<String>();
-            row.add("constraint3");
+            row.add("Constraint 3");
             if (!this.phene3.isEmpty() && !this.value3.isEmpty()) {
                 row.add(this.phene3 + " " + this.operator3 + " " + this.value3);
             }

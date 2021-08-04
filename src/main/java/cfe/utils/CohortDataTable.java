@@ -143,8 +143,8 @@ public class CohortDataTable extends DataTable {
 	        String subject = row.get(subjectIndex);
 	        if (pheneValueString != null) {
 	            pheneValueString = pheneValueString.trim();
-	            if (pheneValueString.matches("\\d+")) {
-	                int pheneValue = Integer.parseInt(pheneValueString);
+                if (pheneValueString.matches("\\d+") || pheneValueString.matches("\\d+\\.\\d*")) {
+	                double pheneValue = Double.parseDouble(pheneValueString);
 
 	                if (pheneValue <= lowCutoff) {
 	                    lowScoreSubjects.add(subject);
@@ -285,8 +285,8 @@ public class CohortDataTable extends DataTable {
 			if (cohortSubjects.contains(subject) && pheneValueString != null) {
 				pheneValueString = pheneValueString.trim();
 				// If the phene value is an integer
-				if (pheneValueString.matches("\\d+")) {
-					int pheneValue = Integer.parseInt(pheneValueString);
+                if (pheneValueString.matches("\\d+") || pheneValueString.matches("\\d+\\.\\d*")) {
+					double pheneValue = Double.parseDouble(pheneValueString);
 					
 					if (pheneValue <= lowCutoff) {
 						lowVisits++;
@@ -330,8 +330,8 @@ public class CohortDataTable extends DataTable {
 				String pheneValueString = cohortDataRow.get(pheneIndex);
 				pheneValueString = pheneValueString.trim();
 				
-			  	if (pheneValueString.matches("-?\\d+")) {
-		            int pheneValue = Integer.parseInt(pheneValueString);
+                if (pheneValueString.matches("\\d+") || pheneValueString.matches("\\d+\\.\\d*")) {
+		            double pheneValue = Double.parseDouble(pheneValueString);
 		        
 	        	    if (pheneValue <= lowCutoff) {
 	        	        cohortRow.add("1");

@@ -6,9 +6,9 @@ import java.util.Map;
 public class PheneCondition {
     private String phene;
     private String operator;
-    private int value;
+    private double value;
     
-    public PheneCondition(String phene, String operator, int value) {
+    public PheneCondition(String phene, String operator, double value) {
         this.phene = phene;
         this.operator = operator;
         this.value = value;

@@ -144,24 +144,24 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             cohortData.initializeToWorkbookSheet(sheet);
             cohortData.setKey("Subject Identifiers.PheneVisit");
 
-            int value;
+            double value;
             PheneCondition pheneCondition;
             List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
 
             if (phene1 != null && !phene1.isEmpty() && value1 != null && !value1.isEmpty()) {
-                value = Integer.parseInt(value1);
+                value = Double.parseDouble(value1);
                 pheneCondition = new PheneCondition(phene1, operator1, value);
                 pheneConditions.add(pheneCondition);
             }
 
             if (phene2 != null && !phene2.isEmpty() && value2 != null && !value2.isEmpty()) {
-                value = Integer.parseInt(value2);
+                value = Double.parseDouble(value2);
                 pheneCondition = new PheneCondition(phene2, operator2, value);
                 pheneConditions.add(pheneCondition);
             }
 
             if (phene3 != null && !phene3.isEmpty() && value3 != null && !value3.isEmpty()) {
-                value = Integer.parseInt(value3);
+                value = Double.parseDouble(value3);
                 pheneCondition = new PheneCondition(phene3, operator3, value);
                 pheneConditions.add(pheneCondition);
             }

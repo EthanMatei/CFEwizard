@@ -218,19 +218,19 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				Table chips              = db.getTable(this.microarrayTable);
 
 				CohortDataTable subjectIdentifiersData = new CohortDataTable();
-				subjectIdentifiersData.initialize(subjectIdentifiers);
+				subjectIdentifiersData.initializeToAccessTable(subjectIdentifiers);
 
 				CohortDataTable demographicsData = new CohortDataTable();
-				demographicsData.initialize(demographics);
+				demographicsData.initializeToAccessTable(demographics);
 
 				CohortDataTable diagnosisData = new CohortDataTable();
-				diagnosisData.initialize(diagnosis);
+				diagnosisData.initializeToAccessTable(diagnosis);
 
 				CohortDataTable pheneDataData = new CohortDataTable(this.pheneTable);
-				pheneDataData.initialize(pheneData);
+				pheneDataData.initializeToAccessTable(pheneData);
 
 				CohortDataTable chipsData = new CohortDataTable();
-				chipsData.initialize(chips);
+				chipsData.initializeToAccessTable(chips);
 
 				CohortDataTable cohortData = subjectIdentifiersData.merge(demographicsData);
 				
@@ -396,7 +396,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
                 ProbesetMappingParser dbParser = new ProbesetMappingParser(this.probesetMappingDb.getAbsolutePath());
                 Table table = dbParser.getMappingTable();
-                probesetMapping.initialize(table);
+                probesetMapping.initializeToAccessTable(table);
                 
                 //---------------------------------------------
                 // Process diagnosis code

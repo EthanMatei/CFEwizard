@@ -53,7 +53,7 @@ public class CohortDataTable extends DataTable {
         this.pheneTable = pheneTable;
     }
     
-	public void initialize(Table table) throws IOException {
+	public void initializeToAccessTable(Table table) throws IOException {
 
 		// Reset key, because sometimes PheneVisit is misspelled.
 		for (Column col: table.getColumns()) {
@@ -64,7 +64,7 @@ public class CohortDataTable extends DataTable {
 			}
 		}
 		
-		super.initialize(table);
+		super.initializeToAccessTable(table);
 		
 		// Now, after table has been initialized, make sure key and column name are "PheneVisit"
 		this.key = "PheneVisit";
@@ -129,7 +129,7 @@ public class CohortDataTable extends DataTable {
 		return merge;
 	}
 
-	public TreeSet<String> getCohortSubjects(String phene, int lowCutoff, int highCutoff) {
+	public TreeSet<String> getDiscoveryCohortSubjects(String phene, int lowCutoff, int highCutoff) {
         
 	    int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         int pheneIndex   = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
@@ -176,7 +176,7 @@ public class CohortDataTable extends DataTable {
      * @return
      */
     public TreeSet<String> getValidationAndTestingCohortSubjects(String phene, int lowCutoff, int highCutoff,
-            List<PheneCondition> pheneConditions) {
+            List<PheneCondition> pheneConditions) throws Exception {
         
         log.info("Cohort Data size: " + this.data.size());
         log.info("Phene: " + phene + ", low cutoff: " + lowCutoff + ", high cutoff: " + highCutoff);
@@ -232,6 +232,21 @@ public class CohortDataTable extends DataTable {
         cohortSubjects.retainAll(pheneConditionsSubjects); // Intersection of subjects with high but not low visits
                                                            // with subjects that meet all phene conditions
         log.info("Validation and Testing subjects - phase 3: " + cohortSubjects.size());
+        
+        int cohortIndex = this.getColumnIndex("Cohort");
+        if (cohortIndex == -1) {
+            throw new Exception("Could not find \"Cohort\" column in cohort data table.");
+        }
+        
+        // Add validation cohort columns
+        // NOTE: this probably needs to be moved to a new method. At this point, we don't
+        // know which subjects are in the Validation cohort and which are in the Testing
+        // cohort, so these columns cannot be set
+        // OR this method could be changed to calculate that also.
+        this.insertColumn("Validation", cohortIndex + 1, "");
+        this.insertColumn("ValCategory", cohortIndex + 2, "");
+        this.insertColumn("ValidationCohort", cohortIndex + 3, "");
+        
         return cohortSubjects;
     }
     
@@ -273,7 +288,7 @@ public class CohortDataTable extends DataTable {
 
 
 		
-		TreeSet<String> cohortSubjects = this.getCohortSubjects(phene, lowCutoff, highCutoff);
+		TreeSet<String> cohortSubjects = this.getDiscoveryCohortSubjects(phene, lowCutoff, highCutoff);
 	    
 	    //---------------------------------------------------------------------------
 	    // Calculate the number of low and high visits for subjects in the cohort
@@ -383,7 +398,7 @@ public class CohortDataTable extends DataTable {
         
         int cohortIndex = this.getColumnIndex("Cohort");
         
-        TreeSet<String> cohortSubjects = this.getCohortSubjects(phene, lowCutoff, highCutoff);
+        TreeSet<String> cohortSubjects = this.getDiscoveryCohortSubjects(phene, lowCutoff, highCutoff);
 
         for (ArrayList<String> dataRow: this.data) {
             if (cohortSubjects.contains(dataRow.get(subjectIndex))) {
@@ -392,12 +407,11 @@ public class CohortDataTable extends DataTable {
         }
         
         // Add and set "Visit Number" column
-        int visitNumberIndex = 2;
+        int visitNumberIndex = 1;
         this.insertColumn("Visit Number", visitNumberIndex, "");
         String[] visitNumberSortColumns = {"Subject", "Visit Date"};
         this.sort(visitNumberSortColumns);
         
-        int visitDateIndex = this.getColumnIndex("Visit Date");
         String lastSubject = "";
         int visit = 0;
         for (ArrayList<String> row: this.data) {

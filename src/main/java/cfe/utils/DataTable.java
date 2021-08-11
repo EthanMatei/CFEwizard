@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +137,7 @@ public class DataTable {
 	 * @param table
 	 * @throws IOException
 	 */
-	public void initialize(Table table) throws IOException {
+	public void initializeToAccessTable(Table table) throws IOException {
 		this.name = table.getName();
 
 		int columnIndex = 0;
@@ -162,6 +165,9 @@ public class DataTable {
 				if (obj != null) { 
 				    type = obj.getClass().getName();
 				    value = obj.toString();
+				    if (StringUtil.isMdyDate(value)) {
+				        value = StringUtil.mdyDateToTimestampDate(value);
+				    }
 					if (key != null && column.equals(key)) {
 						keyValue = value;
 					}
@@ -184,8 +190,8 @@ public class DataTable {
 	 */
 	public void insertColumn(String name, int position, String initialValue) {
 	    this.columns.add(position, name);
-	    for (ArrayList<String> row: this.data) {
-	    	row.add(position, initialValue);
+	    for (int i = 0; i < this.getNumberOfRows(); i++) {
+	        this.data.get(i).add(position, initialValue);
 	    }
 	}
 
@@ -257,7 +263,7 @@ public class DataTable {
         Collections.sort(this.data, new Comparator<ArrayList<String>>() {
 	            @Override
 	            public int compare(ArrayList<String> row1, ArrayList<String> row2) {
-	                return row1.get(index).compareTo(row2.get(index));
+	                return StringUtil.compareTo(row1.get(index), row2.get(index));
 	            }
 	        });
 	}
@@ -270,9 +276,9 @@ public class DataTable {
         Collections.sort(this.data, new Comparator<ArrayList<String>>() {
 	            @Override
 	            public int compare(ArrayList<String> row1, ArrayList<String> row2) {
-	            	int compare = row1.get(index1).compareTo(row2.get(index1));
+	            	int compare = StringUtil.compareTo(row1.get(index1), row2.get(index1));
 	            	if (compare == 0) {
-	            		compare = row1.get(index2).compareTo(row2.get(index2));
+	            		compare = StringUtil.compareTo(row1.get(index2), row2.get(index2));
 	            	}
 	                return compare;
 	            }
@@ -297,7 +303,7 @@ public class DataTable {
                 int compare = 0;
                 for (String sortColumn: sortColumns) {
                     int index = indexMap.get(sortColumn);
-                    compare = row1.get(index).compareTo(row2.get(index));
+                    compare = StringUtil.compareTo(row1.get(index), row2.get(index));
                     if (compare != 0) break;
                 }
 
@@ -328,7 +334,7 @@ public class DataTable {
 	                    compare = -1;
 	                }
 	                else {
-	                    compare = row1.get(index).compareTo(row2.get(index));
+	                    compare = StringUtil.compareTo(row1.get(index), row2.get(index));
 	                }
 
 	                if (compare != 0) break;
@@ -518,6 +524,23 @@ public class DataTable {
                     		//.getFormat("m/d/yy h:mm"));  
             		xlsxRow.getCell(i).setCellStyle(cellStyle);
             	}
+                else if (StringUtil.isMdyDate(value)) {
+                    // m/d/yy date format
+                    SimpleDateFormat inputDateFormat = new SimpleDateFormat("M/d/yy");
+                    
+                    try {
+                        Date date = inputDateFormat.parse( value );
+                        xlsxRow.createCell(i).setCellValue(date);
+                    }
+                    catch (ParseException exception) {
+                        xlsxRow.createCell(i).setCellValue(value);
+                    }
+
+                    CellStyle cellStyle = workbook.createCellStyle();  
+                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy")); 
+                            //.getFormat("m/d/yy h:mm"));  
+                    xlsxRow.getCell(i).setCellStyle(cellStyle);
+                }            	
             	else {
                     xlsxRow.createCell(i).setCellValue(value);
             	}

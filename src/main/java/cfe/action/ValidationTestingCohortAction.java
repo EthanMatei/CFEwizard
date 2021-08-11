@@ -139,7 +139,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             this.discoveryResults = CfeResultsService.get(discoveryId);
 
             XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
-            XSSFSheet sheet = workbook.getSheet("cohort data");
+            XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
             CohortDataTable cohortData = new CohortDataTable();
             cohortData.initializeToWorkbookSheet(sheet);
             cohortData.setKey("Subject Identifiers.PheneVisit");
@@ -205,17 +205,18 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             discoveryCohortInfo.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO));
             discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
 
-            // Create (all) cohort data table
-            CohortDataTable cohortDataDataTable = new CohortDataTable();
-            cohortDataDataTable.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.COHORT_DATA));
-            cohortDataDataTable.addCohort("validation", validationSubjects);
-            cohortDataDataTable.addCohort("testing", testingSubjects);
+            // Modify (all) cohort data table
+            //CohortDataTable cohortDataDataTable = new CohortDataTable();
+            //cohortData.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.COHORT_DATA));
+            cohortData.addCohort("validation", validationSubjects);
+            cohortData.addCohort("testing", testingSubjects);
             String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
-            cohortDataDataTable.sortWithBlanksLast(sortColumns);            
+            cohortData.sortWithBlanksLast(sortColumns);            
             
             // Create validation cohort data table
             ArrayList<String> columns = new ArrayList<String>();
             columns.add("Subject");
+            columns.add("Visit Number");
             columns.add("Subject Identifiers.PheneVisit");
             columns.add("AffyVisit");
             columns.add("Visit Date");
@@ -224,11 +225,15 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             columns.add("Race/Ethnicity");
             columns.add("DxCode");
             columns.add(this.discoveryPhene);
-                        
-            DataTable validationCohort = cohortDataDataTable.filter("Subject Identifiers.PheneVisit", columns);
+            columns.add("Validation");
+            columns.add("ValCategory");
+            columns.add("ValidationCohort");
 
-            String[] validationSortColumns = {"Subject", "Visit Date"};
-            validationCohort.sortWithBlanksLast(validationSortColumns);  
+                        
+            DataTable validationCohort = cohortData.filter("Subject Identifiers.PheneVisit", columns);
+
+            String[] validationSortColumns = {"Subject", "Visit Number"};
+            validationCohort.sort(validationSortColumns);  
             
             //validationCohort.addColumn("Subject",  "");
             //for (String subject: validationSubjects) {
@@ -309,7 +314,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             
             validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT_INFO);
             
-            cohortDataDataTable.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
+            cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
 
             CfeResults cfeResults = new CfeResults();
 

@@ -512,7 +512,7 @@ public class DataTable {
             		LocalDateTime dateTime = LocalDateTime.parse(value);
             		xlsxRow.createCell(i).setCellValue(dateTime);
                     CellStyle cellStyle = workbook.createCellStyle();  
-                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yy")); 
+                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy")); 
                     		//.getFormat("m/d/yy h:mm"));  
             		xlsxRow.getCell(i).setCellStyle(cellStyle);
             	}
@@ -520,7 +520,7 @@ public class DataTable {
             		LocalDateTime dateTime = LocalDateTime.parse(value);
             		xlsxRow.createCell(i).setCellValue(dateTime);
                     CellStyle cellStyle = workbook.createCellStyle();  
-                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yy HH:mm:ss")); 
+                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy HH:mm:ss")); 
                     		//.getFormat("m/d/yy h:mm"));  
             		xlsxRow.getCell(i).setCellStyle(cellStyle);
             	}

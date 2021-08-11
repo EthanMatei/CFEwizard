@@ -5,9 +5,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -42,6 +44,8 @@ public class CohortDataTable extends DataTable {
 	
 	private static final Log log = LogFactory.getLog(CohortDataTable.class);
 	
+	public static final Long RANDOM_SEED = 10972359723095792L;
+	   
 	private String pheneTable; 
 	
 	public CohortDataTable() {
@@ -175,8 +179,8 @@ public class CohortDataTable extends DataTable {
      * @param pheneConditions
      * @return
      */
-    public TreeSet<String> getValidationAndTestingCohortSubjects(String phene, int lowCutoff, int highCutoff,
-            List<PheneCondition> pheneConditions) throws Exception {
+    public TreeSet<String> setValidationAndTestingCohorts(String phene, double lowCutoff, double highCutoff,
+            List<PheneCondition> pheneConditions, double percentInValidation) throws Exception {
         
         log.info("Cohort Data size: " + this.data.size());
         log.info("Phene: " + phene + ", low cutoff: " + lowCutoff + ", high cutoff: " + highCutoff);
@@ -209,7 +213,7 @@ public class CohortDataTable extends DataTable {
             
             if (pheneValueString != null) {
                 pheneValueString = pheneValueString.trim();
-                if (pheneValueString.matches("\\d+") || pheneValueString.matches("\\d+\\.\\d*")) {
+                if (StringUtil.isFloat(pheneValueString)) {
                     double pheneValue = Double.parseDouble(pheneValueString);
 
                     if (pheneValue <= lowCutoff) {
@@ -222,6 +226,9 @@ public class CohortDataTable extends DataTable {
                 }
             }
         }
+        
+        TreeSet<String> discoverySubjects = lowScoreSubjects;
+        discoverySubjects.retainAll(highScoreSubjects);  
 
         // Set cohort subjects to high score subject, who do NOT have a low score, and who
         // meet all the additional phene conditions (if any)
@@ -243,11 +250,92 @@ public class CohortDataTable extends DataTable {
         // know which subjects are in the Validation cohort and which are in the Testing
         // cohort, so these columns cannot be set
         // OR this method could be changed to calculate that also.
+        // OR, we could start with all in, and then randomly select 
         this.insertColumn("Validation", cohortIndex + 1, "");
         this.insertColumn("ValCategory", cohortIndex + 2, "");
         this.insertColumn("ValidationCohort", cohortIndex + 3, "");
+        this.insertColumn("TestingCohort", cohortIndex + 4, "");
         
-        return cohortSubjects;
+        subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
+        pheneIndex   = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
+        int validationIndex       = this.getColumnIndex("Validation");
+        int valCategoryIndex      = this.getColumnIndex("ValCategory");
+        int validationCohortIndex = this.getColumnIndex("ValidationCohort");
+        int testingCohortIndex    = this.getColumnIndex("TestingCohort");
+        
+        for (ArrayList<String> row : this.data) {
+            String subject = row.get(subjectIndex);
+            String pheneValueString = row.get(pheneIndex);
+            Double pheneValue = null;
+            if (StringUtil.isFloat(pheneValueString)) {
+                pheneValue = Double.parseDouble(pheneValueString);
+            }
+            
+            if (discoverySubjects.contains(subject)) {
+                if (pheneValue != null && pheneValue <= lowCutoff) {
+                    row.set(validationIndex, "Low Validation");  
+                    row.set(valCategoryIndex, "Low");
+                    row.set(validationCohortIndex, "1");
+                    row.set(testingCohortIndex, "0");
+                }
+                else if (pheneValue != null && pheneValue >= highCutoff && !pheneConditionsSubjects.contains(subject)) {
+                    row.set(validationIndex, "High Validation");
+                    row.set(valCategoryIndex, "High");
+                    row.set(validationCohortIndex, "1");
+                    row.set(testingCohortIndex, "0");
+                }
+                else {
+                    row.set(validationIndex, "nothing");
+                    row.set(valCategoryIndex, "nothing");
+                    row.set(validationCohortIndex,  "0");
+                    row.set(testingCohortIndex, "0");
+                }
+            }
+            else if (cohortSubjects.contains(subject)) {
+                row.set(validationIndex, "Clinically Severe");
+                row.set(valCategoryIndex, "Clinical");
+                row.set(validationCohortIndex,  "1");
+                row.set(testingCohortIndex, "0");
+            }
+            else {
+                row.set(validationIndex, "nothing");
+                row.set(valCategoryIndex, "nothing");
+                row.set(validationCohortIndex, "0");
+                row.set(testingCohortIndex, "0");
+            }
+        }
+        
+        List<String> subjects = new ArrayList<String>();
+        subjects.addAll(cohortSubjects);
+
+        TreeSet<String> validationSubjects = new TreeSet();
+        TreeSet<String> testingSubjects    = new TreeSet();
+        
+        Random rand = new Random(RANDOM_SEED);
+        Collections.shuffle(subjects, rand);
+        int count = subjects.size();
+
+        for (int i = 0; i < count; i++) {
+            double percent = (i + 1.0) / count;
+
+
+            if (percent <= percentInValidation) {
+                validationSubjects.add(subjects.get(i));
+            }
+            else {
+                testingSubjects.add(subjects.get(i));
+            }
+        }
+        
+        for (ArrayList<String> row : this.data) {
+            String subject = row.get(subjectIndex);
+
+            if (testingSubjects.contains(subject)) {
+                row.set(validationCohortIndex, "0");
+                row.set(testingCohortIndex, "1");
+            }
+        }
+        return testingSubjects;
     }
     
 	/**

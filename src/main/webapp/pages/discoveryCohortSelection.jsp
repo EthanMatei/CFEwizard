@@ -19,7 +19,7 @@
 Select a Discovery Cohort:
 </p>
 
-<s:form action="DiscoveryCalculate" theme="simple">
+<s:form action="DiscoveryScoringSpecification" theme="simple">
 <table class="dataTable">
     <tr> 
         <th>ID</th>

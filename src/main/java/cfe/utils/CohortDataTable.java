@@ -204,8 +204,6 @@ public class CohortDataTable extends DataTable {
             String pheneValueString = row.get(pheneIndex);
             String subject = row.get(subjectIndex);
             
-            log.info("    " + subject + ": " + pheneValueString);
-            
             // If the subject meets the additional phene conditions
             if (PheneCondition.isTrue(pheneConditions, rowMap)) {
                 pheneConditionsSubjects.add(subject);
@@ -233,12 +231,9 @@ public class CohortDataTable extends DataTable {
         // Set cohort subjects to high score subject, who do NOT have a low score, and who
         // meet all the additional phene conditions (if any)
         TreeSet<String> cohortSubjects = highScoreSubjects;
-        log.info("Validation and Testing subjects - phase 1: " + cohortSubjects.size());
         cohortSubjects.removeAll(lowScoreSubjects);
-        log.info("Validation and Testing subjects - phase 2: " + cohortSubjects.size());
         cohortSubjects.retainAll(pheneConditionsSubjects); // Intersection of subjects with high but not low visits
                                                            // with subjects that meet all phene conditions
-        log.info("Validation and Testing subjects - phase 3: " + cohortSubjects.size());
         
         int cohortIndex = this.getColumnIndex("Cohort");
         if (cohortIndex == -1) {

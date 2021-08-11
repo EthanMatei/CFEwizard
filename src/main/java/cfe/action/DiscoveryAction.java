@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 
@@ -125,7 +127,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private Date scoresGeneratedTime;
 	
 	private List<CfeResults> discoveryCohortResultsList;
-	private int discoveryId;
+	private Long discoveryId;
 	
 	private String errorMessage;
 	
@@ -287,25 +289,19 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				
 				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
 				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
-				
-				
+                    
 				File cohortXlsxTempFile = File.createTempFile("cohort-", ".xlsx");
 				out = new FileOutputStream(cohortXlsxTempFile);
 				cohortWorkbook.write(out);
 				out.close();
 				this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
 
-				// Save the discovery cohort results in the CFE database
+	                
+		        // Save the discovery cohort results in the CFE database
                 CfeResults cfeResults = new CfeResults(cohortWorkbook, CfeResultsType.DISCOVERY_COHORT,
                         this.cohortGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
                 CfeResultsService.save(cfeResults);
-                
-                //----------------------------------------------------
-				// Get diagnosis codes needed for calculation
-				//----------------------------------------------------
-				PheneVisitParser pheneVisitParser = new PheneVisitParser();
-				diagnosisCodes = pheneVisitParser.getDiagnosisCodes(this.discoveryDbTempFileName);
 			} catch (Exception exception) {
 				result = ERROR;
 				log.error("*** ERROR: " + exception.getMessage());
@@ -332,6 +328,49 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	                CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT);
 	    }
 	    
+	    return result;
+	}
+	
+	public String discoveryScoringSpecification() throws Exception {
+	    String result = SUCCESS;
+	    
+	    try {
+	        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+	        CfeResults results = CfeResultsService.get(this.discoveryId);
+	        XSSFWorkbook workbook = results.getResultsSpreadsheet();
+	        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+	    
+	        DataTable diagnosisData = new DataTable("DxCode");
+	        diagnosisData.initializeToWorkbookSheet(sheet);
+	        
+	        diagnosisCodes = new HashMap<String,String>();
+
+	        for (int i = 0; i < diagnosisData.getNumberOfRows(); i++) {
+	            String code    = diagnosisData.getValue(i, "DxCode");
+	            String example = diagnosisData.getValue(i, "Primary DIGS DX").trim();
+	            
+	            String examples = "";
+	            if (diagnosisCodes.containsKey(code)) {
+	                examples = diagnosisCodes.get(code);
+	            }
+
+	            if (examples.isEmpty()) {
+	                examples = example;
+	            }
+	            else {
+	                if (!examples.contains(example)) {
+	                    examples += "; " + example;
+	                }
+	            }
+	        
+	            this.diagnosisCodes.put(code, examples);
+	        }
+	    }
+	    catch (Exception exception) {
+	        this.errorMessage = exception.getLocalizedMessage();
+	        result = ERROR;
+	    }
+        
 	    return result;
 	}
 	
@@ -1054,11 +1093,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         this.discoveryCohortResultsList = discoveryCohortResultsList;
     }
 
-    public int getDiscoveryId() {
+    public Long getDiscoveryId() {
         return discoveryId;
     }
 
-    public void setDiscoveryId(int discoveryId) {
+    public void setDiscoveryId(Long discoveryId) {
         this.discoveryId = discoveryId;
     }
 

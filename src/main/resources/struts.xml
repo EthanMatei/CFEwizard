@@ -151,7 +151,17 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-			
+
+		<action name="DiscoveryScoringSpecification" class="cfe.action.DiscoveryAction" method="discoveryScoringSpecification">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/discoveryScoringSpecification.jsp</result>
+			<result name="error">pages/discoveryScoringSpecification.jsp</result>	
+			<result name="input">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+						
 		<!--  Upload specified CSV file, upload probeset to Genecards symbol mapping DB,
 		      get Diagnostic input, and calculate values -->
 		<action name="DiscoveryCalculate" class="cfe.action.DiscoveryAction" method="calculate">

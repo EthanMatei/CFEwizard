@@ -108,6 +108,10 @@
     </div> <%-- container --%>
     
         
+    <div>
+    discovery ID: <s:property value="discoveryId"/>
+    </div>
+    
     <h3>Diagnosis</h3>
 
     <table class="dataTable" style="margin-top: 1em;">

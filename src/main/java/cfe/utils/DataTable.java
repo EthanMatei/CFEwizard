@@ -392,7 +392,11 @@ public class DataTable {
 		return merge;
 	}
 
-	
+	/**
+	 * Converts the data table to a CSV string.
+	 * 
+	 * @return string representation of the data table in CSV format.
+	 */
 	public String toCsv() {
 		StringBuffer csv = new StringBuffer();
 		//csv.append(this.key);
@@ -667,7 +671,29 @@ public class DataTable {
 	    
 	    return value;
 	}
+	
+    public String getValue(int rowNum, String columnName) throws Exception {
+        String value = null;
+        
+        if (rowNum < 0 || rowNum >= this.getNumberOfRows()) {
+            throw new Exception("Attempt to retrieve value from data table for out of bound row \"" + rowNum + "\".");
+        }
+        
+        ArrayList<String> row = this.data.get(rowNum);
+        
+        int columnIndex = this.getColumnIndex(columnName);
+        
+        if (columnIndex < 0) {
+            throw new Exception("Attempt to retrieve value from data table for non-existent column \"" + columnName + "\".");
+        }
 
+        if (row != null && !row.isEmpty()) {
+            value = row.get(columnIndex);
+        }
+        
+        return value;
+    }
+    
 	public void setValue(String keyValue, String columnName, String value) throws Exception {
 	    ArrayList<String> row = this.getRow(keyValue);
 

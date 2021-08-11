@@ -334,43 +334,68 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	public String discoveryScoringSpecification() throws Exception {
 	    String result = SUCCESS;
 	    
-	    try {
-	        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-	        CfeResults results = CfeResultsService.get(this.discoveryId);
-	        XSSFWorkbook workbook = results.getResultsSpreadsheet();
-	        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
-	    
-	        DataTable diagnosisData = new DataTable("DxCode");
-	        diagnosisData.initializeToWorkbookSheet(sheet);
-	        
-	        diagnosisCodes = new HashMap<String,String>();
+        if (!Authorization.isAdmin(webSession)) {
+            result = LOGIN;
+        }	  
+        else {
+            try {
+                ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
-	        for (int i = 0; i < diagnosisData.getNumberOfRows(); i++) {
-	            String code    = diagnosisData.getValue(i, "DxCode");
-	            String example = diagnosisData.getValue(i, "Primary DIGS DX").trim();
-	            
-	            String examples = "";
-	            if (diagnosisCodes.containsKey(code)) {
-	                examples = diagnosisCodes.get(code);
-	            }
+                CfeResults results = CfeResultsService.get(this.discoveryId);
+                XSSFWorkbook workbook = results.getResultsSpreadsheet();
+                
+                this.lowCutoff      = results.getLowCutoff();
+                this.highCutoff     = results.getHighCutoff();
+                this.pheneSelection = results.getPhene(); 
+                
+                // Get the phene table from the cohort info sheet
+                XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
+                DataTable cohortInfo = new DataTable("attribute");
+                cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+                ArrayList<String> row = cohortInfo.getRow("Phene Table");
+                if (row == null) {
+                    throw new Exception("Unable to find Phene Table row in sheet \""
+                            + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                }
+                this.pheneTable = row.get(1);
+                if (this.pheneTable == null || this.pheneTable.isEmpty()) {
+                    throw new Exception("Could not get phene table information from workbook sheet \""
+                            + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                }
+                
+                XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                DataTable diagnosisData = new DataTable("DxCode");
+                diagnosisData.initializeToWorkbookSheet(sheet);
 
-	            if (examples.isEmpty()) {
-	                examples = example;
-	            }
-	            else {
-	                if (!examples.contains(example)) {
-	                    examples += "; " + example;
-	                }
-	            }
-	        
-	            this.diagnosisCodes.put(code, examples);
-	        }
-	    }
-	    catch (Exception exception) {
-	        this.errorMessage = exception.getLocalizedMessage();
-	        result = ERROR;
-	    }
-        
+                diagnosisCodes = new HashMap<String,String>();
+
+                for (int i = 0; i < diagnosisData.getNumberOfRows(); i++) {
+                    String code    = diagnosisData.getValue(i, "DxCode");
+                    String example = diagnosisData.getValue(i, "Primary DIGS DX").trim();
+
+                    String examples = "";
+                    if (diagnosisCodes.containsKey(code)) {
+                        examples = diagnosisCodes.get(code);
+                    }
+
+                    if (examples.isEmpty()) {
+                        examples = example;
+                    }
+                    else {
+                        if (!examples.contains(example)) {
+                            examples += "; " + example;
+                        }
+                    }
+
+                    this.diagnosisCodes.put(code, examples);
+                }
+            }
+            catch (Exception exception) {
+                this.errorMessage = exception.getLocalizedMessage();
+                result = ERROR;
+            }
+        }
+
 	    return result;
 	}
 	
@@ -417,7 +442,30 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
 
                 this.tempDir = System.getProperty("java.io.tmpdir");
+                
+                //--------------------------------------------------------------
+                // Get the discovery cohort file
+                //--------------------------------------------------------------
+                CfeResults results = CfeResultsService.get(this.discoveryId);
+                XSSFWorkbook workbook = results.getResultsSpreadsheet();
+                XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT);
+                DataTable discoveryCohort = new DataTable("PheneVisit");
+                discoveryCohort.initializeToWorkbookSheet(sheet);
+                String cohortCsv = discoveryCohort.toCsv();
 
+                File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
+                FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
+                this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
+                
+                //--------------------------------------------------------------------------------
+                // Get the phene database file
+                //--------------------------------------------------------------------------------
+                File discoveryDbTmp = File.createTempFile("discovery-db-", ".accdb");
+                if (discoveryDbTmp != null) {
+                    FileUtils.copyFile(this.discoveryDb, discoveryDbTmp);
+                }
+                this.discoveryDbTempFileName = discoveryDbTmp.getAbsolutePath();
+                
                 //------------------------------------------------------
                 // Get the gene expression CSV file
                 //------------------------------------------------------

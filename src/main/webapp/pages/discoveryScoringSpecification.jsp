@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Discovery Cohort</title>
+    <title>CFE Wizard - Discovery Scoring Specification</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
@@ -56,9 +56,6 @@
 </table>
 
 
-
-
-
 <%--
 <s:property value="cohortCsv" />
 --%>
@@ -88,16 +85,26 @@
     <s:hidden name="pheneTable" />
     <s:hidden name="microarrayTable" />
     <s:hidden name="cohortGeneratedTime" />
+    <s:hidden name="discoveryId" />
+    
+    <s:property value="lowCutoff"/>
+    <s:property value="highCutoff"/>
     
     <div id="container">
         <div id="input-files" style="float: left;">
-            <div>    
+                    
+            <p>
+            Phene Database: <s:file name="discoveryDb"/>
+            </p>
+            
+            <p>    
             Gene Expression CSV File: <s:file name="discoveryCsv"/>
-            </div>
+            </p>
     
-            <div>
+            <p>
             Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
-            </div>
+            </p>
+
         </div> <%-- input-file --%>
     
         <div style="margin-left: 4em; font-weight: bold; float: left;">
@@ -107,10 +114,7 @@
         <div style="clear: both;"></div>
     </div> <%-- container --%>
     
-        
-    <div>
-    discovery ID: <s:property value="discoveryId"/>
-    </div>
+
     
     <h3>Diagnosis</h3>
 

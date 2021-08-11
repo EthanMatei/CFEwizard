@@ -20,6 +20,14 @@ Select a Discovery Cohort:
 </p>
 
 <s:form action="DiscoveryScoringSpecification" theme="simple">
+
+<s:hidden name="lowCutoff" />
+<s:hidden name="highCutoff" />
+<s:hidden name="pheneSelection" />
+<s:hidden name="pheneTable" />
+<s:hidden name="microarrayTable" />
+
+    
 <table class="dataTable">
     <tr> 
         <th>ID</th>

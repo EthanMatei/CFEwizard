@@ -352,6 +352,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 DataTable cohortInfo = new DataTable("attribute");
                 cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+                
                 ArrayList<String> row = cohortInfo.getRow("Phene Table");
                 if (row == null) {
                     throw new Exception("Unable to find Phene Table row in sheet \""
@@ -363,6 +364,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                             + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
                 }
                 
+                // Get "Microarray Table" (todo...)
+                
+                // Get diagnosis codes
                 XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 DataTable diagnosisData = new DataTable("DxCode");
                 diagnosisData.initializeToWorkbookSheet(sheet);

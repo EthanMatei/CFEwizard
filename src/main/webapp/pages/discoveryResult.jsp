@@ -29,7 +29,13 @@ Discovery Scoring Results:
 <s:if test="cfeResultsId != null">
     <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
         <s:param name="cfeResultsId" value="cfeResultsId" />
-        results.xlsx
+        <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
+                 alt="Discovery Scores" /> <br />
+            <s:property value="outputFileName"/>
+        </div>
     </s:a>
 </s:if>
 <s:else>

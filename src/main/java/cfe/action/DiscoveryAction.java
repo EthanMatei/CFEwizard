@@ -338,7 +338,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	    
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
-        }	  
+        }
+        else if (discoveryId == null) {
+            this.errorMessage = "No discovery cohort selected.";
+            result = ERROR;
+        }
         else {
             try {
                 ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
@@ -420,6 +424,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		}
+        else if (this.discoveryDb == null || this.discoveryDbFileName == null) {
+            this.errorMessage = "No Phene Visit database file was specified.";
+            result = ERROR;
+        }
+        else if (!this.discoveryDbFileName.endsWith(".accdb")) {
+            this.errorMessage = "Phene Visit database file \"" + discoveryDbFileName
+                    + "\" is not a \".accdb\" (MS Access) file.";
+            result = ERROR;
+        }		
 		else if (this.discoveryCsv == null || this.discoveryCsvFileName == null) {
 	        this.errorMessage = "No gene expression CSV file was specified.";
 	        result = ERROR;
@@ -429,7 +442,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	                + "\" is not a \".csv\" file.";
 	        result = ERROR;
 	    }
-	    else if (this.probesetMappingDb == null || this.probesetMappingDb == null) {
+	    else if (this.probesetMappingDb == null || this.probesetMappingDbFileName == null) {
 	        this.errorMessage = "No probeset to gene mapping database file was specified.";
 	        result = ERROR;
 	    }

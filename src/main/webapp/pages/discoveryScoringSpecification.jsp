@@ -19,9 +19,15 @@
     }
 </script>
 
-<h2>Discovery Cohort</h2>
+<h2>Discovery Scoring Specification</h2>
 
 <s:actionerror />
+
+<s:if test="errorMessage != null && errorMessage != ''">
+    <div class="cfeError">
+        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+    </div>
+</s:if>
 
 <table class="dataTable">
   <tr> <th>Data</th> <th>Inputs</th> <th>Stats</th> </tr>
@@ -34,7 +40,7 @@
                style="margin-top: 2px;"
                src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
                alt="Report" /> <br />
-          Cohort
+          Discovery&nbsp;Cohort
         </div>
       </s:a>
     </td>
@@ -65,13 +71,6 @@
 <h2>Discovery Processing</h2>
 
 
-<s:if test="!errorMessage.trim().isEmpty()">
-    <div class="cfeError">
-        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
-    </div>
-</s:if>
-
-
 <s:form theme="simple" action="DiscoveryCalculate" method="post" enctype="multipart/form-data">
  
     <s:hidden name="lowCutoff" />
@@ -86,9 +85,6 @@
     <s:hidden name="microarrayTable" />
     <s:hidden name="cohortGeneratedTime" />
     <s:hidden name="discoveryId" />
-    
-    <s:property value="lowCutoff"/>
-    <s:property value="highCutoff"/>
     
     <div id="container">
         <div id="input-files" style="float: left;">

@@ -23,31 +23,21 @@
     </div>
 </s:if>
 
-<s:if test="outputFile != null">
+
+<br/>
+Discovery Scoring Results:
+<s:if test="cfeResultsId != null">
     <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
         <s:param name="cfeResultsId" value="cfeResultsId" />
         results.xlsx
     </s:a>
-    <%--
-    <s:a action="XlsxDisplay" title="Discovery Results">
-        <s:param name="spreadsheetFilePath" value="resultsXlsxFile" />
-        <div>
-            <img border="0"
-                 style="margin-top: 2px;"
-                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-                 alt="Discovery Results" /> <br />
-            <s:property value="outputFileName"/>
-
-        </div>
-    </s:a>
-    --%>
 </s:if>
 <s:else>
     <p>No results generated</p>
 </s:else>
     
 <br/>
-Script Output:
+Discovery R Script Output:
 
 
 <s:a action="TextFileDisplay" title="Discovery R script output file">

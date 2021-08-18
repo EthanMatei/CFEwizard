@@ -15,17 +15,20 @@
 <s:if test="errorMessage != null && errorMessage != ''">
     <div style="color: #CC0000; border: 1px solid #CC0000; padding: 7px;">
         ERROR: <s:property value="errorMessage" />
-        <%--
         <p>
         <s:if test="exceptionStack != ''">
             <s:property value="exceptionStack" />
         </s:if>
         </p>
-        --%>
     </div>
 </s:if>
 
 <s:if test="outputFile != null">
+    <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+        results.xlsx
+    </s:a>
+    <%--
     <s:a action="XlsxDisplay" title="Discovery Results">
         <s:param name="spreadsheetFilePath" value="resultsXlsxFile" />
         <div>
@@ -37,6 +40,7 @@
 
         </div>
     </s:a>
+    --%>
 </s:if>
 <s:else>
     <p>No results generated</p>

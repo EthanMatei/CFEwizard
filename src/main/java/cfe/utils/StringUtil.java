@@ -37,7 +37,7 @@ public class StringUtil {
 
     public static String mdyDateToTimestampDate(String value) {
         SimpleDateFormat inputDateFormat = new SimpleDateFormat("M/d/yy");
-        SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-dd-MM");
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         
         try {
             Date date = inputDateFormat.parse( value );
@@ -49,6 +49,19 @@ public class StringUtil {
         return value;
     }
     
+    public static String mdyDateToTimestamp(String value) {
+        SimpleDateFormat inputDateFormat = new SimpleDateFormat("M/d/yy");
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        
+        try {
+            Date date = inputDateFormat.parse( value );
+            value = outputDateFormat.format( date ); 
+        }
+        catch (ParseException exception) {
+            ;
+        }
+        return value;
+    }    
     
     public static String expandMdyDate(String value) {
         SimpleDateFormat inputDateFormat = new SimpleDateFormat("M/d/yy");

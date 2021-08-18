@@ -434,6 +434,10 @@ public class DataTable {
 	          	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
 	        		csv.append(value);
 	        	}
+	          	else if (StringUtil.isMdyDate(value)) {
+	          	    String timestamp = StringUtil.mdyDateToTimestamp(value);
+	          	    csv.append(timestamp);
+	          	}
 	        	else {
 	        	    csv.append("\"" + value + "\"");
 	        	}

@@ -748,4 +748,86 @@ public class CohortDataTable extends DataTable {
 	}
 	
 
+	/**
+	 * Gets the column names for the specified (originally loaded) table,
+	 * excluding the PheneVisit column. This method assumes that each
+	 * tables columns are stored sequentially and that the tables first
+	 * column is names <table-name>.PheneVisit.
+	 * 
+	 * @param tableName
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<String> getTableNonKeyColumns(String tableName) throws Exception {
+	    ArrayList<String> tableColumns = new ArrayList<String>();
+	    String tablePheneVisitColumn = tableName + ".PheneVisit";
+
+	    int startIndex = this.getColumnIndex(tablePheneVisitColumn);
+	    
+	    if (startIndex == -1) {
+	        throw new Exception("Could not find table \"" + tableName + "\" PheneVisit column\""
+	                + tablePheneVisitColumn + "\" in the cohort data table."
+	                );
+	    }
+
+	    startIndex += 1;
+
+	    for (int index = startIndex; index < this.columns.size(); index++) {
+	        String column = this.getColumnName(index);
+	        if (column.contains("PheneVisit")) {
+	            // If the next table has been encountered
+	            break;
+	        }
+	        else {
+	            tableColumns.add(column);
+	        }
+	    }
+	    return tableColumns;
+	}
+	
+	/**
+	 * TO BE COMPLETED - try to recreate generation of bigData table in the
+	 * access integration R script, so that the database does not need to be
+	 * re-uploaded for the discovery scoring phase.
+	 *
+	 * @return
+	 * @throws Exception
+	 */
+	public DataTable getBigData() throws Exception {
+	    DataTable bigData = new DataTable(null);
+	    
+	    String bigDataKey = "Subject Identifiers.PheneVisit";
+   
+	    ArrayList<String> phenes       = this.getPhenes();
+	    ArrayList<String> demographics = this.getTableNonKeyColumns("Demographics");
+	    ArrayList<String> diagnosis    = this.getTableNonKeyColumns("Diagnosis");
+	    ArrayList<String> subjectIdentifiers = this.getTableNonKeyColumns("Subject Identifiers");
+	       
+        ArrayList<String> columns = new ArrayList<String>();
+        
+	    columns.add(bigDataKey);
+	    columns.addAll(phenes);
+	    columns.addAll(demographics);
+	    columns.addAll(diagnosis);
+	    columns.addAll(subjectIdentifiers);
+	       
+	    log.info("**************** demographics columns: " + String.join(", ", demographics));
+	       
+	    log.info("**************** bigData columns: " + String.join(", ", columns));
+
+	    // Get only the columns needed from this cohort data table
+	    bigData = this.filter(bigDataKey, columns);
+	    
+	    // Rename the key column and key
+	    bigData.setColumnName(0, "PheneVisit");
+	    bigData.setKey("PheneVisit");
+	    
+	       
+        log.info("**************** bigData columns: " + String.join(", ", bigData.getColumnNames()));
+	    
+        //String[] sortColumns = {"Subject", "Visit Date", "Phene Visit"};
+        //bigData.sort(sortColumns);
+	    
+	    return bigData;
+	}
 }

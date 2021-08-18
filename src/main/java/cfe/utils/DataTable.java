@@ -807,6 +807,10 @@ public class DataTable {
         this.columns.set(index,  columnName);
     }
     
+    public List<String> getColumnNames() {
+        return this.columns;
+    }
+    
     public String getValue(int rowNumber, int columnNumber) {
         String value = null;
         ArrayList<String> row = this.data.get(rowNumber);

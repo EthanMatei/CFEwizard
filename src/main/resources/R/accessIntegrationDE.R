@@ -5,7 +5,7 @@
 # phene - phene to process
 # pheneTable - name of database table that contains the specified phene
 #-------------------------------------------------------------------------
-prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
+prepAccessData <- function(data, cohort, dxCode, phene, pheneTable, bigDataCsv) {
   
   # ORIG: tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers", cohortTbl)
   tblsNeeded <- c(pheneTable, "Demographics", "Diagnosis", "Subject Identifiers")
@@ -13,26 +13,35 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable) {
   #---------------------------------------------------------
   # Set bigData to have the PheneVisit as its first column
   #---------------------------------------------------------
-  tableName <- paste("`", tblsNeeded[1], "`", sep="")    # Name needs to be escaped in case it has special character, such as hyphen
-  bigData <- dbReadTable(data, tableName)$PheneVisit # Reads tables in database into a data frame
-  bigData <- data.frame(bigData, stringsAsFactors = TRUE)
-  colnames(bigData) <- "PheneVisit"
+  # OLD CODE:
+  #tableName <- paste("`", tblsNeeded[1], "`", sep="")    # Name needs to be escaped in case it has special character, such as hyphen
+  #bigData <- dbReadTable(data, tableName)$PheneVisit # Reads tables in database into a data frame
+  #bigData <- data.frame(bigData, stringsAsFactors = TRUE)
+  #colnames(bigData) <- "PheneVisit"
+  #
+  #for (i in tblsNeeded){
+  #  # collect all the tables you want and merge them together sequentially
+  #  
+  #  # New code
+  #  tableName = paste("`", i, "`", sep="")
+  #  tableData = dbReadTable(data, tableName)
+  #  
+  #  vars <- names(tableData)
+  #  tableData[vars] <- lapply(
+  #      tableData[vars],
+  #      function(x) replace(x,x %in% c("na","NA","", "<NA>", "Na", "n/a", "N/A"), NA)
+  #  )
+  #  
+  #  bigData <- merge(bigData, tableData, by="PheneVisit")
+  #}
   
-  for (i in tblsNeeded){
-    # collect all the tables you want and merge them together sequentially
-    
-    # New code
-    tableName = paste("`", i, "`", sep="")
-    tableData = dbReadTable(data, tableName)
-    
-    vars <- names(tableData)
-    tableData[vars] <- lapply(
-        tableData[vars],
-        function(x) replace(x,x %in% c("na","NA","", "<NA>", "Na", "n/a", "N/A"), NA)
-    )
-    
-    bigData <- merge(bigData, tableData, by="PheneVisit")
-  }
+  # NEW CODE:
+  bigData = read.csv(bigDataCsv, check.names=FALSE, na.strings=c("na","NA","", "<NA>", "Na", "n/a", "N/A"));
+  bigData <- data.frame(bigData, stringsAsFactors = TRUE, check.names=FALSE)
+  vars <- names(bigData)
+  
+  outputFile <- paste(tempDir, "/ai-bigData_", Sys.Date(),".csv", sep="")
+  write.csv(bigData, outputFile)
   
   # Merge the Cohort data
   cohortDataFrame = read.csv(cohort);

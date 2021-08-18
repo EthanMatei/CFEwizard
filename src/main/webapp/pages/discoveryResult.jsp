@@ -13,7 +13,7 @@
 <h2>Discovery Results</h2>
 
 <s:if test="errorMessage != null && errorMessage != ''">
-    <div style="color: #CC0000; border: 1px solid #CC0000; padding: 7px;">
+    <div class="cfeError">
         ERROR: <s:property value="errorMessage" />
         <p>
         <s:if test="exceptionStack != ''">

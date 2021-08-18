@@ -131,6 +131,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private Long cfeResultsId;
 	
+	private String bigDataTempFileName;
+	
 	private String errorMessage;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
@@ -426,30 +428,30 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		}
         else if (this.discoveryDb == null || this.discoveryDbFileName == null) {
             this.errorMessage = "No Phene Visit database file was specified.";
-            result = ERROR;
+            result = INPUT;
         }
         else if (!this.discoveryDbFileName.endsWith(".accdb")) {
             this.errorMessage = "Phene Visit database file \"" + discoveryDbFileName
                     + "\" is not a \".accdb\" (MS Access) file.";
-            result = ERROR;
+            result = INPUT;
         }		
 		else if (this.discoveryCsv == null || this.discoveryCsvFileName == null) {
 	        this.errorMessage = "No gene expression CSV file was specified.";
-	        result = ERROR;
+	        result = INPUT;
 	    }
 	    else if (!this.discoveryCsvFileName.endsWith(".csv")) {
 	        this.errorMessage = "Gene expression file \"" + discoveryCsvFileName
 	                + "\" is not a \".csv\" file.";
-	        result = ERROR;
+	        result = INPUT;
 	    }
 	    else if (this.probesetMappingDb == null || this.probesetMappingDbFileName == null) {
 	        this.errorMessage = "No probeset to gene mapping database file was specified.";
-	        result = ERROR;
+	        result = INPUT;
 	    }
 	    else if (!this.probesetMappingDbFileName.endsWith(".accdb")) {
 	        this.errorMessage = "Probeset to gene mapping database file \"" + probesetMappingDbFileName
 	                + "\" is not a \".accdb\" (MS Access) file.";
-	        result = ERROR;
+	        result = INPUT;
 	    }
 	    else {
             try {
@@ -467,6 +469,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //--------------------------------------------------------------
                 CfeResults results = CfeResultsService.get(this.discoveryId);
                 XSSFWorkbook workbook = results.getResultsSpreadsheet();
+                
                 XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT);
                 DataTable discoveryCohort = new DataTable("PheneVisit");
                 discoveryCohort.initializeToWorkbookSheet(sheet);
@@ -475,6 +478,23 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
                 FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
                 this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
+                
+                //----------------------------------------------------
+                // Get bigData
+                //----------------------------------------------------
+                CohortDataTable cohortData = new CohortDataTable(this.pheneTable);
+                sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                cohortData.initializeToWorkbookSheet(sheet);
+                
+                DataTable bigData = cohortData.getBigData();
+                
+                File bigDataTmp = File.createTempFile("bigData-", ".csv");
+                if (bigDataTmp != null) {
+                    FileUtils.writeStringToFile(bigDataTmp, bigData.toCsv(), "UTF-8");
+                } else {
+                    throw new Exception("Could not create bigData temporary file.");
+                }
+                this.bigDataTempFileName = bigDataTmp.getAbsolutePath();
                 
                 //--------------------------------------------------------------------------------
                 // Get the phene database file
@@ -516,7 +536,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //---------------------------------------
                 // Create R script command
                 //---------------------------------------
-                String[] rScriptCommand = new String[12];
+                String[] rScriptCommand = new String[13];
                 rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
                 rScriptCommand[1] = scriptFile;     // The R script to run
                 rScriptCommand[2] = scriptDir;
@@ -529,6 +549,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 rScriptCommand[9] = this.lowCutoff + "";
                 rScriptCommand[10] = this.highCutoff + "";
                 rScriptCommand[11] = this.tempDir;
+                rScriptCommand[12] = this.bigDataTempFileName;
 
                 // Log a version of the command used for debugging (OUT OF DATE - needs to be fixed or removed)
                 //String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 
@@ -592,8 +613,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //--------------------------------------------
                 // Create results workbook
                 //--------------------------------------------
-
-                log.info("********* STARTING TO CREATE DISCOVERY RESULTS WORKBOOK");
                 
                 CfeResults discoveryCohortResults = CfeResultsService.get(discoveryId);
                 XSSFWorkbook cohortWorkbook = discoveryCohortResults.getResultsSpreadsheet();
@@ -1205,6 +1224,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
     public void setCfeResultsId(Long cfeResultsId) {
         this.cfeResultsId = cfeResultsId;
+    }
+
+    public String getBigDataTempFileName() {
+        return bigDataTempFileName;
+    }
+
+    public void setBigDataTempFileName(String bigDataTempFileName) {
+        this.bigDataTempFileName = bigDataTempFileName;
     }
 
 }

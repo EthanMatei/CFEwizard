@@ -29,7 +29,7 @@ colnames(timing) <- timingColumns
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 10) {
+if (length(args) != 11) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to DEdiscovery script")
 }
@@ -44,6 +44,7 @@ pheneTable         <- args[7]
 lowCutoff          <- args[8]
 highCutoff         <- args[9]
 tempDir            <- args[10]
+bigDataCsv         <- args[11]
 
 print(pheneTable)
 
@@ -91,12 +92,22 @@ accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
 source(accessIntegrationScript)
 
 ##get processed access data
-accessIntegrationOutput <- prepAccessData(PheneData, cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable)
+accessIntegrationOutput <- prepAccessData(PheneData, cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv)
+
 
 PheneData <- accessIntegrationOutput[[1]]
 dxChoice <- accessIntegrationOutput[[2]]
 cohortChoice <- accessIntegrationOutput[[3]]
 rm(accessIntegrationOutput)
+
+outputFile <- paste(tempDir, "/ai-PheneData_", Sys.Date(),".csv", sep="")
+write.csv(PheneData, outputFile);
+
+outputFile <- paste(tempDir, "/ai-dxChoice_", Sys.Date(),".csv", sep="")
+write(dxChoice, outputFile);
+
+outputFile <- paste(tempDir, "/ai-cohortChoice_", Sys.Date(),".csv", sep="")
+write(cohortChoice, outputFile);
 
 # PHENE <- "SI"   # This is your dependent variable
 PHENE <- pheneSelection

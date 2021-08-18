@@ -170,12 +170,12 @@
 		<action name="DiscoveryCalculate" class="cfe.action.DiscoveryAction" method="calculate">
 		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/discoveryResult.jsp</result>
-			<result name="error" type="redirectAction">
+			<result name="input" type="redirectAction">
 			    <param name="actionName">DiscoveryScoringSpecification</param>	
 			    <param name="discoveryId">${discoveryId}</param>	
 			    <param name="errorMessage">${errorMessage}</param>
 			</result>
-			<result name="input">pages/error.jsp</result>
+	        <result name="error">pages/discoveryResult.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>

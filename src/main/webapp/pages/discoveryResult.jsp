@@ -33,7 +33,8 @@ Discovery Scoring Results:
             <img border="0"
                  style="margin-top: 2px;"
                  src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
-                 alt="Discovery Scores" /> <br />
+                 alt="Discovery Scores" />
+            <br />
             <s:property value="outputFileName"/>
         </div>
     </s:a>

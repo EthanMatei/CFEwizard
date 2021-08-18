@@ -35,11 +35,12 @@
     <td>
       <s:a action="XlsxDisplay" title="Cohort Spreadsheet">
         <s:param name="spreadsheetFilePath" value="cohortXlsxFile" />
-        <div>
+        <div style="text-align: center; margin-left: 1em; margin-right: 1em;">
           <img border="0"
                style="margin-top: 2px;"
                src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-               alt="Report" /> <br />
+               alt="Report" />
+          <br />
           Discovery&nbsp;Cohort
         </div>
       </s:a>

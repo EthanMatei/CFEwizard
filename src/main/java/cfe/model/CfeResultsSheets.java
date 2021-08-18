@@ -1,7 +1,8 @@
 package cfe.model;
 
 /**
- * Class that contains names of CFE Results Sheets for the results workbook
+ * Class that contains names of sheets for the CfeResults workbooks.
+ * 
  * @author Jim Mullen
  *
  */
@@ -11,6 +12,7 @@ public class CfeResultsSheets {
     public static final String DISCOVERY_COHORT_INFO  = "discovery cohort info";
     public static final String DISCOVERY_REPORT       = "discovery report";
     public static final String DISCOVERY_SCORES       = "discovery scores";
+    public static final String DISCOVERY_SCORES_INFO  = "discovery scores info";
     public static final String TESTING_COHORT         = "testing cohort";
     public static final String VALIDATION_COHORT      = "validation cohort";
     public static final String VALIDATION_COHORT_INFO = "validation cohort info";

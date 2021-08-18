@@ -602,9 +602,13 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                     outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
                 }
 
+                // Create "Discovery Report" data table
                 DataTable reportDataTable = new DataTable(null);
                 reportDataTable.initializeToCsv(reportFile);
 
+                // Create "Discovery Scores Info" data table
+                DataTable discoveryScoresInfoDataTable = this.createDiscoveryScoresInfoTable();
+                
                 // Create "Discovery Cohort" data table
                 DataTable cohortDataTable = new DataTable(null);
                 sheet = cohortWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT);
@@ -620,16 +624,16 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 sheet = cohortWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 discoveryCohortInfoDataTable.initializeToWorkbookSheet(sheet);
 
-                log.info("********************************* INFO TABLE CREATED");
                 
                 LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
 
-                resultsTables.put("output", outputDataTable);
-                resultsTables.put("report", reportDataTable);
-                resultsTables.put("cohort", cohortDataTable);
-                resultsTables.put("cohort data", cohortDataDataTable);
-                resultsTables.put("info", discoveryCohortInfoDataTable);
-
+                resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES, outputDataTable);
+                resultsTables.put(CfeResultsSheets.DISCOVERY_REPORT, reportDataTable);
+                resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES_INFO, discoveryScoresInfoDataTable);
+                resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT, cohortDataTable);
+                resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT_INFO, discoveryCohortInfoDataTable);
+                resultsTables.put(CfeResultsSheets.COHORT_DATA, cohortDataDataTable);
+                
                 XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
                 cohortDataDataTable.enhanceCohortDataSheet(resultsWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
 
@@ -673,19 +677,27 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		return result;
 	}
 	
-	public DataTable createResultsInfoTable()
+	public DataTable createDiscoveryScoresInfoTable()
 	{
-	    DataTable infoTable = this.createCohortInfoTable();
-	    
+        DataTable infoTable = new DataTable("attribute");
+        infoTable.insertColumn("attribute", 0, "");
+        infoTable.insertColumn("value",  1,  "");
+        
         ArrayList<String> row = new ArrayList<String>();
-        row.add("Diagnosis Code");
-        row.add(this.diagnosisCode);
+        row.add("CFE Version");
+        row.add(VersionNumber.VERSION_NUMBER);
         infoTable.addRow(row);
         
         row = new ArrayList<String>();
         row.add("Time Scores Generated");
         row.add(this.scoresGeneratedTime.toString());
         infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Diagnosis Code");
+        row.add(this.diagnosisCode);
+        infoTable.addRow(row);
+
         
 	    return infoTable;
 	}

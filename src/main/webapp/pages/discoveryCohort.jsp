@@ -27,15 +27,15 @@
   <tr> <th>Data</th> <th>Inputs</th> <th>Stats</th> </tr>
   <tr>
     <td>
-      <s:a action="XlsxDisplay" title="Cohort Spreadsheet">
-        <s:param name="spreadsheetFilePath" value="cohortXlsxFile" />
-        <div>
-          <img border="0"
-               style="margin-top: 2px;"
-               src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-               alt="Report" /> <br />
-          Cohort
-        </div>
+      <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+          <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+                 alt="Report" /> <br />
+            discovery-cohort.xlsx
+          </div>
       </s:a>
     </td>
     

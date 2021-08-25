@@ -249,20 +249,26 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				// How to add a column (name, position, value):
 				//cohortData.addColumnBefore("testColumn", 2, "123");
 				
-				this.cohortDataCsv = cohortData.toCsv();
+				// NO LONGER NEEDED ???
+				//this.cohortDataCsv = cohortData.toCsv();
 
+				// NO LONGER NEEDED ???
 				// Create an Xlsx (spreadsheet) version of the cohort data
-				File cohortDataXlsxTempFile = File.createTempFile("cohort-data-", ".xlsx");
-				FileOutputStream out = new FileOutputStream(cohortDataXlsxTempFile);
-				cohortData.toXlsx().write(out);
-				out.close();
-				this.cohortDataXlsxFile = cohortDataXlsxTempFile.getAbsolutePath();
+				//File cohortDataXlsxTempFile = File.createTempFile("cohort-data-", ".xlsx");
+				//FileOutputStream out = new FileOutputStream(cohortDataXlsxTempFile);
+				//cohortData.toXlsx().write(out);
+				//out.close();
+				//this.cohortDataXlsxFile = cohortDataXlsxTempFile.getAbsolutePath();
 
-				File cohortDataCsvTempFile = File.createTempFile("cohort-data-", ".csv");
-				FileUtils.writeStringToFile(cohortDataCsvTempFile, cohortDataCsv, "UTF-8");
-				this.cohortDataCsvFile = cohortDataCsvTempFile.getAbsolutePath();
+				//File cohortDataCsvTempFile = File.createTempFile("cohort-data-", ".csv");
+				//FileUtils.writeStringToFile(cohortDataCsvTempFile, cohortDataCsv, "UTF-8");
+				//this.cohortDataCsvFile = cohortDataCsvTempFile.getAbsolutePath();
 
 				db.close();
+				
+				// Delete the temporary database file
+				File file = new File(this.discoveryDbTempFileName);
+				file.delete();
 
 				//-------------------------------------------
 				// Create cohort and cohort CSV file
@@ -275,11 +281,12 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				this.lowVisits = cohort.getLowVisits();
 				this.highVisits = cohort.getHighVisits();
 				
-				String cohortCsv = cohort.toCsv();
-
-				File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
-				FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
-				this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
+				// NO LONGER NEEDED ???
+				// String cohortCsv = cohort.toCsv();
+                //
+				// File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
+				// FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
+				// this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
 
 				// Create an Xlsx (spreadsheet) version of the cohort data
 				ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
@@ -293,12 +300,13 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				
 				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
 				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
-                    
-				File cohortXlsxTempFile = File.createTempFile("cohort-", ".xlsx");
-				out = new FileOutputStream(cohortXlsxTempFile);
-				cohortWorkbook.write(out);
-				out.close();
-				this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
+                  
+				// NO LONGER NEEDED ???
+				//File cohortXlsxTempFile = File.createTempFile("cohort-", ".xlsx");
+				//out = new FileOutputStream(cohortXlsxTempFile);
+				//cohortWorkbook.write(out);
+				//out.close();
+				//this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
 
 	                
 		        // Save the discovery cohort results in the CFE database
@@ -306,6 +314,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                         this.cohortGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
                 CfeResultsService.save(cfeResults);
+                this.cfeResultsId = cfeResults.getCfeResultsId();
 			} catch (Exception exception) {
 				result = ERROR;
 				log.error("*** ERROR: " + exception.getMessage());

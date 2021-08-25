@@ -8,11 +8,13 @@ startTime <- Sys.time()
 # dplyr - tool for working with data frame like objects
 # gtools - various general R programming tools
 
-wants <- c("RJDBC", "plyr", "gtools", "dplyr")
+#wants <- c("RJDBC", "plyr", "gtools", "dplyr")
+wants <- c("plyr", "gtools", "dplyr")
+
 has   <- wants %in% rownames(installed.packages())
 if (any(!has)) install.packages(wants[!has])
 
-library(RJDBC)
+# library(RJDBC)
 library(gtools)
 library(plyr)
 library(dplyr)

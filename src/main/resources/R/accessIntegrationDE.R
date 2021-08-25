@@ -41,8 +41,9 @@ prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv) {
   #bigData <- data.frame(bigData, stringsAsFactors = TRUE, check.names=FALSE)
   vars <- names(bigData)
   
-  outputFile <- paste(tempDir, "/ai-bigData_", Sys.Date(),".csv", sep="")
-  write.csv(bigData, outputFile)
+  # FOR DEBUGGING:
+  #outputFile <- paste(tempDir, "/ai-bigData_", Sys.Date(),".csv", sep="")
+  #write.csv(bigData, outputFile)
   
   # Merge the Cohort data
   cohortDataFrame = read.csv(cohort);

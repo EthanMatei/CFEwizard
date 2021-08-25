@@ -37,7 +37,7 @@ public class CfeResults implements Serializable {
 	private String resultsType;
 	
 	/*
-	private String rScriptLog;
+	private String discoveryRScriptLog;
 	*/
 	private String phene;
 	private Integer lowCutoff;

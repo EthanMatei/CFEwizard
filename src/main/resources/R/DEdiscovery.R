@@ -103,14 +103,15 @@ dxChoice <- accessIntegrationOutput[[2]]
 cohortChoice <- accessIntegrationOutput[[3]]
 rm(accessIntegrationOutput)
 
-outputFile <- paste(tempDir, "/ai-PheneData_", Sys.Date(),".csv", sep="")
-write.csv(PheneData, outputFile);
-
-outputFile <- paste(tempDir, "/ai-dxChoice_", Sys.Date(),".csv", sep="")
-write(dxChoice, outputFile);
-
-outputFile <- paste(tempDir, "/ai-cohortChoice_", Sys.Date(),".csv", sep="")
-write(cohortChoice, outputFile);
+# FOR DEBUGGING:
+# outputFile <- paste(tempDir, "/ai-PheneData_", Sys.Date(),".csv", sep="")
+# write.csv(PheneData, outputFile);
+#
+# outputFile <- paste(tempDir, "/ai-dxChoice_", Sys.Date(),".csv", sep="")
+# write(dxChoice, outputFile);
+#
+# outputFile <- paste(tempDir, "/ai-cohortChoice_", Sys.Date(),".csv", sep="")
+# write(cohortChoice, outputFile);
 
 # PHENE <- "SI"   # This is your dependent variable
 PHENE <- pheneSelection

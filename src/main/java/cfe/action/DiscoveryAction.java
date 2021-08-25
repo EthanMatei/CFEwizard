@@ -90,9 +90,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private String reportFile;
 	private String timingFile;
 	
-	private String outputFileName;
-	private String reportFileName;
-	private String timingFileName;
+	// OBSOLETE ???
+	// private String outputFileName;
+	// private String reportFileName;
+	// private String timingFileName;
 	
 	private Set<String> pheneTables;
 	
@@ -615,9 +616,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                     }				
                 }
 
-                outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
-                reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
-                timingFileName = FilenameUtils.getBaseName(timingFile) + ".csv";
+                //outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
+                //reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
+                //timingFileName = FilenameUtils.getBaseName(timingFile) + ".csv";
 
                 //--------------------------------------------
                 // Create results workbook
@@ -704,6 +705,31 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 CfeResultsService.save(cfeResults);
                 this.cfeResultsId = cfeResults.getCfeResultsId();
                 log.info("**************** DISCOVERY CALCULATE - CFE RESULTS ID: " + cfeResultsId);
+                
+                //--------------------------------
+                // Clean up temporary files
+                //--------------------------------
+                File file;
+                
+                // R script input files
+                file = new File(this.cohortCsvFile);
+                file.delete();
+                
+                file = new File(this.discoveryCsvTempFileName);
+                file.delete();
+                
+                file = new File(this.bigDataTempFileName);
+                file.delete();
+                
+                // R script output files:
+                file = new File(outputFile);
+                file.delete();
+                
+                file = new File(reportFile);
+                file.delete();
+                
+                //file = new File(timingFile);
+                //file.delete();
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -995,22 +1021,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		this.reportFile = reportFile;
 	}
 
-	public String getOutputFileName() {
-		return outputFileName;
-	}
-
-	public void setOutputFileName(String outputFileName) {
-		this.outputFileName = outputFileName;
-	}
-
-	public String getReportFileName() {
-		return reportFileName;
-	}
-
-	public void setReportFileName(String reportFileName) {
-		this.reportFileName = reportFileName;
-	}
-
 	public Set<String> getPheneTables() {
 		return pheneTables;
 	}
@@ -1187,13 +1197,13 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         this.timingFile = timingFile;
     }
 
-    public String getTimingFileName() {
-        return timingFileName;
-    }
+    //public String getTimingFileName() {
+    //    return timingFileName;
+    //}
 
-    public void setTimingFileName(String timingFileName) {
-        this.timingFileName = timingFileName;
-    }
+    //public void setTimingFileName(String timingFileName) {
+    //    this.timingFileName = timingFileName;
+    //}
 
     public Date getScoresGeneratedTime() {
         return scoresGeneratedTime;

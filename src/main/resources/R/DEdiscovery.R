@@ -29,7 +29,7 @@ colnames(timing) <- timingColumns
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 11) {
+if (length(args) != 10) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to DEdiscovery script")
 }
@@ -37,14 +37,14 @@ if (length(args) != 11) {
 scriptDir          <- args[1]
 cohortCsvFile      <- args[2]
 diagnosisCodeParam <- args[3]
-dbFile             <- args[4]
-csvFile            <- args[5]
-pheneSelection     <- args[6]
-pheneTable         <- args[7]
-lowCutoff          <- args[8]
-highCutoff         <- args[9]
-tempDir            <- args[10]
-bigDataCsv         <- args[11]
+#dbFile             <- args[4]
+csvFile            <- args[4]
+pheneSelection     <- args[5]
+pheneTable         <- args[6]
+lowCutoff          <- args[7]
+highCutoff         <- args[8]
+tempDir            <- args[9]
+bigDataCsv         <- args[10]
 
 print(pheneTable)
 
@@ -56,7 +56,7 @@ addAsymmetry <- TRUE
 
 
 #get access database location
-accessDb <- dbFile
+# accessDb <- dbFile
 
 ##open connection with access database
 
@@ -76,23 +76,24 @@ jars = paste(
     sep=":"
 )
 
-driver <- JDBC(
-    "net.ucanaccess.jdbc.UcanaccessDriver",
-    jars,
-    identifier.quote="`"
-)
-dbUrl <- paste("jdbc:ucanaccess://", dbFile, sep="")
-PheneData <- dbConnect(driver, dbUrl)
+#driver <- JDBC(
+#    "net.ucanaccess.jdbc.UcanaccessDriver",
+#    jars,
+#    identifier.quote="`"
+#)
+#dbUrl <- paste("jdbc:ucanaccess://", dbFile, sep="")
+#PheneData <- dbConnect(driver, dbUrl)
 
 # List the tables in the database
-dbListTables(PheneData)
+#dbListTables(PheneData)
 
 # Get the access integration script
 accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
 source(accessIntegrationScript)
 
 ##get processed access data
-accessIntegrationOutput <- prepAccessData(PheneData, cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv)
+accessIntegrationOutput <- prepAccessData(cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv)
+# accessIntegrationOutput <- prepAccessData(PheneData, cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv)
 
 
 PheneData <- accessIntegrationOutput[[1]]

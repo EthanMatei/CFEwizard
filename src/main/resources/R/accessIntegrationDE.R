@@ -5,10 +5,11 @@
 # phene - phene to process
 # pheneTable - name of database table that contains the specified phene
 #-------------------------------------------------------------------------
-prepAccessData <- function(data, cohort, dxCode, phene, pheneTable, bigDataCsv) {
-  
+### prepAccessData <- function(data, cohort, dxCode, phene, pheneTable, bigDataCsv) {
+prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv) {
+    
   # ORIG: tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers", cohortTbl)
-  tblsNeeded <- c(pheneTable, "Demographics", "Diagnosis", "Subject Identifiers")
+  # tblsNeeded <- c(pheneTable, "Demographics", "Diagnosis", "Subject Identifiers")
   
   #---------------------------------------------------------
   # Set bigData to have the PheneVisit as its first column
@@ -36,8 +37,8 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable, bigDataCsv) 
   #}
   
   # NEW CODE:
-  bigData = read.csv(bigDataCsv, check.names=FALSE, na.strings=c("na","NA","", "<NA>", "Na", "n/a", "N/A"));
-  bigData <- data.frame(bigData, stringsAsFactors = TRUE, check.names=FALSE)
+  bigData = read.csv(bigDataCsv, check.names=FALSE, stringsAsFactors = TRUE, na.strings=c("na","NA","", "<NA>", "Na", "n/a", "N/A"));
+  #bigData <- data.frame(bigData, stringsAsFactors = TRUE, check.names=FALSE)
   vars <- names(bigData)
   
   outputFile <- paste(tempDir, "/ai-bigData_", Sys.Date(),".csv", sep="")
@@ -88,7 +89,7 @@ prepAccessData <- function(data, cohort, dxCode, phene, pheneTable, bigDataCsv) 
   ##clear up ram
   gc()
   
-  dbDisconnect(data)  # close the database connection
+  # dbDisconnect(data)  # close the database connection
   
   # OLD: output <- list(bigData, dxCode, cohortColumns[cohortPreference])
   output <- list(bigData, dxCode, cohort)  

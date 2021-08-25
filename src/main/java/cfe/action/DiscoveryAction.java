@@ -426,15 +426,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		}
-        else if (this.discoveryDb == null || this.discoveryDbFileName == null) {
-            this.errorMessage = "No Phene Visit database file was specified.";
-            result = INPUT;
-        }
-        else if (!this.discoveryDbFileName.endsWith(".accdb")) {
-            this.errorMessage = "Phene Visit database file \"" + discoveryDbFileName
-                    + "\" is not a \".accdb\" (MS Access) file.";
-            result = INPUT;
-        }		
+        //else if (this.discoveryDb == null || this.discoveryDbFileName == null) {
+        //    this.errorMessage = "No Phene Visit database file was specified.";
+        //    result = INPUT;
+        //}
+        //else if (!this.discoveryDbFileName.endsWith(".accdb")) {
+        //    this.errorMessage = "Phene Visit database file \"" + discoveryDbFileName
+        //            + "\" is not a \".accdb\" (MS Access) file.";
+        //    result = INPUT;
+        //}		
 		else if (this.discoveryCsv == null || this.discoveryCsvFileName == null) {
 	        this.errorMessage = "No gene expression CSV file was specified.";
 	        result = INPUT;
@@ -499,11 +499,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //--------------------------------------------------------------------------------
                 // Get the phene database file
                 //--------------------------------------------------------------------------------
-                File discoveryDbTmp = File.createTempFile("discovery-db-", ".accdb");
-                if (discoveryDbTmp != null) {
-                    FileUtils.copyFile(this.discoveryDb, discoveryDbTmp);
-                }
-                this.discoveryDbTempFileName = discoveryDbTmp.getAbsolutePath();
+                //File discoveryDbTmp = File.createTempFile("discovery-db-", ".accdb");
+                //if (discoveryDbTmp != null) {
+                //    FileUtils.copyFile(this.discoveryDb, discoveryDbTmp);
+                //}
+                //this.discoveryDbTempFileName = discoveryDbTmp.getAbsolutePath();
                 
                 //------------------------------------------------------
                 // Get the gene expression CSV file
@@ -536,20 +536,20 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //---------------------------------------
                 // Create R script command
                 //---------------------------------------
-                String[] rScriptCommand = new String[13];
+                String[] rScriptCommand = new String[12];
                 rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
                 rScriptCommand[1] = scriptFile;     // The R script to run
                 rScriptCommand[2] = scriptDir;
                 rScriptCommand[3] = this.cohortCsvFile;   // Change - name of cohort CSV File
                 rScriptCommand[4] = this.diagnosisCode;
-                rScriptCommand[5] = this.discoveryDbTempFileName;
-                rScriptCommand[6] = this.discoveryCsvTempFileName;
-                rScriptCommand[7] = this.pheneSelection;
-                rScriptCommand[8] = this.pheneTable;
-                rScriptCommand[9] = this.lowCutoff + "";
-                rScriptCommand[10] = this.highCutoff + "";
-                rScriptCommand[11] = this.tempDir;
-                rScriptCommand[12] = this.bigDataTempFileName;
+                //rScriptCommand[5] = this.discoveryDbTempFileName;
+                rScriptCommand[5] = this.discoveryCsvTempFileName;
+                rScriptCommand[6] = this.pheneSelection;
+                rScriptCommand[7] = this.pheneTable;
+                rScriptCommand[8] = this.lowCutoff + "";
+                rScriptCommand[9] = this.highCutoff + "";
+                rScriptCommand[10] = this.tempDir;
+                rScriptCommand[11] = this.bigDataTempFileName;
 
                 // Log a version of the command used for debugging (OUT OF DATE - needs to be fixed or removed)
                 //String logRScriptCommand = WebAppProperties.getRscriptPath() + " " + scriptFile 

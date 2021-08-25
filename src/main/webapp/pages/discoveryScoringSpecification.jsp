@@ -89,10 +89,12 @@
     
     <div id="container">
         <div id="input-files" style="float: left;">
-                    
+                   
+            <%-- 
             <p>
             Phene Database: <s:file name="discoveryDb"/>
             </p>
+            --%>
             
             <p>    
             Gene Expression CSV File: <s:file name="discoveryCsv"/>

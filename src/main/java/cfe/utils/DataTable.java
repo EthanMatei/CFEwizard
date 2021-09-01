@@ -795,8 +795,9 @@ public class DataTable {
 
     public Map<String, String> getRowMap(int rowNum) throws Exception {
 
-        if (this.key == null || this.key.equals("")) {
-            throw new Exception("Attempt to retrieve row from data table without a key.");
+        if (rowNum < 0 || rowNum >= this.getNumberOfRows()) {
+            throw new Exception("Row index " + rowNum + " is out of bounds for data table with "
+                    + this.getNumberOfRows() + " rows.");
         }
         
         Map<String,String> rowMap = new HashMap<String,String>();

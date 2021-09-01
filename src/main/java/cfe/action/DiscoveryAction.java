@@ -627,8 +627,12 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 }
                 outputDataTable.initializeToCsv(outputFile);
                 // Add Genecards Symbols
+                outputDataTable.addColumn("DE Percentile", "");
+                outputDataTable.addColumn("DE Score", "");
                 outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
                 outputDataTable.setColumnName(0, ProbesetMappingParser.PROBE_SET_ID_COLUMN);
+                
+                this.deScoring(outputDataTable);  // calculate percentiles and scores
                 
                 for (int rowIndex = 0; rowIndex < outputDataTable.getNumberOfRows(); rowIndex++) {
                     String keyValue = outputDataTable.getValue(rowIndex, 0);
@@ -734,6 +738,90 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         }
 
 		return result;
+	}
+	
+	public void deScoring(DataTable scoring) throws Exception {
+	    Double negativeMin = null;
+	    Double negativeMax = null;
+	    Double positiveMin = null;
+	    Double positiveMax = null;
+	    
+	    // Get positive and negative min and max
+	    for (int rowNum = 0; rowNum < scoring.getNumberOfRows(); rowNum++) {
+	        Map<String, String> rowMap = scoring.getRowMap(rowNum);
+	        String score = rowMap.get("DEscores");
+	        try {
+	            double rawScore = Double.parseDouble(score);
+	            if (rawScore >= 0.0) {
+                    if (positiveMin == null) {
+                        positiveMin = rawScore;
+                        positiveMax = rawScore;
+                    }
+                    else {
+                        if (rawScore < positiveMin) {
+                            positiveMin = rawScore;
+                        }
+                        else if (rawScore > positiveMax) {
+                            positiveMax = rawScore;
+                        }
+                    }	                
+	            }
+	            else {
+	                if (negativeMin == null) {
+	                    negativeMin = rawScore;
+	                    negativeMax = rawScore;
+	                }
+	                else {
+                        if (rawScore > negativeMin) {
+                            negativeMin = rawScore;
+                        }
+                        else if (rawScore < negativeMax) {
+                            negativeMax = rawScore;
+                        }
+	                }
+	            }
+	        }
+	        catch (NumberFormatException exception) {
+	            ;  // no score - skip
+	        }
+	    }
+	    
+	    for (int rowNum = 0; rowNum < scoring.getNumberOfRows(); rowNum++) {
+	        Map<String, String> rowMap = scoring.getRowMap(rowNum);
+	        String score = rowMap.get("DEscores");
+	        try {
+	            double rawScore = Double.parseDouble(score);
+	            double dePercentile;
+	            if (rawScore >= 0.0) {
+	                dePercentile = (rawScore - positiveMin) / (positiveMax - positiveMin);
+	            }
+	            else {
+	                dePercentile = (Math.abs(rawScore) - Math.abs(negativeMin)) 
+	                        / (Math.abs(negativeMax) - Math.abs(negativeMin));
+	            }
+                scoring.setValue(rowNum, "DE Percentile", dePercentile + "");
+                
+                int deScore = 0;
+                
+                if (dePercentile < 0.333333333333) {
+                    deScore = 0;
+                }
+                else if (dePercentile < 0.50) {
+                    deScore = 1;
+                }
+                else if (dePercentile < 0.80) {
+                    deScore = 2;
+                }
+                else {
+                    deScore = 4;
+                }
+                
+                scoring.setValue(rowNum, "DE Score", deScore + "");
+	        }
+	        catch (NumberFormatException exception) {
+	            ;  // no score - skip
+	        }
+	    }
 	}
 	
 	public DataTable createDiscoveryScoresInfoTable() throws Exception {

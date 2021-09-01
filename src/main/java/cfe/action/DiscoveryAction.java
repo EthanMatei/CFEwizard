@@ -91,11 +91,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private String reportFile;
 	private String timingFile;
 	
-	// OBSOLETE ???
-	// private String outputFileName;
-	// private String reportFileName;
-	// private String timingFileName;
-	
 	private Set<String> pheneTables;
 	
 	private String pheneTable;
@@ -617,10 +612,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                     }				
                 }
 
-                //outputFileName = FilenameUtils.getBaseName(outputFile) + ".xlsx";
-                //reportFileName = FilenameUtils.getBaseName(reportFile) + ".xlsx";
-                //timingFileName = FilenameUtils.getBaseName(timingFile) + ".csv";
-
                 //--------------------------------------------
                 // Create results workbook
                 //--------------------------------------------
@@ -680,7 +671,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES, outputDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_REPORT, reportDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES_INFO, discoveryScoresInfoDataTable);
-                //resultsTables.put(CfeResultsSheets.DISCOVERY_R_SCRIPT_LOG, discoveryRScriptLogDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT, cohortDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT_INFO, discoveryCohortInfoDataTable);
                 resultsTables.put(CfeResultsSheets.COHORT_DATA, cohortDataDataTable);
@@ -730,8 +720,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 file = new File(reportFile);
                 file.delete();
                 
-                //file = new File(timingFile);
-                //file.delete();
+                file = new File(timingFile);
+                file.delete();
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -746,8 +736,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		return result;
 	}
 	
-	public DataTable createDiscoveryScoresInfoTable()
-	{
+	public DataTable createDiscoveryScoresInfoTable() throws Exception {
         DataTable infoTable = new DataTable("attribute");
         infoTable.insertColumn("attribute", 0, "");
         infoTable.insertColumn("value",  1,  "");
@@ -766,6 +755,29 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         row.add("Diagnosis Code");
         row.add(this.diagnosisCode);
         infoTable.addRow(row);
+        
+        if (this.timingFile != null && !this.timingFile.isEmpty()) {
+            DataTable timing = new DataTable(null);
+            timing.initializeToCsv(timingFile);
+            
+            // Add blank spacing row
+            row = new ArrayList<String>();
+            row.add("");
+            row.add("");
+            infoTable.addRow(row);
+            
+            for (int i = 1; i < timing.getNumberOfRows(); i++) {
+                ArrayList<String> time = timing.getRow(i);
+                row = new ArrayList<String>();
+                if (time.get(1).equals("total")) {
+                    row.add("total time (minutes)");
+                } else {
+                    row.add("time for " + time.get(1));
+                }
+                row.add(time.get(2));
+                infoTable.addRow(row);
+            }
+        }
 
         
 	    return infoTable;
@@ -1198,14 +1210,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
     public void setTimingFile(String timingFile) {
         this.timingFile = timingFile;
     }
-
-    //public String getTimingFileName() {
-    //    return timingFileName;
-    //}
-
-    //public void setTimingFileName(String timingFileName) {
-    //    this.timingFileName = timingFileName;
-    //}
 
     public Date getScoresGeneratedTime() {
         return scoresGeneratedTime;

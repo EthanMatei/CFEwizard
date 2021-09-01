@@ -67,22 +67,6 @@ Discovery R Script Output:
 </s:a>
 
 
-<br/>
-Timing:
-
-<s:if test="timingFile != null">
-    <s:a action="CsvDisplay" title="Discovery Timing">
-        <s:param name="csvFilePath" value="timingFile" />
-        <div>
-        <img border="0"
-         style="margin-top: 2px;"
-         src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-         alt="Discovery Timing" /> <br />
-        <s:property value="timingFileName"/>
-        </div>
-    </s:a>
-</s:if>
-
 <hr style="margin-top: 12px;"/>
 
 <h3>Inputs</h3>

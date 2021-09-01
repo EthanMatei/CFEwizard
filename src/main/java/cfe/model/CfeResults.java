@@ -36,9 +36,7 @@ public class CfeResults implements Serializable {
 	
 	private String resultsType;
 	
-	/*
 	private String discoveryRScriptLog;
-	*/
 	private String phene;
 	private Integer lowCutoff;
 	private Integer highCutoff;
@@ -117,7 +115,7 @@ public class CfeResults implements Serializable {
 
     
     @Lob
-    @Column(name="results", nullable=false, columnDefinition="mediumblob")
+    @Column(name="results", nullable=true, columnDefinition="mediumblob")
     public byte[] getResults() {
         return results;
     }
@@ -146,15 +144,15 @@ public class CfeResults implements Serializable {
         this.results = bytes;
     }
     
-    /*
-    public String getRScriptLog() {
-        return rScriptLog;
+    @Lob
+    @Column(nullable=true, columnDefinition="mediumtext")
+    public String getDiscoveryRScriptLog() {
+        return this.discoveryRScriptLog;
     }
 
-    public void setRScriptLog(String rScriptLog) {
-        this.rScriptLog = rScriptLog;
+    public void setDiscoveryRScriptLog(String discoveryRScriptLog) {
+        this.discoveryRScriptLog = discoveryRScriptLog;
     }
-*/
     
     public String getPhene() {
         return phene;

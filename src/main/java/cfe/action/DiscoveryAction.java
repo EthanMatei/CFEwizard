@@ -49,6 +49,7 @@ import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
 import cfe.utils.WebAppProperties;
+import cfe.utils.WorkbookUtil;
 
 public class DiscoveryAction extends BaseAction implements SessionAware {
 
@@ -577,14 +578,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //-------------------------------------------------------
                 // Set up script output file log
                 //-------------------------------------------------------
-                File scriptOutputTextTempFile = File.createTempFile("discovery-r-script-output-", ".txt");
-                FileOutputStream out = new FileOutputStream(scriptOutputTextTempFile);
-                PrintWriter writer = new PrintWriter(out);
-                writer.write(scriptOutput);
-                writer.close();
-                this.scriptOutputTextFile = scriptOutputTextTempFile.getAbsolutePath();
-                this.scriptOutputTextFileName = "script-output.txt";
-                log.info("script output text file: " + scriptOutputTextFile);
+                //File scriptOutputTextTempFile = File.createTempFile("discovery-r-script-output-", ".txt");
+                //FileOutputStream out = new FileOutputStream(scriptOutputTextTempFile);
+                //PrintWriter writer = new PrintWriter(out);
+                //writer.write(scriptOutput);
+                //writer.close();
+                //this.scriptOutputTextFile = scriptOutputTextTempFile.getAbsolutePath();
+                //this.scriptOutputTextFileName = "script-output.txt";
+                //log.info("script output text file: " + scriptOutputTextFile);
 
                 //---------------------------------------------------------------
                 // Get the output, report and timing file paths
@@ -665,26 +666,28 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 DataTable discoveryCohortInfoDataTable = new DataTable(null);
                 sheet = cohortWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 discoveryCohortInfoDataTable.initializeToWorkbookSheet(sheet);
-
+                
+                // Create "Discovery R script log" data table
+                //DataTable discoveryRScriptLogDataTable = new DataTable(null);
+                //discoveryRScriptLogDataTable.addColumn("Discovery R Script Log", "");
+                //ArrayList<String> dataRow = new ArrayList<String>();
+                //dataRow.add(this.scriptOutput);
+                //discoveryRScriptLogDataTable.addRow(dataRow);
+                
                 
                 LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
 
                 resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES, outputDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_REPORT, reportDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES_INFO, discoveryScoresInfoDataTable);
+                //resultsTables.put(CfeResultsSheets.DISCOVERY_R_SCRIPT_LOG, discoveryRScriptLogDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT, cohortDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT_INFO, discoveryCohortInfoDataTable);
                 resultsTables.put(CfeResultsSheets.COHORT_DATA, cohortDataDataTable);
                 
                 XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
                 cohortDataDataTable.enhanceCohortDataSheet(resultsWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
-
-                // OBSOLETE: (now results are stored in the database)
-                //File resultsXlsxTempFile = File.createTempFile("discovery-results-", ".xlsx");
-                //FileOutputStream resultsOut = new FileOutputStream(resultsXlsxTempFile);
-                //resultsWorkbook.write(resultsOut);
-                //resultsOut.close();
-                //this.resultsXlsxFile = resultsXlsxTempFile.getAbsolutePath();
+                //WorkbookUtil.setCellForLongText(resultsWorkbook, CfeResultsSheets.DISCOVERY_R_SCRIPT_LOG, 1, 0);
 
                 // Timing CSV (WORK IN PROGRESS)
                 //DataTable timingTable = new DataTable(null);
@@ -698,10 +701,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                         this.scoresGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
                 
-                /*
-                cfeResults.setRScriptLog(scriptOutput);
-                */
                 
+                cfeResults.setDiscoveryRScriptLog(scriptOutput);
+               
                 CfeResultsService.save(cfeResults);
                 this.cfeResultsId = cfeResults.getCfeResultsId();
                 log.info("**************** DISCOVERY CALCULATE - CFE RESULTS ID: " + cfeResultsId);

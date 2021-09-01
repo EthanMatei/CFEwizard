@@ -32,7 +32,7 @@ Discovery Scoring Results:
         <div>
             <img border="0"
                  style="margin-top: 2px;"
-                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
                  alt="Discovery Scores" />
             <br />
             <s:property value="outputFileName"/>
@@ -48,14 +48,22 @@ Discovery R Script Output:
 
 
 <s:a action="TextFileDisplay" title="Discovery R script output file">
-    <s:param name="textFilePath" value="scriptOutputTextFile" />
-    <div>
-    <img border="0"
-     style="margin-top: 2px;"
-     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
-     alt="Discovery R Script Output" /> <br />
-    <s:property value="scriptOutputTextFileName"/>
-    </div>
+    <s:if test="cfeResultsId != null">
+        <s:a action="CfeResultsDiscoveryRScriptLogDisplay" title="Discovery R Script Log">
+            <s:param name="cfeResultsId" value="cfeResultsId" />
+            <div>
+                <img border="0" style="margin-top: 2px;"
+                     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
+                     alt="Discovery R Script Output"
+                 />
+                 <br/>
+                 discovery-r-script-log.txt
+            </div>
+        </s:a>
+    </s:if>
+    <s:else>
+        <p>No results generated</p>
+    </s:else>
 </s:a>
 
 

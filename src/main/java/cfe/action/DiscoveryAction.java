@@ -741,9 +741,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	}
 	
 	public void deScoring(DataTable scoring) throws Exception {
-	    Double negativeMin = null;
 	    Double negativeMax = null;
-	    Double positiveMin = null;
 	    Double positiveMax = null;
 	    
 	    // Get positive and negative min and max
@@ -753,29 +751,21 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	        try {
 	            double rawScore = Double.parseDouble(score);
 	            if (rawScore >= 0.0) {
-                    if (positiveMin == null) {
-                        positiveMin = rawScore;
+                    if (positiveMax == null) {
                         positiveMax = rawScore;
                     }
                     else {
-                        if (rawScore < positiveMin) {
-                            positiveMin = rawScore;
-                        }
-                        else if (rawScore > positiveMax) {
+                        if (rawScore > positiveMax) {
                             positiveMax = rawScore;
                         }
                     }	                
 	            }
 	            else {
-	                if (negativeMin == null) {
-	                    negativeMin = rawScore;
+	                if (negativeMax == null) {
 	                    negativeMax = rawScore;
 	                }
 	                else {
-                        if (rawScore > negativeMin) {
-                            negativeMin = rawScore;
-                        }
-                        else if (rawScore < negativeMax) {
+                        if (rawScore < negativeMax) {
                             negativeMax = rawScore;
                         }
 	                }
@@ -793,11 +783,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	            double rawScore = Double.parseDouble(score);
 	            double dePercentile;
 	            if (rawScore >= 0.0) {
-	                dePercentile = (rawScore - positiveMin) / (positiveMax - positiveMin);
+	                dePercentile = rawScore / positiveMax;
 	            }
 	            else {
-	                dePercentile = (Math.abs(rawScore) - Math.abs(negativeMin)) 
-	                        / (Math.abs(negativeMax) - Math.abs(negativeMin));
+	                dePercentile = rawScore / negativeMax;
 	            }
                 scoring.setValue(rowNum, "DE Percentile", dePercentile + "");
                 

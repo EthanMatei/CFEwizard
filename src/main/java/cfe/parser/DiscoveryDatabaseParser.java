@@ -71,7 +71,7 @@ public class DiscoveryDatabaseParser {
 
         // Subject Identifiers Table Info
         String[] subjectIdentifiersColumnArray = {
-                "Subject", "Vet/Non-Vet?", "AffyVisit", "Visit Date", "inpt or lab", "CHIP Examiner", "PheneVisit", "Notes"
+                "Subject", "Vet/Non-Vet?"
         };
         LinkedHashSet<String> subjectIdentifiersColumns = new LinkedHashSet<String>(Arrays.asList(subjectIdentifiersColumnArray));
         tableInfo.put(SUBJECT_IDENTIFIERS_TABLE, subjectIdentifiersColumns);     

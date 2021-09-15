@@ -786,19 +786,19 @@ public class CohortDataTable extends DataTable {
 	}
 	
 	/**
-	 * TO BE COMPLETED - try to recreate generation of bigData table in the
+	 * Recreate generation of bigData table in the
 	 * access integration R script, so that the database does not need to be
 	 * re-uploaded for the discovery scoring phase.
 	 *
 	 * @return
 	 * @throws Exception
 	 */
-	public DataTable getBigData() throws Exception {
+	public DataTable getBigData(String phene) throws Exception {
 	    DataTable bigData = new DataTable(null);
 	    
 	    String bigDataKey = "Subject Identifiers.PheneVisit";
    
-	    ArrayList<String> phenes       = this.getPhenes();
+	    //ArrayList<String> phenes       = this.getPhenes();
 	    ArrayList<String> demographics = this.getTableNonKeyColumns("Demographics");
 	    ArrayList<String> diagnosis    = this.getTableNonKeyColumns("Diagnosis");
 	    ArrayList<String> subjectIdentifiers = this.getTableNonKeyColumns("Subject Identifiers");
@@ -806,7 +806,8 @@ public class CohortDataTable extends DataTable {
         ArrayList<String> columns = new ArrayList<String>();
         
 	    columns.add(bigDataKey);
-	    columns.addAll(phenes);
+	    //columns.addAll(phenes);
+	    columns.add(phene);
 	    columns.addAll(demographics);
 	    columns.addAll(diagnosis);
 	    columns.addAll(subjectIdentifiers);

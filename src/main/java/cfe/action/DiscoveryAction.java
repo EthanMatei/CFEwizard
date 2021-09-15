@@ -492,7 +492,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 cohortData.initializeToWorkbookSheet(sheet);
                 
-                DataTable bigData = cohortData.getBigData();
+                DataTable bigData = cohortData.getBigData(this.pheneSelection);
                 
                 File bigDataTmp = File.createTempFile("bigData-", ".csv");
                 if (bigDataTmp != null) {
@@ -623,26 +623,31 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 // Discovery R Script
                 DataTable outputDataTable = new DataTable(null);
                 if (outputFile == null) {
-                    throw new Exception("No output file generated for discovery calculation.");
+                    errorMessage = "No output file generated for discovery calculation.";
+                    result = ERROR;
                 }
-                outputDataTable.initializeToCsv(outputFile);
-                // Add Genecards Symbols
-                outputDataTable.addColumn("DE Percentile", "");
-                outputDataTable.addColumn("DE Score", "");
-                outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
-                outputDataTable.setColumnName(0, ProbesetMappingParser.PROBE_SET_ID_COLUMN);
+                else {
+                    outputDataTable.initializeToCsv(outputFile);
+                    // Add Genecards Symbols
+                    outputDataTable.addColumn("DE Percentile", "");
+                    outputDataTable.addColumn("DE Score", "");
+                    outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
+                    outputDataTable.setColumnName(0, ProbesetMappingParser.PROBE_SET_ID_COLUMN);
                 
-                this.deScoring(outputDataTable);  // calculate percentiles and scores
+                    this.deScoring(outputDataTable);  // calculate percentiles and scores
                 
-                for (int rowIndex = 0; rowIndex < outputDataTable.getNumberOfRows(); rowIndex++) {
-                    String keyValue = outputDataTable.getValue(rowIndex, 0);
-                    String genecardsSymbol = probesetMapping.getValue(keyValue, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
-                    outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
+                    for (int rowIndex = 0; rowIndex < outputDataTable.getNumberOfRows(); rowIndex++) {
+                        String keyValue = outputDataTable.getValue(rowIndex, 0);
+                        String genecardsSymbol = probesetMapping.getValue(keyValue, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
+                        outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
+                    }
                 }
 
                 // Create "Discovery Report" data table
                 DataTable reportDataTable = new DataTable(null);
-                reportDataTable.initializeToCsv(reportFile);
+                if (reportFile != null && !reportFile.isEmpty()) {
+                    reportDataTable.initializeToCsv(reportFile);
+                }
 
                 // Create "Discovery Scores Info" data table
                 DataTable discoveryScoresInfoDataTable = this.createDiscoveryScoresInfoTable();
@@ -718,14 +723,20 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 file.delete();
                 
                 // R script output files:
-                file = new File(outputFile);
-                file.delete();
+                if (outputFile != null && !outputFile.isEmpty()) {
+                    file = new File(outputFile);
+                    file.delete();
+                }
                 
-                file = new File(reportFile);
-                file.delete();
+                if (reportFile != null && !reportFile.isEmpty()) {
+                    file = new File(reportFile);
+                    file.delete();
+                }
                 
-                file = new File(timingFile);
-                file.delete();
+                if (timingFile != null && !timingFile.isEmpty()) {
+                    file = new File(timingFile);
+                    file.delete();
+                }
             }
             catch (Exception exception) {
                 result = ERROR;

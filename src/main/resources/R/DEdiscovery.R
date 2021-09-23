@@ -235,6 +235,7 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
   x <- data[which(data["Subject"] == uniqueSubject),]
   
   x  <-  x [ order( as.Date(x$date) ), ] # order by visit
+  # x  <-  x [ order( as.Date(x$Visit_Date) ), ] # order by visit
   
   cat("\n...")
   totalVisits <- nrow(x) #get number of visits for this subject
@@ -261,10 +262,10 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
             
             ")
     
-    #print(c("PHENE = ", PHENE, "   ", " visit = ", visit, " class: ", class(visit)))
-    #print(c("x[visit + 1,PHENE]: ", x[visit + 1,PHENE]))
+    print(c("PHENE = ", PHENE, "   ", " visit = ", visit, " class: ", class(visit)))
+    print(c("x[visit + 1,PHENE]: ", x[visit + 1,PHENE]))
     theResult = x[visit,PHENE]
-    #print(c("x[visit,PHENE]", x[visit,PHENE], class(theResult)))
+    print(c("x[visit,PHENE]", x[visit,PHENE], class(theResult)))
     
     pheneChange <- strtoi(x[visit + 1,PHENE]) - strtoi(x[visit,PHENE]) #change in phene state
     
@@ -324,12 +325,14 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     
     cat("\nPhene and gene changes calculated\nNow calculating DE points for visits",visit,"-",visit+1)  
     
-    if ( pheneChange == 1 ) { #if phene changes, add gene change value to APscore
+    cat("\n", "pheneChange = ", pheneChange, "\n")
+    if ( pheneChange == 1 ) { #if phene changes, add gene change value to DEscore
+      
       subjectDEscore["DEscores",] <- subjectDEscore["DEscores",] + geneChange[] 
       cat("\n...")
     }
     
-    if ( pheneChange == -1 ) { #if phene changes, add gene change value to APscore
+    if ( pheneChange == -1 ) { #if phene changes, add gene change value to DEscore
       subjectDEscore["DEscores",] <- subjectDEscore["DEscores",] + (geneChange[] * -1)
       cat("\n...")
     }

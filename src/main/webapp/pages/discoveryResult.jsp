@@ -92,10 +92,6 @@ Discovery R Script Output:
         <td> <s:property value="diagnosisCode"/> </td>
     </tr>
     <tr>
-        <th>Phene Visit Database File</th>
-        <td><s:property value="discoveryDbFileName" /></td>
-    </tr>
-    <tr>
         <th>Gene Expression CSV File</th>
         <td><s:property value="discoveryCsvFileName" /></td>
     </tr>
@@ -105,42 +101,67 @@ Discovery R Script Output:
     </tr>    
 </table>
 
+<s:if test="debugDiscoveryScoring">
 
-<hr style="margin-top: 12px;"/>
+    <hr style="margin-top: 12px;"/>
 
-<h3>System Information</h3>
+    <h3>Debug Information</h3>
 
-<table class="dataTable">
-    <tr>
-        <th>Temp Directory</th>
-        <td> <s:property value="tempDir" /> </td>
-    </tr>
-    <tr>
-        <th>Phene Visit DB temp file</th>
-        <td> <s:property value="discoveryDbTempFileName" /> </td>
-    </tr>
-    <tr>
-        <th>Cohort CSV temp file</th>
-        <td> <s:property value="cohortCsvFile" /> </td>
-    </tr>
-    <tr>
-        <th>Gene Expression CSV temp file</th>
-        <td> <s:property value="discoveryCsvTempFileName" /> </td>
-    </tr>
-    <tr>
-        <th>CFE Wizard Base directory</th>
-        <td> <s:property value="baseDir"/> </td>
-    </tr>
-    <tr>
-        <th>R Script Directory</th>
-        <td> <s:property value="scriptDir" /> </td>
-    <tr>
-        <th>R Script File</th>
-        <td> <s:property value="scriptFile" /> </td>
-    </tr>
-</table>
+    <h5>R Script Input Files</h5>
+    <table class="dataTable">
+        <tr>
+            <th>Cohort CSV temp file</th>
+            <td>
+                <s:a action="CsvDisplay">
+                    <s:param name="csvFilePath" value="cohortCsvFile" />
+                    <s:property value="cohortCsvFile" />
+                </s:a>
+            </td>
+        </tr>
+        <tr>
+            <th>Big data CSV temp file</th>
+            <td>
+                <s:a action="CsvDisplay">
+                    <s:param name="csvFilePath" value="bigDataTempFileName" />
+                    <s:property value="bigDataTempFileName" />
+                </s:a>
+            </td>
+        </tr>
+        <tr>
+            <th>Gene Expression CSV temp file</th>
+            <td>
+                <s:a action="CsvDisplay">
+                    <s:param name="csvFilePath" value="discoveryCsvTempFileName" />
+                    <s:property value="discoveryCsvTempFileName" />
+                </s:a>
+            </td>
+        </tr>
+    </table>
+    
+    <h5>Other Information</h5>
+    <table class="dataTable">
+        <tr>
+            <th>Discovery Scoring Command</th>
+            <td> <s:property value="discoveryScoringCommand"/> </td>
+        </tr>
+        <tr>
+            <th>Temp Directory</th>
+            <td> <s:property value="tempDir" /> </td>
+        </tr>
+        <tr>
+            <th>CFE Wizard Base directory</th>
+            <td> <s:property value="baseDir"/> </td>
+        </tr>
+        <tr>
+            <th>R Script Directory</th>
+            <td> <s:property value="scriptDir" /> </td>
+        <tr>
+            <th>R Script File</th>
+            <td> <s:property value="scriptFile" /> </td>
+        </tr>
+    </table>
 
-
+</s:if>
 
 <br/>
 

@@ -685,7 +685,7 @@ public class CohortDataTable extends DataTable {
 			
 			cell = row.getCell(highIndex);
 			int rowNumber = i + 1;
-			int lastRow = sheet.getLastRowNum() + 1;
+			int lastRow = sheet.getLastRowNum();
 			String subjectCol = DataTable.columnLetter(subjectIndex);
 			String pheneCol   = DataTable.columnLetter(pheneIndex);
 			String highFormula = "COUNTIFS("

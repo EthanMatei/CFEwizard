@@ -103,6 +103,10 @@
             <p>
             Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
             </p>
+            
+            <p>
+            <s:checkbox name="debugDiscoveryScoring"/> debug
+            </p>
 
         </div> <%-- input-file --%>
     

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Table;
 import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
+import com.opencsv.CSVReader;
 
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsSheets;
@@ -129,6 +131,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private Long cfeResultsId;
 	
 	private String bigDataTempFileName;
+	
+	private boolean debugDiscoveryScoring = false;
+	
+	private String discoveryScoringCommand;
 	
 	private String errorMessage;
 	
@@ -362,12 +368,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 this.highCutoff     = results.getHighCutoff();
                 this.pheneSelection = results.getPhene(); 
                 
+                ArrayList<String> row;
+                
                 // Get the phene table from the cohort info sheet
                 XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
+                                
                 DataTable cohortInfo = new DataTable("attribute");
                 cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
                 
-                ArrayList<String> row = cohortInfo.getRow("Phene Table");
+                row = cohortInfo.getRow("Phene Table");
                 if (row == null) {
                     throw new Exception("Unable to find Phene Table row in sheet \""
                             + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
@@ -378,7 +387,43 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                             + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
                 }
                 
-                // Get "Microarray Table" (todo...)
+                row = cohortInfo.getRow("Microarray Table");
+                if (row != null && row.size() >= 2) {
+                    this.microarrayTable = row.get(1);
+                }
+                
+                row = cohortInfo.getRow("Number of Cohort Subjects");
+                if (row != null && row.size() >= 2) {
+                    String numSubjects = row.get(1);
+                    try {
+                        this.numberOfSubjects = Integer.parseInt(numSubjects);
+                    }
+                    catch (NumberFormatException exception) {
+                        ; // ignore
+                    }
+                }
+                
+                row = cohortInfo.getRow("Number of Cohort Low Visits");
+                if (row != null && row.size() >= 2) {
+                    String numSubjects = row.get(1);
+                    try {
+                        this.lowVisits = Integer.parseInt(numSubjects);
+                    }
+                    catch (NumberFormatException exception) {
+                        ; // ignore
+                    }
+                }
+                
+                row = cohortInfo.getRow("Number of Cohort High Visits");
+                if (row != null && row.size() >= 2) {
+                    String numSubjects = row.get(1);
+                    try {
+                        this.highVisits = Integer.parseInt(numSubjects);
+                    }
+                    catch (NumberFormatException exception) {
+                        ; // ignore
+                    }
+                }
                 
                 // Get diagnosis codes
                 XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
@@ -470,14 +515,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
                 this.tempDir = System.getProperty("java.io.tmpdir");
                 
-                //--------------------------------------------------------------
-                // Get the discovery cohort file
-                //--------------------------------------------------------------
+                //---------------------------------------------------------------------
+                // Create discovery cohort file that will be passed to the R script
+                //---------------------------------------------------------------------
                 CfeResults results = CfeResultsService.get(this.discoveryId);
                 XSSFWorkbook workbook = results.getResultsSpreadsheet();
                 
                 XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT);
                 DataTable discoveryCohort = new DataTable("PheneVisit");
+                
                 discoveryCohort.initializeToWorkbookSheet(sheet);
                 String cohortCsv = discoveryCohort.toCsv();
 
@@ -492,7 +538,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 cohortData.initializeToWorkbookSheet(sheet);
                 
-                DataTable bigData = cohortData.getBigData();
+                DataTable bigData = cohortData.getBigData(this.pheneSelection);
                 
                 File bigDataTmp = File.createTempFile("bigData-", ".csv");
                 if (bigDataTmp != null) {
@@ -566,6 +612,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
                 log.info("RSCRIPT COMMAND: " + String.join(" ", rScriptCommand));
                 
+                this.discoveryScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
+                
                 scriptOutput = this.runCommand(rScriptCommand);
                 
                 this.scoresGeneratedTime = new Date();
@@ -623,26 +671,31 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 // Discovery R Script
                 DataTable outputDataTable = new DataTable(null);
                 if (outputFile == null) {
-                    throw new Exception("No output file generated for discovery calculation.");
+                    errorMessage = "No output file generated for discovery calculation.";
+                    result = ERROR;
                 }
-                outputDataTable.initializeToCsv(outputFile);
-                // Add Genecards Symbols
-                outputDataTable.addColumn("DE Percentile", "");
-                outputDataTable.addColumn("DE Score", "");
-                outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
-                outputDataTable.setColumnName(0, ProbesetMappingParser.PROBE_SET_ID_COLUMN);
+                else {
+                    outputDataTable.initializeToCsv(outputFile);
+                    // Add Genecards Symbols
+                    outputDataTable.addColumn("DE Percentile", "");
+                    outputDataTable.addColumn("DE Score", "");
+                    outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
+                    outputDataTable.setColumnName(0, ProbesetMappingParser.PROBE_SET_ID_COLUMN);
                 
-                this.deScoring(outputDataTable);  // calculate percentiles and scores
+                    this.deScoring(outputDataTable);  // calculate percentiles and scores
                 
-                for (int rowIndex = 0; rowIndex < outputDataTable.getNumberOfRows(); rowIndex++) {
-                    String keyValue = outputDataTable.getValue(rowIndex, 0);
-                    String genecardsSymbol = probesetMapping.getValue(keyValue, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
-                    outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
+                    for (int rowIndex = 0; rowIndex < outputDataTable.getNumberOfRows(); rowIndex++) {
+                        String keyValue = outputDataTable.getValue(rowIndex, 0);
+                        String genecardsSymbol = probesetMapping.getValue(keyValue, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
+                        outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
+                    }
                 }
 
                 // Create "Discovery Report" data table
                 DataTable reportDataTable = new DataTable(null);
-                reportDataTable.initializeToCsv(reportFile);
+                if (reportFile != null && !reportFile.isEmpty()) {
+                    reportDataTable.initializeToCsv(reportFile);
+                }
 
                 // Create "Discovery Scores Info" data table
                 DataTable discoveryScoresInfoDataTable = this.createDiscoveryScoresInfoTable();
@@ -708,24 +761,32 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 File file;
                 
                 // R script input files
-                file = new File(this.cohortCsvFile);
-                file.delete();
+                if (!this.debugDiscoveryScoring) {
+                    file = new File(this.cohortCsvFile);
+                    file.delete();
                 
-                file = new File(this.discoveryCsvTempFileName);
-                file.delete();
+                    file = new File(this.discoveryCsvTempFileName);
+                    file.delete();
                 
-                file = new File(this.bigDataTempFileName);
-                file.delete();
+                    file = new File(this.bigDataTempFileName);
+                    file.delete();
+                }
                 
                 // R script output files:
-                file = new File(outputFile);
-                file.delete();
+                if (outputFile != null && !outputFile.isEmpty()) {
+                    file = new File(outputFile);
+                    file.delete();
+                }
                 
-                file = new File(reportFile);
-                file.delete();
+                if (reportFile != null && !reportFile.isEmpty()) {
+                    file = new File(reportFile);
+                    file.delete();
+                }
                 
-                file = new File(timingFile);
-                file.delete();
+                if (timingFile != null && !timingFile.isEmpty()) {
+                    file = new File(timingFile);
+                    file.delete();
+                }
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -900,8 +961,39 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		row.add("Microarray Table");
 		row.add(this.microarrayTable);
 		infoTable.addRow(row);
-		
+
+        row = new ArrayList<String>();
+        row.add("Number of Cohort Subjects");
+        row.add(this.numberOfSubjects + "");
+        infoTable.addRow(row);
+        
+	    row = new ArrayList<String>();
+	    row.add("Number of Cohort Low Visits");
+	    row.add(this.lowVisits + "");
+	    infoTable.addRow(row);
+
+        row = new ArrayList<String>();
+        row.add("Number of Cohort High Visits");
+        row.add(this.highVisits + "");
+        infoTable.addRow(row);	        
 		return infoTable;
+    }
+    
+    /** 
+     * WORK IN PROGRESS
+     * For checking that gene expression file has phene visit, instead of affy visit, columns. 
+     */
+    public void checkGeneExpressionFile(String geneExpressionFile) throws Exception {
+        FileReader filereader = new FileReader(geneExpressionFile);
+        CSVReader csvReader = new CSVReader(filereader);
+        String[] visits;
+     
+        visits = csvReader.readNext();
+        for (String visit: visits) {
+            // Need to compare these to pheneVisits in the cohort data
+            // ...
+        }
+
     }
     
 	/** 
@@ -1334,6 +1426,22 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
     public void setBigDataTempFileName(String bigDataTempFileName) {
         this.bigDataTempFileName = bigDataTempFileName;
+    }
+
+    public boolean getDebugDiscoveryScoring() {
+        return debugDiscoveryScoring;
+    }
+
+    public void setDebugDiscoveryScoring(boolean debugDiscoveryScoring) {
+        this.debugDiscoveryScoring = debugDiscoveryScoring;
+    }
+
+    public String getDiscoveryScoringCommand() {
+        return discoveryScoringCommand;
+    }
+
+    public void setDiscoveryScoringCommand(String discoveryScoringCommand) {
+        this.discoveryScoringCommand = discoveryScoringCommand;
     }
 
 }

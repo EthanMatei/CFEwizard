@@ -94,7 +94,7 @@ public class DataTable {
             this.addColumn(columnName, "");
         }
         
-        for (int rowIndex = 1; rowIndex < sheet.getLastRowNum(); rowIndex++) {
+        for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
             XSSFRow row = sheet.getRow(rowIndex);
             ArrayList<String> dataRow = new ArrayList<String>();
             

@@ -49,15 +49,16 @@ prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv) {
   cohortDataFrame = read.csv(cohort);
   bigData <-merge(bigData, cohortDataFrame, by="PheneVisit")
   
-  #define function that gets all characters of string x minus the last n characters
-  substrLeft <- function(x, n){
-    substr(x, 1, nchar(x)-n)
-  }
+  # ALREADY HAVE A SUBJECT COLUMN
+  ### #define function that gets all characters of string x minus the last n characters
+  ### substrLeft <- function(x, n){
+  ###  substr(x, 1, nchar(x)-n)
+  ### }
   
-  #define a "Subject" column that excludes visit data
-  bigData <- cbind(bigData,substrLeft( sapply(bigData["PheneVisit"],as.character),2))
+  ### #define a "Subject" column that excludes visit data
+  ### bigData <- cbind(bigData,substrLeft( sapply(bigData["PheneVisit"],as.character),2))
   
-  colnames(bigData)[length(bigData)] <- "Subject"
+  ### colnames(bigData)[length(bigData)] <- "Subject"
   
   
   #write.csv(bigData, "/tmp/bigData.csv", row.names = FALSE)

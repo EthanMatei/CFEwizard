@@ -6,7 +6,7 @@
 # pheneTable - name of database table that contains the specified phene
 #-------------------------------------------------------------------------
 ### prepAccessData <- function(data, cohort, dxCode, phene, pheneTable, bigDataCsv) {
-prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv) {
+prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv, highCutoff) {
     
   # ORIG: tblsNeeded <- c("CFI-S","SAS","SMS","HAMD SI","Pain","PANSS", "Demographics","SSS", "Diagnosis", "Subject Identifiers", cohortTbl)
   # tblsNeeded <- c(pheneTable, "Demographics", "Diagnosis", "Subject Identifiers")
@@ -70,6 +70,7 @@ prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv) {
   #---------------------------------------
   # Calculation phene
   #---------------------------------------
+  highCutoff <- as.numeric(highCutoff)
   bigData[, phene] <- as.numeric(bigData[, phene] >= highCutoff)
   
   #get names of cohorts

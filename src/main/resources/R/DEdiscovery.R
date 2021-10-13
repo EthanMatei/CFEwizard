@@ -57,44 +57,12 @@ if (diagnosisCodeParam == "All") {
 addAsymmetry <- TRUE
 
 
-#get access database location
-# accessDb <- dbFile
-
-##open connection with access database
-
-#-------------------------------------------------------
-# Get MS Access database connection
-#-------------------------------------------------------
-###PheneData <- odbcConnectAccess2007(accessDb)
-
-# Using Ucanacess Driver
-# Need to download this, unzip, and put all jars in directory with script
-jars = paste(
-    paste(scriptDir, "commons-lang3-3.8.1.jar", sep="/"),
-    paste(scriptDir, "commons-logging-1.2.jar", sep="/"),
-    paste(scriptDir, "hsqldb-2.5.0.jar", sep="/"),
-    paste(scriptDir, "jackcess-3.0.1.jar", sep="/"),
-    paste(scriptDir, "ucanaccess-5.0.0.jar", sep="/"),    
-    sep=":"
-)
-
-#driver <- JDBC(
-#    "net.ucanaccess.jdbc.UcanaccessDriver",
-#    jars,
-#    identifier.quote="`"
-#)
-#dbUrl <- paste("jdbc:ucanaccess://", dbFile, sep="")
-#PheneData <- dbConnect(driver, dbUrl)
-
-# List the tables in the database
-#dbListTables(PheneData)
-
 # Get the access integration script
 accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
 source(accessIntegrationScript)
 
 ##get processed access data
-accessIntegrationOutput <- prepAccessData(cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv)
+accessIntegrationOutput <- prepAccessData(cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv, highCutoff)
 # accessIntegrationOutput <- prepAccessData(PheneData, cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv)
 
 
@@ -215,7 +183,7 @@ section3Time <- 0
 #-------------------------------
 # For each subject
 #-------------------------------
-for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual subject IDs
+for ( uniqueSubject in list.of.unique.subjects  ) { # loop through individual subject IDs
   
   # TIMING
   startSection1Time <- Sys.time()
@@ -246,7 +214,7 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
   subjectDEscore["perfectionCounter",] <- 0 #reset perfectionCounter to 0 for the new subject
   
   
-  for (visit in 1:(totalVisits-1)){ ##stop calculating when there are no comparisons left
+  for (visit in 1:(totalVisits-1)) { # stop calculating when there are no comparisons left
     
     #status update  
     cat("
@@ -295,7 +263,7 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     cat("\n...")
     pheneValue <- x[visit + 1,PHENE]
     
-    if (visit == 1){
+    if (visit == 1) {
       lookAround <- data.frame(pheneChange, stringsAsFactors = TRUE)
       wormShape <- subjectDEscore[-(1:2), ]
     } else {
@@ -304,7 +272,7 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     wormShape <- rbind(wormShape, geneChange)
     
     
-    if (totalVisits > 2){
+    if (totalVisits > 2) {
       cat("\nCalculating perfection
               ...")  
       
@@ -326,18 +294,18 @@ for ( uniqueSubject in list.of.unique.subjects  ) { #loop through individual sub
     cat("\nPhene and gene changes calculated\nNow calculating DE points for visits",visit,"-",visit+1)  
     
     cat("\n", "pheneChange = ", pheneChange, "\n")
-    if ( pheneChange == 1 ) { #if phene changes, add gene change value to DEscore
+    if ( pheneChange == 1 ) { # if phene changes, add gene change value to DEscore
       
       subjectDEscore["DEscores",] <- subjectDEscore["DEscores",] + geneChange[] 
       cat("\n...")
     }
     
-    if ( pheneChange == -1 ) { #if phene changes, add gene change value to DEscore
+    if ( pheneChange == -1 ) { # if phene changes, add gene change value to DEscore
       subjectDEscore["DEscores",] <- subjectDEscore["DEscores",] + (geneChange[] * -1)
       cat("\n...")
     }
     
-    if ( pheneChange == 0 ){ #if phene doesn't change, nor does gene...
+    if ( pheneChange == 0 ) { # if phene doesn't change, nor does gene...
       cat("\nFor genes that didn't change on this visit, we can't assign points until we get through all the other visits")
     }
     

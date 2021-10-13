@@ -7,8 +7,7 @@
 #---------------------------------------------------------------------------------------------
 prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv, highCutoff) {
 
-  bigData = read.csv(bigDataCsv, check.names=FALSE, stringsAsFactors = TRUE, na.strings=c("na","NA","", "<NA>", "Na", "n/a", "N/A"));
-  vars <- names(bigData)
+  bigData = read.csv(bigDataCsv, check.names=FALSE, stringsAsFactors = TRUE, na.strings=c("na","NA","", "<NA>", "Na", "n/a", "N/A"))
   
   # FOR DEBUGGING:
   #outputFile <- paste(tempDir, "/ai-bigData_", Sys.Date(),".csv", sep="")

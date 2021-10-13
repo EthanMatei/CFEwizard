@@ -971,7 +971,12 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		row.add("Time Cohort Generated");
 		row.add(this.cohortGeneratedTime.toString());
 		infoTable.addRow(row);
-		
+        
+        row = new ArrayList<String>();
+        row.add("Test Database");
+        row.add(this.discoveryDbFileName);
+        infoTable.addRow(row);
+        
 		row = new ArrayList<String>();
 		row.add("Phene Table");
 		row.add(this.pheneTable);

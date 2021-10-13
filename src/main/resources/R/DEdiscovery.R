@@ -51,24 +51,21 @@ bigDataCsv         <- args[10]
 print(pheneTable)
 
 if (diagnosisCodeParam == "All") {
-  diagnosisCodeParam <- ""
+  dxChoice <- ""
+} else {
+  dxChoice <- diagnosisCodeParam  
 }
 
 addAsymmetry <- TRUE
-
 
 # Get the access integration script
 accessIntegrationScript <- paste(scriptDir, "accessIntegrationDE.R", sep="/")
 source(accessIntegrationScript)
 
-##get processed access data
-accessIntegrationOutput <- prepAccessData(cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv, highCutoff)
-# accessIntegrationOutput <- prepAccessData(PheneData, cohortCsvFile, diagnosisCodeParam, pheneSelection, pheneTable, bigDataCsv)
+# get processed data that originally came from testing Access database
+accessIntegrationOutput <- prepAccessData(cohortCsvFile, dxChoice, pheneSelection, pheneTable, bigDataCsv, highCutoff)
 
-
-PheneData <- accessIntegrationOutput[[1]]
-dxChoice <- accessIntegrationOutput[[2]]
-cohortChoice <- accessIntegrationOutput[[3]]
+PheneData <- accessIntegrationOutput
 rm(accessIntegrationOutput)
 
 # FOR DEBUGGING:
@@ -159,7 +156,7 @@ list.of.unique.subjects <- list.of.unique.subjects[!is.na(list.of.unique.subject
 
 wormShape <- subjectDEscore
 
-cat("You selected cohort",cohortChoice,"and diagnosis:",ifelse(dxChoice != "", dxChoice, "everyone"))
+cat("You selected diagnosis:",ifelse(dxChoice != "", dxChoice, "everyone"))
 
 numberOfSubjects <- length(unique ( data[-nrow(data),"Subject"] ))
 

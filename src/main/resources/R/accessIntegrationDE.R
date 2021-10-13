@@ -27,12 +27,6 @@ prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv, highCu
   highCutoff <- as.numeric(highCutoff)
   bigData[, phene] <- as.numeric(bigData[, phene] >= highCutoff)
   
-  #get names of cohorts
-  cohortColumns <- colnames(cohortDataFrame)
-  
-  #drop the subject header column
-  cohortColumns <- cohortColumns[-1]
-  
   #subset data by cohort
   bigData <- bigData[bigData["DiscoveryCohort"] == 1,]
   
@@ -44,8 +38,6 @@ prepAccessData <- function(cohort, dxCode, phene, pheneTable, bigDataCsv, highCu
   # clear up ram
   gc()
   
-  output <- list(bigData, dxCode, cohort)  
-  
-  return(output)
+  return(bigData)
 }
 

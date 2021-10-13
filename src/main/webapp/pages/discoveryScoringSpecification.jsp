@@ -69,8 +69,6 @@
 
 <hr/>
 
-<h2>Discovery Processing</h2>
-
 
 <s:form theme="simple" action="DiscoveryCalculate" method="post" enctype="multipart/form-data">
  
@@ -109,8 +107,42 @@
             </p>
 
         </div> <%-- input-file --%>
-    
+        
+        <div style="margin-left: 1em; float: left;">
+            <p> Discovery Percentile Scores</p>
+            <table class="dataTable">
+                <tr>
+                    <th> Percentile Range </th> <th> Score </th>
+                </tr>
+                <tr>
+                    <td> 0.00 &le; x &lt; 0.33</td>
+                    <td>
+                        <s:textfield name="dePercentileScore1" style="text-align: right;"/> 
+                    </td>
+                </tr>
+                <tr>
+                    <td> 0.33 &le; x &lt; 0.50</td>
+                    <td>
+                        <s:textfield name="dePercentileScore2" style="text-align: right;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td> 0.50 &le; x &lt; 0.80</td>
+                    <td>
+                        <s:textfield name="dePercentileScore3" style="text-align: right;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td> 0.80 &le; x &lt; 1.00</td>
+                    <td>
+                        <s:textfield name="dePercentileScore4" style="text-align: right;"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+                   
         <div style="margin-left: 4em; font-weight: bold; float: left;">
+            <p>&nbsp;</p>
             <s:submit value="Process" id="processDiscoveryButton" style="font-weight: bold; padding-left: 2em; padding-right: 2em;"/>
         </div>
     

@@ -136,6 +136,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private String discoveryScoringCommand;
 	
+	private int dePercentileScore1 = 0;
+	private int dePercentileScore2 = 1;
+	private int dePercentileScore3 = 2;
+	private int dePercentileScore4 = 4;
+	
 	private String errorMessage;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
@@ -854,16 +859,16 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 int deScore = 0;
                 
                 if (dePercentile < 0.333333333333) {
-                    deScore = 0;
+                    deScore = this.dePercentileScore1;
                 }
                 else if (dePercentile < 0.50) {
-                    deScore = 1;
+                    deScore = this.dePercentileScore2;
                 }
                 else if (dePercentile < 0.80) {
-                    deScore = 2;
+                    deScore = this.dePercentileScore3;
                 }
                 else {
-                    deScore = 4;
+                    deScore = this.dePercentileScore4;
                 }
                 
                 scoring.setValue(rowNum, "DE Score", deScore + "");
@@ -888,6 +893,36 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         row.add("Time Scores Generated");
         row.add(this.scoresGeneratedTime.toString());
         infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("");
+        row.add("");
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("DE Percentile Score (0.00 <= x < 0.33)");
+        row.add("" + this.dePercentileScore1);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("DE Percentile Score (0.33 <= x < 0.50)");
+        row.add("" + this.dePercentileScore2);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("DE Percentile Score (0.50 <= x < 0.80)");
+        row.add("" + this.dePercentileScore3);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("DE Percentile Score (0.80 <= x < 1.00)");
+        row.add("" + this.dePercentileScore4);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("");
+        row.add("");
+        infoTable.addRow(row);               
         
         row = new ArrayList<String>();
         row.add("Diagnosis Code");
@@ -1442,6 +1477,38 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
     public void setDiscoveryScoringCommand(String discoveryScoringCommand) {
         this.discoveryScoringCommand = discoveryScoringCommand;
+    }
+
+    public int getDePercentileScore1() {
+        return dePercentileScore1;
+    }
+
+    public void setDePercentileScore1(int dePercentileScore1) {
+        this.dePercentileScore1 = dePercentileScore1;
+    }
+
+    public int getDePercentileScore2() {
+        return dePercentileScore2;
+    }
+
+    public void setDePercentileScore2(int dePercentileScore2) {
+        this.dePercentileScore2 = dePercentileScore2;
+    }
+
+    public int getDePercentileScore3() {
+        return dePercentileScore3;
+    }
+
+    public void setDePercentileScore3(int dePercentileScore3) {
+        this.dePercentileScore3 = dePercentileScore3;
+    }
+
+    public int getDePercentileScore4() {
+        return dePercentileScore4;
+    }
+
+    public void setDePercentileScore4(int dePercentileScore4) {
+        this.dePercentileScore4 = dePercentileScore4;
     }
 
 }

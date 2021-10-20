@@ -15,6 +15,15 @@ and the data from them are stored into the CFE Wizard's MySQL database.
 
 For developer information, see [Developers Guide](./docs/DevelopersGuide.md)
 
+---
+
+Discovery
+----------------
+
+![Discovery](./docs/Discovery.png "Discover Process")
+
+---
+
 **Scoring**
 
 | Score          | Calculation                                                                                |

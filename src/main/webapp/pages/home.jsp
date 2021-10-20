@@ -42,7 +42,15 @@
 
 <ul>
     <li> <s:a action="ValidationTestingCohortDiscoveryCohortSelection">Validation and Testing Cohorts Creation</s:a> </li>
+    <li> <s:a action="ValidationDataSelection">Validation Scoring</s:a></li>
 </ul>
+
+<h2>Testing</h2>
+
+<ul>
+    <li> <s:a action="TestingDataSelection">Testing Scoring</s:a></li>
+</ul>
+
 
 <h2>Results</h2>
 <ul>

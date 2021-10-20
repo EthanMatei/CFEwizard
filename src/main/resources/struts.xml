@@ -508,9 +508,37 @@
                 <param name="actionName">LoginAction</param>
             </result>
         </action>
-               
+
         <!-- ==================================================================================== -->
-                
+
+        <!-- Validation Scoring -->
+
+		<action name="ValidationDataSelection" class="cfe.action.ValidationScoringAction" method="validationDataSelection">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/validation/validationDataSelection.jsp</result>
+			<result name="error">pages/validation/validationDataSelection.jsp</result>	
+			<result name="input">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+         
+        <!-- ==================================================================================== -->
+        
+        <!-- Testing Scoring -->
+
+		<action name="TestingDataSelection" class="cfe.action.TestingScoringAction" method="testingDataSelection">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/testing/testingDataSelection.jsp</result>
+			<result name="error">pages/testing/testingDataSelection.jsp</result>	
+			<result name="input">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		        
+        <!-- ==================================================================================== -->
+                        
         <!-- CFE Results -->
 		<action name="CfeResults" class="cfe.action.CfeResultsAction">
 			<interceptor-ref name="basicStack"/>
@@ -575,7 +603,7 @@
             </result>
 		</action>
 		
-		<!-- Discovery Results XLSX (spreadsheet) file display -->
+		<!-- CFE Results XLSX (spreadsheet) file display -->
 		<action name="CfeResultsXlsxDisplay" class="cfe.action.CfeResultsXlsxDisplayAction" method="view">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success" type="stream">

@@ -45,7 +45,10 @@ public class WebAppProperties {
 	
 	private static final String RSCRIPT_PATH_PROPERTY = "rscript.path";
 	private static final String DEFAULT_RSCRIPT_PATH  = "/usr/bin/Rscript";
-	
+	   
+    private static final String PYTHON3_PATH_PROPERTY = "python3.path";
+    private static final String DEFAULT_PYTHON3_PATH  = "/usr/bin/python3";
+    
 	private static Log log = LogFactory.getLog(WebAppProperties.class);
 	
 	private static Properties properties = new Properties();
@@ -110,7 +113,11 @@ public class WebAppProperties {
 	public static String getRscriptPath() {
 		return properties.getProperty( RSCRIPT_PATH_PROPERTY, DEFAULT_RSCRIPT_PATH );
 	}
-	
+    
+    public static String getPython3Path() {
+        return properties.getProperty( PYTHON3_PATH_PROPERTY, DEFAULT_PYTHON3_PATH );
+    }
+    
 	public static String getDbHost() {
 		return properties.getProperty( DB_HOST );
 	}

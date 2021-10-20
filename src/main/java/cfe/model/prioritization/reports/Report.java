@@ -45,7 +45,7 @@ public class Report {
 		}
 		
 		for (ReportSheet reportSheet: reportSheets) {
-			reportSheet.setSheet(workbook, isLandscape, xlsxFormat);
+			reportSheet.setSheet(workbook, isLandscape);
 		}
 		
 	    //---------------------------------------------------
@@ -64,7 +64,29 @@ public class Report {
 	    
 		return fileStream;
 	}
+	
+    public XSSFWorkbook getWorkbook(boolean isLandscape) {
+        XSSFWorkbook workbook = null;
 
+        workbook = new XSSFWorkbook();
+        
+        for (ReportSheet reportSheet: reportSheets) {
+            reportSheet.setSheet(workbook, isLandscape);
+        }
+        
+        try {
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            workbook.write(byteOut);
+            byteOut.close();
+        }
+        catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        
+        return workbook;
+    }
+    
+    
 	public List<ReportSheet> getReportSheets() {
 		return reportSheets;
 	}

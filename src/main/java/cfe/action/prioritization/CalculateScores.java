@@ -2,23 +2,29 @@ package cfe.action.prioritization;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 
 
 import cfe.action.BaseAction;
 
 import cfe.enums.prioritization.Scores;
+import cfe.model.CfeResults;
+import cfe.model.CfeResultsType;
 import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.Score;
 import cfe.model.prioritization.ScoreResults;
 import cfe.model.prioritization.disease.DiseaseSelection;
 import cfe.model.prioritization.disease.DiseaseSelector;
+import cfe.model.prioritization.reports.ReportGenerator;
 import cfe.model.prioritization.results.Results;
+import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 
 /**
@@ -69,6 +75,16 @@ public class CalculateScores extends BaseAction implements SessionAware {
 				DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
 				try {
 					results = Score.calculate(geneListInput, diseaseSelection, weights);
+					Date generatedTime = new Date();
+					
+					// Generate a workbook with the prediction scores
+					XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(results, scores, weights, diseaseSelectors);
+					
+					CfeResults cfeResults = new CfeResults();
+					cfeResults.setResultsSpreadsheet(workbook);
+					cfeResults.setResultsType(CfeResultsType.PREDICTION_SCORES);
+					cfeResults.setGeneratedTime(generatedTime);
+					CfeResultsService.save(cfeResults);
 				}
 				catch (Exception exception) {
 					this.setErrorMessage( exception.getMessage() );

@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import cfe.enums.prioritization.ScoringWeights;
 import cfe.model.prioritization.Disorder;
@@ -109,12 +110,11 @@ public class ReportGenerator {
 	 * @param diseaseSelectors
 	 * @return an InputStream for the generated spreadsheet.
 	 */
-	private static InputStream generateScoresReport(String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.prioritization.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) {
+	public static Report generateScoresReportObject(Results results, Map<String, ScoreResults> scores, List<cfe.enums.prioritization.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) {
 
-		log.info("############### IN GENERATE SCORES REPORT: " + reportFormat);
+		log.info("############### IN GENERATE SCORES REPORT.");
 		Report report = new Report();
 		
-		InputStream fileStream = null;
 		List<ReportSheet> sheets = new ArrayList<ReportSheet>();
 		ReportSheet sheet = new ReportSheet();
 		
@@ -122,36 +122,51 @@ public class ReportGenerator {
 	    // Scores Sheet
 	    //----------------------------------------------------------------------------------------
 	    //sheet = getScoresSheet(reportFormat, scores);
-	    sheet = getScoresSheet2(reportFormat, results);
+	    sheet = getScoresSheet2(results);
 	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
 	    // Score Detail Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getScoreDetailsSheet(reportFormat, results);
+	    sheet = getScoreDetailsSheet(results);
 	    if (sheet != null) sheets.add(sheet);
 	    
 	    //----------------------------------------------------------------------------------------
 	    // Scoring Weights Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getScoringWeightsSheet(reportFormat, weights);
+	    sheet = getScoringWeightsSheet(weights);
 	    if (sheet != null) sheets.add(sheet);
 	    
 	    //----------------------------------------------------------------------------------------
 	    // Disease Selectors Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getDiseaseSelectorsSheet(reportFormat, scores, diseaseSelectors);
+	    sheet = getDiseaseSelectorsSheet(scores, diseaseSelectors);
 	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
 	    // Version Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getVersionSheet(reportFormat, scores, diseaseSelectors);
+	    sheet = getVersionSheet(scores, diseaseSelectors);
 	    if (sheet != null) sheets.add(sheet);
 	    
-		report.setReportSheets( sheets );
-		boolean isLandscape=false;
-		boolean xlsxFormat = false;
+		report.setReportSheets( sheets ); 
+		return report;
+	}
+	
+	public static XSSFWorkbook generateScoresWorkbook(Results results, Map<String, ScoreResults> scores, List<cfe.enums.prioritization.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) {
+	    Report report = ReportGenerator.generateScoresReportObject(results, scores, weights, diseaseSelectors);
+        boolean isLandscape = false;
+	    XSSFWorkbook workbook = report.getWorkbook(isLandscape);
+	    return workbook;
+	}
+	
+    private static InputStream generateScoresReport(String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.prioritization.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) {
+        InputStream fileStream = null;
+        
+        Report report = ReportGenerator.generateScoresReportObject(results, scores, weights, diseaseSelectors);
+		
+        boolean isLandscape = false;
+		boolean xlsxFormat  = false;
 		if (reportFormat != null && reportFormat.equals("xlsx")) xlsxFormat = true;
 		fileStream = report.getExcel(isLandscape,xlsxFormat);		
 
@@ -243,7 +258,7 @@ public class ReportGenerator {
 	 * @param results
 	 * @return
 	 */
-	private static ReportSheet getScoresSheet2(String reportFormat, Results results) {
+	private static ReportSheet getScoresSheet2(Results results) {
 		ReportSheet sheet = new ReportSheet();
 		
 		sheet.setTitle( "CFG Wizard Scores" );
@@ -314,7 +329,7 @@ public class ReportGenerator {
 	 * @param results
 	 * @return
 	 */
-	private static ReportSheet getScoreDetailsSheet(String reportFormat, Results results) {
+	private static ReportSheet getScoreDetailsSheet(Results results) {
 		ReportSheet sheet = new ReportSheet();
 		
 		List<String> categoryHeaders = results.getCategoryHeaders();
@@ -436,7 +451,7 @@ public class ReportGenerator {
 	 * @param diseaseSelectors
 	 * @return
 	 */
-	private static ReportSheet getDiseaseSelectorsSheet(String reportFormat, Map<String, ScoreResults> scores, List<DiseaseSelector> diseaseSelectors) {
+	private static ReportSheet getDiseaseSelectorsSheet(Map<String, ScoreResults> scores, List<DiseaseSelector> diseaseSelectors) {
 		
 		ReportSheet sheet = null;
 
@@ -472,7 +487,7 @@ public class ReportGenerator {
 		return sheet;
 	}
 	
-	private static ReportSheet getVersionSheet(String reportFormat, Map<String, ScoreResults> scores, List<DiseaseSelector> diseaseSelectors) {
+	private static ReportSheet getVersionSheet(Map<String, ScoreResults> scores, List<DiseaseSelector> diseaseSelectors) {
 
 		ReportSheet sheet = new ReportSheet();
 
@@ -502,7 +517,7 @@ public class ReportGenerator {
 	}
 	
 	
-	private static ReportSheet getScoringWeightsSheet(String reportFormat, List<cfe.enums.prioritization.ScoringWeights> weights) {
+	private static ReportSheet getScoringWeightsSheet(List<cfe.enums.prioritization.ScoringWeights> weights) {
 
 		ReportSheet sheet = new ReportSheet();
 

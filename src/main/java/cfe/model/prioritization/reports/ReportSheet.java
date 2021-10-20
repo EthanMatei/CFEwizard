@@ -101,8 +101,7 @@ public class ReportSheet {
 		return maxLength;
 	}
 	
-	public void setSheet(Workbook workbook, boolean isLandscape, boolean xlsxFormat) {
-		InputStream fileStream = null;
+	public void setSheet(Workbook workbook, boolean isLandscape) {
 
 		CreationHelper createHelper = workbook.getCreationHelper();
 		

@@ -27,20 +27,9 @@ Select Validation Data:
 
 <s:form action="ValidationScoringSpecification" theme="simple" method="post" enctype="multipart/form-data">
 
-    <p>
-    Phene: <s:textfield name="phene" />
-    </p>
-    
-    <p>    
-    Validation Master Sheet CSV File: <s:file name="validationMasterSheetCsv"/>
-    </p>
-    
-    <p>
-    Predictor List CSV File: <s:file name="predictorListCsv"/>
-    </p>
 
-<%--    
 <table class="dataTable">
+    <caption>Validation Cohorts with Discovery Scores</caption>
     <tr> 
         <th>ID</th>
         <th>Results</th>
@@ -51,7 +40,7 @@ Select Validation Data:
         <th>Phene High Cutoff</th>
     </tr>
 
-    <s:iterator value="discoveryCohortResultsList" var="result">
+    <s:iterator value="discoveryScores" var="result">
         <tr>
             <td>
                  <s:radio name="discoveryId" list="{cfeResultsId}"/>
@@ -71,8 +60,40 @@ Select Validation Data:
     </s:iterator>
 
 </table>
---%>
 
+
+<table class="dataTable" style="margin-top: 17px;">
+    <caption>Prediction Scores</caption>
+    <tr> 
+        <th>ID</th>
+        <th>Results</th>
+        <th>Results Type</th>
+        <th>Time Generated</th>
+        <th>Phene</th>
+        <th>Phene Low Cutoff</th>
+        <th>Phene High Cutoff</th>
+    </tr>
+
+    <s:iterator value="predictionScores" var="result">
+        <tr>
+            <td>
+                 <s:radio name="discoveryId" list="{cfeResultsId}"/>
+            </td>
+            <td>
+                <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
+                    <s:param name="cfeResultsId" value="cfeResultsId" />
+                    prediction-results.xlsx
+                 </s:a>
+            </td>
+            <td> <s:property value="resultsType"/>
+            <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
+            <td> <s:property value="phene"/> </td>
+            <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
+            <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
+        </tr>
+    </s:iterator>
+
+</table>
 <s:submit value="Select" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
 </s:form>
 

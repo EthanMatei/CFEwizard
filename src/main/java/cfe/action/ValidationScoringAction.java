@@ -61,17 +61,11 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	private Map<String, Object> webSession;
 
 	private Long validationDataId;
-	private List<CfeResults> cfeResults;
+	private List<CfeResults> discoveryScores;
+	private List<CfeResults> predictionScores;
 	
 	private String phene;
 	
-	private File validationMasterSheetCsv;
-	private String validationMasterSheetCsvContentType;
-	private String validationMasterSheetCsvFileName;
-
-	private File predictorListCsv;
-	private String predictorListCsvContentType;
-	private String predictorListCsvFileName;
 	    
 	/**
 	 * Select validation data (cohorts + discovery and prioritization scores)
@@ -84,7 +78,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    if (!Authorization.isAdmin(webSession)) {
 	        result = LOGIN;
 	    } else {
-	        this.cfeResults = CfeResultsService.getMetadata(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+	        this.discoveryScores  = CfeResultsService.getMetadata(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+	        this.predictionScores = CfeResultsService.getMetadata(CfeResultsType.PREDICTION_SCORES);
 	    }
 	    
 	    return result;
@@ -251,6 +246,22 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
     public void setPhene(String phene) {
         this.phene = phene;
+    }
+
+    public List<CfeResults> getDiscoveryScores() {
+        return discoveryScores;
+    }
+
+    public void setDiscoveryScores(List<CfeResults> discoveryScores) {
+        this.discoveryScores = discoveryScores;
+    }
+
+    public List<CfeResults> getPredictionScores() {
+        return predictionScores;
+    }
+
+    public void setPredictionScores(List<CfeResults> predictionScores) {
+        this.predictionScores = predictionScores;
     }
 
 }

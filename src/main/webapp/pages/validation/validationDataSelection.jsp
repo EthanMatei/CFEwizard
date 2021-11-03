@@ -21,14 +21,22 @@
     </div>
 </s:if>
 
-<p style="font-weight: bold;">
-Select Validation Data:
-</p>
 
 <s:form action="ValidationScoringSpecification" theme="simple" method="post" enctype="multipart/form-data">
 
+<%--
 <p>
 Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
+</p>
+--%>
+
+<p>
+Score cutoff (&ge;): <s:textfield style="text-align: right;" name="scoreCutoff" />
+</p>
+
+
+<p style="font-weight: bold;">
+Select Validation Data:
 </p>
             
 <table class="dataTable">

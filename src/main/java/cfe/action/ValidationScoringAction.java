@@ -76,6 +76,10 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
 	private String phene;
 	
+	private double scoreCutoff = 6.0;
+	
+	private List<String> genesNotFoundInPrioritization = new ArrayList<String>();
+	
 	    
 	/**
 	 * Select validation data (cohorts + discovery and prioritization scores)
@@ -101,10 +105,10 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }
-        else if (this.probesetMappingDb == null || this.probesetMappingDbFileName == null) {
-            this.setErrorMessage("No probeset to gene mapping database file was specified.");
-            result = INPUT;
-        }
+        //else if (this.probesetMappingDb == null || this.probesetMappingDbFileName == null) {
+        //    this.setErrorMessage("No probeset to gene mapping database file was specified.");
+        //    result = INPUT;
+        //}
         else if (validationDataId == null) {
             this.setErrorMessage("No validation data selected.");
             result = INPUT;
@@ -118,15 +122,17 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 //------------------------------------------------------------
                 // Get the probeset to mapping information
                 //------------------------------------------------------------
+                /*
                 String key = "Probe Set ID";
                 DataTable probesetMapping = new DataTable(key);
                 
                 ProbesetMappingParser dbParser = new ProbesetMappingParser(this.probesetMappingDb.getAbsolutePath());
                 Table table = dbParser.getMappingTable();
                 probesetMapping.initializeToAccessTable(table);
+                */
                 
-                this.validationMasterSheetFile = this.createValidationMasterSheet(this.validationDataId);
-                this.predictorListFile = this.createPredictorList(this.validationDataId);
+                this.validationMasterSheetFile = this.createValidationMasterSheet(this.validationDataId, this.prioritizationId);
+                this.predictorListFile = this.createPredictorList(this.validationDataId, this.prioritizationId);
             }
             catch (Exception exception) {
                 this.setErrorMessage(exception.getLocalizedMessage());
@@ -181,7 +187,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	}
 	
 	
-	public String createValidationMasterSheet(Long validationDataId) throws Exception
+	public String createValidationMasterSheet(Long validationDataId, Long prioritizationId) throws Exception
 	{
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
         
@@ -222,18 +228,24 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         return validationMasterSheetCsvTmp.getAbsolutePath();
 	}
 
-	public String createPredictorList(Long validationDataId) throws Exception
+	public String createPredictorList(Long validationDataId, Long prioritizationId) throws Exception
 	{
 	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
-	    /*
-	        CfeResults cfeResults = CfeResultsService.get(validationDataId);
-	        XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
-	     */
-
+	    Map<String,Double> prioritizationScores = this.getPrioritizationScores(prioritizationId);
+	    
+	    //----------------------------------------
+	    // Get the discovery scores
+	    //----------------------------------------
+	    CfeResults discoveryScoresAndCohorts = CfeResultsService.get(validationDataId);
+	    XSSFWorkbook workbook = discoveryScoresAndCohorts.getResultsSpreadsheet();
+        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES);
+        
+        DataTable discoveryScores = new DataTable("Probe Set ID");
+        discoveryScores.initializeToWorkbookSheet(sheet);
+	    
+        
 	    String key = "Predictor";
-
-	    //XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT);
 
 	    DataTable predictorList = new DataTable(key);
 	    predictorList.addColumn(key, "");
@@ -248,6 +260,70 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         predictorList.addColumn("PSYCHOSIS", "");
         predictorList.addColumn("All", "");
         
+        for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
+            double deScore = 0.0;
+            double prioritizationScore = 0.0;
+            double rawDeScore = 0.0;
+            double dePercentile = 0.0;
+            
+            String gene = discoveryScores.getValue(i, "Genecards Symbol");
+            String probeset = discoveryScores.getValue(i, "Probe Set ID");
+            String rawDeScoreString = discoveryScores.getValue(i, "DEscores");
+            String dePercentileString = discoveryScores.getValue(i, "DE Percentile");
+            String deScoreString = discoveryScores.getValue(i, "DE Score");
+            
+            try {
+                rawDeScore = Double.parseDouble(rawDeScoreString);
+            }
+            catch (NumberFormatException exception) {
+                rawDeScore = 0.0;
+            }
+            
+            try {
+                dePercentile = Double.parseDouble(dePercentileString);
+            }
+            catch (NumberFormatException exception) {
+                dePercentile = 0.0;
+            }
+                        
+            try {
+                deScore = Double.parseDouble(deScoreString);
+            }
+            catch (NumberFormatException exception) {
+                deScore = 0.0;
+            }
+        
+            if (prioritizationScores.containsKey(gene)) {
+                prioritizationScore = prioritizationScores.get(gene);   
+
+                double score = deScore + prioritizationScore;
+                if (dePercentile >= 0.3333333333 && score > this.scoreCutoff) {
+                    String direction = "I";
+                    if (rawDeScore < 0.0) {
+                        direction = "D";
+                    }
+
+                    ArrayList<String> row = new ArrayList<String>();
+                    row.add(gene + "biom" + probeset);
+                    row.add(direction);
+                    row.add("0"); // Male
+                    row.add("0"); // Female
+                    row.add("0"); // BP
+                    row.add("0"); // MDD
+                    row.add("0"); // SZ
+                    row.add("0"); // SZA
+                    row.add("0"); // PTSD
+                    row.add("0"); // PSYCHOSIS
+                    row.add("1"); // All
+
+                    predictorList.addRow(row);
+                }
+            }
+            else {
+                this.genesNotFoundInPrioritization.add(gene);
+            }
+        }
+        
 	    //-------------------------------------------------------
 	    // Write the master sheet to a CSV file
 	    //-------------------------------------------------------
@@ -258,6 +334,40 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    }
 	    return predictorListCsvTmp.getAbsolutePath();
 	}
+	
+    public Map<String,Double> getPrioritizationScores(Long prioritizationId) throws Exception
+    {
+        Map<String,Double> scores = new HashMap<String,Double>();
+        
+        CfeResults cfeResults = CfeResultsService.get(prioritizationId);
+        XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
+        
+        String key = "Gene";
+        
+        XSSFSheet sheet = workbook.getSheet("CFG Wizard Scores");
+        DataTable cfgScoresSheet = new DataTable(key);
+        cfgScoresSheet.initializeToWorkbookSheet(sheet);
+
+        // Get scores
+        for (int i = 0; i < cfgScoresSheet.getNumberOfRows(); i++) {
+            String gene  = cfgScoresSheet.getValue(i, "Gene");
+            String score = cfgScoresSheet.getValue(i, "Score");
+            
+            String[] geneList = gene.split(",");  // If list, change to single upper-case value
+            gene = geneList[0].toUpperCase();
+            
+            Double scoreValue = 0.0;
+            try {
+                scoreValue = Double.parseDouble(score);
+            } catch (NumberFormatException exception) {
+                scoreValue = 0.0;
+            }
+            
+            scores.put(gene, scoreValue);
+        }
+
+        return scores;
+    }
 	
 	public DataTable createValidationScoresInfoTable() throws Exception {
         DataTable infoTable = new DataTable("attribute");
@@ -424,6 +534,22 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
     public void setPredictorListFile(String predictorListFile) {
         this.predictorListFile = predictorListFile;
+    }
+
+    public double getScoreCutoff() {
+        return scoreCutoff;
+    }
+
+    public void setScoreCutoff(double scoreCutoff) {
+        this.scoreCutoff = scoreCutoff;
+    }
+
+    public List<String> getGenesNotFoundInPrioritization() {
+        return genesNotFoundInPrioritization;
+    }
+
+    public void setGenesNotFoundInPrioritization(List<String> genesNotFoundInPrioritization) {
+        this.genesNotFoundInPrioritization = genesNotFoundInPrioritization;
     }
 
 }

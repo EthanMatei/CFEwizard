@@ -30,6 +30,10 @@
 </p>
 
 <p>
+Score cutoff (&ge;): <s:property value="scoreCutoff" />
+</p>
+
+<p>
     Validation Master Sheet:
     <s:a action="CsvDisplay">
         <s:param name="csvFilePath" value="validationMasterSheetFile" />

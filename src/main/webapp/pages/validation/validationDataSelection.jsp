@@ -31,6 +31,11 @@ Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
 --%>
 
 <p>
+Gene Expression CSV File
+<s:file name="geneExpressionCsv" />
+</p>
+        
+<p>
 Score cutoff (&ge;): <s:textfield style="text-align: right;" name="scoreCutoff" />
 </p>
 

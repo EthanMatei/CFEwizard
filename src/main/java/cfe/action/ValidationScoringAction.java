@@ -61,9 +61,9 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	private Map<String, Object> webSession;
 
     
-    private File probesetMappingDb;
-    private String probesetMappingDbContentType;
-    private String probesetMappingDbFileName;
+    private File geneExpressionCsv;
+    private String geneExpressionCsvContentType;
+    private String geneExpressionCsvFileName;
 
 	private List<CfeResults> discoveryScores;
 	private List<CfeResults> prioritizationScores;
@@ -105,7 +105,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }
-        //else if (this.probesetMappingDb == null || this.probesetMappingDbFileName == null) {
+        //else if (this.geneExpressionCsv == null || this.geneExpressionCsvFileName == null) {
         //    this.setErrorMessage("No probeset to gene mapping database file was specified.");
         //    result = INPUT;
         //}
@@ -119,20 +119,22 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         }
         else {
             try {
-                //------------------------------------------------------------
-                // Get the probeset to mapping information
-                //------------------------------------------------------------
-                /*
-                String key = "Probe Set ID";
-                DataTable probesetMapping = new DataTable(key);
+                DataTable predictorList = this.createPredictorList(this.validationDataId, this.prioritizationId);
+                String predictorListCsv = predictorList.toCsv();
+                File predictorListCsvTmp = File.createTempFile("validation-master-sheet-",  ".csv");
+                if (predictorListCsv != null) {
+                    FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
+                }
+                this.predictorListFile = predictorListCsvTmp.getAbsolutePath();
                 
-                ProbesetMappingParser dbParser = new ProbesetMappingParser(this.probesetMappingDb.getAbsolutePath());
-                Table table = dbParser.getMappingTable();
-                probesetMapping.initializeToAccessTable(table);
-                */
-                
-                this.validationMasterSheetFile = this.createValidationMasterSheet(this.validationDataId, this.prioritizationId);
-                this.predictorListFile = this.createPredictorList(this.validationDataId, this.prioritizationId);
+                this.validationMasterSheetFile = this.createValidationMasterSheet(
+                        this.validationDataId,
+                        predictorList,
+                        this.geneExpressionCsv
+                );
+            
+                // Need to read in gene expression file (row at a time?), each row represents the phene visit
+                // values for one probeset (create map from probeset name to column name?)
             }
             catch (Exception exception) {
                 this.setErrorMessage(exception.getLocalizedMessage());
@@ -187,7 +189,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	}
 	
 	
-	public String createValidationMasterSheet(Long validationDataId, Long prioritizationId) throws Exception
+	public String createValidationMasterSheet(Long validationDataId, DataTable predictorList, File geneExpressionCsvFile) throws Exception
 	{
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
         
@@ -217,6 +219,23 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	        masterSheet.setValue(i, "Biomarkers", pheneVisit);
 	    }
 	    
+	    // Add predictor columns
+	    for (int i = 0; i < predictorList.getNumberOfRows(); i++) {
+	        String predictor = predictorList.getValue(i, "Predictor");
+	        masterSheet.addColumn(predictor, "");
+	    }
+        
+	    FileReader filereader = new FileReader(geneExpressionCsv);
+        CSVReader csvReader = new CSVReader(filereader);
+        
+        String[] header = csvReader.readNext();
+        
+        String[] row;
+        while ((row = csvReader.readNext()) != null) {
+            
+        }
+        csvReader.close();
+        
 	    //-------------------------------------------------------
 	    // Write the master sheet to a CSV file
 	    //-------------------------------------------------------
@@ -225,10 +244,11 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         if (masterSheetCsv != null) {
             FileUtils.write(validationMasterSheetCsvTmp, masterSheetCsv, "UTF-8");
         }
+        
         return validationMasterSheetCsvTmp.getAbsolutePath();
 	}
 
-	public String createPredictorList(Long validationDataId, Long prioritizationId) throws Exception
+	public DataTable createPredictorList(Long validationDataId, Long prioritizationId) throws Exception
 	{
 	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
@@ -324,15 +344,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
             }
         }
         
-	    //-------------------------------------------------------
-	    // Write the master sheet to a CSV file
-	    //-------------------------------------------------------
-	    String predictorListCsv = predictorList.toCsv();
-	    File predictorListCsvTmp = File.createTempFile("validation-master-sheet-",  ".csv");
-	    if (predictorListCsv != null) {
-	        FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
-	    }
-	    return predictorListCsvTmp.getAbsolutePath();
+        return predictorList;
 	}
 	
     public Map<String,Double> getPrioritizationScores(Long prioritizationId) throws Exception
@@ -413,7 +425,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true); // redirect standard error to standard output
         
-        log.info("*** Before process start");
         Process process = processBuilder.start();
 
 
@@ -432,7 +443,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    }
 	    
 	    reader.close();
-        log.info("*** reader closed");
 		return output.toString();
 	}
 	
@@ -464,28 +474,28 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         this.phene = phene;
     }
     
-    public File getProbesetMappingDb() {
-        return probesetMappingDb;
+    public File getGeneExpressionsCsv() {
+        return geneExpressionCsv;
     }
 
-    public void setProbesetMappingDb(File probesetMappingDb) {
-        this.probesetMappingDb = probesetMappingDb;
+    public void setGeneExpressionsCsv(File geneExpressionCsv) {
+        this.geneExpressionCsv = geneExpressionCsv;
     }
 
-    public String getProbesetMappingDbContentType() {
-        return probesetMappingDbContentType;
+    public String getGeneExpressionsCsvContentType() {
+        return geneExpressionCsvContentType;
     }
 
-    public void setProbesetMappingDbContentType(String probesetMappingDbContentType) {
-        this.probesetMappingDbContentType = probesetMappingDbContentType;
+    public void setGeneExpressionsCsvContentType(String geneExpressionCsvContentType) {
+        this.geneExpressionCsvContentType = geneExpressionCsvContentType;
     }
 
-    public String getProbesetMappingDbFileName() {
-        return probesetMappingDbFileName;
+    public String getGeneExpressionsCsvFileName() {
+        return geneExpressionCsvFileName;
     }
 
-    public void setProbesetMappingDbFileName(String probesetMappingDbFileName) {
-        this.probesetMappingDbFileName = probesetMappingDbFileName;
+    public void setGeneExpressionsCsvFileName(String geneExpressionCsvFileName) {
+        this.geneExpressionCsvFileName = geneExpressionCsvFileName;
     }
 
     public List<CfeResults> getDiscoveryScores() {

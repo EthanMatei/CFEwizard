@@ -60,12 +60,19 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
 	private Map<String, Object> webSession;
 
+    
+    private File probesetMappingDb;
+    private String probesetMappingDbContentType;
+    private String probesetMappingDbFileName;
 
 	private List<CfeResults> discoveryScores;
 	private List<CfeResults> prioritizationScores;
     
     private Long validationDataId;	
 	private Long prioritizationId;
+	
+	private String validationMasterSheetFile;
+	private String predictorListFile;
 
 	private String phene;
 	
@@ -94,13 +101,32 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }
+        else if (this.probesetMappingDb == null || this.probesetMappingDbFileName == null) {
+            this.setErrorMessage("No probeset to gene mapping database file was specified.");
+            result = INPUT;
+        }
         else if (validationDataId == null) {
             this.setErrorMessage("No validation data selected.");
-            result = ERROR;
+            result = INPUT;
+        }
+        else if (prioritizationId == null) {
+            this.setErrorMessage("No prioritization results selected.");
+            result = INPUT;
         }
         else {
             try {
-
+                //------------------------------------------------------------
+                // Get the probeset to mapping information
+                //------------------------------------------------------------
+                String key = "Probe Set ID";
+                DataTable probesetMapping = new DataTable(key);
+                
+                ProbesetMappingParser dbParser = new ProbesetMappingParser(this.probesetMappingDb.getAbsolutePath());
+                Table table = dbParser.getMappingTable();
+                probesetMapping.initializeToAccessTable(table);
+                
+                this.validationMasterSheetFile = this.createValidationMasterSheet(this.validationDataId);
+                this.predictorListFile = this.createPredictorList(this.validationDataId);
             }
             catch (Exception exception) {
                 this.setErrorMessage(exception.getLocalizedMessage());
@@ -154,7 +180,84 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 		return result;
 	}
 	
+	
+	public String createValidationMasterSheet(Long validationDataId) throws Exception
+	{
+        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+        
+	    CfeResults cfeResults = CfeResultsService.get(validationDataId);
+	    XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
+	    
+	    String key = "Subject Identifiers.PheneVisit";
+	    
+	    XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT);
+	    DataTable masterSheet = new DataTable(key);
+	    masterSheet.initializeToWorkbookSheet(sheet);
+	    
+	    masterSheet.deleteColumn("TestingCohort");
+	    
+	    // Create dx column
+	    masterSheet.insertColumn("dx", 9, "");
+        for (int i = 0; i < masterSheet.getNumberOfRows(); i++) {
+            String gender = masterSheet.getValue(i, "Gender(M/F)");
+            String dxCode = masterSheet.getValue(i, "DxCode");
+            masterSheet.setValue(i, "dx", gender + "-" + dxCode);
+        }
+        
+        // Create Biomarkers column
+	    masterSheet.addColumn("Biomarkers",  "");
+	    for (int i = 0; i < masterSheet.getNumberOfRows(); i++) {
+	        String pheneVisit = masterSheet.getValue(i, key);
+	        masterSheet.setValue(i, "Biomarkers", pheneVisit);
+	    }
+	    
+	    //-------------------------------------------------------
+	    // Write the master sheet to a CSV file
+	    //-------------------------------------------------------
+	    String masterSheetCsv = masterSheet.toCsv();
+        File validationMasterSheetCsvTmp = File.createTempFile("validation-master-sheet-",  ".csv");
+        if (masterSheetCsv != null) {
+            FileUtils.write(validationMasterSheetCsvTmp, masterSheetCsv, "UTF-8");
+        }
+        return validationMasterSheetCsvTmp.getAbsolutePath();
+	}
 
+	public String createPredictorList(Long validationDataId) throws Exception
+	{
+	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+
+	    /*
+	        CfeResults cfeResults = CfeResultsService.get(validationDataId);
+	        XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
+	     */
+
+	    String key = "Predictor";
+
+	    //XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT);
+
+	    DataTable predictorList = new DataTable(key);
+	    predictorList.addColumn(key, "");
+	    predictorList.addColumn("Direction", "");
+        predictorList.addColumn("Male", "");
+        predictorList.addColumn("Female", "");
+        predictorList.addColumn("BP", "");
+        predictorList.addColumn("MDD", "");
+        predictorList.addColumn("SZ", "");
+        predictorList.addColumn("SZA", "");
+        predictorList.addColumn("PTSD", "");
+        predictorList.addColumn("PSYCHOSIS", "");
+        predictorList.addColumn("All", "");
+        
+	    //-------------------------------------------------------
+	    // Write the master sheet to a CSV file
+	    //-------------------------------------------------------
+	    String predictorListCsv = predictorList.toCsv();
+	    File predictorListCsvTmp = File.createTempFile("validation-master-sheet-",  ".csv");
+	    if (predictorListCsv != null) {
+	        FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
+	    }
+	    return predictorListCsvTmp.getAbsolutePath();
+	}
 	
 	public DataTable createValidationScoresInfoTable() throws Exception {
         DataTable infoTable = new DataTable("attribute");
@@ -250,6 +353,30 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
     public void setPhene(String phene) {
         this.phene = phene;
     }
+    
+    public File getProbesetMappingDb() {
+        return probesetMappingDb;
+    }
+
+    public void setProbesetMappingDb(File probesetMappingDb) {
+        this.probesetMappingDb = probesetMappingDb;
+    }
+
+    public String getProbesetMappingDbContentType() {
+        return probesetMappingDbContentType;
+    }
+
+    public void setProbesetMappingDbContentType(String probesetMappingDbContentType) {
+        this.probesetMappingDbContentType = probesetMappingDbContentType;
+    }
+
+    public String getProbesetMappingDbFileName() {
+        return probesetMappingDbFileName;
+    }
+
+    public void setProbesetMappingDbFileName(String probesetMappingDbFileName) {
+        this.probesetMappingDbFileName = probesetMappingDbFileName;
+    }
 
     public List<CfeResults> getDiscoveryScores() {
         return discoveryScores;
@@ -281,6 +408,22 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
     public void setPrioritizationId(Long prioritizationId) {
         this.prioritizationId = prioritizationId;
+    }
+
+    public String getValidationMasterSheetFile() {
+        return validationMasterSheetFile;
+    }
+
+    public void setValidationMasterSheetFile(String validationMasterSheetFile) {
+        this.validationMasterSheetFile = validationMasterSheetFile;
+    }
+
+    public String getPredictorListFile() {
+        return predictorListFile;
+    }
+
+    public void setPredictorListFile(String predictorListFile) {
+        this.predictorListFile = predictorListFile;
     }
 
 }

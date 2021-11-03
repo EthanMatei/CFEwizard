@@ -138,8 +138,8 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
             this.discoveryResults = CfeResultsService.get(discoveryId);
 
-            XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
-            XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+            XSSFWorkbook discoveryWorkbook = discoveryResults.getResultsSpreadsheet();
+            XSSFSheet sheet = discoveryWorkbook.getSheet(CfeResultsSheets.COHORT_DATA);
             CohortDataTable cohortData = new CohortDataTable();
             cohortData.initializeToWorkbookSheet(sheet);
             cohortData.setKey("Subject Identifiers.PheneVisit");
@@ -180,14 +180,26 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             //-------------------------------------------------------------------------------
             XSSFWorkbook resultsWorkbook = new XSSFWorkbook();
             
+            if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
+                // Discovery scores table
+                DataTable discoveryScores = new DataTable(null);
+                discoveryScores.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES));
+                discoveryScores.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES);
+            
+                // Discovery scores info table
+                DataTable discoveryScoresInfo = new DataTable(null);
+                discoveryScoresInfo.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES_INFO));
+                discoveryScoresInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES_INFO);                
+            }
+            
             // Discovery cohort table
             DataTable discoveryCohort = new DataTable(null);
-            discoveryCohort.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
+            discoveryCohort.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
             discoveryCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT);
 
             // Discovery cohort info table
             DataTable discoveryCohortInfo = new DataTable(null);
-            discoveryCohortInfo.initializeToWorkbookSheet(workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO));
+            discoveryCohortInfo.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO));
             discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
 
             // Modify (all) cohort data table

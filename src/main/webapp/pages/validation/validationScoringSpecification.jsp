@@ -29,6 +29,23 @@
     Prioritization ID: <s:property value="prioritizationId" />
 </p>
 
+<p>
+    Validation Master Sheet:
+    <s:a action="CsvDisplay">
+        <s:param name="csvFilePath" value="validationMasterSheetFile" />
+        <s:property value="validationMasterSheetFile" />
+    </s:a>
+</p>
+
+
+<p>
+    Predictor List:
+    <s:a action="CsvDisplay">
+        <s:param name="csvFilePath" value="predictorListFile" />
+        <s:property value="predictorListFile" />
+    </s:a>
+</p>
+
 <s:form action="ValidationScoresCalculation" theme="simple" method="post" enctype="multipart/form-data">
 <s:submit value="Calculate" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
 </s:form>

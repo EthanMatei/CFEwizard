@@ -704,7 +704,7 @@ public class DataTable {
 	    int columnIndex = this.getColumnIndex(columnName);
 
 	    if (columnIndex < 0) {
-	        throw new Exception("Attempt to retrieve value from data table for non-existent column \"" + columnName + "\".");
+	        throw new Exception("Attempt to set value for data table for non-existent column \"" + columnName + "\".");
 	    }
 
 	    if (row == null && row.isEmpty()) {
@@ -715,8 +715,17 @@ public class DataTable {
 	    }
 	}
 	
-	public void setValue(int rowIndex, String columnName, String value) {
+	public void setValue(int rowIndex, String columnName, String value) throws Exception {
 	    int columnIndex = this.getColumnIndex(columnName);
+
+        if (columnIndex < 0) {
+            throw new Exception("Attempt to set value for data table for non-existent column \"" + columnName + "\".");
+        }
+        
+        if (rowIndex < 0 || rowIndex > this.data.size()) {
+            throw new Exception("Attempt to set value in data table with invalid row index " + rowIndex + ".");
+        }
+
 	    this.data.get(rowIndex).set(columnIndex, value);
 	}
 

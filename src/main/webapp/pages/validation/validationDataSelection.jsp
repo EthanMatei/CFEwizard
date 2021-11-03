@@ -27,7 +27,10 @@ Select Validation Data:
 
 <s:form action="ValidationScoringSpecification" theme="simple" method="post" enctype="multipart/form-data">
 
-
+<p>
+Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
+</p>
+            
 <table class="dataTable">
     <caption>Validation Cohorts with Discovery Scores</caption>
     <tr> 

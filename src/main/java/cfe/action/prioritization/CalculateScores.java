@@ -77,12 +77,12 @@ public class CalculateScores extends BaseAction implements SessionAware {
 					results = Score.calculate(geneListInput, diseaseSelection, weights);
 					Date generatedTime = new Date();
 					
-					// Generate a workbook with the prediction scores
+					// Generate a workbook with the prioritization scores
 					XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(results, scores, weights, diseaseSelectors);
 					
 					CfeResults cfeResults = new CfeResults();
 					cfeResults.setResultsSpreadsheet(workbook);
-					cfeResults.setResultsType(CfeResultsType.PREDICTION_SCORES);
+					cfeResults.setResultsType(CfeResultsType.PRIORITIZATION_SCORES);
 					cfeResults.setGeneratedTime(generatedTime);
 					CfeResultsService.save(cfeResults);
 				}

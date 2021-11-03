@@ -63,7 +63,7 @@ Select Validation Data:
 
 
 <table class="dataTable" style="margin-top: 17px;">
-    <caption>Prediction Scores</caption>
+    <caption>Prioritization Scores</caption>
     <tr> 
         <th>ID</th>
         <th>Results</th>
@@ -74,7 +74,7 @@ Select Validation Data:
         <th>Phene High Cutoff</th>
     </tr>
 
-    <s:iterator value="predictionScores" var="result">
+    <s:iterator value="prioritizationScores" var="result">
         <tr>
             <td>
                  <s:radio name="discoveryId" list="{cfeResultsId}"/>
@@ -82,7 +82,7 @@ Select Validation Data:
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
                     <s:param name="cfeResultsId" value="cfeResultsId" />
-                    prediction-results.xlsx
+                    prioritization-results.xlsx
                  </s:a>
             </td>
             <td> <s:property value="resultsType"/>

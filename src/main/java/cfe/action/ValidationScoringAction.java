@@ -62,7 +62,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
 	private Long validationDataId;
 	private List<CfeResults> discoveryScores;
-	private List<CfeResults> predictionScores;
+	private List<CfeResults> prioritizationScores;
 	
 	private String phene;
 	
@@ -79,7 +79,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	        result = LOGIN;
 	    } else {
 	        this.discoveryScores  = CfeResultsService.getMetadata(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
-	        this.predictionScores = CfeResultsService.getMetadata(CfeResultsType.PREDICTION_SCORES);
+	        this.prioritizationScores = CfeResultsService.getMetadata(CfeResultsType.PRIORITIZATION_SCORES);
 	    }
 	    
 	    return result;
@@ -256,12 +256,12 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         this.discoveryScores = discoveryScores;
     }
 
-    public List<CfeResults> getPredictionScores() {
-        return predictionScores;
+    public List<CfeResults> getPrioritizationScores() {
+        return prioritizationScores;
     }
 
-    public void setPredictionScores(List<CfeResults> predictionScores) {
-        this.predictionScores = predictionScores;
+    public void setPrioritizationScores(List<CfeResults> prioritizationScores) {
+        this.prioritizationScores = prioritizationScores;
     }
 
 }

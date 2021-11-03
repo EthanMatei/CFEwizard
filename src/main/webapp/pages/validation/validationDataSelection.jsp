@@ -43,7 +43,7 @@ Select Validation Data:
     <s:iterator value="discoveryScores" var="result">
         <tr>
             <td>
-                 <s:radio name="discoveryId" list="{cfeResultsId}"/>
+                 <s:radio name="validationDataId" list="{cfeResultsId}"/>
             </td>
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
@@ -53,6 +53,7 @@ Select Validation Data:
             </td>
             <td> <s:property value="resultsType"/>
             <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
+            
             <td> <s:property value="phene"/> </td>
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
             <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
@@ -69,15 +70,17 @@ Select Validation Data:
         <th>Results</th>
         <th>Results Type</th>
         <th>Time Generated</th>
+        <%--
         <th>Phene</th>
         <th>Phene Low Cutoff</th>
         <th>Phene High Cutoff</th>
+        --%>
     </tr>
 
     <s:iterator value="prioritizationScores" var="result">
         <tr>
             <td>
-                 <s:radio name="discoveryId" list="{cfeResultsId}"/>
+                 <s:radio name="prioritizationId" list="{cfeResultsId}"/>
             </td>
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
@@ -87,9 +90,11 @@ Select Validation Data:
             </td>
             <td> <s:property value="resultsType"/>
             <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
+            <%--
             <td> <s:property value="phene"/> </td>
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
             <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
+            --%>
         </tr>
     </s:iterator>
 

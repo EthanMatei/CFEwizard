@@ -60,10 +60,13 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
 	private Map<String, Object> webSession;
 
-	private Long validationDataId;
+
 	private List<CfeResults> discoveryScores;
 	private List<CfeResults> prioritizationScores;
-	
+    
+    private Long validationDataId;	
+	private Long prioritizationId;
+
 	private String phene;
 	
 	    
@@ -262,6 +265,22 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
     public void setPrioritizationScores(List<CfeResults> prioritizationScores) {
         this.prioritizationScores = prioritizationScores;
+    }
+
+    public Long getValidationDataId() {
+        return validationDataId;
+    }
+
+    public void setValidationDataId(Long validationDataId) {
+        this.validationDataId = validationDataId;
+    }
+
+    public Long getPrioritizationId() {
+        return prioritizationId;
+    }
+
+    public void setPrioritizationId(Long prioritizationId) {
+        this.prioritizationId = prioritizationId;
     }
 
 }

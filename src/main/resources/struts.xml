@@ -522,7 +522,28 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-         
+ 
+ 
+		<action name="ValidationScoringSpecification" class="cfe.action.ValidationScoringAction" method="validationScoringSpecification">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/validation/validationScoringSpecification.jsp</result>
+			<result name="error">pages/validation/validationScoringSpecification.jsp</result>	
+			<result name="input">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>       
+		
+ 
+		<action name="ValidationScoresCalculation" class="cfe.action.ValidationScoringAction" method="calculateValidationScores">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/validation/validationScores.jsp</result>
+			<result name="error">pages/validation/validationScores.jsp</result>	
+			<result name="input">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>  		
         <!-- ==================================================================================== -->
         
         <!-- Testing Scoring -->

@@ -753,6 +753,32 @@ public class DataTable {
     }
     
     /**
+     * Gets the row index for the row that has the specified value in the specified column.
+     * 
+     * @param columnName
+     * @param value
+     * @return the row index for the specified column and value, or -1 if the value is not
+     *         found in the specified column.
+     */
+    public int getRowIndex(String columnName, String value) throws Exception {
+       int rowIndex = -1;
+       
+       int columnIndex = this.getColumnIndex(columnName);
+       
+       if (columnIndex < 0) {
+           throw new Exception("Column name \"" + columnName + "\" not found in call to getRowIndex");
+       }
+       
+       for (int i = 0; i < this.data.size(); i++) {
+           if (value.equals(this.getValue(i, columnIndex))) {
+               rowIndex = i;
+               break;
+           }
+       }
+       return rowIndex;
+    }
+    
+    /**
      * Get the specified row with only the specified columns.
      * 
      * @param index

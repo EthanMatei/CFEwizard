@@ -116,6 +116,8 @@ Select Validation Data:
 
 </table>
 <s:submit value="Select" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+
+<s:token/>
 </s:form>
 
 </tiles:putAttribute>

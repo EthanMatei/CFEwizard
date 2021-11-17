@@ -102,6 +102,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	public String validationScoringSpecification() throws Exception {
 	    String result = SUCCESS;
 	    
+	    log.info("***** GENE EXPRESSION FILE NAME: " + this.geneExpressionCsvFileName);
+	    
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }
@@ -117,11 +119,19 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
             this.setErrorMessage("No prioritization results selected.");
             result = INPUT;
         }
+        else if (this.geneExpressionCsv == null || this.geneExpressionCsvFileName == null) {
+            this.setErrorMessage("No gene expression CSV file specified.");
+            result = INPUT;
+        }
+        else if (!this.geneExpressionCsvFileName.endsWith(".csv")) {
+            this.setErrorMessage("This gene expression file \"" + this.geneExpressionCsvFileName + "\" is not a .csv file.");
+            result = INPUT;
+        }
         else {
             try {
                 DataTable predictorList = this.createPredictorList(this.validationDataId, this.prioritizationId);
                 String predictorListCsv = predictorList.toCsv();
-                File predictorListCsvTmp = File.createTempFile("validation-master-sheet-",  ".csv");
+                File predictorListCsvTmp = File.createTempFile("predictor-list-",  ".csv");
                 if (predictorListCsv != null) {
                     FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
                 }
@@ -132,9 +142,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                         predictorList,
                         this.geneExpressionCsv
                 );
-            
-                // Need to read in gene expression file (row at a time?), each row represents the phene visit
-                // values for one probeset (create map from probeset name to column name?)
             }
             catch (Exception exception) {
                 this.setErrorMessage(exception.getLocalizedMessage());
@@ -191,6 +198,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	
 	public String createValidationMasterSheet(Long validationDataId, DataTable predictorList, File geneExpressionCsvFile) throws Exception
 	{
+	    log.info("******************** in createValidationMasterSheet.");
+	    
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
         
 	    CfeResults cfeResults = CfeResultsService.get(validationDataId);
@@ -204,7 +213,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    
 	    masterSheet.deleteColumn("TestingCohort");
 	    
-	    // Create dx column
+	    // Create dx column (gender + diagnosis code)
 	    masterSheet.insertColumn("dx", 9, "");
         for (int i = 0; i < masterSheet.getNumberOfRows(); i++) {
             String gender = masterSheet.getValue(i, "Gender(M/F)");
@@ -212,29 +221,75 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
             masterSheet.setValue(i, "dx", gender + "-" + dxCode);
         }
         
-        // Create Biomarkers column
+        // Create Biomarkers column (contains pheneVisit as value)
 	    masterSheet.addColumn("Biomarkers",  "");
 	    for (int i = 0; i < masterSheet.getNumberOfRows(); i++) {
 	        String pheneVisit = masterSheet.getValue(i, key);
 	        masterSheet.setValue(i, "Biomarkers", pheneVisit);
 	    }
 	    
-	    // Add predictor columns
+	    // Add predictor columns (combination of gene cards symbol, "biom" and probeset)
 	    for (int i = 0; i < predictorList.getNumberOfRows(); i++) {
 	        String predictor = predictorList.getValue(i, "Predictor");
 	        masterSheet.addColumn(predictor, "");
 	    }
         
+	    log.info("Initial validation mastersheet created (without gene expression values)");
+	    
+        //---------------------------------------------------------------------------
+        // Read in the gene expression CSV file. It has the following format:
+        //
+        // ID            <phene-visit> <phene-visit> <phene-visit>
+        // <probeset>    <value>       <value>       <value>
+        // <probeset>    <value>       <value>       <value>
+        //---------------------------------------------------------------------------
 	    FileReader filereader = new FileReader(geneExpressionCsv);
         CSVReader csvReader = new CSVReader(filereader);
         
         String[] header = csvReader.readNext();
         
+        log.info("***** header retrieved");
+        
+        // Create map from probesets to predictors
+        HashMap<String,String> probesetToPredictorMap = new HashMap<String,String>();
+        List<String> columns = masterSheet.getColumnNames();
+        for (String column: columns) {
+            if (column.contains("biom")) {
+                String[] mapValues = column.split("biom");
+                log.info("******** column: " + column);
+                log.info("Setting map from " + mapValues[0] + " to " + mapValues[1]);
+                probesetToPredictorMap.put(mapValues[0],  mapValues[1]);
+            }
+        }
+        
+        log.info("************************** probeset to predictor map set.");
+        
         String[] row;
         while ((row = csvReader.readNext()) != null) {
-            
+            String probeset = row[0];
+            String predictor = probesetToPredictorMap.get(probeset);
+
+            if (predictor != null && !predictor.isEmpty()) {
+                for (int i = 1; i < row.length; i++) {
+                    String pheneVisit = header[i];
+                    String value = row[i];
+
+                    // Set mastersheet values
+                    //
+                    // ... Biomarker     <gene>biom<probeset>  <gene>biom<probeset> ...
+                    // ... <phene-visit> <value>               <value>
+                    // ... <phene-visit> <value>               <value>
+                    int rowIndex = masterSheet.getRowIndex("Biomarkers", pheneVisit);
+                    if (rowIndex >= 0) {
+                        log.info("***** Setting mastersheet row " + rowIndex + " column " + predictor + ".");
+                        masterSheet.setValue(rowIndex, predictor, value);    
+                    }
+                }
+            }
         }
         csvReader.close();
+        
+        log.info("Gene expression values set in validation mastersheet.");
         
 	    //-------------------------------------------------------
 	    // Write the master sheet to a CSV file
@@ -244,10 +299,14 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         if (masterSheetCsv != null) {
             FileUtils.write(validationMasterSheetCsvTmp, masterSheetCsv, "UTF-8");
         }
+        else {
+            throw new Exception("Unable to create validation mastersheet.");
+        }
         
         return validationMasterSheetCsvTmp.getAbsolutePath();
 	}
 
+	
 	public DataTable createPredictorList(Long validationDataId, Long prioritizationId) throws Exception
 	{
 	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
@@ -474,27 +533,27 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         this.phene = phene;
     }
     
-    public File getGeneExpressionsCsv() {
+    public File getGeneExpressionCsv() {
         return geneExpressionCsv;
     }
 
-    public void setGeneExpressionsCsv(File geneExpressionCsv) {
+    public void setGeneExpressionCsv(File geneExpressionCsv) {
         this.geneExpressionCsv = geneExpressionCsv;
     }
 
-    public String getGeneExpressionsCsvContentType() {
+    public String getGeneExpressionCsvContentType() {
         return geneExpressionCsvContentType;
     }
 
-    public void setGeneExpressionsCsvContentType(String geneExpressionCsvContentType) {
+    public void setGeneExpressionCsvContentType(String geneExpressionCsvContentType) {
         this.geneExpressionCsvContentType = geneExpressionCsvContentType;
     }
 
-    public String getGeneExpressionsCsvFileName() {
+    public String getGeneExpressionCsvFileName() {
         return geneExpressionCsvFileName;
     }
 
-    public void setGeneExpressionsCsvFileName(String geneExpressionCsvFileName) {
+    public void setGeneExpressionCsvFileName(String geneExpressionCsvFileName) {
         this.geneExpressionCsvFileName = geneExpressionCsvFileName;
     }
 

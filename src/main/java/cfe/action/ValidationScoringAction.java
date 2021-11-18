@@ -198,8 +198,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	
 	public String createValidationMasterSheet(Long validationDataId, DataTable predictorList, File geneExpressionCsvFile) throws Exception
 	{
-	    log.info("******************** in createValidationMasterSheet.");
-	    
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
         
 	    CfeResults cfeResults = CfeResultsService.get(validationDataId);
@@ -233,8 +231,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	        String predictor = predictorList.getValue(i, "Predictor");
 	        masterSheet.addColumn(predictor, "");
 	    }
-        
-	    log.info("Initial validation mastersheet created (without gene expression values)");
 	    
         //---------------------------------------------------------------------------
         // Read in the gene expression CSV file. It has the following format:
@@ -248,21 +244,15 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         
         String[] header = csvReader.readNext();
         
-        log.info("***** header retrieved");
-        
         // Create map from probesets to predictors
         HashMap<String,String> probesetToPredictorMap = new HashMap<String,String>();
         List<String> columns = masterSheet.getColumnNames();
         for (String column: columns) {
             if (column.contains("biom")) {
                 String[] mapValues = column.split("biom");
-                log.info("******** column: " + column);
-                log.info("Setting map from " + mapValues[0] + " to " + mapValues[1]);
-                probesetToPredictorMap.put(mapValues[0],  mapValues[1]);
+                probesetToPredictorMap.put(mapValues[1],  column);
             }
         }
-        
-        log.info("************************** probeset to predictor map set.");
         
         String[] row;
         while ((row = csvReader.readNext()) != null) {
@@ -281,15 +271,12 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                     // ... <phene-visit> <value>               <value>
                     int rowIndex = masterSheet.getRowIndex("Biomarkers", pheneVisit);
                     if (rowIndex >= 0) {
-                        log.info("***** Setting mastersheet row " + rowIndex + " column " + predictor + ".");
                         masterSheet.setValue(rowIndex, predictor, value);    
                     }
                 }
             }
         }
         csvReader.close();
-        
-        log.info("Gene expression values set in validation mastersheet.");
         
 	    //-------------------------------------------------------
 	    // Write the master sheet to a CSV file
@@ -336,7 +323,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         predictorList.addColumn("SZ", "");
         predictorList.addColumn("SZA", "");
         predictorList.addColumn("PTSD", "");
-        predictorList.addColumn("PSYCHOSIS", "");
+        predictorList.addColumn("PSYCH", "");
         predictorList.addColumn("All", "");
         
         for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
@@ -392,7 +379,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                     row.add("0"); // SZ
                     row.add("0"); // SZA
                     row.add("0"); // PTSD
-                    row.add("0"); // PSYCHOSIS
+                    row.add("0"); // PSYCH
                     row.add("1"); // All
 
                     predictorList.addRow(row);

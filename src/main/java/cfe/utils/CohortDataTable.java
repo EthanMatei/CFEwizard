@@ -179,7 +179,7 @@ public class CohortDataTable extends DataTable {
      * @param pheneConditions
      * @return
      */
-    public TreeSet<String> setValidationAndTestingCohorts(
+    public List<TreeSet<String>> setValidationAndTestingCohorts(
             String phene, double lowCutoff, double highCutoff,
             String clinicalPhene, double clinicalHighCutoff,
             List<PheneCondition> pheneConditions, double percentInValidation
@@ -361,7 +361,11 @@ public class CohortDataTable extends DataTable {
                 row.set(testingCohortIndex, "1");
             }
         }
-        return testingSubjects;
+        
+        List<TreeSet<String>> results = new ArrayList<TreeSet<String>>();
+        results.add(validationSubjects);
+        results.add(testingSubjects);
+        return results;
     }
     
 	/**

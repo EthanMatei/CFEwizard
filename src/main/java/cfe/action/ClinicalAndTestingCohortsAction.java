@@ -73,6 +73,9 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 	TreeSet<String> validationSubjects;
 	TreeSet<String> testingSubjects;
 	
+	int numberOfValidationSubjects = 0;
+	int numberOfTestingSubjects    = 0;
+	
 	private Long cfeResultsId;
 	
 	public ClinicalAndTestingCohortsAction() {
@@ -149,8 +152,8 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             cohortData.initializeToWorkbookSheet(sheet);
             cohortData.setKey("Subject Identifiers.PheneVisit");
 
-            double value;
-            PheneCondition pheneCondition;
+            //double value;
+            //PheneCondition pheneCondition;
             List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
 
             /*
@@ -175,11 +178,17 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             
             double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
             
-            this.testingSubjects = cohortData.setValidationAndTestingCohorts(
+            List<TreeSet<String>> results = cohortData.setValidationAndTestingCohorts(
                     discoveryPhene, discoveryLowCutoff, discoveryHighCutoff, 
                     clinicalPhene, clinicalHighCutoff,
                     pheneConditions, percentInValidation
             );
+            
+            this.validationSubjects = results.get(0);
+            this.testingSubjects    = results.get(1);
+            
+            this.numberOfValidationSubjects = this.validationSubjects.size();
+            this.numberOfTestingSubjects    = this.testingSubjects.size();
 
             List<String> subjects = new ArrayList<String>();
             subjects.addAll(cohortSubjects);
@@ -275,6 +284,22 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             row.add("Time Cohort Generated");
             row.add(new Date().toString());
             validationCohortInfo.addRow(row);
+
+            
+            row = new ArrayList<String>();
+            row.add("% in clinical cohort specified");
+            row.add(this.percentInValidationCohort);
+            validationCohortInfo.addRow(row);
+            
+            row = new ArrayList<String>();
+            row.add("Number of clinical cohort subjects");
+            row.add(this.numberOfValidationSubjects + "");
+            validationCohortInfo.addRow(row);            
+
+            row = new ArrayList<String>();
+            row.add("Number of testing cohort subjects");
+            row.add(this.numberOfTestingSubjects + "");
+            validationCohortInfo.addRow(row); 
             
             row = new ArrayList<String>();
             row.add("Discovery Phene");
@@ -324,12 +349,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             }
             validationCohortInfo.addRow(row);
             */
-            
-            row = new ArrayList<String>();
-            row.add("% in clinical cohort specified");
-            row.add(this.percentInValidationCohort);
-            validationCohortInfo.addRow(row);
-            
+
             validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.CLINICAL_COHORT_INFO);
             
             cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);

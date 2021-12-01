@@ -342,7 +342,7 @@ public class CohortDataTable extends DataTable {
         int count = subjects.size();
 
         for (int i = 0; i < count; i++) {
-            double percent = (i + 1.0) / count;
+            double percent = (i + 0.5) / count;
 
 
             if (percent <= percentInValidation) {

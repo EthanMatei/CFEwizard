@@ -602,4 +602,20 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         this.cfeResultsId = cfeResultsId;
     }
 
+    public int getNumberOfValidationSubjects() {
+        return numberOfValidationSubjects;
+    }
+
+    public void setNumberOfValidationSubjects(int numberOfValidationSubjects) {
+        this.numberOfValidationSubjects = numberOfValidationSubjects;
+    }
+
+    public int getNumberOfTestingSubjects() {
+        return numberOfTestingSubjects;
+    }
+
+    public void setNumberOfTestingSubjects(int numberOfTestingSubjects) {
+        this.numberOfTestingSubjects = numberOfTestingSubjects;
+    }
+
 }

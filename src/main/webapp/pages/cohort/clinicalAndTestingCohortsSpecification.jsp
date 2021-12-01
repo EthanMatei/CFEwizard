@@ -26,7 +26,7 @@
 
 <div style="border: 1px solid #222222; border-radius: 10px; maring-top: 20px; padding: 10px;">
 
-    <p style="font-weight: bold; margin-top: 12px;">Additional Validation and Testing Cohort Constraints</p>
+    <p style="font-weight: bold; margin-top: 12px;">Clinical Cohort Constraint</p>
     <s:form theme="simple" action="ClinicalAndTestingCohortsProcess">
         <s:hidden name="discoveryId"/>
         <s:hidden name="discoveryPhene"/>

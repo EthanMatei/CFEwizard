@@ -69,12 +69,28 @@
 </table>
 </s:if>
 --%>
+
+<table class="dataTable">
+    <tr>
+        <th> Cohort </th> <th> Number of Subjects </th>
+    </tr>
+    <tr>
+        <td> Clinical </td>
+        <td style="text-align: right;"> <s:property value="numberOfValidationSubjects" />
+    </tr>
+    <tr>
+        <td> Testing  </td>
+        <td style="text-align: right;"> <s:property value="numberOfTestingSubjects" />
+    </tr>
+</table>
     
 <div style="margin-top: 14px; margin-bottom: 14px;">
     Subjects specified in Clinical Cohort:
     <s:property value="percentInValidationCohort"/>%
 </div>
     
+
+
 
 <br/>
 <hr/>
@@ -91,6 +107,7 @@
     </div>
 </s:a>
          
+
 
 <%--       
 <h4>Clinical Cohort</h4>

@@ -551,7 +551,7 @@
         
         <!-- Testing Scoring -->
 
-		<action name="TestingDataSelection" class="cfe.action.TestingScoringAction" method="testingDataSelection">
+		<action name="TestingDataSelection" class="cfe.action.TestingScoringAction" method="selectTestingData">
 		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/testing/testingDataSelection.jsp</result>
 			<result name="error">pages/testing/testingDataSelection.jsp</result>	
@@ -562,11 +562,15 @@
 		</action>
 
 
-		<action name="TestingScoringSpecification" class="cfe.action.TestingScoringAction" method="testingScoringSpecification">
+		<action name="TestingScoringSpecification" class="cfe.action.TestingScoringAction" method="specifyTestingScoringOptions">
 		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/testing/testingScoringSpecification.jsp</result>
 			<result name="error">pages/testing/testingDataSelection.jsp</result>	
-			<result name="input">pages/error.jsp</result>
+
+			<result name="input" type="redirectAction">
+			    <param name="actionName">TestingDataSelection</param>
+			    <param name="errorMessage">${errorMessage}</param>
+			</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>

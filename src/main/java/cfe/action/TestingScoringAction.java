@@ -63,12 +63,14 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	private Long testingDataId;
 	private List<CfeResults> cfeResults;
 	
+	private CfeResults testingData;
+	
 	/**
 	 * Select testing data
 	 * @return
 	 * @throws Exception
 	 */
-	public String testingDataSelection() throws Exception {
+	public String selectTestingData() throws Exception {
 	    String result = SUCCESS;
 	    
 	    if (!Authorization.isAdmin(webSession)) {
@@ -83,7 +85,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	    return result;
 	}
 	
-	public String testingScoringSpecification() throws Exception {
+	public String specifyTestingScoringOptions() throws Exception {
 	    String result = SUCCESS;
 	    
         if (!Authorization.isAdmin(webSession)) {
@@ -91,15 +93,13 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         }
         else if (testingDataId == null) {
             this.setErrorMessage("No testing data selected.");
-            result = ERROR;
+            result = INPUT;
         }
         else {
-            try {
-
-            }
-            catch (Exception exception) {
-                this.setErrorMessage(exception.getLocalizedMessage());
+            testingData = CfeResultsService.get(testingDataId);
+            if (testingData == null) {
                 result = ERROR;
+                this.setErrorMessage("Unable to retrieve testing data for ID " + testingDataId + ".");
             }
         }
 
@@ -236,6 +236,14 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
     public void setCfeResults(List<CfeResults> cfeResults) {
         this.cfeResults = cfeResults;
+    }
+
+    public CfeResults getTestingData() {
+        return testingData;
+    }
+
+    public void setTestingData(CfeResults testingData) {
+        this.testingData = testingData;
     }
 
 }

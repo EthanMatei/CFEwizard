@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Validation and Testing Cohort</title>
+    <title>CFE Wizard - Clinical and Testing Cohorts</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
@@ -12,7 +12,7 @@
 <tiles:putAttribute name="content">
 
 
-<h2>Validation and Testing Cohort</h2>
+<h2>Clinical and Testing Cohorts</h2>
 
 <s:actionerror />
 

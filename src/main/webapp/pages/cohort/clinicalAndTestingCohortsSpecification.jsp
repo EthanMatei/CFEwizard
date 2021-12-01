@@ -27,12 +27,29 @@
 <div style="border: 1px solid #222222; border-radius: 10px; maring-top: 20px; padding: 10px;">
 
     <p style="font-weight: bold; margin-top: 12px;">Additional Validation and Testing Cohort Constraints</p>
-    <s:form theme="simple" action="ValidationTestingCohortProcess">
+    <s:form theme="simple" action="ClinicalAndTestingCohortsProcess">
         <s:hidden name="discoveryId"/>
         <s:hidden name="discoveryPhene"/>
         <s:hidden name="discoveryLowCutoff"/>
         <s:hidden name="discoveryHighCutoff"/>
     
+        <table class="dataTable">
+            <tr>
+                <th> Attribute </th> <th> Value </th>
+            </tr>
+            <tr>
+                <td> Clinical Phene: </td>
+                <td> <s:select name="clinicalPhene" list="phenes" /> </td>
+            </tr>
+            <tr>
+                <td> Clinical High Cutoff: </td>
+                <td style="text-align: right;">
+                    <s:textfield style="text-align: right;" name="clinicalHighCutoff" value="" />
+                </td>
+            </tr>
+        </table>
+        
+        <%--
         <table class="dataTable">
             <tr> <th>Phene</th> <th>Relation</th> <th>Value</th> </tr>
             <tr>
@@ -51,9 +68,10 @@
                 <td> <s:textfield name="value3" value="" size="4" style="text-align: right;"/> </td>
             </tr>
         </table>
-    
+        --%>
+        
         <div style="margin-top: 14px; margin-bottom: 14px;">
-            % Subjects in Validation Cohort:
+            % Subjects in Clinical Cohort:
             <s:textfield name="percentInValidationCohort" value="50" size="4" style="text-align: right;"/>
         </div>
     

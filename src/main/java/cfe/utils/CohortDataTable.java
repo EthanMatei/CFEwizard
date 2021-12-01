@@ -179,8 +179,11 @@ public class CohortDataTable extends DataTable {
      * @param pheneConditions
      * @return
      */
-    public TreeSet<String> setValidationAndTestingCohorts(String phene, double lowCutoff, double highCutoff,
-            List<PheneCondition> pheneConditions, double percentInValidation) throws Exception {
+    public TreeSet<String> setValidationAndTestingCohorts(
+            String phene, double lowCutoff, double highCutoff,
+            String clinicalPhene, double clinicalHighCutoff,
+            List<PheneCondition> pheneConditions, double percentInValidation
+            ) throws Exception {
         
         log.info("Cohort Data size: " + this.data.size());
         log.info("Phene: " + phene + ", low cutoff: " + lowCutoff + ", high cutoff: " + highCutoff);
@@ -188,13 +191,27 @@ public class CohortDataTable extends DataTable {
         int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         int pheneIndex   = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
         
+        int clinicalPheneIndex = this.getColumnIndexTrimAndIgnoreCase(clinicalPhene.trim());
+        
+        if (subjectIndex < 0) {
+            throw new Exception("Can't find \"Subject\" column in cohort data.");
+        }
+        else if (pheneIndex < 0) {
+            throw new Exception("Can't find discovery phene \"" + phene + "\" column in cohort data.");
+        }
+        else if (clinicalPheneIndex < 0) {
+            throw new Exception ("Can't find clinical phene \"" + clinicalPhene + "\" column in cohort data.");
+        }
+        
         log.info("subject index: " + subjectIndex + ", pheneIndex: " + pheneIndex);
 
         // Find subjects with low score and subjects with high score
         TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
         TreeSet<String> highScoreSubjects  = new TreeSet<String>();
-        TreeSet<String> pheneConditionsSubjects = new TreeSet<String>(); // Subjects who meet the additional phene conditions
-
+        //TreeSet<String> pheneConditionsSubjects = new TreeSet<String>(); // Subjects who meet the additional phene conditions
+        
+        TreeSet<String> clinicalConditionSubjects = new TreeSet<String>();
+        
         for (ArrayList<String> row : this.data) {
             Map<String,String> rowMap = new HashMap<String,String>();
             for (int i = 0; i < this.columns.size(); i++) {
@@ -203,11 +220,23 @@ public class CohortDataTable extends DataTable {
             
             String pheneValueString = row.get(pheneIndex);
             String subject = row.get(subjectIndex);
+            String clinicalPheneValueString = row.get(clinicalPheneIndex);
+            
+            // If the subject meets the clinical phene condition
+            if (clinicalPheneValueString != null) {
+                clinicalPheneValueString = clinicalPheneValueString.trim();
+                if (StringUtil.isFloat(clinicalPheneValueString)) {
+                    double clinicalPheneValue = Double.parseDouble(clinicalPheneValueString);
+                    if (clinicalPheneValue >= clinicalHighCutoff) {
+                        clinicalConditionSubjects.add(subject);
+                    }
+                }
+            }
             
             // If the subject meets the additional phene conditions
-            if (PheneCondition.isTrue(pheneConditions, rowMap)) {
-                pheneConditionsSubjects.add(subject);
-            }
+            //if (PheneCondition.isTrue(pheneConditions, rowMap)) {
+            //    pheneConditionsSubjects.add(subject);
+            //}
             
             if (pheneValueString != null) {
                 pheneValueString = pheneValueString.trim();
@@ -230,19 +259,21 @@ public class CohortDataTable extends DataTable {
 
         // Set cohort subjects to high score subject, who do NOT have a low score, and who
         // meet all the additional phene conditions (if any)
-        TreeSet<String> cohortSubjects = highScoreSubjects;
-        cohortSubjects.removeAll(lowScoreSubjects);
-        cohortSubjects.retainAll(pheneConditionsSubjects); // Intersection of subjects with high but not low visits
+        //TreeSet<String> cohortSubjects = highScoreSubjects;
+        //cohortSubjects.removeAll(lowScoreSubjects);
+        //cohortSubjects.retainAll(pheneConditionsSubjects); // Intersection of subjects with high but not low visits
                                                            // with subjects that meet all phene conditions
+        TreeSet<String> cohortSubjects = clinicalConditionSubjects;
+        cohortSubjects.removeAll(discoverySubjects);
         
         int cohortIndex = this.getColumnIndex("Cohort");
         if (cohortIndex == -1) {
             throw new Exception("Could not find \"Cohort\" column in cohort data table.");
         }
         
-        // Add validation cohort columns
+        // Add validation (Clinical) cohort columns
         // NOTE: this probably needs to be moved to a new method. At this point, we don't
-        // know which subjects are in the Validation cohort and which are in the Testing
+        // know which subjects are in the Validation (Clinical) cohort and which are in the Testing
         // cohort, so these columns cannot be set
         // OR this method could be changed to calculate that also.
         // OR, we could start with all in, and then randomly select 
@@ -273,7 +304,7 @@ public class CohortDataTable extends DataTable {
                     row.set(validationCohortIndex, "1");
                     row.set(testingCohortIndex, "0");
                 }
-                else if (pheneValue != null && pheneValue >= highCutoff && !pheneConditionsSubjects.contains(subject)) {
+                else if (pheneValue != null && pheneValue >= highCutoff && !clinicalConditionSubjects.contains(subject)) {
                     row.set(validationIndex, "High Validation");
                     row.set(valCategoryIndex, "High");
                     row.set(validationCohortIndex, "1");
@@ -303,8 +334,8 @@ public class CohortDataTable extends DataTable {
         List<String> subjects = new ArrayList<String>();
         subjects.addAll(cohortSubjects);
 
-        TreeSet<String> validationSubjects = new TreeSet();
-        TreeSet<String> testingSubjects    = new TreeSet();
+        TreeSet<String> validationSubjects = new TreeSet<String>();
+        TreeSet<String> testingSubjects    = new TreeSet<String>();
         
         Random rand = new Random(RANDOM_SEED);
         Collections.shuffle(subjects, rand);

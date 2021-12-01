@@ -22,9 +22,19 @@
         <td style="text-align: right;"> <s:property value="discoveryPhene"/> </td>
         <td style="text-align: right;"> <s:property value="discoveryLowCutoff"/> </td>
         <td style="text-align: right;"> <s:property value="discoveryHighCutoff"/> </td>
+    </tr>
+</table>
+
+<table class="dataTable" style="margin-bottom: 20px;">
+    <tr> <th>Clinical Phene</th> <th>High Cutoff</th> </tr>
+    <tr>
+        <td style="text-align: right;"> <s:property value="clinicalPhene"/> </td>
+        <td style="text-align: right;"> <s:property value="clinicalHighCutoff"/> </td>
+    </tr>
 </table>
 
 
+<%--
 <s:if test="(phene1 != '' && value1 != '') || (phene2 != '' && value2 != '') || (phene3 != '' && value3 != '')">
 <p style="font-weight: bold; margin-top: 24px;">Additional Validation and Testing Cohort Constraints</p>
    
@@ -58,9 +68,10 @@
     </s:if>
 </table>
 </s:if>
+--%>
     
 <div style="margin-top: 14px; margin-bottom: 14px;">
-    Subjects specified in Validation Cohort:
+    Subjects specified in Clinical Cohort:
     <s:property value="percentInValidationCohort"/>%
 </div>
     
@@ -82,7 +93,7 @@
          
 
 <%--       
-<h4>Validation Cohort</h4>
+<h4>Clinical Cohort</h4>
 <s:iterator value="validationSubjects" var="subject">
     <s:property value="subject"/> <br/>
 </s:iterator>

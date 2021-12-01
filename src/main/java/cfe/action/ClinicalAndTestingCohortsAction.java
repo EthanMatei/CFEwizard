@@ -60,7 +60,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 	*/
 	
 	private String clinicalPhene;
-	private String clinicalHighCutoff;
+	private Integer clinicalHighCutoff;
 	
 	private String discoveryPhene;
 	private String discoveryPheneTable;
@@ -176,7 +176,9 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
             
             this.testingSubjects = cohortData.setValidationAndTestingCohorts(
-                    discoveryPhene, discoveryLowCutoff, discoveryHighCutoff, pheneConditions, percentInValidation
+                    discoveryPhene, discoveryLowCutoff, discoveryHighCutoff, 
+                    clinicalPhene, clinicalHighCutoff,
+                    pheneConditions, percentInValidation
             );
 
             List<String> subjects = new ArrayList<String>();
@@ -244,7 +246,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             //    row.add(subject);
             //    validationCohort.addRow(row);
             //}
-            validationCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT);
+            validationCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.CLINICAL_COHORT);
 
             // Create testing cohort data table
             DataTable testingCohort = new DataTable("Subject");
@@ -275,18 +277,29 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             validationCohortInfo.addRow(row);
             
             row = new ArrayList<String>();
-            row.add("Phene");
+            row.add("Discovery Phene");
             row.add(this.discoveryPhene);
             validationCohortInfo.addRow(row);
             
             row = new ArrayList<String>();
-            row.add("Low Cutoff");
+            row.add("Discovery Low Cutoff");
             row.add(this.discoveryLowCutoff + "");
             validationCohortInfo.addRow(row);
             
             row = new ArrayList<String>();
-            row.add("High Cutoff");
+            row.add("Discovery High Cutoff");
             row.add(this.discoveryHighCutoff + "");
+            validationCohortInfo.addRow(row);
+            
+            
+            row = new ArrayList<String>();
+            row.add("Clincal Phene");
+            row.add(this.clinicalPhene);
+            validationCohortInfo.addRow(row);
+            
+            row = new ArrayList<String>();
+            row.add("Clinical High Cutoff");
+            row.add(this.clinicalHighCutoff + "");
             validationCohortInfo.addRow(row);
             
             /*
@@ -313,11 +326,11 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             */
             
             row = new ArrayList<String>();
-            row.add("% in validation cohort specified");
+            row.add("% in clinical cohort specified");
             row.add(this.percentInValidationCohort);
             validationCohortInfo.addRow(row);
             
-            validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT_INFO);
+            validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.CLINICAL_COHORT_INFO);
             
             cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
 
@@ -521,11 +534,11 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         this.clinicalPhene = clinicalPhene;
     }
 
-    public String getClinicalHighCutoff() {
+    public Integer getClinicalHighCutoff() {
         return clinicalHighCutoff;
     }
 
-    public void setClinicalHighCutoff(String clinicalHighCutoff) {
+    public void setClinicalHighCutoff(Integer clinicalHighCutoff) {
         this.clinicalHighCutoff = clinicalHighCutoff;
     }
 

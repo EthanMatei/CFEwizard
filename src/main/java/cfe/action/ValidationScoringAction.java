@@ -205,7 +205,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    
 	    String key = "Subject Identifiers.PheneVisit";
 	    
-	    XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT);
+	    XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.CLINICAL_COHORT);
 	    DataTable masterSheet = new DataTable(key);
 	    masterSheet.initializeToWorkbookSheet(sheet);
 	    

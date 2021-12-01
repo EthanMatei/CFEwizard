@@ -14,7 +14,7 @@
 <h2>Cohort Creation</h2>
 <ul>
     <li><s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a></li>
-    <li> <s:a action="ValidationTestingCohortDiscoveryCohortSelection">Clinical and Testing Cohorts Creation</s:a> </li>
+    <li> <s:a action="ClinicalAndTestingCohortsDiscoveryCohortSelection">Clinical and Testing Cohorts Creation</s:a> </li>
 </ul>
 
 <h2>Discovery</h2>
@@ -46,7 +46,6 @@
 <h2>Validation</h2>
 
 <ul>
-    <li> <s:a action="ValidationTestingCohortDiscoveryCohortSelection">Validation and Testing Cohorts Creation</s:a> </li>
     <li> <s:a action="ValidationDataSelection">Validation Scoring</s:a></li>
 </ul>
 

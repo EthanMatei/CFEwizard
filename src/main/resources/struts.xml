@@ -476,7 +476,7 @@
  
         <!-- Clinical (Validation) and Testing Cohort Creation -->
         
-		<action name="ValidationTestingCohortDiscoveryCohortSelection"
+		<action name="ClinicalAndTestingCohortsDiscoveryCohortSelection"
 		        class="cfe.action.ClinicalAndTestingCohortsAction"
 		        method="initialize">
 			<interceptor-ref name="basicStack"/>
@@ -487,7 +487,7 @@
             </result>
         </action>
         
-		<action name="ValidationTestingCohortSpecification"
+		<action name="ClinicalAndTestingCohortsSpecification"
 		        class="cfe.action.ClinicalAndTestingCohortsAction"
 		        method="specification">
 			<interceptor-ref name="basicStack"/>
@@ -498,7 +498,7 @@
             </result>
         </action>
            
-		<action name="ValidationTestingCohortProcess"
+		<action name="ClinicalAndTestingCohortsProcess"
 		        class="cfe.action.ClinicalAndTestingCohortsAction"
 		        method="process">
 			<interceptor-ref name="basicStack"/>

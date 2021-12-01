@@ -15,6 +15,6 @@ public class CfeResultsSheets {
     public static final String DISCOVERY_SCORES       = "discovery scores";
     public static final String DISCOVERY_SCORES_INFO  = "discovery scores info";
     public static final String TESTING_COHORT         = "testing cohort";
-    public static final String VALIDATION_COHORT      = "validation cohort";
-    public static final String VALIDATION_COHORT_INFO = "validation cohort info";
+    public static final String CLINICAL_COHORT        = "clinical cohort";
+    public static final String CLINICAL_COHORT_INFO   = "clinical cohort info";
 }

@@ -371,6 +371,23 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 
             CfeResultsService.save(cfeResults);
             this.cfeResultsId = cfeResults.getCfeResultsId();
+            
+            /* Create table with info for checking cohorts?
+            ArrayList<String> checkColumns = new ArrayList<String>();
+            columns.add("Subject");
+            columns.add("Visit Number");
+            columns.add("Subject Identifiers.PheneVisit");
+            columns.add("AffyVisit");
+            columns.add("Visit Date");
+            columns.add(this.discoveryPhene);
+            columns.add(this.clinicalPhene);
+            columns.add("Cohort");
+            columns.add("Validation");
+            columns.add("ValCategory");
+            columns.add("ValidationCohort");
+            columns.add("TestingCohort");
+            DataTable cohortCheck = cohortData.filter(cohortData.getKey(), checkColumns);
+            */
         }
         
         return result;

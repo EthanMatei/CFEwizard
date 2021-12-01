@@ -620,7 +620,7 @@ public class DataTable {
 	}
 	
 	/**
-	 * Gets a data table that has only the specified columns.
+	 * Gets a data table with the specified key that has only the specified columns.
 	 * @param columns
 	 * @return
 	 */

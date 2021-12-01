@@ -301,13 +301,13 @@ public class CohortDataTable extends DataTable {
                 if (pheneValue != null && pheneValue <= lowCutoff) {
                     row.set(validationIndex, "Low Validation");  
                     row.set(valCategoryIndex, "Low");
-                    row.set(validationCohortIndex, "1");
+                    row.set(validationCohortIndex, "0");
                     row.set(testingCohortIndex, "0");
                 }
                 else if (pheneValue != null && pheneValue >= highCutoff && !clinicalConditionSubjects.contains(subject)) {
                     row.set(validationIndex, "High Validation");
                     row.set(valCategoryIndex, "High");
-                    row.set(validationCohortIndex, "1");
+                    row.set(validationCohortIndex, "0");
                     row.set(testingCohortIndex, "0");
                 }
                 else {

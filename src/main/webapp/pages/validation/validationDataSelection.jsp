@@ -45,7 +45,7 @@ Select Validation Data:
 </p>
             
 <table class="dataTable">
-    <caption>Validation Cohorts with Discovery Scores</caption>
+    <caption>Clinical Cohorts with Discovery Scores</caption>
     <tr> 
         <th>ID</th>
         <th>Results</th>

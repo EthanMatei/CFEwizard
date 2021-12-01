@@ -1,4 +1,17 @@
-Discovery cohort creation:
+Cohort Creation
+=============================
+
+The following cohorts need to be created:
+
+1. Discovery Cohort
+2. Clinical Chort (previously referred to as the Validation Cohort)
+3. Testing Cohort - consists of the following 3 subgroups, which may overlap:
+    * State (test)
+    * First year
+    * Future (hospitalization)
+
+Discovery Cohort Creation
+-----------------------------
 
 1. Display the list of phene tables (or all tables if the phene tables cannot be distinguished).
 2. The user selects the table, and then the phenes in that table are displayed

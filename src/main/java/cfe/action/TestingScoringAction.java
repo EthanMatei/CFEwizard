@@ -74,7 +74,10 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	    if (!Authorization.isAdmin(webSession)) {
 	        result = LOGIN;
 	    } else {
-	        this.cfeResults = CfeResultsService.getMetadata(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+	        this.cfeResults = CfeResultsService.getMetadata(
+	                CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES,
+	                CfeResultsType.ALL_COHORTS_PLUS_VALIDATION_SCORES
+	            );
 	    }
 	    
 	    return result;
@@ -218,13 +221,21 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	public Map<String, Object> getSession() {
 		return webSession;
 	}
-	
-    public Long getCfeResultsId() {
+
+    public Long getTestingDataId() {
         return testingDataId;
     }
 
-    public void setCfeResultsId(Long cfeResultsId) {
-        this.testingDataId = cfeResultsId;
+    public void setTestingDataId(Long testingDataId) {
+        this.testingDataId = testingDataId;
+    }
+
+    public List<CfeResults> getCfeResults() {
+        return cfeResults;
+    }
+
+    public void setCfeResults(List<CfeResults> cfeResults) {
+        this.cfeResults = cfeResults;
     }
 
 }

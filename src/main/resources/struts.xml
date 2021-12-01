@@ -560,7 +560,28 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-		        
+
+
+		<action name="TestingScoringSpecification" class="cfe.action.TestingScoringAction" method="testingScoringSpecification">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/testing/testingScoringSpecification.jsp</result>
+			<result name="error">pages/testing/testingDataSelection.jsp</result>	
+			<result name="input">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<action name="TestingScoringCalculation" class="cfe.action.TestingScoringAction" method="calculateTestingScores">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/testing/testingScores.jsp</result>
+			<result name="error">pages/testing/testingDataSelection.jsp</result>	
+			<result name="input">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+						        
         <!-- ==================================================================================== -->
                         
         <!-- CFE Results -->
@@ -613,7 +634,7 @@
             </result>
 		</action>	
         
-        <!-- CSV text file display -->
+        <!-- CSV text file display - a more efficient CSV file display action that works well for large files -->
 		<action name="CsvTextFileDisplay" class="cfe.action.CsvTextFileDisplayAction" method="view">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success" type="stream">

@@ -45,15 +45,15 @@ Select Testing Data:
         <th>Phene High Cutoff</th>
     </tr>
 
-    <s:iterator value="discoveryCohortResultsList" var="result">
+    <s:iterator value="cfeResults" var="result">
         <tr>
             <td>
-                 <s:radio name="discoveryId" list="{cfeResultsId}"/>
+                 <s:radio name="testingDataId" list="{cfeResultsId}"/>
             </td>
             <td>
-                <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
+                <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
                     <s:param name="cfeResultsId" value="cfeResultsId" />
-                    discovery-results.xlsx
+                    results.xlsx
                  </s:a>
             </td>
             <td> <s:property value="resultsType"/>

@@ -24,3 +24,17 @@ Protocol Document: PROTOCOLS/INTRA Cohort Creation (OM 7-29-2020) DFL HLNSG 6-26
 Notes:
 * Microarray data table is used to limit the subjects in the cohort to those for which there is gene expression data
 * In the Cohort table, the date is the date of the visit corresponding to the PhenVisit field
+
+
+Clinical Cohort Creation
+---------------------------
+
+* Create a clinical phene and a clinical phene high cutoff
+* Take subjects that are not in the Discovery cohort who have a high value (greater than or equal to the high
+    cutoff value for the clinical phene)
+
+Testing Cohort Creation
+--------------------------
+
+* TBD...
+

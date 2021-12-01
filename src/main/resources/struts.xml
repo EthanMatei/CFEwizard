@@ -477,10 +477,10 @@
         <!-- Validation/Testing Cohort Creation -->
         
 		<action name="ValidationTestingCohortDiscoveryCohortSelection"
-		        class="cfe.action.ValidationTestingCohortAction"
+		        class="cfe.action.ClinicalAndTestingCohortsAction"
 		        method="initialize">
 			<interceptor-ref name="basicStack"/>
-		    <result name="success">pages/validationTestingCohortDiscoveryCohortSelection.jsp</result>
+		    <result name="success">pages/cohort/validationTestingCohortDiscoveryCohortSelection.jsp</result>
 		    <result name="error">/pages/error.jsp</result>
 		    <result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
@@ -488,10 +488,10 @@
         </action>
         
 		<action name="ValidationTestingCohortSpecification"
-		        class="cfe.action.ValidationTestingCohortAction"
+		        class="cfe.action.ClinicalAndTestingCohortsAction"
 		        method="specification">
 			<interceptor-ref name="basicStack"/>
-		    <result name="success">pages/validationTestingCohortSpecification.jsp</result>
+		    <result name="success">pages/cohort/validationTestingCohortSpecification.jsp</result>
 		    <result name="error">/pages/error.jsp</result>
 		    <result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
@@ -499,10 +499,10 @@
         </action>
            
 		<action name="ValidationTestingCohortProcess"
-		        class="cfe.action.ValidationTestingCohortAction"
+		        class="cfe.action.ClinicalAndTestingCohortsAction"
 		        method="process">
 			<interceptor-ref name="basicStack"/>
-		    <result name="success">pages/validationTestingCohort.jsp</result>
+		    <result name="success">pages/cohort/validationTestingCohort.jsp</result>
 		    <result name="error">/pages/error.jsp</result>
 		    <result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>

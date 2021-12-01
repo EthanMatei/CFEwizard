@@ -11,9 +11,14 @@
 <%-- User: <s:property value="#session.username" /> --%>
 
 
-<h2>Discovery</h2>
+<h2>Cohort Creation</h2>
 <ul>
     <li><s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a></li>
+    <li> <s:a action="ValidationTestingCohortDiscoveryCohortSelection">Clinical and Testing Cohorts Creation</s:a> </li>
+</ul>
+
+<h2>Discovery</h2>
+<ul>
     <li><s:a action="DiscoveryCohortSelection">Discovery Scoring</s:a></li>
 </ul>
 

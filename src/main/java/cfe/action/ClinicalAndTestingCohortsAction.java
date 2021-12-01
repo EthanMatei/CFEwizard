@@ -25,10 +25,10 @@ import cfe.utils.CohortDataTable;
 import cfe.utils.DataTable;
 import cfe.utils.PheneCondition;
 
-public class ValidationTestingCohortAction extends BaseAction implements SessionAware {
+public class ClinicalAndTestingCohortsAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-	private static final Log log = LogFactory.getLog(ValidationTestingCohortAction.class);
+	private static final Log log = LogFactory.getLog(ClinicalAndTestingCohortsAction.class);
 
 	private Map<String, Object> webSession;
     
@@ -45,6 +45,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
     
 	private String errorMessage;
 	
+	/*
 	private String phene1;
 	private String phene2;
 	private String phene3;
@@ -56,6 +57,10 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 	private String value1;
 	private String value2;
 	private String value3;
+	*/
+	
+	private String clinicalPhene;
+	private String clinicalHighCutoff;
 	
 	private String discoveryPhene;
 	private String discoveryPheneTable;
@@ -70,7 +75,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 	
 	private Long cfeResultsId;
 	
-	public ValidationTestingCohortAction() {
+	public ClinicalAndTestingCohortsAction() {
 	    this.cohortSubjects     = new TreeSet<String>();
 	    this.validationSubjects = new TreeSet<String>();
 	    this.testingSubjects    = new TreeSet<String>();
@@ -148,6 +153,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             PheneCondition pheneCondition;
             List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
 
+            /*
             if (phene1 != null && !phene1.isEmpty() && value1 != null && !value1.isEmpty()) {
                 value = Double.parseDouble(value1);
                 pheneCondition = new PheneCondition(phene1, operator1, value);
@@ -165,6 +171,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
                 pheneCondition = new PheneCondition(phene3, operator3, value);
                 pheneConditions.add(pheneCondition);
             }
+            */
             
             double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
             
@@ -282,6 +289,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
             row.add(this.discoveryHighCutoff + "");
             validationCohortInfo.addRow(row);
             
+            /*
             row = new ArrayList<String>();
             row.add("Constraint 1");
             if (!this.phene1.isEmpty() && !this.value1.isEmpty()) {
@@ -302,6 +310,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
                 row.add(this.phene3 + " " + this.operator3 + " " + this.value3);
             }
             validationCohortInfo.addRow(row);
+            */
             
             row = new ArrayList<String>();
             row.add("% in validation cohort specified");
@@ -396,6 +405,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
         this.operators = operators;
     }
 
+    /*
     public String getPhene1() {
         return phene1;
     }
@@ -443,7 +453,7 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
     public void setOperator3(String operator3) {
         this.operator3 = operator3;
     }
-
+    
     public String getValue1() {
         return value1;
     }
@@ -467,6 +477,9 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
     public void setValue3(String value3) {
         this.value3 = value3;
     }
+    */
+    
+    
 
     public String getDiscoveryPhene() {
         return discoveryPhene;
@@ -498,6 +511,22 @@ public class ValidationTestingCohortAction extends BaseAction implements Session
 
     public void setDiscoveryHighCutoff(Integer discoveryHighCutoff) {
         this.discoveryHighCutoff = discoveryHighCutoff;
+    }
+    
+    public String getClinicalPhene() {
+        return clinicalPhene;
+    }
+
+    public void setClinicalPhene(String clinicalPhene) {
+        this.clinicalPhene = clinicalPhene;
+    }
+
+    public String getClinicalHighCutoff() {
+        return clinicalHighCutoff;
+    }
+
+    public void setClinicalHighCutoff(String clinicalHighCutoff) {
+        this.clinicalHighCutoff = clinicalHighCutoff;
     }
 
     public String getPercentInValidationCohort() {

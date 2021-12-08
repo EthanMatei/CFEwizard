@@ -90,7 +90,13 @@
 </div>
     
 
-
+<p>
+    Cohort Check:
+    <s:a action="CsvTextFileDisplay" title="Cohort Check">
+        <s:param name="textFilePath" value="cohortCheckCsvFileName" />
+        <s:property value="cohortCheckCsvFileName" />
+    </s:a>
+</p>
 
 <br/>
 <hr/>

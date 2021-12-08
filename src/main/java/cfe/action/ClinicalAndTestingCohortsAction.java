@@ -1,5 +1,6 @@
 package cfe.action;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
@@ -77,6 +79,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 	int numberOfTestingSubjects    = 0;
 	
 	private Long cfeResultsId;
+    private String cohortCheckCsvFileName;
 	
 	public ClinicalAndTestingCohortsAction() {
 	    this.cohortSubjects     = new TreeSet<String>();
@@ -372,22 +375,29 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             CfeResultsService.save(cfeResults);
             this.cfeResultsId = cfeResults.getCfeResultsId();
             
-            /* Create table with info for checking cohorts?
+            /* Create table with info for checking cohorts */
             ArrayList<String> checkColumns = new ArrayList<String>();
-            columns.add("Subject");
-            columns.add("Visit Number");
-            columns.add("Subject Identifiers.PheneVisit");
-            columns.add("AffyVisit");
-            columns.add("Visit Date");
-            columns.add(this.discoveryPhene);
-            columns.add(this.clinicalPhene);
-            columns.add("Cohort");
-            columns.add("Validation");
-            columns.add("ValCategory");
-            columns.add("ValidationCohort");
-            columns.add("TestingCohort");
+            checkColumns.add("Subject");
+            checkColumns.add("Visit Number");
+            checkColumns.add("Subject Identifiers.PheneVisit");
+            checkColumns.add("AffyVisit");
+            checkColumns.add("Visit Date");
+            checkColumns.add(this.discoveryPhene);
+            checkColumns.add(this.clinicalPhene);
+            checkColumns.add("Cohort");
+            checkColumns.add("Validation");
+            checkColumns.add("ValCategory");
+            checkColumns.add("ValidationCohort");
+            checkColumns.add("TestingCohort");
             DataTable cohortCheck = cohortData.filter(cohortData.getKey(), checkColumns);
-            */
+            
+            String cohortCheckCsv = cohortCheck.toCsv();
+            File cohortCheckCsvFile = File.createTempFile("cohort-check-",  ".csv");
+            if (cohortCheckCsv != null) {
+                FileUtils.write(cohortCheckCsvFile, cohortCheckCsv, "UTF-8");
+            }
+            this.cohortCheckCsvFileName = cohortCheckCsvFile.getAbsolutePath();
+            /* */
         }
         
         return result;
@@ -633,6 +643,14 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 
     public void setNumberOfTestingSubjects(int numberOfTestingSubjects) {
         this.numberOfTestingSubjects = numberOfTestingSubjects;
+    }
+
+    public String getCohortCheckCsvFileName() {
+        return cohortCheckCsvFileName;
+    }
+
+    public void setCohortCheckCsvFileName(String cohortCheckCsvFileName) {
+        this.cohortCheckCsvFileName = cohortCheckCsvFileName;
     }
 
 }

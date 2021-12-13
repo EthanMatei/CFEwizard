@@ -79,6 +79,10 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	private double scoreCutoff = 6.0;
 	
 	private List<String> genesNotFoundInPrioritization = new ArrayList<String>();
+    private String validationScoringCommand;
+    private String scriptOutput;
+    private String scriptOutputFile;
+    private String tempDir;
 	
 	    
 	/**
@@ -129,7 +133,41 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         }
         else {
             try {
+                log.info("Starting to create predictor list and master sheet for validation scoring.");
+
+                ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+                // NEED TO GET PHENE FROM validationDataId
+                CfeResults validationData = CfeResultsService.get(validationDataId);
+                if (validationData == null) {
+                    throw new Exception("Could not get validation data with ID " + validationDataId + ".");
+                }
+                
+                XSSFWorkbook workbook = validationData.getResultsSpreadsheet();
+                if (workbook == null) {
+                    throw new Exception("Could not get workbook for validation data.");
+                }
+                
+                XSSFSheet sheet = workbook.getSheet( CfeResultsSheets.DISCOVERY_COHORT_INFO );
+                if (sheet == null) {
+                    throw new Exception("Could not get \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO
+                            + "\" shee from validation data workbook.");
+                }
+                
+                DataTable discoveryCohortInfo = new DataTable("attribute");
+                discoveryCohortInfo.initializeToWorkbookSheet(sheet);
+                ArrayList<String> row = discoveryCohortInfo.getRow("Phene");
+                if (row == null || row.size() == 0) {
+                    throw new Exception("Could not find Phene row in \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO
+                            + "\" sheet in validation data workbook.");
+                }
+                this.phene = row.get(1);
+                
+                
                 DataTable predictorList = this.createPredictorList(this.validationDataId, this.prioritizationId);
+                if (predictorList == null) {
+                    throw new Exception("Could not create validation predictor list.");
+                }
+                
                 String predictorListCsv = predictorList.toCsv();
                 File predictorListCsvTmp = File.createTempFile("predictor-list-",  ".csv");
                 if (predictorListCsv != null) {
@@ -137,11 +175,23 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 }
                 this.predictorListFile = predictorListCsvTmp.getAbsolutePath();
                 
+                log.info("****** PREDICTOR LIST FILE \"" + predictorListFile + "\" CREATED.");
+                        
+                if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
+                    throw new Exception("Could not create validation predictor list file.");
+                }
+                
                 this.validationMasterSheetFile = this.createValidationMasterSheet(
                         this.validationDataId,
                         predictorList,
                         this.geneExpressionCsv
                 );
+                
+                log.info("************* MASTER SHEET FILE NAME: " + this.validationMasterSheetFile);
+                
+                if (this.validationMasterSheetFile == null || this.validationMasterSheetFile.isEmpty()) {
+                    throw new Exception("Could not create validation master sheet.");
+                }                
             }
             catch (Exception exception) {
                 this.setErrorMessage(exception.getLocalizedMessage());
@@ -167,6 +217,18 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		}
+		else if (this.phene == null || this.phene.isEmpty()) {
+		    this.setErrorMessage("No phene specified for validation scoring.");
+		    result = INPUT;
+		}
+		else if (this.validationMasterSheetFile == null || this.validationMasterSheetFile.isEmpty()) {
+		    this.setErrorMessage("No master sheet specified for validation scoring.");
+		    result = INPUT;
+	    }
+		else if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
+		    this.setErrorMessage("No predictor list specified for validation scoring.");
+		    result = INPUT;
+		}
 	    else {
             try {
                 log.info("Starting validation scoring");
@@ -174,13 +236,33 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 String scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
                 String scriptFile = new File(getClass().getResource("/R/Validation.R").toURI()).getAbsolutePath();
                 
-                String[] rScriptCommand = new String[12];
+                if (scriptDir == null || scriptDir.isEmpty()) {
+                    throw new Exception("The R script directory could not be determined for validation scoring.");    
+                }
+                
+                if (scriptFile == null || scriptFile.isEmpty()) {
+                    throw new Exception("The validation scoring script could not be located.");
+                }
+                
+                this.tempDir = System.getProperty("java.io.tmpdir");
+                
+                String[] rScriptCommand = new String[7];
                 rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
                 rScriptCommand[1] = scriptFile;     // The R script to run
-                rScriptCommand[2] = scriptDir;
+                rScriptCommand[2] = scriptDir;   // The dierctory that contains R scripts
                 rScriptCommand[3] = this.phene;
+                rScriptCommand[4] = this.validationMasterSheetFile;
+                rScriptCommand[5] = this.predictorListFile;
+                rScriptCommand[6] = this.tempDir;
                 
-
+                this.validationScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
+                log.info("Validation Scoring Command: " + this.validationScoringCommand);
+                
+                this.scriptOutput = this.runCommand(rScriptCommand);
+                
+                File tempFile = File.createTempFile("validation-r-script-output", ".txt");
+                FileUtils.write(tempFile, scriptOutput, "UTF-8");
+                this.scriptOutputFile = tempFile.getAbsolutePath();
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -196,16 +278,33 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	}
 	
 	
-	public String createValidationMasterSheet(Long validationDataId, DataTable predictorList, File geneExpressionCsvFile) throws Exception
+	public String createValidationMasterSheet(Long validationDataId, DataTable predictorList, File geneExpressionCsvFile)
+	        throws Exception
 	{
-        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
         
 	    CfeResults cfeResults = CfeResultsService.get(validationDataId);
+	    if (cfeResults == null) {
+	        throw new Exception("Could not get saved results for ID " + validationDataId + ".");
+	    }
+	    
 	    XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
+	    
+	    if (workbook == null) {
+	        throw new Exception("Unable to get results spreadsheet from database for results ID "
+	            + validationDataId + ".");
+	    }
 	    
 	    String key = "Subject Identifiers.PheneVisit";
 	    
 	    XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.CLINICAL_COHORT);
+	    if (sheet == null) {
+	        sheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT); // check for old deprecated name
+	        if (sheet == null) {
+	            throw new Exception("Could not find \"" + CfeResultsSheets.CLINICAL_COHORT + "\" sheet in results workbook.");
+	        }
+	    }
+	    
 	    DataTable masterSheet = new DataTable(key);
 	    masterSheet.initializeToWorkbookSheet(sheet);
 	    
@@ -226,12 +325,12 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	        masterSheet.setValue(i, "Biomarkers", pheneVisit);
 	    }
 	    
-	    // Add predictor columns (combination of gene cards symbol, "biom" and probeset)
+	    // Add predictor columns (combination of gene cards symbol, "biom" and pro)beset)
 	    for (int i = 0; i < predictorList.getNumberOfRows(); i++) {
 	        String predictor = predictorList.getValue(i, "Predictor");
 	        masterSheet.addColumn(predictor, "");
 	    }
-	    
+	       
         //---------------------------------------------------------------------------
         // Read in the gene expression CSV file. It has the following format:
         //
@@ -278,7 +377,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         }
         csvReader.close();
         
-	    //-------------------------------------------------------
+	    //-----------------------------)--------------------------
 	    // Write the master sheet to a CSV file
 	    //-------------------------------------------------------
 	    String masterSheetCsv = masterSheet.toCsv();
@@ -324,6 +423,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         predictorList.addColumn("SZA", "");
         predictorList.addColumn("PTSD", "");
         predictorList.addColumn("PSYCH", "");
+        predictorList.addColumn("PSYCHOSIS", "");
         predictorList.addColumn("All", "");
         
         for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
@@ -334,7 +434,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
             
             String gene = discoveryScores.getValue(i, "Genecards Symbol");
             String probeset = discoveryScores.getValue(i, "Probe Set ID");
-            String rawDeScoreString = discoveryScores.getValue(i, "DEscores");
+            String rawDeScoreString = discoveryScores.getValue(i, "DE Raw Score");
             String dePercentileString = discoveryScores.getValue(i, "DE Percentile");
             String deScoreString = discoveryScores.getValue(i, "DE Score");
             
@@ -380,6 +480,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                     row.add("0"); // SZA
                     row.add("0"); // PTSD
                     row.add("0"); // PSYCH
+                    row.add("0"); // PSYCHOSIS
                     row.add("1"); // All
 
                     predictorList.addRow(row);
@@ -606,6 +707,22 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
     public void setGenesNotFoundInPrioritization(List<String> genesNotFoundInPrioritization) {
         this.genesNotFoundInPrioritization = genesNotFoundInPrioritization;
+    }
+
+    public String getValidationScoringCommand() {
+        return validationScoringCommand;
+    }
+
+    public void setValidationScoringCommand(String validationScoringCommand) {
+        this.validationScoringCommand = validationScoringCommand;
+    }
+
+    public String getScriptOutputFile() {
+        return scriptOutputFile;
+    }
+
+    public void setScriptOutputFile(String scriptOutputFile) {
+        this.scriptOutputFile = scriptOutputFile;
     }
 
 }

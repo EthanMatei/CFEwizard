@@ -21,6 +21,20 @@
     </div>
 </s:if>
 
+<p>
+Validation Scoring Command:
+</p>
+<pre>
+<s:property value="validationScoringCommand" />
+</pre>
+
+<p>
+Validation R Script Output:
+<s:a action="TextFileDisplay" title="Validation R Script Output">
+        <s:param name="textFilePath" value="scriptOutputFile" />
+        <s:property value="scriptOutputFile" />
+    </s:a>
+</p>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

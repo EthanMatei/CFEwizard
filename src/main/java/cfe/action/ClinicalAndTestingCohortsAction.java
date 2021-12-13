@@ -232,7 +232,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             // Create validation cohort data table
             ArrayList<String> columns = new ArrayList<String>();
             columns.add("Subject");
-            columns.add("Visit Number");
+            columns.add("VisitNumber");
             columns.add("Subject Identifiers.PheneVisit");
             columns.add("AffyVisit");
             columns.add("Visit Date");
@@ -249,7 +249,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                         
             DataTable validationCohort = cohortData.filter("Subject Identifiers.PheneVisit", columns);
 
-            String[] validationSortColumns = {"Subject", "Visit Number"};
+            String[] validationSortColumns = {"Subject", "VisitNumber"};
             validationCohort.sort(validationSortColumns);  
             
             //validationCohort.addColumn("Subject",  "");
@@ -378,7 +378,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             /* Create table with info for checking cohorts */
             ArrayList<String> checkColumns = new ArrayList<String>();
             checkColumns.add("Subject");
-            checkColumns.add("Visit Number");
+            checkColumns.add("VisitNumber");
             checkColumns.add("Subject Identifiers.PheneVisit");
             checkColumns.add("AffyVisit");
             checkColumns.add("Visit Date");

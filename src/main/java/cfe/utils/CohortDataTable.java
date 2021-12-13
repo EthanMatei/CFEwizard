@@ -524,9 +524,9 @@ public class CohortDataTable extends DataTable {
             }
         }
         
-        // Add and set "Visit Number" column
+        // Add and set "VisitNumber" column
         int visitNumberIndex = 1;
-        this.insertColumn("Visit Number", visitNumberIndex, "");
+        this.insertColumn("VisitNumber", visitNumberIndex, "");
         String[] visitNumberSortColumns = {"Subject", "Visit Date"};
         this.sort(visitNumberSortColumns);
         

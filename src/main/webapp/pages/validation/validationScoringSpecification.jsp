@@ -34,13 +34,16 @@ Score cutoff (&ge;): <s:property value="scoreCutoff" />
 </p>
 
 <p>
+Phene: <s:property value="phene" />
+</p>
+
+<p>
     Validation Master Sheet:
     <s:a action="CsvTextFileDisplay" title="Validation Mastersheet">
         <s:param name="textFilePath" value="validationMasterSheetFile" />
         <s:property value="validationMasterSheetFile" />
     </s:a>
 </p>
-
 
 <p>
     Predictor List:
@@ -51,7 +54,12 @@ Score cutoff (&ge;): <s:property value="scoreCutoff" />
 </p>
 
 <s:form action="ValidationScoresCalculation" theme="simple" method="post" enctype="multipart/form-data">
-<s:submit value="Calculate" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+    <s:hidden name="phene" />
+    <s:hidden name="validationMasterSheetFile" />
+    <s:hidden name="predictorListFile" />
+
+    <s:submit value="Calculate" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+    <s:token/>
 </s:form>
 
 </tiles:putAttribute>

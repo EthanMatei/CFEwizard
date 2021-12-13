@@ -48,3 +48,24 @@ Maven is the tool used for building the Wizards and managing their dependencies.
 ```shell
 sudo apt install maven
 ```
+
+R
+-------------------------------------------------------------------
+
+The web app executes R scripts, so R (version 4) needs to be installed.
+
+Several different R packages that are used by the scripts need to be installed.
+These packages can be installed as in the example shown below:
+
+    sudo R
+
+    # For the DEdiscovery script:
+    install.packages("plyr")
+    install.packages("gtools")
+    install.packages("dplyr")
+
+    # For the Validation script:
+    install.packages("pROC")
+    install.packages("ROCR")
+    install.packages("verification")
+

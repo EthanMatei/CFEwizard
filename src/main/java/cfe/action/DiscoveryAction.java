@@ -371,7 +371,12 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
                 this.lowCutoff      = results.getLowCutoff();
                 this.highCutoff     = results.getHighCutoff();
-                this.pheneSelection = results.getPhene(); 
+                this.pheneSelection = results.getPhene();
+                
+                if (this.lowCutoff >= this.highCutoff) {
+                    throw new Exception("The low cutoff (" + this.lowCutoff + ") is not less than the "
+                            + "high cutoff (" + this.highCutoff + ").");
+                }
                 
                 ArrayList<String> row;
                 
@@ -813,7 +818,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	    // Get positive and negative min and max
 	    for (int rowNum = 0; rowNum < scoring.getNumberOfRows(); rowNum++) {
 	        Map<String, String> rowMap = scoring.getRowMap(rowNum);
-	        String score = rowMap.get("DEscores");
+	        String score = rowMap.get("DE Raw Score");
 	        try {
 	            double rawScore = Double.parseDouble(score);
 	            if (rawScore >= 0.0) {
@@ -844,7 +849,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	    
 	    for (int rowNum = 0; rowNum < scoring.getNumberOfRows(); rowNum++) {
 	        Map<String, String> rowMap = scoring.getRowMap(rowNum);
-	        String score = rowMap.get("DEscores");
+	        String score = rowMap.get("DE Raw Score");
 	        try {
 	            double rawScore = Double.parseDouble(score);
 	            double dePercentile;

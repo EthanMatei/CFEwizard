@@ -542,11 +542,16 @@
 		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/validation/validationScores.jsp</result>
 			<result name="error">pages/validation/validationScores.jsp</result>	
-			<result name="input">pages/error.jsp</result>
+			<result name="input" type="redirectAction">
+			    <param name="actionName">ValidationScoringSpecification</param>
+			    <param name="errorMessage">${errorMessage}</param>
+			</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>
-		</action>  		
+		</action>
+		
+	
         <!-- ==================================================================================== -->
         
         <!-- Testing Scoring -->

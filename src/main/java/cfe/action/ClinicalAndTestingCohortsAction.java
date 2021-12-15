@@ -160,6 +160,8 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         } else {
+            this.discoveryResults = CfeResultsService.get(discoveryId);
+            
             log.info("********************************** FOLLOW UP DB FILE NAME: " + this.followUpDbFileName);
             ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
             this.discoveryResults = CfeResultsService.get(discoveryId);
@@ -469,6 +471,23 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         this.scoringDataFileName = scoringDataCsvFile.getAbsolutePath();
     }
     
+    public void createPheneVistsCsvFile() throws Exception {
+        XSSFWorkbook workbook = this.discoveryResults.getResultsSpreadsheet();
+        
+        workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+
+        
+        // FINISH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+        DataTable pheneVisits = new DataTable("TestingVisit");
+        
+        String pheneVisitsCsv = pheneVisits.toCsv();
+        File pheneVisitsCsvFile = File.createTempFile("testing-phene-visits-",  ".csv");
+        if (pheneVisitsCsv != null) {
+            FileUtils.write(pheneVisitsCsvFile, pheneVisitsCsv, "UTF-8");
+        }
+        //this.pheneVisitsFileName = pheneVisitsCsvFile.getAbsolutePath();
+    }
 	public void setSession(Map<String, Object> session) {
 		this.webSession = session;
 		

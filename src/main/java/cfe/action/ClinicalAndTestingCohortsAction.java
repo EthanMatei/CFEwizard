@@ -1,6 +1,7 @@
 package cfe.action;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -17,10 +18,13 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 
+import com.healthmarketscience.jackcess.Table;
+
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
+import cfe.parser.AccessDatabaseParser;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
@@ -35,6 +39,9 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 	private Map<String, Object> webSession;
     
 	public static final Long RANDOM_SEED = 10972359723095792L;
+	
+	public static final String ACTUARIAL_TABLE_NAME = "Actuarial and Subject Info";
+	public static final String HOSPITALIZATIONS_TABLE_NAME = "Hospitalizations Follow-up Database";
 	
 	private List<CfeResults> discoveryResultsList;
 	private CfeResults discoveryResults;
@@ -81,6 +88,13 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 	private Long cfeResultsId;
     private String cohortCheckCsvFileName;
 	
+    // Fllow-up MS Access database
+    
+    private File followUpDb;
+    private String followUpDbContentType;
+    private String followUpDbFileName;
+    private String scoringDataFileName;
+    
 	public ClinicalAndTestingCohortsAction() {
 	    this.cohortSubjects     = new TreeSet<String>();
 	    this.validationSubjects = new TreeSet<String>();
@@ -146,6 +160,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         } else {
+            log.info("********************************** FOLLOW UP DB FILE NAME: " + this.followUpDbFileName);
             ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
             this.discoveryResults = CfeResultsService.get(discoveryId);
 
@@ -196,6 +211,11 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             List<String> subjects = new ArrayList<String>();
             subjects.addAll(cohortSubjects);
 
+            //-----------------------------------------------------------
+            // Process hospitalization data
+            //-----------------------------------------------------------
+            this.processHospitalization();
+            
             //-------------------------------------------------------------------------------
             // Create new CFE results that has all the cohorts plus previous information
             //-------------------------------------------------------------------------------
@@ -404,6 +424,51 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
     }
     	
 
+    public void processHospitalization() throws Exception {
+        AccessDatabaseParser dbParser = new AccessDatabaseParser(this.followUpDb);
+        
+        //---------------------------------------------------------------
+        // Get the actuarial table
+        //---------------------------------------------------------------
+        Table actuarialTable = dbParser.getTable(ACTUARIAL_TABLE_NAME);
+        
+        if (actuarialTable == null) {
+            String errorMessage = "The acturial table \"" + ACTUARIAL_TABLE_NAME + "\""
+                    + " could not be found in the follow-up database \"" + this.followUpDbFileName + "\".";
+            throw new IOException(errorMessage);
+        }
+        
+        DataTable actuarialAndSubjectInfo = new DataTable(ACTUARIAL_TABLE_NAME, "ID");
+        actuarialAndSubjectInfo.initializeToAccessTable(actuarialTable);
+        
+        //----------------------------------------------------------------
+        // Get the hospitalization table
+        //----------------------------------------------------------------
+        Table hospitalizationsTable = dbParser.getTable(HOSPITALIZATIONS_TABLE_NAME);
+        
+        if (hospitalizationsTable == null) {
+            String errorMessage = "The hospitalizations table \"" + HOSPITALIZATIONS_TABLE_NAME + "\""
+                    + " could not be found in the follow-up database \"" + this.followUpDbFileName + "\".";
+            throw new IOException(errorMessage);
+        }
+        
+        DataTable hospitalizations = new DataTable(HOSPITALIZATIONS_TABLE_NAME, "ID");
+        hospitalizations.initializeToAccessTable(hospitalizationsTable);
+        
+        // Join tables
+        DataTable scoringData = null;
+        String keyColumn = null;
+        String joinColumn = "SubjectID";
+        scoringData = DataTable.join(keyColumn, joinColumn, actuarialAndSubjectInfo, hospitalizations);
+        
+        String scoringDataCsv = scoringData.toCsv();
+        File scoringDataCsvFile = File.createTempFile("testing-scoring-data-",  ".csv");
+        if (scoringDataCsv != null) {
+            FileUtils.write(scoringDataCsvFile, scoringDataCsv, "UTF-8");
+        }
+        this.scoringDataFileName = scoringDataCsvFile.getAbsolutePath();
+    }
+    
 	public void setSession(Map<String, Object> session) {
 		this.webSession = session;
 		
@@ -651,6 +716,38 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 
     public void setCohortCheckCsvFileName(String cohortCheckCsvFileName) {
         this.cohortCheckCsvFileName = cohortCheckCsvFileName;
+    }
+
+    public File getFollowUpDb() {
+        return followUpDb;
+    }
+
+    public void setFollowUpDb(File followUpDb) {
+        this.followUpDb = followUpDb;
+    }
+
+    public String getFollowUpDbContentType() {
+        return followUpDbContentType;
+    }
+
+    public void setFollowUpDbContentType(String followUpDbContentType) {
+        this.followUpDbContentType = followUpDbContentType;
+    }
+
+    public String getFollowUpDbFileName() {
+        return followUpDbFileName;
+    }
+
+    public void setFollowUpDbFileName(String followUpDbFileName) {
+        this.followUpDbFileName = followUpDbFileName;
+    }
+
+    public String getScoringDataFileName() {
+        return scoringDataFileName;
+    }
+
+    public void setScoringDataFileName(String scoringDataFileName) {
+        this.scoringDataFileName = scoringDataFileName;
     }
 
 }

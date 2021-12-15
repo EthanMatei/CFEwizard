@@ -22,7 +22,7 @@ import cfe.utils.TableParseResult;
 import cfe.utils.Util;
 
 /**
- * Class for parsing MS Access database files.
+ * Class for parsing MS Access database files for the prioritization phase.
  * 
  * @author Michel Tavares
  * @author Jim Mullen

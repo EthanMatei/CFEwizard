@@ -27,7 +27,7 @@
 <div style="border: 1px solid #222222; border-radius: 10px; maring-top: 20px; padding: 10px;">
 
     <p style="font-weight: bold; margin-top: 12px;">Clinical Cohort Constraint</p>
-    <s:form theme="simple" action="ClinicalAndTestingCohortsProcess">
+    <s:form theme="simple" action="ClinicalAndTestingCohortsProcess" method="post" enctype="multipart/form-data">
         <s:hidden name="discoveryId"/>
         <s:hidden name="discoveryPhene"/>
         <s:hidden name="discoveryLowCutoff"/>
@@ -75,10 +75,15 @@
             <s:textfield name="percentInValidationCohort" value="50" size="4" style="text-align: right;"/>
         </div>
     
+        <div style="margin-bottom: 14px;">
+            Follow up database: <s:file name="followUpDb" />
+        </div>
+        
         <div>
         <s:submit value="Process" style="padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
         </div>
     
+        <s:token />
     </s:form>
 
 </div>

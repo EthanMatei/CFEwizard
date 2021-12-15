@@ -25,6 +25,13 @@ import com.healthmarketscience.jackcess.TableMetaData;
 import cfe.utils.CohortDataTable;
 import cfe.utils.ColumnInfo;
 
+/**
+ * Discovery (PheneVisits) database parser. This class should be modified to extend the
+ * AccessDatabaseParser class.
+ * 
+ * @author Jim Mullen
+ *
+ */
 public class DiscoveryDatabaseParser {
 
     // "Core" tables (required for every discovery phase)

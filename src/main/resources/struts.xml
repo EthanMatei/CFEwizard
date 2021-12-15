@@ -501,7 +501,7 @@
 		<action name="ClinicalAndTestingCohortsProcess"
 		        class="cfe.action.ClinicalAndTestingCohortsAction"
 		        method="process">
-			<interceptor-ref name="basicStack"/>
+			<interceptor-ref name="fileUploadStack"/>
 		    <result name="success">pages/cohort/clinicalAndTestingCohorts.jsp</result>
 		    <result name="error">/pages/error.jsp</result>
 		    <result name="login" type="redirectAction">

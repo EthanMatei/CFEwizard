@@ -38,6 +38,8 @@ Notes:
 
 * Part of the testing cohort is taken from the clinical cohort process
 
+For the extended testing cohort, there are 2 input files, a "PheneVisits" file and a "ScoringData" file.
+
 
 Discovery Process
 -------------------------------

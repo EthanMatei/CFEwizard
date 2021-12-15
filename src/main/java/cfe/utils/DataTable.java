@@ -65,7 +65,16 @@ public class DataTable {
 		this.key = key;
 		this.index = new TreeMap<String, ArrayList<String>>();
 	}
-	
+
+    public DataTable(String name, String key) {
+        this.name = name;
+        
+	    columns = new ArrayList<String>();
+	    data = new ArrayList<ArrayList<String>>();
+	    this.key = key;
+	    this.index = new TreeMap<String, ArrayList<String>>();
+	}
+    
     public void initializeToCsv(String csvFile) throws IOException {
         Reader reader = Files.newBufferedReader(Paths.get(csvFile));
 		CSVReader csvReader = new CSVReader(reader);  
@@ -154,6 +163,8 @@ public class DataTable {
 		Row row;
 		while ((row = table.getNextRow()) != null) {
 			
+		    log.info("**************** ROW SIZE: " + row.size() + "   (COLUMNS SIZE: " + columns.size() + ")");
+		    
 			ArrayList<String> dataRow = new ArrayList<String>();
 			for (String column: columns) {
 				keyValue = null;
@@ -162,16 +173,21 @@ public class DataTable {
 				
 				String type = "";
 				String value = "";
+
 				if (obj != null) { 
 				    type = obj.getClass().getName();
 				    value = obj.toString();
-				    if (StringUtil.isMdyDate(value)) {
-				        value = StringUtil.mdyDateToTimestampDate(value);
-				    }
-					if (key != null && column.equals(key)) {
-						keyValue = value;
-					}
-			    }
+				}
+				else {
+				    value = "";
+				}
+				
+				if (StringUtil.isMdyDate(value)) {
+				    value = StringUtil.mdyDateToTimestampDate(value);
+				}
+				if (key != null && column.equals(key)) {
+					keyValue = value;
+				}
 				
 				//dataRow.add(row.getString(column));
 				dataRow.add(value);
@@ -402,6 +418,8 @@ public class DataTable {
 		//csv.append(this.key);
 		boolean first = true;
 		for (String column: this.columns) {
+            column = "\"" + column + "\"";
+		    
 			if (first) {
 			    csv.append(column);
 			    first = false;
@@ -439,7 +457,9 @@ public class DataTable {
 	          	    csv.append(timestamp);
 	          	}
 	        	else {
-	        	    csv.append("\"" + value + "\"");
+	        	    String modifiedValue = value;
+	        	    modifiedValue = modifiedValue.replace("\"",  "\"\"");
+	        	    csv.append("\"" + modifiedValue + "\"");
 	        	}
 	        }
 	        csv.append("\n");
@@ -568,11 +588,16 @@ public class DataTable {
 	/**
 	 * Gets the index of the first occurrence of the specified column name.
 	 * @param columnName
-	 * @return
+	 * @return the index for the column or -1 if it does not exist
 	 */
 	public int getColumnIndex(String columnName) {
 		int index = this.columns.indexOf(columnName);
 		return index;
+	}
+	
+	public boolean hasColumn(String columnName) {
+	    boolean hasColumn = this.columns.contains(columnName);
+	    return hasColumn;
 	}
 	
 	public int getLastColumnIndex(String columnName) {
@@ -618,6 +643,99 @@ public class DataTable {
     
         return letters;	    
 	}
+	
+	/**
+	 * Joins 2 DataTable objects on the specified join column. Column names that are not unique to a
+	 * table will have "table-name." prepended to the column name.
+	 * 
+	 * @param keyColumn
+	 * @param joinColumn
+	 * @param table1
+	 * @param table2
+	 * @return
+	 */
+	public static DataTable join(String keyColumn, String joinColumn, DataTable table1, DataTable table2) throws Exception {
+	    
+	    if (joinColumn == null || joinColumn.isEmpty()) {
+	        throw new Exception("No join column specified for data table join.");    
+	    }
+	    
+	    if (table1 == null) {
+	        throw new Exception("Table 1 for data table join is null.");
+	    }
+	    
+	    if (table2 == null) {
+	        throw new Exception("Table 2 for data tabel join is null.");
+	    }
+	    
+	    if (!table1.hasColumn(joinColumn)) {
+	        String errorMessage = "Table 1 (\"" + table1.getName() + "\") of data table join does not"
+	                + " contain the join column \"" + joinColumn + "\".";
+	        throw new Exception(errorMessage);    
+	    }
+        
+        if (!table2.hasColumn(joinColumn)) {
+            String errorMessage = "Table 2 (\"" + table2.getName() + "\") of data table join does not"
+                    + " contain the join column \"" + joinColumn + "\".";
+            throw new Exception(errorMessage);    
+        }
+        
+	    DataTable joinTable = new DataTable(keyColumn);
+	    
+	    List<String> columns1 = table1.getColumnNames();
+	    List<String> columns2 = table2.getColumnNames();
+	    
+	    //--------------------------------------------------
+	    // Add the columns for the join table
+	    //--------------------------------------------------
+	    for (String column: columns1) {
+	        if (table2.hasColumn(column)) {
+	            // if this column name is not unique, prepend the table name to it
+	            column = table1.getName() + "." + column;
+	        }
+	        joinTable.addColumn(column,  "");
+	    }
+	    
+	    for (String column: columns2) {
+	        if (table1.hasColumn(column)) {
+                // if this column name is not unique, prepend the table name to it
+                column = table2.getName() + "." + column;
+	        }
+	        joinTable.addColumn(column, "");
+	    }
+	    
+	    //-----------------------------------------------
+	    // Join the rows
+	    //-----------------------------------------------
+	    for (int index1 = 0; index1 < table1.getNumberOfRows(); index1++) {
+	        ArrayList<String> row1 = table1.getRow(index1);
+	        String subjectIndex1 = table1.getValue(index1, joinColumn);
+	        for (int index2 = 0; index2 < table2.getNumberOfRows(); index2++) {
+	            String subjectIndex2 = table2.getValue(index2, joinColumn);
+	            
+	            // If these rows match on the join column
+	            if (subjectIndex2.equals(subjectIndex1)) {
+	                ArrayList<String> joinRow = new ArrayList<String>();
+	                
+	                // Add row values for table 1
+	                for (int columnIndex = 0; columnIndex < row1.size(); columnIndex++) {
+	                    joinRow.add(row1.get(columnIndex));
+	                }
+	                
+	                // add row values for table 2
+	                ArrayList<String> row2 = table2.getRow(index2);
+	                for (int columnIndex = 0; columnIndex < row2.size(); columnIndex++) {
+	                    joinRow.add(row2.get(columnIndex));
+	                }
+	                
+	                joinTable.addRow(joinRow);
+	            }
+	        }
+	    }
+	    
+	    return joinTable;
+	}
+	
 	
 	/**
 	 * Gets a data table with the specified key that has only the specified columns.
@@ -904,6 +1022,14 @@ public class DataTable {
             String keyValue = row.get(this.keyIndex);
             this.index.put(keyValue, row);
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

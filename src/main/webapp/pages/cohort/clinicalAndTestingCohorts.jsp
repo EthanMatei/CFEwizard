@@ -33,6 +33,9 @@
     </tr>
 </table>
 
+<p>
+Follow-up Database File: <s:property value="followUpDbFileName" />
+</p>
 
 <%--
 <s:if test="(phene1 != '' && value1 != '') || (phene2 != '' && value2 != '') || (phene3 != '' && value3 != '')">
@@ -98,6 +101,13 @@
     </s:a>
 </p>
 
+<p>
+    Scoring Data:
+    <s:a action="CsvTextFileDisplay" title="Scoring Data">
+        <s:param name="textFilePath" value="scoringDataFileName" />
+        <s:property value="scoringDataFileName" />
+    </s:a>
+</p>
 <br/>
 <hr/>
 

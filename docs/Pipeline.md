@@ -1,5 +1,8 @@
+CFE Pipeline
+================
+
 Cohort Creation
-=============================
+-----------------------------------
 
 The following cohorts need to be created:
 
@@ -10,8 +13,7 @@ The following cohorts need to be created:
     * First year
     * Future (hospitalization)
 
-Discovery Cohort Creation
------------------------------
+### Discovery Cohort Creation
 
 1. Display the list of phene tables (or all tables if the phene tables cannot be distinguished).
 2. The user selects the table, and then the phenes in that table are displayed
@@ -26,15 +28,19 @@ Notes:
 * In the Cohort table, the date is the date of the visit corresponding to the PhenVisit field
 
 
-Clinical Cohort Creation
----------------------------
+### Clinical Cohort Creation
 
 * Create a clinical phene and a clinical phene high cutoff
 * Take subjects that are not in the Discovery cohort who have a high value (greater than or equal to the high
     cutoff value for the clinical phene)
 
-Testing Cohort Creation
---------------------------
+### Testing Cohort Creation
 
-* TBD...
+* Part of the testing cohort is taken from the clinical cohort process
 
+
+Discovery Process
+-------------------------------
+
+
+![Discovery Process](Discovery.png)

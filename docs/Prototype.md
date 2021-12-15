@@ -11,11 +11,7 @@ Steps/Databases:
 4. Testing
 
 Data is entered into MS Access databases, and those databases are uploaded to the CFE Wizard,
-and the data from them are used for processing and/or stored into the CFE Wizard's MySQL database.
-
-For developer information, see [Developers Guide](./docs/DevelopersGuide.md)
-
-[Pipeline](./docs/Pipeline.md)
+and the data from them are stored into the CFE Wizard's MySQL database.
 
 ---
 

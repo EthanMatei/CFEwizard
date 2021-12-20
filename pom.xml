@@ -17,7 +17,7 @@
     <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
-        <version>2.16.0</version>
+        <version>2.17.0</version>
     </dependency>
 
     <dependency>
@@ -90,7 +90,7 @@
     <dependency>
       <groupId>org.apache.struts</groupId>
 	  <artifactId>struts2-core</artifactId>
-      <version>2.5.28</version>
+      <version>2.5.28.1</version>
     </dependency>
     
     <!-- Maven war plugin -->
@@ -132,7 +132,7 @@
     <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-tiles-plugin</artifactId>
-      <version>2.5.28</version>
+      <version>2.5.28.1</version>
     </dependency>
 
     <dependency>

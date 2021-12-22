@@ -249,7 +249,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 String[] rScriptCommand = new String[7];
                 rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
                 rScriptCommand[1] = scriptFile;     // The R script to run
-                rScriptCommand[2] = scriptDir;   // The dierctory that contains R scripts
+                rScriptCommand[2] = scriptDir;   // The directory that contains R scripts
                 rScriptCommand[3] = this.phene;
                 rScriptCommand[4] = this.validationMasterSheetFile;
                 rScriptCommand[5] = this.predictorListFile;

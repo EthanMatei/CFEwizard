@@ -1,7 +1,9 @@
 package cfe.action;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -9,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -30,6 +34,7 @@ import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.DataTable;
 import cfe.utils.PheneCondition;
+import cfe.utils.WebAppProperties;
 
 public class ClinicalAndTestingCohortsAction extends BaseAction implements SessionAware {
 
@@ -51,6 +56,8 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 	private String[] operators = {">=", ">", "<=", "<"};
 	
 	private Long discoveryId;
+	
+	private String admissionPhene;
     
 	private String errorMessage;
 	
@@ -94,11 +101,33 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
     private String followUpDbContentType;
     private String followUpDbFileName;
     private String scoringDataFileName;
+    private String pheneVisitsFileName;
+    
+    private List<String> admissionReasons;
+    private String predictionCohortCreationCommand;
+    private String scriptOutput;
+    private String outputFile;
+    private String scriptOutputFile;
     
 	public ClinicalAndTestingCohortsAction() {
 	    this.cohortSubjects     = new TreeSet<String>();
 	    this.validationSubjects = new TreeSet<String>();
 	    this.testingSubjects    = new TreeSet<String>();
+	    
+	    admissionReasons = new ArrayList<String>();
+	    admissionReasons.add("Suicide");
+	    admissionReasons.add("Violence");
+	    admissionReasons.add("Depression");
+	    admissionReasons.add("Mania");
+	    admissionReasons.add("Hallucinations");
+	    admissionReasons.add("Delusion");
+	    admissionReasons.add("Other Psychosis"); 
+	    admissionReasons.add("Anxiety"); 
+	    admissionReasons.add("Stress");
+	    admissionReasons.add("Alcohol");
+	    admissionReasons.add("Drugs");
+	    admissionReasons.add("Pain");
+	    Collections.sort(admissionReasons);
 	}
 	
 	public String initialize() throws Exception {
@@ -162,7 +191,8 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         } else {
             this.discoveryResults = CfeResultsService.get(discoveryId);
             
-            log.info("********************************** FOLLOW UP DB FILE NAME: " + this.followUpDbFileName);
+            log.info("Testing follow-up database file name: " + this.followUpDbFileName);
+            
             ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
             this.discoveryResults = CfeResultsService.get(discoveryId);
 
@@ -216,7 +246,52 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             //-----------------------------------------------------------
             // Process hospitalization data
             //-----------------------------------------------------------
-            this.processHospitalization();
+            this.processHospitalizations();
+            
+            //--------------------------------------------------
+            // Create phene visits CSV file
+            //--------------------------------------------------
+            this.createPheneVistsCsvFile();
+            
+            //------------------------------------------------------------
+            // Run Python script
+            //------------------------------------------------------------
+            String scriptFile = new File(getClass().getResource("/python/CohortCreation.py").toURI()).getAbsolutePath();
+            String tempDir = System.getProperty("java.io.tmpdir");
+            
+            String[] pythonScriptCommand = new String[6];
+            pythonScriptCommand[0] = WebAppProperties.getPython3Path();
+            pythonScriptCommand[1] = scriptFile;     // Python script to run
+            pythonScriptCommand[2] = this.scoringDataFileName;
+            pythonScriptCommand[3] = this.pheneVisitsFileName;
+            pythonScriptCommand[4] = this.admissionPhene;
+            pythonScriptCommand[5] = tempDir;
+            
+            log.info("PYTHON CREATE COHORT COMMAND: " + String.join(" ", pythonScriptCommand));
+            
+            this.predictionCohortCreationCommand = "\"" + String.join("\" \"",  pythonScriptCommand) + "\"";
+            
+            this.scriptOutput = this.runCommand(pythonScriptCommand);
+
+            File tempFile = File.createTempFile("prediction-cohort-creation-python-script-output", ".txt");
+            FileUtils.write(tempFile, scriptOutput, "UTF-8");
+            this.scriptOutputFile = tempFile.getAbsolutePath();
+            
+            //---------------------------------------------------------------
+            // Get the output file path
+            //---------------------------------------------------------------
+            String outputFilePatternString = "Output file created: (.*)";
+
+            Pattern outputFilePattern = Pattern.compile(outputFilePatternString);
+
+            String lines[] = scriptOutput.split("\\r?\\n");
+            for (String line: lines) {
+                Matcher outputMatcher = outputFilePattern.matcher(line);
+
+                if (outputMatcher.find()) {
+                    this.outputFile = outputMatcher.group(1).trim();
+                }             
+            }
             
             //-------------------------------------------------------------------------------
             // Create new CFE results that has all the cohorts plus previous information
@@ -379,6 +454,10 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             
             cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
 
+            
+            //-------------------------------------------
+            // Create and save CFE results
+            //-------------------------------------------
             CfeResults cfeResults = new CfeResults();
 
             if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
@@ -397,7 +476,9 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             CfeResultsService.save(cfeResults);
             this.cfeResultsId = cfeResults.getCfeResultsId();
             
-            /* Create table with info for checking cohorts */
+            //---------------------------------------------------------
+            // Create table with info for checking cohorts (optional)
+            //---------------------------------------------------------
             ArrayList<String> checkColumns = new ArrayList<String>();
             checkColumns.add("Subject");
             checkColumns.add("VisitNumber");
@@ -419,14 +500,40 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                 FileUtils.write(cohortCheckCsvFile, cohortCheckCsv, "UTF-8");
             }
             this.cohortCheckCsvFileName = cohortCheckCsvFile.getAbsolutePath();
-            /* */
         }
         
         return result;
     }
     	
+    public String runCommand(String[] command) throws Exception {
+        StringBuilder output = new StringBuilder();
+        
+        log.info("run command: " + String.join(" ", command));
+        
+        // This allows debugging:
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.redirectErrorStream(true); // redirect standard error to standard output
+        
+        Process process = processBuilder.start();
 
-    public void processHospitalization() throws Exception {
+        BufferedReader reader = new BufferedReader(
+        new InputStreamReader(process.getInputStream()));
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            output.append(line + "\n");
+        }
+
+        int status = process.waitFor();
+        if (status != 0) {
+            //throw new Exception("Command \"" + command + "\" exited with code " + status);
+        }
+        
+        reader.close();
+        return output.toString();
+    }
+    
+    public void processHospitalizations() throws Exception {
         AccessDatabaseParser dbParser = new AccessDatabaseParser(this.followUpDb);
         
         //---------------------------------------------------------------
@@ -471,23 +578,42 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         this.scoringDataFileName = scoringDataCsvFile.getAbsolutePath();
     }
     
+    /**
+     * Creates the phene visit CSV file that is used for input into the Python script
+     * for calculating the hospitalization cohort.
+     * 
+     * @throws Exception
+     */
     public void createPheneVistsCsvFile() throws Exception {
         XSSFWorkbook workbook = this.discoveryResults.getResultsSpreadsheet();
         
-        workbook.getSheet(CfeResultsSheets.COHORT_DATA);
-
+        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
         
-        // FINISH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        String originalKeyColumn = "Subject Identifiers.PheneVisit";
+        String originalVisitDateColumn = "Visit Date";
         
-        DataTable pheneVisits = new DataTable("TestingVisit");
+        List<String> filterColumns = new ArrayList<String>();
+        filterColumns.add(originalKeyColumn);
+        filterColumns.add(originalVisitDateColumn);
         
+        DataTable pheneVisits = new DataTable(originalKeyColumn);
+        pheneVisits.initializeToWorkbookSheet(sheet);
+        pheneVisits.sort("Subject", "VisitNumber");
+        
+        pheneVisits = pheneVisits.filter(originalKeyColumn, filterColumns);
+        pheneVisits.renameColumn(originalKeyColumn, "TestingVisit");
+        pheneVisits.renameColumn(originalVisitDateColumn, "PheneVisit Date");
+        
+        // Create the temporary CSV file
         String pheneVisitsCsv = pheneVisits.toCsv();
         File pheneVisitsCsvFile = File.createTempFile("testing-phene-visits-",  ".csv");
         if (pheneVisitsCsv != null) {
             FileUtils.write(pheneVisitsCsvFile, pheneVisitsCsv, "UTF-8");
         }
-        //this.pheneVisitsFileName = pheneVisitsCsvFile.getAbsolutePath();
+        
+        this.pheneVisitsFileName = pheneVisitsCsvFile.getAbsolutePath();
     }
+    
 	public void setSession(Map<String, Object> session) {
 		this.webSession = session;
 		
@@ -767,6 +893,62 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 
     public void setScoringDataFileName(String scoringDataFileName) {
         this.scoringDataFileName = scoringDataFileName;
+    }
+
+    public String getPheneVisitsFileName() {
+        return pheneVisitsFileName;
+    }
+
+    public void setPheneVisitsFileName(String pheneVisitsFileName) {
+        this.pheneVisitsFileName = pheneVisitsFileName;
+    }
+
+    public List<String> getAdmissionReasons() {
+        return admissionReasons;
+    }
+
+    public void setAdmissionReasons(List<String> admissionReasons) {
+        this.admissionReasons = admissionReasons;
+    }
+
+    public String getAdmissionPhene() {
+        return admissionPhene;
+    }
+
+    public void setAdmissionPhene(String admissionPhene) {
+        this.admissionPhene = admissionPhene;
+    }
+
+    public String getPredictionCohortCreationCommand() {
+        return predictionCohortCreationCommand;
+    }
+
+    public void setPredictionCohortCreationCommand(String predictionCohortCreationCommand) {
+        this.predictionCohortCreationCommand = predictionCohortCreationCommand;
+    }
+
+    public String getScriptOutput() {
+        return scriptOutput;
+    }
+
+    public void setScriptOutput(String scriptOutput) {
+        this.scriptOutput = scriptOutput;
+    }
+
+    public String getScriptOutputFile() {
+        return scriptOutputFile;
+    }
+
+    public void setScriptOutputFile(String scriptOutputFile) {
+        this.scriptOutputFile = scriptOutputFile;
+    }
+
+    public String getOutputFile() {
+        return outputFile;
+    }
+
+    public void setOutputFile(String outputFile) {
+        this.outputFile = outputFile;
     }
 
 }

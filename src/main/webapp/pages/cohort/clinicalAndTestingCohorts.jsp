@@ -108,8 +108,37 @@ Follow-up Database File: <s:property value="followUpDbFileName" />
         <s:property value="scoringDataFileName" />
     </s:a>
 </p>
+
+<p>
+    Phene Visits Data:
+    <s:a action="CsvTextFileDisplay" title="Phene Visits">
+        <s:param name="textFilePath" value="pheneVisitsFileName" />
+        <s:property value="pheneVisitsFileName" />
+    </s:a>
+</p>
+
 <br/>
 <hr/>
+
+<p>
+Prediction cohort creation command: <s:property value="predictionCohortCreationCommand"/>
+</p>
+
+<p>
+Prediction Cohort Creation Python Script Output:
+<s:a action="TextFileDisplay" title="Prediction Cohort Python Script Output">
+    <s:param name="textFilePath" value="scriptOutputFile" />
+    <s:property value="scriptOutputFile" />
+</s:a>
+</p>
+
+<p>
+Prediction Cohort:
+<s:a action="CsvTextFileDisplay" title="Prediction Cohort">
+    <s:param name="textFilePath" value="outputFile" />
+    <s:property value="outputFile" />
+</s:a>
+</p>
 
 
 <s:a action="CfeResultsXlsxDisplay" title="Cohort Spreadsheet">

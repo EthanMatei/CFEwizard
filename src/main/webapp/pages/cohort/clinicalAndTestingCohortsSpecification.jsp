@@ -75,9 +75,15 @@
             <s:textfield name="percentInValidationCohort" value="50" size="4" style="text-align: right;"/>
         </div>
     
+        <br />
+        
         <div style="margin-bottom: 14px;">
             Follow up database: <s:file name="followUpDb" />
         </div>
+        
+        <p>
+        Admission phene: <s:select name="admissionPhene" list="admissionReasons"/>
+        </p>
         
         <div>
         <s:submit value="Process" style="padding-left: 2em; padding-right: 2em; font-weight: bold;"/>

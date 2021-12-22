@@ -247,6 +247,20 @@ public class DataTable {
         }
 	}
 	
+	public void renameColumn(String originalColumnName, String newColumnName) throws Exception {
+	    int columnIndex = this.getColumnIndex(originalColumnName);
+	    if (columnIndex < 0) {
+	        throw new Exception("Column \"" + originalColumnName + "\" not found in data table.");
+	    }
+	    
+	    this.columns.set(columnIndex, newColumnName);
+	    
+	    // If the column being renamed is the key column, rename the key 
+	    if (this.key != null && this.key.contentEquals(originalColumnName)) {
+	        this.key = newColumnName;
+	    }
+	}
+	
 	/**
 	 * Deletes the last occurrence of the specified column in the data table.
 	 *

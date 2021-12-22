@@ -273,7 +273,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             
             this.scriptOutput = this.runCommand(pythonScriptCommand);
 
-            File tempFile = File.createTempFile("prediction-cohort-creation-python-script-output", ".txt");
+            File tempFile = File.createTempFile("prediction-cohort-creation-python-script-output-", ".txt");
             FileUtils.write(tempFile, scriptOutput, "UTF-8");
             this.scriptOutputFile = tempFile.getAbsolutePath();
             

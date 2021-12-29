@@ -15,6 +15,19 @@
 <%-- Only allow admins see and make database uploads --%>
 <s:if test="#session.username==adminUser">
 
+  <h3>Application Properties</h3>
+  <table class="dataTable">
+  <tr> <th>Property</th> <th>Value</th> </tr>
+  <s:iterator value="applicationProperties">
+    <tr>
+      <td><s:property value="key"/></td>
+      <td><s:property value="value"/></td>
+    </tr>
+  </s:iterator>
+  </table>
+  
+  <hr />
+  
   <h3>Java System Properties</h3>
   <table class="dataTable">
   <tr> <th>Property</th> <th>Value</th> </tr>

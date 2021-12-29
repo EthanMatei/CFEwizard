@@ -17,6 +17,12 @@ phene_visit_file  = sys.argv[2]
 admission_phene   = sys.argv[3]
 temp_dir          = sys.argv[4]
 
+# Print out command line arguments for debugging purposes
+print("scoring data file:", scoring_data_file)
+print("phene_visit_file:", phene_visit_file)
+print("admission phene:", admission_phene)
+print("temp dir:", temp_dir)
+
 #### IMPORT FILES HERE  ####
 data = pd.read_csv(scoring_data_file)
 visit_dates = pd.read_csv(phene_visit_file)
@@ -182,6 +188,8 @@ find_df = pd.merge(fin_df,finished,left_on='TestingVisit', right_on = 'TestingVi
 find_df.dropna(how='all', axis=1, inplace=True)
 
 output_file_name = temp_dir + "/prediction-cohort-" + str(uuid.uuid4()) + ".csv"
+
+find_df.to_csv(output_file_name)
 
 print ("Output file created: " + output_file_name)
 

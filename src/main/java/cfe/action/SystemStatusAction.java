@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.utils.Authorization;
+import cfe.utils.WebAppProperties;
 
 // http://struts.apache.org/release/2.3.x/docs/file-upload.html
 
@@ -28,6 +29,7 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
 	
 	private Map<String, Object> webSession;
 	
+	private Map<String,String> applicationProperties;
 	private Map<String,String> systemProperties;
 	private Map<String,String> environmentVariables;
 
@@ -39,6 +41,11 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
 			result = LOGIN;
 		}
 		else {
+		    this.applicationProperties = new TreeMap<String, String>();
+		    this.applicationProperties.put(WebAppProperties.TEMP_DIR, WebAppProperties.getTempDir());
+            this.applicationProperties.put(WebAppProperties.PYTHON3_PATH_PROPERTY, WebAppProperties.getPython3Path());
+		    this.applicationProperties.put(WebAppProperties.RSCRIPT_PATH_PROPERTY, WebAppProperties.getRscriptPath());
+		    
     		String[] props = {
 	    		"java.home", "java.class.path", "java.version",
 		    	"os.name", "os.version", "user.home", "user.name"
@@ -47,6 +54,7 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
 		    for (String prop: props) {
 			    this.systemProperties.put(prop, System.getProperty(prop, ""));
 		    }
+		    
 		    this.environmentVariables = System.getenv();   
 	    }
 
@@ -58,7 +66,11 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
 		
 	}
 	
-	public Map<String, Object> getSession() {
+	public Map<String, String> getApplicationProperties() {
+        return applicationProperties;
+    }
+
+    public Map<String, Object> getSession() {
 		return webSession;
 	}
 	

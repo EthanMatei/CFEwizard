@@ -43,11 +43,13 @@ public class WebAppProperties {
 	private static final String ADMIN_USERNAME_PROPERTY = "admin.username";
 	private static final String ADMIN_PASSWORD_PROPERTY = "admin.password";
 	
-	private static final String RSCRIPT_PATH_PROPERTY = "rscript.path";
+	public static final String RSCRIPT_PATH_PROPERTY = "rscript.path";
 	private static final String DEFAULT_RSCRIPT_PATH  = "/usr/bin/Rscript";
 	   
-    private static final String PYTHON3_PATH_PROPERTY = "python3.path";
+    public static final String PYTHON3_PATH_PROPERTY = "python3.path";
     private static final String DEFAULT_PYTHON3_PATH  = "/usr/bin/python3";
+    
+    public static final String TEMP_DIR = "temp.dir";
     
 	private static Log log = LogFactory.getLog(WebAppProperties.class);
 	
@@ -128,6 +130,12 @@ public class WebAppProperties {
 	
 	public static String getRootDir() {
 		return WebAppProperties.rootDir;
+	}
+	
+	public static String getTempDir() {
+	    String defaultTempDir = properties.getProperty("java.io.tmpdir", "/tmp");
+	    String tempDir = properties.getProperty( TEMP_DIR, defaultTempDir );
+	    return tempDir;
 	}
 
 }

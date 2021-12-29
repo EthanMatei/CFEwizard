@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -33,6 +35,7 @@ import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.DataTable;
+import cfe.utils.FileUtil;
 import cfe.utils.PheneCondition;
 import cfe.utils.WebAppProperties;
 
@@ -257,7 +260,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             // Run Python script
             //------------------------------------------------------------
             String scriptFile = new File(getClass().getResource("/python/CohortCreation.py").toURI()).getAbsolutePath();
-            String tempDir = System.getProperty("java.io.tmpdir");
+            String tempDir = WebAppProperties.getTempDir();
             
             String[] pythonScriptCommand = new String[6];
             pythonScriptCommand[0] = WebAppProperties.getPython3Path();
@@ -273,9 +276,10 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             
             this.scriptOutput = this.runCommand(pythonScriptCommand);
 
-            File tempFile = File.createTempFile("prediction-cohort-creation-python-script-output-", ".txt");
+            File tempFile = FileUtil.createTempFile("prediction-cohort-creation-python-script-output-", ".txt");
             FileUtils.write(tempFile, scriptOutput, "UTF-8");
             this.scriptOutputFile = tempFile.getAbsolutePath();
+
             
             //---------------------------------------------------------------
             // Get the output file path
@@ -292,6 +296,17 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                     this.outputFile = outputMatcher.group(1).trim();
                 }             
             }
+            
+            //Path path = Paths.get(outputFile);
+            //String fileName = path.getFileName().toString();
+            //this.outputFile = System.getProperty("java.io.tmpdir") + "/" + fileName;
+            log.info("Updated prediction cohort output file:" + this.outputFile);
+
+            
+            // Create hospitalizations data table
+            DataTable hospitalizationsData = new DataTable("hospitalizations cohort data", "TestingVisit");
+            hospitalizationsData.initializeToCsv(this.outputFile);
+
             
             //-------------------------------------------------------------------------------
             // Create new CFE results that has all the cohorts plus previous information
@@ -321,7 +336,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
 
             // Modify (all) cohort data table
-            cohortData.addCohort("validation", validationSubjects);
+            cohortData.addCohort("clinical", validationSubjects);
             cohortData.addCohort("testing", testingSubjects);
             String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
             cohortData.sortWithBlanksLast(sortColumns);            
@@ -453,7 +468,32 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.CLINICAL_COHORT_INFO);
             
             cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
+            
+            //
+            DataTable testingCohortData = cohortData;
+            
+            testingCohortData.deleteRow("Cohort", "discovery");
+            testingCohortData.deleteRow("Cohort", "validation");   // "validation" deprecated; new name "clinical"
+            testingCohortData.deleteRow("Cohort", "clinical");
+            
+            DataTable hospitalizationsResult = DataTable.join("TestingVisit", "TestingVisit", "Subject Identifiers.PheneVisit",
+                    hospitalizationsData, testingCohortData, DataTable.JoinType.RIGHT_OUTER);
+            hospitalizationsResult.renameColumn("Time to 1st Hosp", "time");
+            
+            // Create TestCohort column that is 0 if the discovery phene value is not set
+            // and 1 if it is set
+            hospitalizationsResult.addColumn("TestCohort", "1");
+            for (int rowIndex = 0; rowIndex < hospitalizationsResult.getNumberOfRows(); rowIndex++) {
+                String pheneValue = hospitalizationsResult.getValue(rowIndex, this.discoveryPhene);
+                if (pheneValue == null || pheneValue.trim().isEmpty()) {
+                    hospitalizationsResult.setValue(rowIndex, "TestCohort", "0");
+                }
+            }
+            hospitalizationsResult.sort("Subject", "VisitNumber");
 
+
+            hospitalizationsData.addToWorkbook(resultsWorkbook, CfeResultsSheets.PREDICTION_COHORT);
+            hospitalizationsResult.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT_DATA);
             
             //-------------------------------------------
             // Create and save CFE results
@@ -495,7 +535,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             DataTable cohortCheck = cohortData.filter(cohortData.getKey(), checkColumns);
             
             String cohortCheckCsv = cohortCheck.toCsv();
-            File cohortCheckCsvFile = File.createTempFile("cohort-check-",  ".csv");
+            File cohortCheckCsvFile = FileUtil.createTempFile("cohort-check-",  ".csv");
             if (cohortCheckCsv != null) {
                 FileUtils.write(cohortCheckCsvFile, cohortCheckCsv, "UTF-8");
             }
@@ -571,7 +611,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         scoringData = DataTable.join(keyColumn, joinColumn, actuarialAndSubjectInfo, hospitalizations);
         
         String scoringDataCsv = scoringData.toCsv();
-        File scoringDataCsvFile = File.createTempFile("testing-scoring-data-",  ".csv");
+        File scoringDataCsvFile = FileUtil.createTempFile("testing-scoring-data-",  ".csv");
         if (scoringDataCsv != null) {
             FileUtils.write(scoringDataCsvFile, scoringDataCsv, "UTF-8");
         }
@@ -606,7 +646,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         
         // Create the temporary CSV file
         String pheneVisitsCsv = pheneVisits.toCsv();
-        File pheneVisitsCsvFile = File.createTempFile("testing-phene-visits-",  ".csv");
+        File pheneVisitsCsvFile = FileUtil.createTempFile("testing-phene-visits-",  ".csv");
         if (pheneVisitsCsv != null) {
             FileUtils.write(pheneVisitsCsvFile, pheneVisitsCsv, "UTF-8");
         }

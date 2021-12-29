@@ -59,7 +59,10 @@ public class DataTable {
 	protected List<String> columns;
 	protected List<ArrayList<String>> data;
 	
+	public enum JoinType {INNER, OUTER, LEFT_OUTER, RIGHT_OUTER};
+	
 	public DataTable(String key) {
+	    this.name = "";
 		columns = new ArrayList<String>();
 		data = new ArrayList<ArrayList<String>>();
 		this.key = key;
@@ -236,6 +239,53 @@ public class DataTable {
 		        this.index.put(keyValue, row);
 		    }
 		}
+	}
+	
+	/**
+	 * Indicates if the data table has a row with the specified value in the specified column.
+	 * 
+	 * @param columnName
+	 * @param columnValue
+	 * @return
+	 */
+	public boolean hasRow(String columnName, String columnValue) throws Exception {
+	    boolean hasRow = false;
+	    
+	    int columnIndex = this.getColumnIndex(columnName);
+	    if (columnIndex < 0) {
+	        String errorMessage = "Column \"" + columnName + "\" not found in data table \"" + this.name + "\".";
+	        throw new Exception(errorMessage);
+	    }
+	        
+	    for (int rowIndex = 0; rowIndex < this.getNumberOfRows(); rowIndex++) {
+	        ArrayList<String> row = data.get(rowIndex);
+	        if (row.get(columnIndex).contentEquals(columnValue)) {
+	            hasRow = true;
+	            break;
+	        }
+	    }
+	    return hasRow;
+	}
+	
+	/**
+	 * Deletes row where the specified column name has the specified value.
+	 * 
+	 * @param columnName
+	 * @param columnValue
+	 */
+	public void deleteRow(String columnName, String columnValue) throws Exception {
+	    int columnIndex = this.getColumnIndex(columnName);
+	    if (columnIndex < 0) {
+	        String errorMessage = "Column \"" + columnName + "\" not found in data table \"" + this.name + "\".";
+	        throw new Exception(errorMessage);
+	    }
+	    
+	    for (int rowIndex = this.getNumberOfRows() -1; rowIndex >= 0; rowIndex--) {
+	        ArrayList<String> row = data.get(rowIndex);
+	        if (row.get(columnIndex).contentEquals(columnValue)) {
+	            this.data.remove(rowIndex);
+	        }
+	    }
 	}
 	
 	public void deleteColumn(String columnName) {
@@ -658,19 +708,31 @@ public class DataTable {
         return letters;	    
 	}
 	
+	   public static DataTable join(String keyColumn, String joinColumn, DataTable table1, DataTable table2) throws Exception {
+	       DataTable joinedTable = DataTable.join(keyColumn, joinColumn, joinColumn, table1, table2);
+	       return joinedTable;
+	   }
+	   
+	    public static DataTable join(String keyColumn, String joinColumn1, String joinColumn2, 
+	            DataTable table1, DataTable table2) throws Exception {
+	        DataTable joinedTable = DataTable.join(keyColumn, joinColumn1, joinColumn2, table1, table2, JoinType.INNER);
+	        return joinedTable;
+	    }
 	/**
 	 * Joins 2 DataTable objects on the specified join column. Column names that are not unique to a
 	 * table will have "table-name." prepended to the column name.
 	 * 
 	 * @param keyColumn
-	 * @param joinColumn
+	 * @param joinColumn1
+	 * @param joinColumn2
 	 * @param table1
 	 * @param table2
 	 * @return
 	 */
-	public static DataTable join(String keyColumn, String joinColumn, DataTable table1, DataTable table2) throws Exception {
+	public static DataTable join(String keyColumn, String joinColumn1, String joinColumn2, 
+	        DataTable table1, DataTable table2, JoinType joinType) throws Exception {
 	    
-	    if (joinColumn == null || joinColumn.isEmpty()) {
+	    if (joinColumn1 == null || joinColumn1.isEmpty() || joinColumn2 == null || joinColumn2.isEmpty()) {
 	        throw new Exception("No join column specified for data table join.");    
 	    }
 	    
@@ -682,15 +744,15 @@ public class DataTable {
 	        throw new Exception("Table 2 for data tabel join is null.");
 	    }
 	    
-	    if (!table1.hasColumn(joinColumn)) {
+	    if (!table1.hasColumn(joinColumn1)) {
 	        String errorMessage = "Table 1 (\"" + table1.getName() + "\") of data table join does not"
-	                + " contain the join column \"" + joinColumn + "\".";
+	                + " contain the join column \"" + joinColumn1 + "\".";
 	        throw new Exception(errorMessage);    
 	    }
         
-        if (!table2.hasColumn(joinColumn)) {
+        if (!table2.hasColumn(joinColumn2)) {
             String errorMessage = "Table 2 (\"" + table2.getName() + "\") of data table join does not"
-                    + " contain the join column \"" + joinColumn + "\".";
+                    + " contain the join column \"" + joinColumn2 + "\".";
             throw new Exception(errorMessage);    
         }
         
@@ -723,12 +785,13 @@ public class DataTable {
 	    //-----------------------------------------------
 	    for (int index1 = 0; index1 < table1.getNumberOfRows(); index1++) {
 	        ArrayList<String> row1 = table1.getRow(index1);
-	        String subjectIndex1 = table1.getValue(index1, joinColumn);
+	        String subjectIndex1 = table1.getValue(index1, joinColumn1);
 	        for (int index2 = 0; index2 < table2.getNumberOfRows(); index2++) {
-	            String subjectIndex2 = table2.getValue(index2, joinColumn);
+	            String subjectIndex2 = table2.getValue(index2, joinColumn2);
 	            
 	            // If these rows match on the join column
-	            if (subjectIndex2.equals(subjectIndex1)) {
+	            if (subjectIndex2.equals(subjectIndex1)) {  // Both table contain row
+	                
 	                ArrayList<String> joinRow = new ArrayList<String>();
 	                
 	                // Add row values for table 1
@@ -747,6 +810,53 @@ public class DataTable {
 	        }
 	    }
 	    
+	    if (joinType == JoinType.RIGHT_OUTER || joinType == JoinType.OUTER) {
+	        for (int index2 = 0; index2 < table2.getNumberOfRows(); index2++) {
+	            String value = table2.getValue(index2, joinColumn2);
+	            if (!table1.hasRow(joinColumn1, value)) {
+	                // If there is not matching row in table 1 for the row in table 2
+	                ArrayList<String> joinRow = new ArrayList<String>();
+	                
+	                // Add blank row values for table 1
+                    for (int columnIndex = 0; columnIndex < columns1.size(); columnIndex++) {
+                        joinRow.add("");
+                    }
+                    
+                    // add row values for table 2
+                    ArrayList<String> row2 = table2.getRow(index2);
+                    for (int columnIndex = 0; columnIndex < row2.size(); columnIndex++) {
+                        joinRow.add(row2.get(columnIndex));
+                    }
+                    
+                    joinTable.addRow(joinRow);
+	            }
+	        }
+	    }
+	    
+	   if (joinType == JoinType.LEFT_OUTER || joinType == JoinType.OUTER) {
+	        for (int index1 = 0; index1 < table1.getNumberOfRows(); index1++) {
+
+	            String value = table1.getValue(index1, joinColumn1);
+	            if (!table2.hasRow(joinColumn2, value)) {
+	                // If there is not matching row in table 2 for the row in table 1
+	                ArrayList<String> joinRow = new ArrayList<String>();
+	                    
+	                // Add row values for table 1
+	                ArrayList<String> row1 = table1.getRow(index1);
+                    for (int columnIndex = 0; columnIndex < row1.size(); columnIndex++) {
+                        joinRow.add(row1.get(columnIndex));
+                    }
+	                    
+	                // Add blank row values for table 2
+	        	    for (int columnIndex = 0; columnIndex < columns2.size(); columnIndex++) {
+	                    joinRow.add("");
+	                }
+	                
+	                joinTable.addRow(joinRow);
+	            }
+	        }
+	   }
+
 	    return joinTable;
 	}
 	

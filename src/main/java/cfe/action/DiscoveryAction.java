@@ -50,6 +50,7 @@ import cfe.utils.CohortDataTable;
 import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
+import cfe.utils.FileUtil;
 import cfe.utils.WebAppProperties;
 import cfe.utils.WorkbookUtil;
 
@@ -174,7 +175,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		    try {
 			    // Copy the upload files to temporary files, because the upload files get deleted
 			    // and they are needed beyond this method
-			    File discoveryDbTmp = File.createTempFile("discovery-db-", ".accdb");
+			    File discoveryDbTmp = FileUtil.createTempFile("discovery-db-", ".accdb");
 			    FileUtils.copyFile(this.discoveryDb, discoveryDbTmp);
 			    this.discoveryDbTempFileName = discoveryDbTmp.getAbsolutePath();
 			
@@ -523,7 +524,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
                 this.scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
 
-                this.tempDir = System.getProperty("java.io.tmpdir");
+                //this.tempDir = System.getProperty("java.io.tmpdir");
+                this.tempDir = FileUtil.getTempDir();
                 
                 //---------------------------------------------------------------------
                 // Create discovery cohort file that will be passed to the R script
@@ -537,7 +539,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 discoveryCohort.initializeToWorkbookSheet(sheet);
                 String cohortCsv = discoveryCohort.toCsv();
 
-                File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
+                File cohortCsvTempFile = FileUtil.createTempFile("cohort-", ".csv");
                 FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
                 this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
                 
@@ -550,7 +552,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
                 DataTable bigData = cohortData.getBigData(this.pheneSelection);
                 
-                File bigDataTmp = File.createTempFile("bigData-", ".csv");
+                File bigDataTmp = FileUtil.createTempFile("bigData-", ".csv");
                 if (bigDataTmp != null) {
                     FileUtils.writeStringToFile(bigDataTmp, bigData.toCsv(), "UTF-8");
                 } else {
@@ -570,7 +572,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //------------------------------------------------------
                 // Get the gene expression CSV file
                 //------------------------------------------------------
-                File discoveryCsvTmp = File.createTempFile("discovery-csv-",  ".csv");
+                File discoveryCsvTmp = FileUtil.createTempFile("discovery-csv-",  ".csv");
                 if (this.discoveryCsv != null) {
                     FileUtils.copyFile(this.discoveryCsv, discoveryCsvTmp);
                 }

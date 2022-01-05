@@ -689,6 +689,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 else {
                     outputDataTable.initializeToCsv(outputFile);
                     // Add Genecards Symbols
+                    outputDataTable.renameColumn("DEscores", "DE Raw Score");
                     outputDataTable.addColumn("DE Percentile", "");
                     outputDataTable.addColumn("DE Score", "");
                     outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
@@ -821,67 +822,71 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	    for (int rowNum = 0; rowNum < scoring.getNumberOfRows(); rowNum++) {
 	        Map<String, String> rowMap = scoring.getRowMap(rowNum);
 	        String score = rowMap.get("DE Raw Score");
-	        try {
-	            double rawScore = Double.parseDouble(score);
-	            if (rawScore >= 0.0) {
-                    if (positiveMax == null) {
-                        positiveMax = rawScore;
-                    }
-                    else {
-                        if (rawScore > positiveMax) {
-                            positiveMax = rawScore;
-                        }
-                    }	                
-	            }
-	            else {
-	                if (negativeMax == null) {
-	                    negativeMax = rawScore;
+	        if (score != null) {
+	            try {
+	                double rawScore = Double.parseDouble(score);
+	                if (rawScore >= 0.0) {
+	                    if (positiveMax == null) {
+	                        positiveMax = rawScore;
+	                    }
+	                    else {
+	                        if (rawScore > positiveMax) {
+	                            positiveMax = rawScore;
+	                        }
+	                    }	                
 	                }
 	                else {
-                        if (rawScore < negativeMax) {
-                            negativeMax = rawScore;
-                        }
+	                    if (negativeMax == null) {
+	                        negativeMax = rawScore;
+	                    }
+	                    else {
+	                        if (rawScore < negativeMax) {
+	                            negativeMax = rawScore;
+	                        }
+	                    }
 	                }
 	            }
-	        }
-	        catch (NumberFormatException exception) {
-	            ;  // no score - skip
+	            catch (NumberFormatException exception) {
+	                ;  // no score - skip
+	            }
 	        }
 	    }
 	    
 	    for (int rowNum = 0; rowNum < scoring.getNumberOfRows(); rowNum++) {
 	        Map<String, String> rowMap = scoring.getRowMap(rowNum);
 	        String score = rowMap.get("DE Raw Score");
-	        try {
-	            double rawScore = Double.parseDouble(score);
-	            double dePercentile;
-	            if (rawScore >= 0.0) {
-	                dePercentile = rawScore / positiveMax;
+	        if (score != null) {
+	            try {
+	                double rawScore = Double.parseDouble(score);
+	                double dePercentile;
+	                if (rawScore >= 0.0) {
+	                    dePercentile = rawScore / positiveMax;
+	                }
+	                else {
+	                    dePercentile = rawScore / negativeMax;
+	                }
+	                scoring.setValue(rowNum, "DE Percentile", dePercentile + "");
+
+	                int deScore = 0;
+
+	                if (dePercentile < 0.333333333333) {
+	                    deScore = this.dePercentileScore1;
+	                }
+	                else if (dePercentile < 0.50) {
+	                    deScore = this.dePercentileScore2;
+	                }
+	                else if (dePercentile < 0.80) {
+	                    deScore = this.dePercentileScore3;
+	                }
+	                else {
+	                    deScore = this.dePercentileScore4;
+	                }
+
+	                scoring.setValue(rowNum, "DE Score", deScore + "");
 	            }
-	            else {
-	                dePercentile = rawScore / negativeMax;
+	            catch (NumberFormatException exception) {
+	                ;  // no score - skip
 	            }
-                scoring.setValue(rowNum, "DE Percentile", dePercentile + "");
-                
-                int deScore = 0;
-                
-                if (dePercentile < 0.333333333333) {
-                    deScore = this.dePercentileScore1;
-                }
-                else if (dePercentile < 0.50) {
-                    deScore = this.dePercentileScore2;
-                }
-                else if (dePercentile < 0.80) {
-                    deScore = this.dePercentileScore3;
-                }
-                else {
-                    deScore = this.dePercentileScore4;
-                }
-                
-                scoring.setValue(rowNum, "DE Score", deScore + "");
-	        }
-	        catch (NumberFormatException exception) {
-	            ;  // no score - skip
 	        }
 	    }
 	}

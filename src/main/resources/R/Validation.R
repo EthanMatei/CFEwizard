@@ -365,9 +365,9 @@ for (i in 1:(nrow(predictors))) {
 
 table <- table[-1,] #remove first placeholder row
 if (correctTies ){
-csvOutput <- paste0(csvOutputFolder, "\\predictions output CORRECT TIES ", testName, Sys.Date())
+csvOutput <- paste0(csvOutputFolder, "/predictions output CORRECT TIES ", testName, Sys.Date())
 }else{
-csvOutput <- paste0(csvOutputFolder, "\\predictions output", testName, Sys.Date())
+csvOutput <- paste0(csvOutputFolder, "/predictions output", testName, Sys.Date())
 }
 if (LEVELS){
   csvOutput <- paste0(csvOutput, " levels")

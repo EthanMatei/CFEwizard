@@ -64,6 +64,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	private List<CfeResults> cfeResults;
 	
 	private CfeResults testingData;
+    private String scriptDir;
+    private String scriptFile;
 	
 	/**
 	 * Select testing data
@@ -125,8 +127,13 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
             try {
                 log.info("Starting testing scoring");
                 
+                this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
+                this.scriptFile = new File(getClass().getResource("/R/Predictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
+                
                 String[] rScriptCommand = new String[12];
-                rScriptCommand[0] = WebAppProperties.getPython3Path();
+                rScriptCommand[0] = WebAppProperties.getRscriptPath();
+                rScriptCommand[1] = this.scriptFile;
+                rScriptCommand[2] = scriptDir;
             }
             catch (Exception exception) {
                 result = ERROR;

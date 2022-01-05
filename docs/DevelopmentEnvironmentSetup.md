@@ -69,3 +69,20 @@ These packages can be installed as in the example shown below:
     install.packages("ROCR")
     install.packages("verification")
 
+Python
+----------------------------------------------------------
+
+The web app executes Python scripts, so Python 3 needs to be available, and is by default on most Linux installations. 
+
+Package information for what was used originally:
+
+* pandas: 1.3.1
+* numpy: 1.20.3
+
+
+How to install the needed packages on Ubuntu:
+
+    sudo apt install python3-pip
+    pip install pandas==1.3.1
+
+~

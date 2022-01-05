@@ -12,16 +12,16 @@ Steps/Databases:
 
 Data inputs into the CFE Wizard include:
 
-    * MS Access Databases
-    * CSV files
-    * Manually entered values
+* MS Access Databases
+* CSV files
+* Manually entered values
 
 The CFE Wizard uses a MySQL database to store values that need to persist.
 
 For developer information, see:
 
-    * [Developers Guide](./docs/DevelopersGuide.md)
-    * [Development Environment Setup](./docs/DevelopmentEnvironmentSetup.md)
+* [Developers Guide](./docs/DevelopersGuide.md)
+* [Development Environment Setup](./docs/DevelopmentEnvironmentSetup.md)
 
 
 For information about the CFE Wizard's calculations, see: [Pipeline](./docs/Pipeline.md)

@@ -470,30 +470,31 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
             
             //
-            DataTable testingCohortData = cohortData;
+            DataTable cohortDataForTesting = cohortData;
             
-            testingCohortData.deleteRow("Cohort", "discovery");
-            testingCohortData.deleteRow("Cohort", "validation");   // "validation" deprecated; new name "clinical"
-            testingCohortData.deleteRow("Cohort", "clinical");
+            cohortDataForTesting.deleteRow("Cohort", "discovery");
+            cohortDataForTesting.deleteRow("Cohort", "validation");   // "validation" deprecated; new name "clinical"
+            cohortDataForTesting.deleteRow("Cohort", "clinical");
             
-            DataTable hospitalizationsResult = DataTable.join("TestingVisit", "TestingVisit", "Subject Identifiers.PheneVisit",
-                    hospitalizationsData, testingCohortData, DataTable.JoinType.RIGHT_OUTER);
-            hospitalizationsResult.renameColumn("Time to 1st Hosp", "time");
+            
+            DataTable testingCohortData = DataTable.join("TestingVisit", "TestingVisit", "Subject Identifiers.PheneVisit",
+                    hospitalizationsData, cohortDataForTesting, DataTable.JoinType.RIGHT_OUTER);
+            testingCohortData.renameColumn("Time to 1st Hosp", "time");
             
             // Create TestCohort column that is 0 if the discovery phene value is not set
             // and 1 if it is set
-            hospitalizationsResult.addColumn("TestCohort", "1");
-            for (int rowIndex = 0; rowIndex < hospitalizationsResult.getNumberOfRows(); rowIndex++) {
-                String pheneValue = hospitalizationsResult.getValue(rowIndex, this.discoveryPhene);
+            testingCohortData.addColumn("TestCohort", "1");
+            for (int rowIndex = 0; rowIndex < testingCohortData.getNumberOfRows(); rowIndex++) {
+                String pheneValue = testingCohortData.getValue(rowIndex, this.discoveryPhene);
                 if (pheneValue == null || pheneValue.trim().isEmpty()) {
-                    hospitalizationsResult.setValue(rowIndex, "TestCohort", "0");
+                    testingCohortData.setValue(rowIndex, "TestCohort", "0");
                 }
             }
-            hospitalizationsResult.sort("Subject", "VisitNumber");
+            testingCohortData.sort("Subject", "VisitNumber");
 
 
             hospitalizationsData.addToWorkbook(resultsWorkbook, CfeResultsSheets.PREDICTION_COHORT);
-            hospitalizationsResult.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT_DATA);
+            testingCohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT_DATA);
             
             //-------------------------------------------
             // Create and save CFE results

@@ -1,14 +1,9 @@
 package cfe.action;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,24 +12,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 
-import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Table;
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 import com.opencsv.CSVReader;
 
 import cfe.model.CfeResults;
@@ -57,7 +47,8 @@ import cfe.utils.WorkbookUtil;
 public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-	private static final Log log = LogFactory.getLog(DiscoveryAction.class);
+	//private static final Log log = LogFactory.getLog(DiscoveryAction.class);
+    private static Logger log = Logger.getLogger(DiscoveryAction.class.getName());
 
 	private Map<String, Object> webSession;
 	
@@ -173,6 +164,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		}
 		else {
 		    try {
+		        log.info("Database \"" + this.discoveryDbFileName + "\" uploaded.");
+		        
 			    // Copy the upload files to temporary files, because the upload files get deleted
 			    // and they are needed beyond this method
 			    File discoveryDbTmp = FileUtil.createTempFile("discovery-db-", ".accdb");
@@ -295,7 +288,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //
 				// File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
 				// FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
-				// this.cohortCsvFile = cohortCsvTempFile.getAbsolutePath();
+				// this.cohortCsvFile = cohortCsvTempFile.getAbsolutePat)h();
 
 				// Create an Xlsx (spreadsheet) version of the cohort data
 				ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
@@ -326,7 +319,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 this.cfeResultsId = cfeResults.getCfeResultsId();
 			} catch (Exception exception) {
 				result = ERROR;
-				log.error("*** ERROR: " + exception.getMessage());
 				errorMessage = exception.getLocalizedMessage();
 				exception.printStackTrace();
 			}
@@ -766,7 +758,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                
                 CfeResultsService.save(cfeResults);
                 this.cfeResultsId = cfeResults.getCfeResultsId();
-                log.info("**************** DISCOVERY CALCULATE - CFE RESULTS ID: " + cfeResultsId);
+                log.info("Discovery calculation - CFE Results ID: " + cfeResultsId);
                 
                 //--------------------------------
                 // Clean up temporary files
@@ -1066,7 +1058,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true); // redirect standard error to standard output
         
-        log.info("*** Before process start");
         Process process = processBuilder.start();
 
 
@@ -1078,14 +1069,13 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	        output.append(line + "\n");
 	    }
 
-	    log.info("*** Going to wait for process...");
+	    log.info("Waiting for process...");
 	    int status = process.waitFor();
 	    if (status != 0) {
             //throw new Exception("Command \"" + command + "\" exited with code " + status);
 	    }
 	    
 	    reader.close();
-        log.info("*** reader closed");
 		return output.toString();
 	}
 	

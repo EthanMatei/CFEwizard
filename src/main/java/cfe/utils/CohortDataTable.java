@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -978,5 +979,23 @@ public class CohortDataTable extends DataTable {
         //bigData.sort(sortColumns);
 	    
 	    return bigData;
+	}
+	
+	public Map<String,ArrayList<ColumnInfo>> getPheneMap() throws Exception
+	{
+	    Map<String,ArrayList<ColumnInfo>> pheneMap = new TreeMap<String,ArrayList<ColumnInfo>>();
+	    
+	    int otherDxIndex = this.getColumnIndex("Other Dx");
+	    if (otherDxIndex < 0) {
+	        throw new Exception("Column \"Other Dx\" not found in cohort data table.");
+	    }
+	    
+	    int pheneStartIndex = otherDxIndex + 1;
+	    
+	    for (String column: this.columns) {
+	        
+	    }
+	    
+	    return pheneMap;
 	}
 }

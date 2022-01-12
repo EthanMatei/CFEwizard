@@ -27,11 +27,11 @@ import cfe.utils.ColumnInfo;
 
 public class AccessDatabaseParser {
 
-	private String msAccessFile;
-	private Database database;
+	protected String msAccessFileName;
+	protected Database database;
 	
 	public AccessDatabaseParser(String msAccessFileName) throws IOException {
-	    this.msAccessFile = msAccessFileName;
+	    this.msAccessFileName = msAccessFileName;
 	    this.database = DatabaseBuilder.open(new File(msAccessFileName));
 	}
 	
@@ -45,7 +45,45 @@ public class AccessDatabaseParser {
 		tableNames = this.database.getTableNames();
 		
 		return tableNames;
-	}	
+	}
+	
+	public Set<String> getTableColumnNames(String tableName) throws Exception {
+	    Set<String> columnNames = new LinkedHashSet<String>();
+	    
+	    Table table = this.database.getTable(tableName);
+	    
+	    if (table == null) {
+	        String errorMessage = "Table \"" + tableName + "\" could not be found in database \""
+	                + this.msAccessFileName + "\".";
+	        throw new Exception(errorMessage);
+	    }
+	    
+        for (Column column: table.getColumns()) {
+            String columnName = column.getName().trim();
+            columnNames.add(columnName);
+        };
+
+	    return columnNames;
+	}
+	
+	/**
+	 * Indicates if the specified table name contains the specified column name.
+	 * 
+	 * @param tableName
+	 * @param columnName
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean tableHasColumn(String tableName, String columnName) throws Exception {
+	    boolean hasColumn = false;
+
+	    Set<String> columnNames = this.getTableColumnNames(tableName);
+	    if (columnNames.contains(columnName)) {
+	        hasColumn = true;
+	    }
+
+	    return hasColumn;
+	}
 
 	
 	public Map<String,ArrayList<ColumnInfo>> getTableColumnMap(Set<String> excludedTables) throws Exception {
@@ -61,13 +99,13 @@ public class AccessDatabaseParser {
 			    for (Column col: table.getColumns()) {
 				    String columnName = col.getName().trim();
 				    DataType colDataType = col.getType();
-				    if (!columnName.equalsIgnoreCase("PheneVisit")) {
+				    //if (!columnName.equalsIgnoreCase("PheneVisit")) {
 					    ColumnInfo colInfo = new ColumnInfo();
 					    colInfo.setTableName(tableName);
 					    colInfo.setColumnName(columnName);
 					    colInfo.setColumnType(colDataType.toString());
 				        columnInfos.add(colInfo);
-				    }
+				    //}
 			    };
 			    map.put(tableName, columnInfos);
 			}
@@ -112,5 +150,9 @@ public class AccessDatabaseParser {
 	    Table table = this.database.getTable(tableName);
 	    return table;
 	}
-	
+
+    public String getMsAccessFileName() {
+        return msAccessFileName;
+    }
+
 }

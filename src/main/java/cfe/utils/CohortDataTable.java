@@ -1,9 +1,6 @@
 package cfe.utils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,28 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
-import com.opencsv.CSVReader;
-
-import cfe.action.DiscoveryAction;
-import cfe.model.CfeResultsSheets;
 
 /**
  * Class for storing the the merged data tables used to construct the Discovery cohort.
@@ -42,7 +30,7 @@ import cfe.model.CfeResultsSheets;
  */
 public class CohortDataTable extends DataTable {
 	
-	private static final Log log = LogFactory.getLog(CohortDataTable.class);
+	private static final Logger log = Logger.getLogger(CohortDataTable.class.getName());
 	
 	public static final Long RANDOM_SEED = 10972359723095792L;
 	   
@@ -57,12 +45,38 @@ public class CohortDataTable extends DataTable {
         this.pheneTable = pheneTable;
     }
     
+    public int getPheneColumnIndex(String phene) throws Exception {
+        int index = -1;
+        
+        int matchCount = 0;
+        for (int i = 0; i < this.columns.size(); i++) {
+            String column = this.columns.get(i);
+            // Remove table name from column (if any)
+            String modifiedColumn = column.trim().replaceFirst("[^\\.]+\\.",  "");
+            //log.info("Modified column: \"" + modifiedColumn + "\"." + " - Phene: \"" + phene + "\".");
+            if (modifiedColumn.equalsIgnoreCase(phene)) {
+                //log.info("MATCH FOUND!!!!!!!!!!!!!!!!!!!!!!!!!.");
+                matchCount++;
+                index = i;
+            }
+        }
+        
+        if (matchCount > 1) {
+            throw new Exception("Phene column found " + matchCount + " times in the cohort data table.");    
+        }
+        
+        log.info("Returning phene column index: " + index);
+        return index;
+    }
+    
+    
 	public void initializeToAccessTable(Table table) throws IOException {
 
 		// Reset key, because sometimes PheneVisit is misspelled.
 		for (Column col: table.getColumns()) {
 			String columnName = col.getName();
-			if (columnName.trim().equalsIgnoreCase("PheneVisit")) {
+			if (columnName.trim().equalsIgnoreCase("PheneVisit")
+			        || columnName.trim().equalsIgnoreCase("Phene Visit")) {
 				this.key = columnName;
 				break;
 			}
@@ -73,15 +87,89 @@ public class CohortDataTable extends DataTable {
 		// Now, after table has been initialized, make sure key and column name are "PheneVisit"
 		this.key = "PheneVisit";
 		for (int i = 0; i < this.columns.size(); i++) {
-			if (columns.get(i).trim().equalsIgnoreCase("PheneVisit")) {
+			if (columns.get(i).trim().equalsIgnoreCase("PheneVisit")
+			        || columns.get(i).trim().equalsIgnoreCase("Phene Visit")) {
 				columns.set(i, "PheneVisit");
 				break;
 			}
 		}
     }
 	
+	public CohortDataTable mergePheneTable(CohortDataTable mergeTable) throws Exception {
+
+        if (this.key == null || mergeTable.key == null) {
+            throw new Exception("Merge of tables without a key defined.");
+        }
+        
+        // If this cohort data table doesn't have a phene table, but the merged
+        // table does, set this table's phene table to that of the merged table
+        if ((this.pheneTable == null || this.pheneTable.isEmpty())
+                && mergeTable.pheneTable != null && !mergeTable.pheneTable.isEmpty()) {
+            this.pheneTable = mergeTable.pheneTable;
+        }
+        
+        CohortDataTable merge = new CohortDataTable();
+        
+        merge.keyIndex = this.keyIndex;
+        
+        ArrayList<String> columns1 = new ArrayList<String>();
+        for (String columnName: this.columns) {
+            if (columnName.equals(key)) {
+                columnName = this.name + "." + columnName;
+            }
+            columns1.add(columnName);
+        }
+        
+        ArrayList<String> columns2 = new ArrayList<String>();
+        for (String columnName: mergeTable.columns) {
+            // ADD THIS LATER??? Add the table name to all phene table column names
+            if (columnName.equals(key)) {
+                columnName = mergeTable.name + "." + columnName;
+            }
+            columns2.add(columnName);
+        }   
+        
+        merge.columns.addAll(columns1);
+        merge.columns.addAll(columns2);
+        
+        // log.info("Columns for phene table merge have been merged.");
+        
+        //String columnsString = String.join(", ", merge.columns);
+        
+        Set<String> keys1 = this.index.keySet();
+        
+        for (String key: keys1) {
+            ArrayList<String> mergedRow = new ArrayList<String>();
+            mergedRow.addAll(this.index.get(key));
+            
+            // log.info("Going to merge row for key \""+ key + "\".");
+            ArrayList<String> mergeRow = mergeTable.getRow(key);
+            if (mergeRow == null) {
+                // log.info("merge row is null.");
+                // If the row doesn't exist in the phene table, create a blank row
+                mergeRow = new ArrayList<String>();
+                mergeRow.add(key);   // Add the phene value
+                for (int i = 1; i < columns2.size(); i++) {
+                    mergeRow.add("");
+                }
+            }
+            // log.info("merge row size: " + mergeRow.size());
+            
+            mergedRow.addAll(mergeRow);
+            
+            merge.addRow(mergedRow);
+        }
+        
+        //merge.deleteLastColumn(key);
+        
+        log.info("Returning merge table; number of rows: " + merge.getNumberOfRows());
+        return merge;
+	}
+	
+	
 	public CohortDataTable merge(CohortDataTable mergeTable) throws Exception {
-		if (this.key == null || mergeTable.key == null) {
+
+	    if (this.key == null || mergeTable.key == null) {
 			throw new Exception("Merge of tables without a key defined.");
 		}
 		
@@ -133,10 +221,20 @@ public class CohortDataTable extends DataTable {
 		return merge;
 	}
 
-	public TreeSet<String> getDiscoveryCohortSubjects(String phene, int lowCutoff, int highCutoff) {
-        
+	public TreeSet<String> getDiscoveryCohortSubjects(String phene, int lowCutoff, int highCutoff) throws Exception {
+	    
 	    int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
-        int pheneIndex   = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
+        int pheneIndex   = this.getPheneColumnIndex(phene.trim());
+        
+        log.info("phene index returned: " + pheneIndex);
+        
+        if (subjectIndex < 0) {
+            throw new Exception("Column \"Subject\" could not be found in the cohort data table.");
+        }
+        
+        if (pheneIndex < 0) {
+            throw new Exception("Column \"" + phene + "\" could not be found in the cohort data table.");
+        }
 
 	    // Find subjects with low score and subjects with high score
 	    TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
@@ -388,9 +486,9 @@ public class CohortDataTable extends DataTable {
 	    }
 	     
 		// Get the selected phene column index
-		int pheneIndex = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
+		int pheneIndex = this.getPheneColumnIndex(phene.trim());
 		if (pheneIndex == -1) {
-		    throw new Exception("Phene column \"" + phene + "\" could not be found in the cohort data table.");
+		    throw new Exception("Phene column \"" + phene + "\" could not be found in the cohort data table while trying to get discovery cohort.");
 		}
 		
 		int pheneVisitIndex = this.getColumnIndexTrimAndIgnoreCase("Subject Identifiers.PheneVisit");
@@ -509,26 +607,40 @@ public class CohortDataTable extends DataTable {
 	}
 	*/
 	
-    public void enhance(String phene, int lowCutoff, int highCutoff) {
+    public void enhance(String phene, int lowCutoff, int highCutoff) throws Exception {
+        log.info("Enhancement of cohort data table started.");
+        
         int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
+        
+        if (subjectIndex < 0) {
+            throw new Exception("Column \"Subject\" not found in cohort data table.");
+        }
         
         this.insertColumn("Cohort", 1, "");
         
         int cohortIndex = this.getColumnIndex("Cohort");
         
+        log.info("Cohort index: " + cohortIndex);
+        
         TreeSet<String> cohortSubjects = this.getDiscoveryCohortSubjects(phene, lowCutoff, highCutoff);
 
+        log.info("Cohort subjects retrieved.");
+        
         for (ArrayList<String> dataRow: this.data) {
             if (cohortSubjects.contains(dataRow.get(subjectIndex))) {
                 dataRow.set(cohortIndex, "discovery");
             }
         }
         
+        log.info("Setting of cohort column is done.");
+        
         // Add and set "VisitNumber" column
         int visitNumberIndex = 1;
         this.insertColumn("VisitNumber", visitNumberIndex, "");
         String[] visitNumberSortColumns = {"Subject", "Visit Date"};
         this.sort(visitNumberSortColumns);
+        
+        log.info("Sort for visit number complete.");
         
         String lastSubject = "";
         int visit = 0;
@@ -543,6 +655,7 @@ public class CohortDataTable extends DataTable {
             row.set(visitNumberIndex, visit + "");
         }
         
+        log.info("Before cohort data table enhancement sort.");
         String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
         this.sortWithBlanksLast(sortColumns);
     }
@@ -847,9 +960,9 @@ public class CohortDataTable extends DataTable {
 	    columns.addAll(diagnosis);
 	    columns.addAll(subjectIdentifiers);
 	       
-	    log.info("**************** demographics columns: " + String.join(", ", demographics));
+	    log.info("demographics columns: " + String.join(", ", demographics));
 	       
-	    log.info("**************** bigData columns: " + String.join(", ", columns));
+	    log.info("bigData columns: " + String.join(", ", columns));
 
 	    // Get only the columns needed from this cohort data table
 	    bigData = this.filter(bigDataKey, columns);
@@ -859,7 +972,7 @@ public class CohortDataTable extends DataTable {
 	    bigData.setKey("PheneVisit");
 	    
 	       
-        log.info("**************** bigData columns: " + String.join(", ", bigData.getColumnNames()));
+        log.info("bigData columns: " + String.join(", ", bigData.getColumnNames()));
 	    
         //String[] sortColumns = {"Subject", "Visit Date", "Phene Visit"};
         //bigData.sort(sortColumns);

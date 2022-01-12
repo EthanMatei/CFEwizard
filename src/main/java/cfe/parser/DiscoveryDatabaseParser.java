@@ -32,19 +32,17 @@ import cfe.utils.ColumnInfo;
  * @author Jim Mullen
  *
  */
-public class DiscoveryDatabaseParser {
+public class DiscoveryDatabaseParser extends AccessDatabaseParser {
 
     // "Core" tables (required for every discovery phase)
 	public static final String DIAGNOSIS_TABLE = "Diagnosis";
 	public static final String DEMOGRAPHICS_TABLE = "Demographics";
 	public static final String SUBJECT_IDENTIFIERS_TABLE = "Subject Identifiers";
+
 	
-	private String msAccessFile;
-	private Database database;
-	
-	public DiscoveryDatabaseParser(String msAccessFile) throws IOException {
-	    this.msAccessFile = msAccessFile;
-	    this.database = DatabaseBuilder.open(new File(msAccessFile));
+	public DiscoveryDatabaseParser(String msAccessFileName) throws IOException {
+	    super(msAccessFileName);
+	    this.database = DatabaseBuilder.open(new File(msAccessFileName));
 	}
 	
 	/**
@@ -129,7 +127,33 @@ public class DiscoveryDatabaseParser {
 	public Set<String> getPheneTables() throws Exception {
 		Set<String> pheneTables = new TreeSet<String>();
 
-		pheneTables = this.database.getTableNames();
+		Set<String> excludePatterns = new HashSet<String>();
+	    excludePatterns.add("Cohorts");
+		excludePatterns.add("Demographics");
+		excludePatterns.add("Diagnosis");
+		excludePatterns.add("Subject Identifiers");
+	    excludePatterns.add(".*[Cc]hip [Dd]ata.*");
+	    excludePatterns.add(".*[Mm]icroarray [Dd]ata.*");
+
+		Set<String> tables = this.database.getTableNames();
+		
+		for (String tableName: tables) {
+		    boolean excludeTable = false;
+		    for (String pattern: excludePatterns) {
+		        if (tableName.matches(pattern)) {
+		            excludeTable = true;
+		            break;
+		        }
+		    }
+		    
+		    // If the table name is not an excluded table, and it has a "PheneVisit" column,
+		    // include it in the set of phene tables
+		    if (!excludeTable) {
+		        if (this.tableHasColumn(tableName, "PheneVisit")) {
+		            pheneTables.add(tableName);
+		        }
+		    }
+		}
 		
 		return pheneTables;
 	}
@@ -170,32 +194,41 @@ public class DiscoveryDatabaseParser {
 	}
 	
 	public Map<String,ArrayList<ColumnInfo>> getTableColumnMap() throws Exception {
-	    Set<String> excludedTables = new HashSet<String>();
-	    excludedTables.add("Demographics");
-	    excludedTables.add("Diagnosis");
-	    excludedTables.add("Subject Identifiers");
 	    
 		Set<String> tableNames = new TreeSet<String>();
 		Map<String,ArrayList<ColumnInfo>> map = new TreeMap<String,ArrayList<ColumnInfo>>();
 		
-		tableNames = this.database.getTableNames();
+		tableNames = this.getPheneTables();
+		
+	    Set<String> excludePatterns = new HashSet<String>();
+	    excludePatterns.add("[Pp]hene\\s*[Vv]isit");
+	    excludePatterns.add("Field[0-9]+");
+	    excludePatterns.add("ID");
+	        
 		for (String tableName: tableNames) {
-			if (!excludedTables.contains(tableName)) {
-			    Table table = this.database.getTable(tableName);
-			    ArrayList<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
-			    for (Column col: table.getColumns()) {
-				    String columnName = col.getName().trim();
-				    DataType colDataType = col.getType();
-				    if (!columnName.equalsIgnoreCase("PheneVisit")) {
-					    ColumnInfo colInfo = new ColumnInfo();
-					    colInfo.setTableName(tableName);
-					    colInfo.setColumnName(columnName);
-					    colInfo.setColumnType(colDataType.toString());
-				        columnInfos.add(colInfo);
-				    }
-			    };
-			    map.put(tableName, columnInfos);
-			}
+		    Table table = this.database.getTable(tableName);
+		    ArrayList<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
+		    for (Column col: table.getColumns()) {
+		        String columnName = col.getName().trim();
+		        DataType colDataType = col.getType();
+		        
+		        boolean excludeColumn = false;
+		        for (String pattern: excludePatterns) {
+		            if (columnName.matches(pattern)) {
+		                excludeColumn = true;
+		                break;
+		            }
+		        }
+		        
+		        if (!excludeColumn) {
+		            ColumnInfo colInfo = new ColumnInfo();
+		            colInfo.setTableName(tableName);
+		            colInfo.setColumnName(columnName);
+		            colInfo.setColumnType(colDataType.toString());
+		            columnInfos.add(colInfo);
+		        }
+		    };
+		    map.put(tableName, columnInfos);
 		}
 		
 		return map;
@@ -229,19 +262,7 @@ public class DiscoveryDatabaseParser {
         return diagnosisCodes;
 	}
 	
-	public void deleteTableRows(String tableName) throws IOException {
 
-	    Table table = this.database.getTable(tableName);
-	    for (Row row: table) {
-	    	table.deleteRow(row);
-	    }
-	}
-	
-	public void addRows(String tableName, List<String[]> rowValues) throws IOException {
-	    Table table = this.database.getTable(tableName);
-
-	    table.addRows(rowValues);
-	}
 
 
 	/**

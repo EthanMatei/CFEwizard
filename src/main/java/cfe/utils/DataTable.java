@@ -718,19 +718,20 @@ public class DataTable {
 	        DataTable joinedTable = DataTable.join(keyColumn, joinColumn1, joinColumn2, table1, table2, JoinType.INNER);
 	        return joinedTable;
 	    }
-	/**
-	 * Joins 2 DataTable objects on the specified join column. Column names that are not unique to a
-	 * table will have "table-name." prepended to the column name.
-	 * 
-	 * @param keyColumn
-	 * @param joinColumn1
-	 * @param joinColumn2
-	 * @param table1
-	 * @param table2
-	 * @return
-	 */
+	    
+    /**
+     * 
+     * @param keyColumn
+     * @param joinColumn1
+     * @param joinColumn2
+     * @param table1
+     * @param table2
+     * @param joinType
+     * @return
+     * @throws Exception
+     */
 	public static DataTable join(String keyColumn, String joinColumn1, String joinColumn2, 
-	        DataTable table1, DataTable table2, JoinType joinType) throws Exception {
+	        DataTable table1, DataTable table2, DataTable.JoinType joinType) throws Exception {
 	    
 	    if (joinColumn1 == null || joinColumn1.isEmpty() || joinColumn2 == null || joinColumn2.isEmpty()) {
 	        throw new Exception("No join column specified for data table join.");    

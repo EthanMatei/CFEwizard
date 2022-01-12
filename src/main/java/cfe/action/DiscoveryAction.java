@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +33,6 @@ import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
 import cfe.parser.DiscoveryDatabaseParser;
-import cfe.parser.PheneVisitParser;
 import cfe.parser.ProbesetMappingParser;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
@@ -41,8 +41,8 @@ import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
+import cfe.utils.Util;
 import cfe.utils.WebAppProperties;
-import cfe.utils.WorkbookUtil;
 
 public class DiscoveryAction extends BaseAction implements SessionAware {
 
@@ -222,7 +222,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				Table subjectIdentifiers = db.getTable("Subject Identifiers");
 				Table demographics       = db.getTable("Demographics");
 				Table diagnosis          = db.getTable("Diagnosis");
-				Table pheneData          = db.getTable(this.pheneTable);
+				//Table pheneData          = db.getTable(this.pheneTable);
 				Table chips              = db.getTable(this.microarrayTable);
 
 				CohortDataTable subjectIdentifiersData = new CohortDataTable();
@@ -234,8 +234,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				CohortDataTable diagnosisData = new CohortDataTable();
 				diagnosisData.initializeToAccessTable(diagnosis);
 
-				CohortDataTable pheneDataData = new CohortDataTable(this.pheneTable);
-				pheneDataData.initializeToAccessTable(pheneData);
+				//CohortDataTable pheneDataData = new CohortDataTable(this.pheneTable);
+				//pheneDataData.initializeToAccessTable(pheneData);
 
 				CohortDataTable chipsData = new CohortDataTable();
 				chipsData.initializeToAccessTable(chips);
@@ -243,30 +243,41 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				CohortDataTable cohortData = subjectIdentifiersData.merge(demographicsData);
 				
 				cohortData = cohortData.merge(diagnosisData);
-				cohortData = cohortData.merge(pheneDataData);
+	
+				//log.info("Before phene tables merge");
+				
+				Set<String> pheneTableNames = dbParser.getPheneTables();
+				for (String pheneTableName: pheneTableNames) {
+				    log.info("Starting to add phene table \"" + pheneTableName + "\" to the cohort data.");
+				    CohortDataTable pheneDataTable = new CohortDataTable();
+				    Table dbTable = dbParser.getTable(pheneTableName);
+				    pheneDataTable.initializeToAccessTable(dbTable);
+				    //log.info("Data table for phene table \"" + pheneTableName + "\" created.");
+				    cohortData = cohortData.mergePheneTable(pheneDataTable);
+				}
+				//cohortData = cohortData.merge(pheneDataData);
+				
 				cohortData = cohortData.merge(chipsData);
 				
+				// DEBUG
+				// String csv1 = cohortData.toCsv();
+				// File cfile1 = FileUtil.createTempFile("cohort-data-1-", ".csv");
+				// FileUtils.writeStringToFile(cfile1, csv1, "UTF-8");
+				
+				log.info("chip data merged.");
+				
 				cohortData.enhance(pheneSelection, lowCutoff, highCutoff);
-				
-				// How to add a column (name, position, value):
-				//cohortData.addColumnBefore("testColumn", 2, "123");
-				
-				// NO LONGER NEEDED ???
-				//this.cohortDataCsv = cohortData.toCsv();
 
-				// NO LONGER NEEDED ???
-				// Create an Xlsx (spreadsheet) version of the cohort data
-				//File cohortDataXlsxTempFile = File.createTempFile("cohort-data-", ".xlsx");
-				//FileOutputStream out = new FileOutputStream(cohortDataXlsxTempFile);
-				//cohortData.toXlsx().write(out);
-				//out.close();
-				//this.cohortDataXlsxFile = cohortDataXlsxTempFile.getAbsolutePath();
-
-				//File cohortDataCsvTempFile = File.createTempFile("cohort-data-", ".csv");
-				//FileUtils.writeStringToFile(cohortDataCsvTempFile, cohortDataCsv, "UTF-8");
-				//this.cohortDataCsvFile = cohortDataCsvTempFile.getAbsolutePath();
+                // DEBUG
+                // String csv2 = cohortData.toCsv();
+                // File cfile2 = FileUtil.createTempFile("cohort-data-2-", ".csv");
+                // FileUtils.writeStringToFile(cfile2, csv2, "UTF-8");
+                
+				log.info("Cohort data enhanced.");
 
 				db.close();
+				
+				log.info("Database closed.");
 				
 				// Delete the temporary database file
 				File file = new File(this.discoveryDbTempFileName);
@@ -279,22 +290,24 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				cohort.sort("Subject", "PheneVisit"); 
                 this.cohortGeneratedTime = new Date();
 				
+                // DEBUG
+                // String csv3 = cohortData.toCsv();
+                // File cfile3 = FileUtil.createTempFile("cohort-data-3-", ".csv");
+                // FileUtils.writeStringToFile(cfile3, csv3, "UTF-8");
+                
 				this.numberOfSubjects = cohort.getNumberOfSubjects();
 				this.lowVisits = cohort.getLowVisits();
 				this.highVisits = cohort.getHighVisits();
 				
-				// NO LONGER NEEDED ???
-				// String cohortCsv = cohort.toCsv();
-                //
-				// File cohortCsvTempFile = File.createTempFile("cohort-", ".csv");
-				// FileUtils.writeStringToFile(cohortCsvTempFile, cohortCsv, "UTF-8");
-				// this.cohortCsvFile = cohortCsvTempFile.getAbsolutePat)h();
-
-				// Create an Xlsx (spreadsheet) version of the cohort data
 				ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
                 
 				DataTable infoTable = this.createCohortInfoTable();
 				
+                // DEBUG
+                // String csv4 = cohortData.toCsv();
+                // File cfile4 = FileUtil.createTempFile("cohort-data-4-", ".csv");
+                // FileUtils.writeStringToFile(cfile4, csv4, "UTF-8");
+                
 				LinkedHashMap<String, DataTable> cohortTables = new LinkedHashMap<String, DataTable>();
 				cohortTables.put(CfeResultsSheets.DISCOVERY_COHORT,  cohort);
 				cohortTables.put(CfeResultsSheets.COHORT_DATA, cohortData);
@@ -319,7 +332,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 this.cfeResultsId = cfeResults.getCfeResultsId();
 			} catch (Exception exception) {
 				result = ERROR;
-				errorMessage = exception.getLocalizedMessage();
+				errorMessage = exception.getMessage();
+				log.warning("*** ERROR: " + errorMessage);
 				exception.printStackTrace();
 			}
 		}
@@ -485,7 +499,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         //    result = INPUT;
         //}
         //else if (!this.discoveryDbFileName.endsWith(".accdb")) {
-        //    this.errorMessage = "Phene Visit database file \"" + discoveryDbFileName
+        //    this.er)rorMessage = "Phene Visit database file \"" + discoveryDbFileName
         //            + "\" is not a \".accdb\" (MS Access) file.";
         //    result = INPUT;
         //}		
@@ -881,6 +895,29 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	            }
 	        }
 	    }
+	}
+	
+	public DataTable createPheneDataTable(DiscoveryDatabaseParser dbParser) throws Exception {
+	    String keyColumn = "PheneVisit";
+	    DataTable pheneDataTable = null;
+	    
+	    Set<String> pheneTableNames = new TreeSet<String>();
+	    pheneTableNames = dbParser.getPheneTables();
+	    
+	    for (String pheneTableName: pheneTableNames) {
+	        DataTable dataTable = new DataTable(keyColumn);
+	        dataTable.initializeToAccessTable( dbParser.getTable(pheneTableName) );
+	        if (pheneDataTable == null) {
+	            pheneDataTable = dataTable;
+	        }
+	        else {
+	            String joinColumn1 = keyColumn;
+	            String joinColumn2 = keyColumn;
+	            DataTable.join(keyColumn, joinColumn1, joinColumn2, pheneDataTable, dataTable, DataTable.JoinType.OUTER);
+	        }
+	    }
+	    
+	    return pheneDataTable;
 	}
 	
 	public DataTable createDiscoveryScoresInfoTable() throws Exception {

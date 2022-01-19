@@ -2,8 +2,11 @@ package cfe.utils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class PheneCondition {
+    private static final Logger log = Logger.getLogger(PheneCondition.class.getName());
+    
     private String phene;
     private String operator;
     private double value;
@@ -51,6 +54,10 @@ public class PheneCondition {
             String phene = pheneCondition.getPhene();
             String valueString = values.get(phene);
             double value;
+            
+            log.info("Phene condition - \"" + phene + "\" " + pheneCondition.operator
+                    + " " + pheneCondition.value + " | \"" + valueString);
+            
             try {
                 value = Double.parseDouble(valueString);
                 if (!pheneCondition.isTrue(value)) {
@@ -63,8 +70,10 @@ public class PheneCondition {
                 isTrue = false;
                 break;
             }
+
         }
         
+        log.info("IS TRUE: " + isTrue);
         return isTrue;
     }
     

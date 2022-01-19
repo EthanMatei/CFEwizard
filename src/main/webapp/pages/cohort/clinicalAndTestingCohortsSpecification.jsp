@@ -33,6 +33,7 @@
         <s:hidden name="discoveryLowCutoff"/>
         <s:hidden name="discoveryHighCutoff"/>
     
+        <%--
         <table class="dataTable">
             <tr>
                 <th> Attribute </th> <th> Value </th>
@@ -48,8 +49,8 @@
                 </td>
             </tr>
         </table>
+        --%>
         
-        <%--
         <table class="dataTable">
             <tr> <th>Phene</th> <th>Relation</th> <th>Value</th> </tr>
             <tr>
@@ -68,7 +69,6 @@
                 <td> <s:textfield name="value3" value="" size="4" style="text-align: right;"/> </td>
             </tr>
         </table>
-        --%>
         
         <div style="margin-top: 14px; margin-bottom: 14px;">
             % Subjects in Clinical Cohort:
@@ -84,7 +84,24 @@
         <p>
         Admission phene: <s:select name="admissionPhene" list="admissionReasons"/>
         </p>
-        
+    
+    
+        <%--
+        <h3>Phenes:</h3>
+
+        <div class="scrollable" style="height: 240px;">
+            <div id="tree">
+                <s:iterator value="pheneMap" var="table" status="pstat">
+                    <span style="font-weight: bold;"><s:property value="key"/></span> <br/>
+                    <s:iterator value="value" var="pheneValue">
+                        <s:radio name="pheneSelection" list="#{#pheneValue.tableAndColumnName:#pheneValue.columnName}" /> <br/>
+                    </s:iterator>
+                </s:iterator>
+            </div>
+        </div>
+        --%>
+    
+    
         <div>
         <s:submit value="Process" style="padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
         </div>

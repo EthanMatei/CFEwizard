@@ -223,7 +223,7 @@ public class DiscoveryDatabaseParser extends AccessDatabaseParser {
 		        if (!excludeColumn) {
 		            ColumnInfo colInfo = new ColumnInfo();
 		            colInfo.setTableName(tableName);
-		            colInfo.setColumnName(columnName);
+		            colInfo.setColumnName(tableName + "." + columnName);
 		            colInfo.setColumnType(colDataType.toString());
 		            columnInfos.add(colInfo);
 		        }

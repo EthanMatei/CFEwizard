@@ -12,6 +12,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import javax.print.DocFlavor.STRING;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -46,6 +49,7 @@ public class CohortDataTable extends DataTable {
         this.pheneTable = pheneTable;
     }
     
+    // OBSOLETE
     public int getPheneColumnIndex(String phene) throws Exception {
         int index = -1;
         
@@ -124,9 +128,10 @@ public class CohortDataTable extends DataTable {
         ArrayList<String> columns2 = new ArrayList<String>();
         for (String columnName: mergeTable.columns) {
             // ADD THIS LATER??? Add the table name to all phene table column names
-            if (columnName.equals(key)) {
+            // if (columnName.equals(key)) {
                 columnName = mergeTable.name + "." + columnName;
-            }
+            // }
+            
             columns2.add(columnName);
         }   
         
@@ -225,7 +230,7 @@ public class CohortDataTable extends DataTable {
 	public TreeSet<String> getDiscoveryCohortSubjects(String phene, int lowCutoff, int highCutoff) throws Exception {
 	    
 	    int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
-        int pheneIndex   = this.getPheneColumnIndex(phene.trim());
+        int pheneIndex   = this.getColumnIndex(phene.trim());
         
         log.info("phene index returned: " + pheneIndex);
         
@@ -280,7 +285,7 @@ public class CohortDataTable extends DataTable {
      */
     public List<TreeSet<String>> setValidationAndTestingCohorts(
             String phene, double lowCutoff, double highCutoff,
-            String clinicalPhene, double clinicalHighCutoff,
+            // String clinicalPhene, double clinicalHighCutoff,
             List<PheneCondition> pheneConditions, double percentInValidation
             ) throws Exception {
         
@@ -290,7 +295,7 @@ public class CohortDataTable extends DataTable {
         int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         int pheneIndex   = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
         
-        int clinicalPheneIndex = this.getColumnIndexTrimAndIgnoreCase(clinicalPhene.trim());
+        //int clinicalPheneIndex = this.getColumnIndexTrimAndIgnoreCase(clinicalPhene.trim());
         
         if (subjectIndex < 0) {
             throw new Exception("Can't find \"Subject\" column in cohort data.");
@@ -298,16 +303,17 @@ public class CohortDataTable extends DataTable {
         else if (pheneIndex < 0) {
             throw new Exception("Can't find discovery phene \"" + phene + "\" column in cohort data.");
         }
-        else if (clinicalPheneIndex < 0) {
-            throw new Exception ("Can't find clinical phene \"" + clinicalPhene + "\" column in cohort data.");
-        }
+        //else if (clinicalPheneIndex < 0) {
+        //    throw new Exception ("Can't find clinical phene \"" + clinicalPhene + "\" column in cohort data.");
+        //}
         
         log.info("subject index: " + subjectIndex + ", pheneIndex: " + pheneIndex);
 
         // Find subjects with low score and subjects with high score
+        TreeSet<String> allSubjects        = new TreeSet<String>();
         TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
         TreeSet<String> highScoreSubjects  = new TreeSet<String>();
-        //TreeSet<String> pheneConditionsSubjects = new TreeSet<String>(); // Subjects who meet the additional phene conditions
+        TreeSet<String> pheneConditionsSubjects = new TreeSet<String>(); // Subjects who meet the additional phene conditions
         
         TreeSet<String> clinicalConditionSubjects = new TreeSet<String>();
         
@@ -319,23 +325,26 @@ public class CohortDataTable extends DataTable {
             
             String pheneValueString = row.get(pheneIndex);
             String subject = row.get(subjectIndex);
-            String clinicalPheneValueString = row.get(clinicalPheneIndex);
+            
+            allSubjects.add(subject);
+            
+            //String clinicalPheneValueString = row.get(clinicalPheneIndex);
             
             // If the subject meets the clinical phene condition
-            if (clinicalPheneValueString != null) {
-                clinicalPheneValueString = clinicalPheneValueString.trim();
-                if (StringUtil.isFloat(clinicalPheneValueString)) {
-                    double clinicalPheneValue = Double.parseDouble(clinicalPheneValueString);
-                    if (clinicalPheneValue >= clinicalHighCutoff) {
-                        clinicalConditionSubjects.add(subject);
-                    }
-                }
-            }
+            //if (clinicalPheneValueString != null) {
+            //    clinicalPheneValueString = clinicalPheneValueString.trim();
+            //    if (StringUtil.isFloat(clinicalPheneValueString)) {
+            //        double clinicalPheneValue = Double.parseDouble(clinicalPheneValueString);
+            //        if (clinicalPheneValue >= clinicalHighCutoff) {
+            //            clinicalConditionSubjects.add(subject);
+            //        }
+            //    }
+            //}
             
             // If the subject meets the additional phene conditions
-            //if (PheneCondition.isTrue(pheneConditions, rowMap)) {
-            //    pheneConditionsSubjects.add(subject);
-            //}
+            if (PheneCondition.isTrue(pheneConditions, rowMap)) {
+                pheneConditionsSubjects.add(subject);
+            }
             
             if (pheneValueString != null) {
                 pheneValueString = pheneValueString.trim();
@@ -358,12 +367,17 @@ public class CohortDataTable extends DataTable {
 
         // Set cohort subjects to high score subject, who do NOT have a low score, and who
         // meet all the additional phene conditions (if any)
-        //TreeSet<String> cohortSubjects = highScoreSubjects;
-        //cohortSubjects.removeAll(lowScoreSubjects);
-        //cohortSubjects.retainAll(pheneConditionsSubjects); // Intersection of subjects with high but not low visits
-                                                           // with subjects that meet all phene conditions
-        TreeSet<String> cohortSubjects = clinicalConditionSubjects;
+        TreeSet<String> cohortSubjects = allSubjects;
         cohortSubjects.removeAll(discoverySubjects);
+        cohortSubjects.retainAll(pheneConditionsSubjects); // Intersection of non-discovery subjects with
+                                                           // with subjects that meet all phene conditions
+        
+        log.info("discoverySubjects: {" + StringUtils.join(discoverySubjects, ",") + "}");
+        log.info("pheneConditionSubjects: {" + StringUtils.join(pheneConditionsSubjects, ",") + "}");
+        log.info("cohortSubjects: {" + StringUtils.join(cohortSubjects, ",") + "}");
+        
+        //TreeSet<String> cohortSubjects = clinicalConditionSubjects;
+        //cohortSubjects.removeAll(discoverySubjects)array;
         
         int cohortIndex = this.getColumnIndex("Cohort");
         if (cohortIndex == -1) {
@@ -389,6 +403,11 @@ public class CohortDataTable extends DataTable {
         int testingCohortIndex    = this.getColumnIndex("TestingCohort");
         
         for (ArrayList<String> row : this.data) {
+            Map<String,String> rowMap = new HashMap<String,String>();
+            for (int i = 0; i < this.columns.size(); i++) {
+                rowMap.put(columns.get(i), row.get(i));
+            }
+            
             String subject = row.get(subjectIndex);
             String pheneValueString = row.get(pheneIndex);
             Double pheneValue = null;
@@ -401,13 +420,13 @@ public class CohortDataTable extends DataTable {
                     row.set(validationIndex, "Low Validation");  
                     row.set(valCategoryIndex, "Low");
                     row.set(validationCohortIndex, "0");
-                    row.set(testingCohortIndex, "0");
+                    row.set(testingCohortIndex, "1");
                 }
                 else if (pheneValue != null && pheneValue >= highCutoff && !clinicalConditionSubjects.contains(subject)) {
                     row.set(validationIndex, "High Validation");
                     row.set(valCategoryIndex, "High");
                     row.set(validationCohortIndex, "0");
-                    row.set(testingCohortIndex, "0");
+                    row.set(testingCohortIndex, "1");
                 }
                 else {
                     row.set(validationIndex, "nothing");
@@ -417,10 +436,19 @@ public class CohortDataTable extends DataTable {
                 }
             }
             else if (cohortSubjects.contains(subject)) {
-                row.set(validationIndex, "Clinically Severe");
-                row.set(valCategoryIndex, "Clinical");
-                row.set(validationCohortIndex,  "1");
-                row.set(testingCohortIndex, "0");
+                if (PheneCondition.isTrue(pheneConditions, rowMap)) {
+                    // If this phene visit meets the addition clinical cohort phene conditions
+                    row.set(validationIndex, "Clinically Severe");
+                    row.set(valCategoryIndex, "Clinical");
+                    row.set(validationCohortIndex,  "1");
+                    row.set(testingCohortIndex, "0");
+                }
+                else {
+                    row.set(validationIndex, "nothing");
+                    row.set(valCategoryIndex, "nothing");
+                    row.set(validationCohortIndex,  "0");
+                    row.set(testingCohortIndex, "0");
+                }
             }
             else {
                 row.set(validationIndex, "nothing");
@@ -487,7 +515,7 @@ public class CohortDataTable extends DataTable {
 	    }
 	     
 		// Get the selected phene column index
-		int pheneIndex = this.getPheneColumnIndex(phene.trim());
+		int pheneIndex = this.getColumnIndex(phene.trim());
 		if (pheneIndex == -1) {
 		    throw new Exception("Phene column \"" + phene + "\" could not be found in the cohort data table while trying to get discovery cohort.");
 		}
@@ -609,7 +637,10 @@ public class CohortDataTable extends DataTable {
 	*/
 	
     public void enhance(String phene, int lowCutoff, int highCutoff) throws Exception {
-        log.info("Enhancement of cohort data table started.");
+        log.info("Enhancement of cohort data table started for phene \"" + phene 
+                + "\" with low cutoff = " + lowCutoff + " and high cutoff = " + highCutoff + ".");
+        
+        log.info("Columns: " + StringUtils.join(this.columns, ","));
         
         int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         
@@ -981,21 +1012,112 @@ public class CohortDataTable extends DataTable {
 	    return bigData;
 	}
 	
+	/**
+	 * Gets the next phene visit column index from the start index. This method
+	 * searches to the next to last position, because the last position is
+	 * for microarray data.
+	 * 
+	 * @param startIndex
+	 * @return the index of the next phene visit column, or -1 if not found
+	 */
+	public int getNextPheneVisitColumnIndex(int startIndex)
+	{
+	    int index = -1;
+	    for (int i = startIndex; i < this.getNumberOfColumns() - 1; i++) {
+	        if (this.getColumnName(i).matches(".*\\.PheneVisit")) {
+	            index = i;
+	            break;
+	        }
+	    }
+	    return index;
+	}
+	
+	/**
+	 * NOTE: This method assumes that:
+	 * - the Diagnosis table values are the values right before the first phene table values.
+	 * - all the phene table values are stored contiguously together
+	 * - the last phene table column is the one before the last column (which is the microarray table
+	 *   data column.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	public Map<String,ArrayList<ColumnInfo>> getPheneMap() throws Exception
 	{
 	    Map<String,ArrayList<ColumnInfo>> pheneMap = new TreeMap<String,ArrayList<ColumnInfo>>();
 	    
-	    int otherDxIndex = this.getColumnIndex("Other Dx");
-	    if (otherDxIndex < 0) {
-	        throw new Exception("Column \"Other Dx\" not found in cohort data table.");
+	    // The diagnosis table should come before the first phene table, so find the start of it,
+	    // and then look for the next PheneVisit column, which should be the start of the first
+	    // phene table.
+	    int diagnosisPheneVisitIndex = this.getColumnIndex("Demographics.PheneVisit");
+	    if (diagnosisPheneVisitIndex < 0) {
+	        throw new Exception("The Diagnosis table PheneVisit column could not be found in cohort data table.");
 	    }
 	    
-	    int pheneStartIndex = otherDxIndex + 1;
+	    int pheneStartIndex = this.getNextPheneVisitColumnIndex(diagnosisPheneVisitIndex + 1);
 	    
-	    for (String column: this.columns) {
+	    while (pheneStartIndex != -1) {
+	        String pheneTable = this.getColumnName(pheneStartIndex);
+	        pheneTable = pheneTable.substring(0, pheneTable.indexOf('.'));
 	        
+	        int pheneEndIndex = this.getNextPheneVisitColumnIndex(pheneStartIndex + 1);
+	        if (pheneEndIndex == -1) {
+	            pheneEndIndex = this.getNumberOfColumns() - 1;
+	        }
+	        
+	        for (int columnIndex = pheneStartIndex + 1; columnIndex < pheneEndIndex; columnIndex++) {
+                ArrayList<ColumnInfo> columnInfos = new ArrayList<ColumnInfo>();
+	            if (pheneMap.containsKey(pheneTable)) {
+	                columnInfos = pheneMap.get(pheneTable);
+	            }
+	            ColumnInfo columnInfo = new ColumnInfo();
+	            columnInfo.setColumnName(this.getColumnName(columnIndex));
+	            columnInfo.setTableName(pheneTable);
+	            columnInfos.add(columnInfo);
+                pheneMap.put(pheneTable, columnInfos);
+	        }
+	        
+	        pheneStartIndex = this.getNextPheneVisitColumnIndex(pheneStartIndex + 1);
 	    }
 	    
 	    return pheneMap;
 	}
+	
+	/**
+	 * Note: assumes that phene table names have been prepended to the phene names.
+	 * @return
+	 * @throws Exception
+	 */
+    public ArrayList<String> getPheneList() throws Exception {
+        ArrayList<String> pheneList = new ArrayList<String>();
+        
+        // The diagnosis table should come before the first phene table, so find the start of it,
+        // and then look for the next PheneVisit column, which should be the start of the first
+        // phene table.
+        int diagnosisPheneVisitIndex = this.getColumnIndex("Diagnosis.PheneVisit");
+        if (diagnosisPheneVisitIndex < 0) {
+            throw new Exception("The Diagnosis table PheneVisit column could not be found in cohort data table.");
+        }
+        
+        int pheneStartIndex = this.getNextPheneVisitColumnIndex(diagnosisPheneVisitIndex + 1);
+        
+        while (pheneStartIndex != -1) {
+            String pheneTable = this.getColumnName(pheneStartIndex);
+            pheneTable = pheneTable.substring(0, pheneTable.indexOf('.'));
+            
+            int pheneEndIndex = this.getNextPheneVisitColumnIndex(pheneStartIndex + 1);
+            if (pheneEndIndex == -1) {
+                pheneEndIndex = this.getNumberOfColumns() - 1;
+            }
+            
+            for (int columnIndex = pheneStartIndex + 1; columnIndex < pheneEndIndex; columnIndex++) {
+                String pheneName = this.getColumnName(columnIndex);
+                pheneList.add(pheneName);
+            }
+            
+            pheneStartIndex = this.getNextPheneVisitColumnIndex(pheneStartIndex + 1);
+        }
+        
+        return pheneList;
+    }	
 }

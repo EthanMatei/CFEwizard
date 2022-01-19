@@ -242,8 +242,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 				CohortDataTable cohortData = subjectIdentifiersData.merge(demographicsData);
 				
+				log.info("Cohort data table has " + cohortData.getNumberOfRows() 
+				    + " rows after merge of demographics table.");
+				
 				cohortData = cohortData.merge(diagnosisData);
-	
+	       
+                log.info("Cohort data table has " + cohortData.getNumberOfRows() 
+                    + " rows after merge of diagnosis table.");
+                
 				//log.info("Before phene tables merge");
 				
 				Set<String> pheneTableNames = dbParser.getPheneTables();
@@ -252,12 +258,31 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				    CohortDataTable pheneDataTable = new CohortDataTable();
 				    Table dbTable = dbParser.getTable(pheneTableName);
 				    pheneDataTable.initializeToAccessTable(dbTable);
+				    
+				    if (pheneDataTable.hasColumn("ID")) {
+				        pheneDataTable.deleteColumn("ID");  // Delete an ID column if it exists
+				    }
+				    
+				    String firstColumn = pheneDataTable.getColumnName(0);
+				    if (!firstColumn.endsWith("PheneVisit")) {
+				        throw new Exception("Phene table \"" + pheneTableName 
+				                + "\" has first column \"" + firstColumn + "\", which is not "
+				                + "a PheneVisit column.");    
+				    }
 				    //log.info("Data table for phene table \"" + pheneTableName + "\" created.");
 				    cohortData = cohortData.mergePheneTable(pheneDataTable);
+				    
+	                log.info("Cohort data table has " + cohortData.getNumberOfRows() 
+                    + " rows after merge of phene table \"" + pheneTableName + "\".");
+                
 				}
 				//cohortData = cohortData.merge(pheneDataData);
 				
 				cohortData = cohortData.merge(chipsData);
+                log.info("Cohort data table has " + cohortData.getNumberOfRows() 
+                + " rows after merge of chips data table.");
+                
+				cohortData.deleteColumns("Field\\d+");
 				
 				// DEBUG
 				// String csv1 = cohortData.toCsv();
@@ -286,6 +311,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				//-------------------------------------------
 				// Create cohort and cohort CSV file
 				//-------------------------------------------
+				log.info("Discovery cohort phene selection: \"" + pheneSelection + "\".");
 				CohortTable cohort = cohortData.getDiscoveryCohort(pheneSelection, lowCutoff, highCutoff);
 				cohort.sort("Subject", "PheneVisit"); 
                 this.cohortGeneratedTime = new Date();

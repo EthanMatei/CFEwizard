@@ -20,7 +20,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -50,7 +52,7 @@ import com.opencsv.CSVReader;
  */
 public class DataTable {
 	
-	private static final Log log = LogFactory.getLog(DataTable.class);
+	private static final Logger log = Logger.getLogger(DataTable.class.getName());
     
 	protected String name; // name of the table
 	protected String key;  // primary key column name
@@ -162,11 +164,13 @@ public class DataTable {
 		    columnIndex++;
 	    }
 		
+		log.info("Initializing to Access table \"" + table.getName() + "\".");
+		
 		String keyValue = null;
 		Row row;
 		while ((row = table.getNextRow()) != null) {
 			
-		    log.info("**************** ROW SIZE: " + row.size() + "   (COLUMNS SIZE: " + columns.size() + ")");
+		    // log.info("**************** ROW SIZE: " + row.size() + "   (COLUMNS SIZE: " + columns.size() + ")");
 		    
 			ArrayList<String> dataRow = new ArrayList<String>();
 			for (String column: columns) {
@@ -198,6 +202,8 @@ public class DataTable {
 			
 			this.addRow(dataRow);
 		}
+		
+		log.info(this.getNumberOfRows() + " rows added for Access table \"" + table.getName() + "\".");
     }
 	
 	/**
@@ -288,13 +294,35 @@ public class DataTable {
 	    }
 	}
 	
-	public void deleteColumn(String columnName) {
-	    int columnIndex = this.getColumnIndex(columnName);
+	public void deleteColumn(int columnIndex) throws Exception {
+	    if (columnIndex < 0) {
+	        throw new Exception("Column index less than zero for delete column; value is " + columnIndex + ".");
+	    }
+	    
+	    if (columnIndex >= this.getNumberOfColumns()) {
+	        throw new Exception("Column index is greater than max column index (" 
+	            + (this.getNumberOfColumns() - 1) + "); value is " + columnIndex + ".");
+	    }
+	    
 	    this.columns.remove(columnIndex);
         
         for (ArrayList<String> dataRow : this.data) {
             dataRow.remove(columnIndex);
         }
+	}
+	
+	public void deleteColumn(String columnName) throws Exception {
+	    int columnIndex = this.getColumnIndex(columnName);
+	    this.deleteColumn(columnIndex);
+	}
+	
+	public void deleteColumns(String pattern) throws Exception {
+	    for (int columnIndex = this.getNumberOfColumns() - 1; columnIndex >= 0; columnIndex--) {
+	        String columnName = this.getColumnName(columnIndex);
+	        if (columnName.matches(pattern)) {
+	            this.deleteColumn(columnIndex);
+	        }
+	    }
 	}
 	
 	public void renameColumn(String originalColumnName, String newColumnName) throws Exception {
@@ -886,6 +914,10 @@ public class DataTable {
 	    return dataTable;
 	}
 	
+	public int getNumberOfColumns() {
+	    return this.columns.size();    
+	}
+	
 	public int getNumberOfRows() {
 		return this.data.size();
 	}
@@ -1118,6 +1150,7 @@ public class DataTable {
     public List<String> getColumnNames() {
         return this.columns;
     }
+    
     
     public String getValue(int rowNumber, int columnNumber) {
         String value = null;

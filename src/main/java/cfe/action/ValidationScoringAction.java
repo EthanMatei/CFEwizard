@@ -50,6 +50,7 @@ import cfe.utils.CohortDataTable;
 import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
+import cfe.utils.FileUtil;
 import cfe.utils.WebAppProperties;
 import cfe.utils.WorkbookUtil;
 
@@ -169,7 +170,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 }
                 
                 String predictorListCsv = predictorList.toCsv();
-                File predictorListCsvTmp = File.createTempFile("predictor-list-",  ".csv");
+                File predictorListCsvTmp = FileUtil.createTempFile("predictor-list-",  ".csv");
                 if (predictorListCsv != null) {
                     FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
                 }
@@ -244,7 +245,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                     throw new Exception("The validation scoring script could not be located.");
                 }
                 
-                this.tempDir = System.getProperty("java.io.tmpdir");
+                this.tempDir = FileUtil.getTempDir();
                 
                 String[] rScriptCommand = new String[7];
                 rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
@@ -260,7 +261,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 
                 this.scriptOutput = this.runCommand(rScriptCommand);
                 
-                File tempFile = File.createTempFile("validation-r-script-output", ".txt");
+                File tempFile = FileUtil.createTempFile("validation-r-script-output", ".txt");
                 FileUtils.write(tempFile, scriptOutput, "UTF-8");
                 this.scriptOutputFile = tempFile.getAbsolutePath();
             }
@@ -381,7 +382,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    // Write the master sheet to a CSV file
 	    //-------------------------------------------------------
 	    String masterSheetCsv = masterSheet.toCsv();
-        File validationMasterSheetCsvTmp = File.createTempFile("validation-master-sheet-",  ".csv");
+        File validationMasterSheetCsvTmp = FileUtil.createTempFile("validation-master-sheet-",  ".csv");
         if (masterSheetCsv != null) {
             FileUtils.write(validationMasterSheetCsvTmp, masterSheetCsv, "UTF-8");
         }

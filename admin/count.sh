@@ -1,1 +1,9 @@
-cloc ../src/main/java/cfe
+# Script for counting the lines of code in the CFE Wizard
+echo "CFE Wizard - count of lines of code"
+cloc --quiet --hide-rate --exclude-ext=md \
+    ../src/main/java/cfe \
+    ../src/main/resources/R \
+    ../src/main/resources/python \
+    ../src/main/webapp/pages
+
+

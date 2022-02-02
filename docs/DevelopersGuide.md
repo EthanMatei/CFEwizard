@@ -101,6 +101,26 @@ Then a tag should be created that has the same name as the VERSION_NUMBER value,
 Then a release should be created in GitHub with the name "CFE Wizard _release-number_", and
 with a description of the major changes for this release.
 
+Code Directory Structure
+---------------------------------------------------------------------
+
+* **sql/** - scripts for creating the CFE database and CFE database user
+* **src/** - source code
+    * **main/** - application source code
+        * **java/** - Java source code
+        * **resources/**
+            * **python/** - Python script(s)
+            * **R/** - R scripts
+        * **webapp/**
+            * **css/** - CSS (Cascading Style Sheets) for the web pages
+            * **images/** - images for the web pages
+            * **js/** - JavaScript files for the web pages
+            * **pages/** - the JSP (Java Server Pages) web pages
+    * **test/** - tests source code
+* **target/** - directory where generated WAR (Web ARchive) file (CFE.war), and asscoiated files, are stored
+* pom.xml - Maven comfiguration file (contains library dependency information)
+
+
 
 GitHub Workflow
 ---------------------------------------
@@ -112,6 +132,7 @@ When a new version is complete, the branch it was developed on is merged with th
 the version is numbered and tagged (see above).
 
 ![CFE GitHub Workflow](cfe-github.png "CFE GitHub Workflow")
+
 
 
 

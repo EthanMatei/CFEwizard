@@ -7,10 +7,6 @@
 
 calculatePREDICTOR <- function(data, predictor, direction, increasedPanel, decreasedPanel, LEVELS = TRUE, slopes = FALSE, MAX = FALSE, maxSlopes = TRUE) {
   
-  
-  
-  
-  
   #initialize some variables for later#
   
   increased <- NULL
@@ -24,7 +20,7 @@ calculatePREDICTOR <- function(data, predictor, direction, increasedPanel, decre
   
   ##ask for user input of increased markers#
   
-  if (direction == "I"){
+  if (direction == "I") {
     
     increased <- predictor
     decreased <- NULL
@@ -123,7 +119,7 @@ calculatePREDICTOR <- function(data, predictor, direction, increasedPanel, decre
   #If user inputs no increased or decreased markers, stop script and warn user
   if (length(c(increased, decreased)) == 0) {
     print("NO INCREASED OR DECREASED MARKERS ENTERED. SCRIPT STOPPING.")
-    gmessage(message="No increased or decreased markers entered.\nSCRIPT STOPPING.", title="Error")
+    # gmessage(message="No increased or decreased markers entered.\nSCRIPT STOPPING.", title="Error")
     stop()
   }
   

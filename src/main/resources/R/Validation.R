@@ -101,18 +101,21 @@ csvOutputFolder <- outputDir
 
 # install all the packages you need but don't have
 
-
 require(devtools)
 
-gwidgetspackage <- c("gWidgets") %in% rownames(installed.packages())
-gwidgetstcltkpackage <- c("gWidgetstcltk") %in% rownames(installed.packages())
+# Jim - commented out
+#gwidgetspackage <- c("gWidgets") %in% rownames(installed.packages())
+#gwidgetstcltkpackage <- c("gWidgetstcltk") %in% rownames(installed.packages())
 verificationpackage <- c("verification") %in% rownames(installed.packages())
 
-if(!gwidgetspackage) install_version("gWidgets", version = '0.0-54.1')
-if(!gwidgetspackage) install_version("gWidgetstcltk", version = '0.0-55')
+# Jim - commented out
+#if(!gwidgetspackage) install_version("gWidgets", version = '0.0-54.1')
+#if(!gwidgetspackage) install_version("gWidgetstcltk", version = '0.0-55')
 if(!gwidgetspackage) install_version("verification", version = '1.42')
 
-wants <- c("coin","survival", "pROC", "xlsx", "verification", "gWidgetstcltk", "gWidgets", "tcltk", "ROCR", "ggplot2", "GGally", "VGAM", "exactRankTests")
+# Original:
+# wants <- c("coin","survival", "pROC", "xlsx", "verification", "gWidgetstcltk", "gWidgets", "tcltk", "ROCR", "ggplot2", "GGally", "VGAM", "exactRankTests")
+wants <- c("coin","survival", "pROC", "xlsx", "verification", "ROCR", "GGally", "VGAM", "exactRankTests")
 has   <- wants %in% rownames(installed.packages())
 if(any(!has)) install.packages(wants[!has])
 
@@ -129,21 +132,20 @@ data <- read.csv(file=masterSheetCsvFile, header = TRUE, na.strings=c("NA", "na"
 #get the subject ID and visitnumber for all incomplete cases
 incompletes <- data[!complete.cases(data[PHENE]),][,c("Subject","VisitNumber")]
 
-if ( nrow(incompletes) > 0 ){
-for ( subjNum in nrow(incompletes):1 ){
+if ( nrow(incompletes) > 0 ) {
+  for ( subjNum in nrow(incompletes):1 ) {
 
-subj <- incompletes[subjNum,1]
+    subj <- incompletes[subjNum,1]
 
+    visitNumsGreaterThan <- data[data$Subject == subj & data$VisitNumber > incompletes[[subjNum,"VisitNumber"]], ]$VisitNumber
 
-visitNumsGreaterThan <- data[data$Subject == subj & data$VisitNumber > incompletes[[subjNum,"VisitNumber"]], ]$VisitNumber
-
-#increment down the visit numbers above the one you dropped to maintain the sequence
-if ( any(  visitNumsGreaterThan > incompletes[subjNum, 2] )  ){ #only do this if there are any visit numbers greater than the one you dropped
-data[data$Subject == subj & data$VisitNumber > incompletes[[subjNum,"VisitNumber"]], ]$VisitNumber <- (visitNumsGreaterThan - 1)
+    #increment down the visit numbers above the one you dropped to maintain the sequence
+    if ( any(  visitNumsGreaterThan > incompletes[subjNum, 2] ) ) { #only do this if there are any visit numbers greater than the one you dropped
+        data[data$Subject == subj & data$VisitNumber > incompletes[[subjNum,"VisitNumber"]], ]$VisitNumber <- (visitNumsGreaterThan - 1)
+    }
+    #get rid of missing data
+    data <- data[complete.cases(data[PHENE]),]
   }
-#get rid of missing data
-data <- data[complete.cases(data[PHENE]),]
-}
 }
 
   
@@ -163,11 +165,11 @@ if (FIRSTYEARtest | FUTUREtest | stateFirstYearHosp | stateFutureHosp){
 
   # if user asks for state first year hosp, use
   # the variable "FirstYearScore" as the outcome 
-  if (stateFirstYearHosp){
-  #calculate ROC grouping variable#
-  data$ROC <- as.numeric(data["FirstYearScore"] > 0)
+  if (stateFirstYearHosp) {
+    #calculate ROC grouping variable#
+    data$ROC <- as.numeric(data["FirstYearScore"] > 0)
   
-  testName <- "firstYearHosp"
+    testName <- "firstYearHosp"
   }
   
   # if the user asks for state future hosp use "HospFreq"
@@ -250,111 +252,105 @@ for (i in 1:(nrow(predictors))) {
   
   # for each marker, check if the user has requested any analyses
   any.requested <- rowSums(predictors[,! (names(predictors) %in% c("Predictor","Direction"))])[[i]]
+
   #if not, skip to the next one
-  if (any.requested > 0){
-  
-  # by now, all the variables needed for the calculatePREDICTOR() function have been set. no need to adjust anything
-  output <- calculatePREDICTOR(data, predictor, direction, increasedPanel, decreasedPanel, LEVELS, slopes, MAX, maxSlopes)
-  
-  
-  #get processed data
-  data.out <- output[[1]]
-  #if the user inputs no increased predictor and just one decreased predictor
-  #this will automatically be set to TRUE, otherwise FALSE
-  singleNegativePredictor <- output[[2]]
-  #get list of what increased predictors are in the PREDICTOR variable
-  #and what decreased predictors are in the predictor variable, just for reference
-  increasedPredictors <- output[[3]]
-  decreasedPredictors <- output[[4]]
+  if (any.requested > 0) {
+    # by now, all the variables needed for the calculatePREDICTOR() function have been set. no need to adjust anything
+    output <- calculatePREDICTOR(data, predictor, direction, increasedPanel, decreasedPanel, LEVELS, slopes, MAX, maxSlopes)
   
   
+    #get processed data
+    data.out <- output[[1]]
+    #if the user inputs no increased predictor and just one decreased predictor
+    #this will automatically be set to TRUE, otherwise FALSE
+    singleNegativePredictor <- output[[2]]
+    #get list of what increased predictors are in the PREDICTOR variable
+    #and what decreased predictors are in the predictor variable, just for reference
+    increasedPredictors <- output[[3]]
+    decreasedPredictors <- output[[4]]
   
-  #Split dataset by diagnosis and gender as requested #
-  genderList <- NULL
-  if (predictors[i,"Female"]){
-    genderList <- "F"
-  }
-  if (predictors[i,"Male"]){
-    genderList <- c(genderList,"M")
-  }
+    #Split dataset by diagnosis and gender as requested #
+    genderList <- NULL
+    if (predictors[i,"Female"]){
+      genderList <- "F"
+    }
+
+    if (predictors[i,"Male"]){
+      genderList <- c(genderList,"M")
+    }
   
-  dxList <- NULL 
-  if (predictors[i,"BP"]){
-    dxList <- "BP"
-  }
-  if (predictors[i,"MDD"]){
-    dxList <- c(dxList,"MDD")
-  }
-  if (predictors[i,"SZ"]){
-    dxList <- c(dxList,"SZ")
-  }
-  if (predictors[i,"SZA"]){
-    dxList <- c(dxList,"SZA")
-  }
-  if (predictors[i,"PTSD"]){
-    dxList <- c(dxList,"PTSD")
-  }
-  if (predictors[i,"PSYCHOSIS"]){
-    dxList <- c(dxList,"PSYCHOSIS")
-  }
-  all <- FALSE
-  if (predictors[i,"All"]){
-    all <- TRUE
-  }
+    dxList <- NULL 
+    if (predictors[i,"BP"]){
+      dxList <- "BP"
+    }
+
+    if (predictors[i,"MDD"]){
+      dxList <- c(dxList,"MDD")
+    }
+
+    if (predictors[i,"SZ"]){
+      dxList <- c(dxList,"SZ")
+    }
+
+    if (predictors[i,"SZA"]){
+      dxList <- c(dxList,"SZA")
+    }
+
+    if (predictors[i,"PTSD"]){
+      dxList <- c(dxList,"PTSD")
+    }
+
+    if (predictors[i,"PSYCHOSIS"]){
+      dxList <- c(dxList,"PSYCHOSIS")
+    }
+
+    all <- FALSE
+    if (predictors[i,"All"]){
+      all <- TRUE
+    }
   
-  ####################################################################################################
+    ####################################################################################################
   
-  ######################## (all the stats) #################################################
+    ######################## (all the stats) #################################################
   
 
+    # for each gender requested
 
-  # for each gender requested
-
-  if (all == TRUE){
-    dataAll <- data.out
+    if (all == TRUE) {
+      dataAll <- data.out
     
-    
-    
-    tableRow <- c("Validation", predictor, direction)
-    rocFit <- roc.area(dataAll$ROC,dataAll$PREDICTOR)
-    
+      tableRow <- c("Validation", predictor, direction)
+      rocFit <- roc.area(dataAll$ROC,dataAll$PREDICTOR)
    
-    tableRow <- c(tableRow, rocFit$n.total)
+      tableRow <- c(tableRow, rocFit$n.total)
     
-   
       corData <- dataAll
     
+      #All t-test between presence of SI and no SI
+      #tFit <- t.test(dataAll$PREDICTOR[dataAll$ROC == 1],
+      #              dataAll$PREDICTOR[dataAll$ROC ==0],       
+      #             alternative = "greater" )
+       #    tableRow <- c(tableRow, tFit$p.value)
+      ANOVA<- oneway.test(corData$PREDICTOR ~ corData$ValCategory, var.equal = TRUE)
+      #tFit<- aov(dataAll$PREDICTOR ~ dataAll$ValCategory)
+      #oneway.test(corData$PREDICTOR ~ corData$ValCategory, var.equal = TRUE)
+      Stepwise <- aov(corData$PREDICTOR ~ corData$ValCategory)
+      AOVStepwise<- TukeyHSD(Stepwise)
+      tableRow <- c(tableRow, ANOVA$p.value)
     
+    
+      if (AOVStepwise$'corData$ValCategory'[,1]["High-Clinical"] < 0
+           && AOVStepwise$'corData$ValCategory'[,1]["Low-Clinical"] < 0
+           && AOVStepwise$'corData$ValCategory'[,1]["Low-High"] < 0   ) {
+        Stepwise <- "Stepwise"
+      } else Stepwise <- "Not Stepwise"
 
-    
-    #All t-test between presence of SI and no SI
-    #tFit <- t.test(dataAll$PREDICTOR[dataAll$ROC == 1],
-    #              dataAll$PREDICTOR[dataAll$ROC ==0],       
-    #             alternative = "greater" )
-     #    tableRow <- c(tableRow, tFit$p.value)
-    ANOVA<- oneway.test(corData$PREDICTOR ~ corData$ValCategory, var.equal = TRUE)
-    #tFit<- aov(dataAll$PREDICTOR ~ dataAll$ValCategory)
-    #oneway.test(corData$PREDICTOR ~ corData$ValCategory, var.equal = TRUE)
-    Stepwise <- aov(corData$PREDICTOR ~ corData$ValCategory)
-    AOVStepwise<- TukeyHSD(Stepwise)
-    tableRow <- c(tableRow, ANOVA$p.value)
-    
-    
-    if(AOVStepwise$'corData$ValCategory'[,1]["High-Clinical"] < 0
-       && AOVStepwise$'corData$ValCategory'[,1]["Low-Clinical"] < 0
-       && AOVStepwise$'corData$ValCategory'[,1]["Low-High"] < 0   ) 
-    {  Stepwise <- "Stepwise"
-     } else Stepwise <- "Not Stepwise"
-     tableRow <- c(tableRow, Stepwise)
-       
-
-    table <- rbind(table, tableRow)
-    
-    rm(dataAll)
-    
-  }
+      tableRow <- c(tableRow, Stepwise)
+      table <- rbind(table, tableRow)
+      rm(dataAll)
+    }
   
-  cat(".")
+    cat(".")
   }
   
 }
@@ -364,22 +360,26 @@ for (i in 1:(nrow(predictors))) {
 
 
 table <- table[-1,] #remove first placeholder row
-if (correctTies ){
-csvOutput <- paste0(csvOutputFolder, "/predictions output CORRECT TIES ", testName, Sys.Date())
-}else{
-csvOutput <- paste0(csvOutputFolder, "/predictions output", testName, Sys.Date())
+if (correctTies ) {
+  csvOutput <- paste0(csvOutputFolder, "/predictions output CORRECT TIES ", testName, Sys.Date())
+} else {
+  csvOutput <- paste0(csvOutputFolder, "/predictions output", testName, Sys.Date())
 }
+
 if (LEVELS){
   csvOutput <- paste0(csvOutput, " levels")
 }
+
 if (slopes){
-csvOutput <- paste0(csvOutput, " slopes")
+  csvOutput <- paste0(csvOutput, " slopes")
 }
+
 if (MAX){
-csvOutput <- paste0(csvOutput, " MAX")
+  csvOutput <- paste0(csvOutput, " MAX")
 }
+
 if (maxSlopes){
-csvOutput <- paste0(csvOutput, " maxSlopes")
+  csvOutput <- paste0(csvOutput, " maxSlopes")
 }
 
 csvOutput <- paste0(csvOutput, ".csv")

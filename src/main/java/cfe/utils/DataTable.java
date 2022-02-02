@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -32,7 +33,12 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -40,7 +46,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
 import com.opencsv.CSVReader;
 
@@ -61,15 +66,18 @@ public class DataTable {
 	protected List<String> columns;
 	protected List<ArrayList<String>> data;
 	
+	public static final Pattern INT_PATTERN       = Pattern.compile("^-?\\d+$");
+    public static final Pattern FLOAT_PATTERN     = Pattern.compile("^-?\\d+\\.\\d*$");
+    public static final Pattern DATE_MDY_PATTERN  = Pattern.compile("\\d{1,2}/\\d{1,2}/\\d{2}(\\d{2})?$");
+    public static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$");
+    public static final Pattern TIMESTAMP_WITH_SECONDS_PATTERN
+        = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}$");    
+	
 	public enum JoinType {INNER, OUTER, LEFT_OUTER, RIGHT_OUTER};
 	
 	public DataTable(String key) {
-	    this.name = "";
-		columns = new ArrayList<String>();
-		data = new ArrayList<ArrayList<String>>();
-		this.key = key;
-		this.index = new TreeMap<String, ArrayList<String>>();
-	}
+	    this("", key);
+    }
 
     public DataTable(String name, String key) {
         this.name = name;
@@ -167,7 +175,7 @@ public class DataTable {
 		log.info("Initializing to Access table \"" + table.getName() + "\".");
 		
 		String keyValue = null;
-		Row row;
+		com.healthmarketscience.jackcess.Row row;
 		while ((row = table.getNextRow()) != null) {
 			
 		    // log.info("**************** ROW SIZE: " + row.size() + "   (COLUMNS SIZE: " + columns.size() + ")");
@@ -535,10 +543,10 @@ public class DataTable {
 	        	
 	        	value = value.trim();
 	        	
-	        	if (value.matches("^-?\\d+$")) {
+	        	if (INT_PATTERN.matcher(value).matches()) {
 	        		csv.append(value);
 	        	}
-            	else if (value.matches("^-?\\d+\\.\\d*$")) {
+            	else if (FLOAT_PATTERN.matcher(value).matches()) {
 	        		csv.append(value);
             	}
 	          	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
@@ -570,12 +578,28 @@ public class DataTable {
         XSSFWorkbook workbook = new XSSFWorkbook();
         
         for (String sheetName: tables.keySet()) {
+            log.info("Adding sheet \"" + sheetName + "\" to workbook...");
         	DataTable table = tables.get(sheetName);
             table.addToWorkbook(workbook, sheetName);
+            log.info("Sheet \"" + sheetName + "\" added to workbook.");
         }
+        log.info("All sheets added to workbook.");
         return workbook;
 	}
-	
+
+	public static Workbook createStreamingWorkbook(Map<String, DataTable> tables, int rowAccessWindowSize) {
+	    SXSSFWorkbook workbook = new SXSSFWorkbook(rowAccessWindowSize);
+
+	    for (String sheetName: tables.keySet()) {
+	        log.info("Adding sheet \"" + sheetName + "\" to workbook...");
+	        DataTable table = tables.get(sheetName);
+	        table.addToStreamingWorkbook(workbook, sheetName);
+	        log.info("Sheet \"" + sheetName + "\" added to workbook.");
+	    }
+	    log.info("All sheets added to workbook.");
+	    return workbook;
+	}
+	   
 	/**
 	 * Adds a sheet representing the data table to the specified workbook.
 	 * 
@@ -610,9 +634,22 @@ public class DataTable {
             cell.setCellValue(columns.get(i));
         }
 
+        //--------------------------------------------------------------
+        // Create the data rows
+        //--------------------------------------------------------------
+        SimpleDateFormat mdyDateFormat = new SimpleDateFormat("M/d/yy");
+        
+        CellStyle dateMdyCellStyle = workbook.createCellStyle();  
+        dateMdyCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy")); 
+        
+        CellStyle timeCellStyle = workbook.createCellStyle();  
+        timeCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy HH:mm:ss")); 
+        
 	    for (ArrayList<String> dataRow: this.data) {
         	rowNumber++;
             xlsxRow = sheet.createRow(rowNumber);
+            
+            log.info("Processing sheet \"" + sheetName + "\", data table row " + rowNumber + "/" + this.getNumberOfRows() + " (" + dataRow.size() + " columns).");
             
             for (int i = 0; i < dataRow.size(); i++){
             	String value = dataRow.get(i);
@@ -620,55 +657,151 @@ public class DataTable {
             	if (value == null) value = "";
             	value = value.trim();
             	
-            	if (value.matches("^-?\\d+$")) {
+            	if (INT_PATTERN.matcher(value).matches()) {
             	    int ivalue = Integer.parseInt(value);
                     xlsxRow.createCell(i).setCellValue(ivalue);
             	}
-            	else if (value.matches("^-?\\d+\\.\\d*$")) {
+            	else if (FLOAT_PATTERN.matcher(value).matches()) {
             		double dvalue = Double.parseDouble(value);
             		xlsxRow.createCell(i).setCellValue(dvalue);
             	}
-            	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
+            	else if (TIMESTAMP_PATTERN.matcher(value).matches()) {
             		LocalDateTime dateTime = LocalDateTime.parse(value);
             		xlsxRow.createCell(i).setCellValue(dateTime);
-                    CellStyle cellStyle = workbook.createCellStyle();  
-                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy")); 
-                    		//.getFormat("m/d/yy h:mm"));  
-            		xlsxRow.getCell(i).setCellStyle(cellStyle);
+ 
+            		xlsxRow.getCell(i).setCellStyle(dateMdyCellStyle);
             	}
-            	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}$")) {
+            	else if (TIMESTAMP_WITH_SECONDS_PATTERN.matcher(value).matches()) {
             		LocalDateTime dateTime = LocalDateTime.parse(value);
             		xlsxRow.createCell(i).setCellValue(dateTime);
-                    CellStyle cellStyle = workbook.createCellStyle();  
-                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy HH:mm:ss")); 
-                    		//.getFormat("m/d/yy h:mm"));  
-            		xlsxRow.getCell(i).setCellStyle(cellStyle);
+            		xlsxRow.getCell(i).setCellStyle(timeCellStyle);
             	}
-                else if (StringUtil.isMdyDate(value)) {
+                else if (DATE_MDY_PATTERN.matcher(value).matches()) {
                     // m/d/yy date format
-                    SimpleDateFormat inputDateFormat = new SimpleDateFormat("M/d/yy");
-                    
+            
                     try {
-                        Date date = inputDateFormat.parse( value );
+                        Date date = mdyDateFormat.parse( value );
                         xlsxRow.createCell(i).setCellValue(date);
                     }
                     catch (ParseException exception) {
                         xlsxRow.createCell(i).setCellValue(value);
                     }
 
-                    CellStyle cellStyle = workbook.createCellStyle();  
-                    cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy")); 
-                            //.getFormat("m/d/yy h:mm"));  
-                    xlsxRow.getCell(i).setCellStyle(cellStyle);
+                    xlsxRow.getCell(i).setCellStyle(dateMdyCellStyle);
                 }            	
             	else {
                     xlsxRow.createCell(i).setCellValue(value);
             	}
             }
         }
+	    
+	    log.info("Sheet \"" + sheetName + "\" added to workbook, returning sheet...");
+	    return sheet;
+	}
+
+	/**
+	 * Adds the data from this object to a sheet with the specified name in the
+	 * specified workbook.
+	 * 
+	 * @param workbook
+	 * @param sheetName
+	 * @return the sheet that was added to the workbook.
+	 */
+	public Sheet addToStreamingWorkbook(Workbook workbook, String sheetName) {
+	    Sheet sheet = workbook.createSheet(sheetName);
+
+	    CreationHelper createHelper = workbook.getCreationHelper();
+
+	    //--------------------------------------
+	    // Column header format
+	    //--------------------------------------
+	    CellStyle headerCellStyle = workbook.createCellStyle();
+
+	    Font font = workbook.createFont();
+	    font.setBold(true);
+	    //headerCellStyle.setFont(font);
+	    headerCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+	    headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    headerCellStyle.setBorderBottom(BorderStyle.THIN);
+	    headerCellStyle.setBorderLeft(BorderStyle.THIN);
+	    headerCellStyle.setBorderRight(BorderStyle.THIN);
+
+	    // Header row
+	    int rowNumber = 0;
+	    Row row = sheet.createRow(rowNumber);
+	    for (int i = 0; i < columns.size(); i++) {
+	        Cell cell;
+	        cell = row.createCell(i);
+	        cell.setCellStyle(headerCellStyle);
+	        cell.setCellValue(columns.get(i));
+	    }
+
+	    //--------------------------------------------------------------
+	    // Create the data rows
+	    //--------------------------------------------------------------
+	    SimpleDateFormat mdyDateFormat = new SimpleDateFormat("M/d/yy");
+
+	    CellStyle dateMdyCellStyle = workbook.createCellStyle();  
+	    dateMdyCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy")); 
+
+	    CellStyle timeCellStyle = workbook.createCellStyle();  
+	    timeCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("mm/dd/yyyy HH:mm:ss")); 
+
+	    for (ArrayList<String> dataRow: this.data) {
+	        rowNumber++;
+	        row = sheet.createRow(rowNumber);
+
+	        log.info("Processing sheet \"" + sheetName + "\", data table row " + rowNumber + "/" + this.getNumberOfRows() + " (" + dataRow.size() + " columns).");
+
+	        for (int i = 0; i < dataRow.size(); i++){
+	            String value = dataRow.get(i);
+
+	            if (value == null) value = "";
+	            value = value.trim();
+
+	            if (INT_PATTERN.matcher(value).matches()) {
+	                int ivalue = Integer.parseInt(value);
+	                row.createCell(i).setCellValue(ivalue);
+	            }
+	            else if (FLOAT_PATTERN.matcher(value).matches()) {
+	                double dvalue = Double.parseDouble(value);
+	                row.createCell(i).setCellValue(dvalue);
+	            }
+	            else if (TIMESTAMP_PATTERN.matcher(value).matches()) {
+	                LocalDateTime dateTime = LocalDateTime.parse(value);
+	                row.createCell(i).setCellValue(dateTime);
+
+	                row.getCell(i).setCellStyle(dateMdyCellStyle);
+	            }
+	            else if (TIMESTAMP_WITH_SECONDS_PATTERN.matcher(value).matches()) {
+	                LocalDateTime dateTime = LocalDateTime.parse(value);
+	                row.createCell(i).setCellValue(dateTime);
+	                row.getCell(i).setCellStyle(timeCellStyle);
+	            }
+	            else if (DATE_MDY_PATTERN.matcher(value).matches()) {
+	                // m/d/yy date format
+
+	                try {
+	                    Date date = mdyDateFormat.parse( value );
+	                    row.createCell(i).setCellValue(date);
+	                }
+	                catch (ParseException exception) {
+	                    row.createCell(i).setCellValue(value);
+	                }
+
+	                row.getCell(i).setCellStyle(dateMdyCellStyle);
+	            }               
+	            else {
+	                row.createCell(i).setCellValue(value);
+	            }
+	        }
+	    }
+	    
+	    log.info("Sheet \"" + sheetName + "\" added to streaming workbook, returning sheet...");
 	    return sheet;
 	}
 	
+
 	public XSSFWorkbook toXlsx() {
         XSSFWorkbook workbook = new XSSFWorkbook();
         String sheetName = "data";

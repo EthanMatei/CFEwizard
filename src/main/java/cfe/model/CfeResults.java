@@ -19,6 +19,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 @Entity
@@ -70,7 +72,7 @@ public class CfeResults implements Serializable {
     }
 
     public CfeResults(
-            XSSFWorkbook resultsWorkbook,
+            Workbook resultsWorkbook,
             String resultsType, 
             Date generatedTime,
             String phene,
@@ -90,7 +92,29 @@ public class CfeResults implements Serializable {
         this.lowCutoff          = lowCutoff;
         this.highCutoff         = highCutoff;
     }
-            
+
+    public CfeResults(
+            SXSSFWorkbook resultsWorkbook,
+            String resultsType, 
+            Date generatedTime,
+            String phene,
+            Integer lowCutoff,
+            Integer highCutoff
+        ) throws IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        resultsWorkbook.write(bos);
+        bos.close();
+        this.results = bos.toByteArray();
+        
+        this.resultsType = resultsType;
+        
+        this.generatedTime      = generatedTime;
+        this.phene              = phene;
+        this.lowCutoff          = lowCutoff;
+        this.highCutoff         = highCutoff;
+    }
+    
     //-----------------------------------------------------------------
     // Getters and Setters
     //-----------------------------------------------------------------
@@ -130,6 +154,15 @@ public class CfeResults implements Serializable {
         fileStream = new ByteArrayInputStream( this.results );
         XSSFWorkbook workbook = new XSSFWorkbook(fileStream);
         return workbook;
+    }
+    
+    @Transient
+    public SXSSFWorkbook getResultsStreamingSpreadsheet() throws Exception {
+        XSSFWorkbook workbook = this.getResultsSpreadsheet();
+        
+        int rowAccessWindowSize = 100;
+        SXSSFWorkbook streamingWorkbook = new SXSSFWorkbook(workbook, rowAccessWindowSize);
+        return streamingWorkbook;
     }
     
     @Transient

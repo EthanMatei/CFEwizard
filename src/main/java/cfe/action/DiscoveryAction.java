@@ -2,8 +2,10 @@ package cfe.action;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +22,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
@@ -339,8 +344,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				cohortTables.put(CfeResultsSheets.COHORT_DATA, cohortData);
 				cohortTables.put(CfeResultsSheets.DISCOVERY_COHORT_INFO, infoTable);
 				
-				XSSFWorkbook cohortWorkbook = DataTable.createWorkbook(cohortTables);
-				cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
+				int rowAccessWindowSize = 100;
+				Workbook cohortWorkbook = DataTable.createStreamingWorkbook(cohortTables, rowAccessWindowSize);
+				//cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
                   
 				// NO LONGER NEEDED ???
 				//File cohortXlsxTempFile = File.createTempFile("cohort-", ".xlsx");
@@ -660,20 +666,24 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
                 scriptOutput = this.runCommand(rScriptCommand);
                 
+                log.info("Returned from DEdiscovery.R script");
+                
                 this.scoresGeneratedTime = new Date();
 
                 //-------------------------------------------------------
                 // Set up script output file log
                 //-------------------------------------------------------
-                //File scriptOutputTextTempFile = File.createTempFile("discovery-r-script-output-", ".txt");
-                //FileOutputStream out = new FileOutputStream(scriptOutputTextTempFile);
-                //PrintWriter writer = new PrintWriter(out);
-                //writer.write(scriptOutput);
-                //writer.close();
-                //this.scriptOutputTextFile = scriptOutputTextTempFile.getAbsolutePath();
-                //this.scriptOutputTextFileName = "script-output.txt";
-                //log.info("script output text file: " + scriptOutputTextFile);
-
+                if (this.debugDiscoveryScoring) {
+                    File scriptOutputTextTempFile = FileUtil.createTempFile("discovery-r-script-output-", ".txt");
+                    FileOutputStream out = new FileOutputStream(scriptOutputTextTempFile);
+                    PrintWriter writer = new PrintWriter(out);
+                    writer.write(scriptOutput);
+                    writer.close();
+                    this.scriptOutputTextFile = scriptOutputTextTempFile.getAbsolutePath();
+                    //this.scriptOutputTextFileName = "script-output.txt";
+                    log.info("script output text file: " + scriptOutputTextFile);
+                }
+                
                 //---------------------------------------------------------------
                 // Get the output, report and timing file paths
                 //---------------------------------------------------------------
@@ -693,14 +703,17 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
                     if (outputMatcher.find()) {
                         outputFile = outputMatcher.group(1).trim();
+                        log.info("Output file pattern found: \"" + outputFile + "\".");
                     }
 
                     if (reportMatcher.find()) {
                         reportFile = reportMatcher.group(1).trim();
+                        log.info("Report file pattern found: \"" + reportFile + "\".");
                     }
 
                     if (timingMatcher.find()) {
                         timingFile = timingMatcher.group(1).trim();
+                        log.info("Timing file pattern found: \"" + timingFile + "\".");
                     }				
                 }
 
@@ -709,13 +722,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //--------------------------------------------
                 
                 CfeResults discoveryCohortResults = CfeResultsService.get(discoveryId);
-                XSSFWorkbook cohortWorkbook = discoveryCohortResults.getResultsSpreadsheet();
+                SXSSFWorkbook cohortWorkbook = discoveryCohortResults.getResultsStreamingSpreadsheet();
                 
                 // Create output data table from the output CSV file generated by the
                 // Discovery R Script
                 DataTable outputDataTable = new DataTable(null);
                 if (outputFile == null) {
                     errorMessage = "No output file generated for discovery calculation.";
+                    log.severe(errorMessage);
                     result = ERROR;
                 }
                 else {
@@ -727,14 +741,17 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                     outputDataTable.addColumn(ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, "");
                     outputDataTable.setColumnName(0, ProbesetMappingParser.PROBE_SET_ID_COLUMN);
                 
+                    log.info("Before call to deScoring.");
                     this.deScoring(outputDataTable);  // calculate percentiles and scores
-                
+                    log.info("After call to deScoring.");
+                    
                     for (int rowIndex = 0; rowIndex < outputDataTable.getNumberOfRows(); rowIndex++) {
                         String keyValue = outputDataTable.getValue(rowIndex, 0);
                         String genecardsSymbol = probesetMapping.getValue(keyValue, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
                         outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
                     }
                 }
+                log.info("Calculation of outputDataTable complete.");
 
                 // Create "Discovery Report" data table
                 DataTable reportDataTable = new DataTable(null);
@@ -745,20 +762,25 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 // Create "Discovery Scores Info" data table
                 DataTable discoveryScoresInfoDataTable = this.createDiscoveryScoresInfoTable();
                 
+                Sheet streamingSheet;
+                
                 // Create "Discovery Cohort" data table
-                DataTable cohortDataTable = new DataTable(null);
-                sheet = cohortWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT);
-                cohortDataTable.initializeToWorkbookSheet(sheet);
+                DataTable discoveryCohortDataTable = new DataTable(null);
+                streamingSheet = cohortWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT);
+                discoveryCohortDataTable.initializeToWorkbookSheet(sheet);
+                log.info("Discovery cohort data table created.");
 
                 // Create "Cohort Data" data table
                 CohortDataTable cohortDataDataTable = new CohortDataTable();
-                sheet = cohortWorkbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                streamingSheet = cohortWorkbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 cohortDataDataTable.initializeToWorkbookSheet(sheet);            
-
+                log.info("Cohort data data table created.");
+                
                 // Create "Discovery Cohort Info" data table
                 DataTable discoveryCohortInfoDataTable = new DataTable(null);
-                sheet = cohortWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
+                streamingSheet = cohortWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 discoveryCohortInfoDataTable.initializeToWorkbookSheet(sheet);
+                log.info("Discovery cohort info data table created.");
                 
                 // Create "Discovery R script log" data table
                 //DataTable discoveryRScriptLogDataTable = new DataTable(null);
@@ -773,12 +795,18 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES, outputDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_REPORT, reportDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES_INFO, discoveryScoresInfoDataTable);
-                resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT, cohortDataTable);
+                resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT, discoveryCohortDataTable);
                 resultsTables.put(CfeResultsSheets.DISCOVERY_COHORT_INFO, discoveryCohortInfoDataTable);
                 resultsTables.put(CfeResultsSheets.COHORT_DATA, cohortDataDataTable);
+                log.info("resultsTables created - size: " + resultsTables.size());
                 
-                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
-                cohortDataDataTable.enhanceCohortDataSheet(resultsWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
+                int rowAccessWindowSize = 100;
+                Workbook resultsWorkbook = DataTable.createStreamingWorkbook(resultsTables, rowAccessWindowSize);
+                log.info("resultsWorkbook created.");
+
+                //log.info("pheneSelection = \"" + pheneSelection + "\" - low cutoff: " + lowCutoff + " - high cutoff: " + highCutoff);
+                //cohortDataDataTable.enhanceCohortDataSheet(resultsWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
+                //log.info("resultsWoorkbook enhanced.");
                 //WorkbookUtil.setCellForLongText(resultsWorkbook, CfeResultsSheets.DISCOVERY_R_SCRIPT_LOG, 1, 0);
 
                 // Timing CSV (WORK IN PROGRESS)
@@ -792,11 +820,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 CfeResults cfeResults = new CfeResults(resultsWorkbook, CfeResultsType.DISCOVERY_SCORES,
                         this.scoresGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
+                log.info("cfeResults object created.");
                 
                 
                 cfeResults.setDiscoveryRScriptLog(scriptOutput);
-               
+                log.info("Discovery scoring results object created.");
+                
                 CfeResultsService.save(cfeResults);
+                log.info("Discovery scoring results object saved.");
+                
                 this.cfeResultsId = cfeResults.getCfeResultsId();
                 log.info("Discovery calculation - CFE Results ID: " + cfeResultsId);
                 

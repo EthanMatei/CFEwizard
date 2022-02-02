@@ -16,9 +16,9 @@ public class StringUtil {
             "^\\d{4}-\\d{2}-\\d{2}$");
 
 
-          public boolean matches(String date) {
-              return DATE_PATTERN.matcher(date).matches();
-          }
+    public boolean matches(String date) {
+        return DATE_PATTERN.matcher(date).matches();
+    }
           
 	public static boolean isInt(String value) {
 	    boolean isInt = INT_PATTERN.matcher(value).matches(); 

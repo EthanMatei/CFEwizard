@@ -1,6 +1,7 @@
 package cfe.action;
 
 import java.sql.DatabaseMetaData;
+import java.text.NumberFormat;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -33,6 +34,18 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
 	private Map<String,String> systemProperties;
 	private Map<String,String> environmentVariables;
 
+    private long currentHeapSize;
+
+    private long maxHeapSize;
+
+    private long currentFreeHeapSize;
+
+    private String currentHeapSizeFormatted;
+
+    private String maxHeapSizeFormatted;
+
+    private String currentFreeHeapSizeFormatted;
+
     public String execute() throws Exception {
     	
 	    String result = SUCCESS;
@@ -55,7 +68,15 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
 			    this.systemProperties.put(prop, System.getProperty(prop, ""));
 		    }
 		    
-		    this.environmentVariables = System.getenv();   
+		    this.environmentVariables = System.getenv();
+		    
+		    this.currentHeapSize     = Runtime.getRuntime().totalMemory(); 
+		    this.maxHeapSize         = Runtime.getRuntime().maxMemory();
+		    this.currentFreeHeapSize = Runtime.getRuntime().freeMemory();
+		    
+		    this.currentHeapSizeFormatted     = NumberFormat.getInstance().format(this.currentHeapSize);
+		    this.maxHeapSizeFormatted         = NumberFormat.getInstance().format(this.maxHeapSize);
+		    this.currentFreeHeapSizeFormatted = NumberFormat.getInstance().format(this.currentFreeHeapSize);
 	    }
 
         return result;
@@ -81,4 +102,53 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
 	public Map<String, String> getEnvironmentVariables() {
 		return this.environmentVariables;
 	}
+
+    public long getCurrentHeapSize() {
+        return currentHeapSize;
+    }
+
+    public void setCurrentHeapSize(long currentHeapSize) {
+        this.currentHeapSize = currentHeapSize;
+    }
+
+    public long getMaxHeapSize() {
+        return maxHeapSize;
+    }
+
+    public void setMaxHeapSize(long maxHeapSize) {
+        this.maxHeapSize = maxHeapSize;
+    }
+
+    public long getCurrentFreeHeapSize() {
+        return currentFreeHeapSize;
+    }
+
+    public void setCurrentFreeHeapSize(long currentFreeHeapSize) {
+        this.currentFreeHeapSize = currentFreeHeapSize;
+    }
+
+    public String getCurrentHeapSizeFormatted() {
+        return currentHeapSizeFormatted;
+    }
+
+    public void setCurrentHeapSizeFormatted(String currentHeapSizeFormatted) {
+        this.currentHeapSizeFormatted = currentHeapSizeFormatted;
+    }
+
+    public String getMaxHeapSizeFormatted() {
+        return maxHeapSizeFormatted;
+    }
+
+    public void setMaxHeapSizeFormatted(String maxHeapSizeFormatted) {
+        this.maxHeapSizeFormatted = maxHeapSizeFormatted;
+    }
+
+    public String getCurrentFreeHeapSizeFormatted() {
+        return currentFreeHeapSizeFormatted;
+    }
+
+    public void setCurrentFreeHeapSizeFormatted(String currentFreeHeapSizeFormatted) {
+        this.currentFreeHeapSizeFormatted = currentFreeHeapSizeFormatted;
+    }
+	
 }

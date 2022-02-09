@@ -1,3 +1,7 @@
+#===================================================================================
+# Validation scoring script
+#===================================================================================
+
 #-------------------------------------------------
 # Process command line arguments
 #-------------------------------------------------
@@ -15,26 +19,7 @@ outputDir            <- args[5]
 
 predictorFilePath <- predictorListCsvFile
 
-#####################################################
-##                                                 ##
-## Insert your genes into the appropriate panels   ##
-##                                                 ##
-#####################################################
 
-
-
-
-### BioM41 
-#increasedPanel <- c("SEPT7P2Pain1569973_at","HRASPain212983_at","DNAJC18Pain227166_at","DENND1BPain1557309_at","MCRS1Pain202556_s_at","RAB33APain206039_at","LY9Pain231124_x_at","ASTN2Pain1554816_at","SERPINF1Pain202283_at","HLADQB1Pain211656_x_at","HLADQB1Pain212998_x_at","FAM134BPain218510_x_at","AF090920Pain234739_at","ZNF441Pain1553193_at","CLSPNPain242150_at","AF087971Pain1561067_at","ZNF91Pain244259_s_at","Hs554262Pain210703_at")
-#decreasedPanel <- c("Hs696420Pain243125_x_at","Hs609761Pain244331_at","RALGAPA2Pain231826_at","OSBP2Pain1569617_at","YBX3Pain201160_s_at","TCF15Pain207306_at","GSPT1Pain215438_x_at","CCDC85CPain219018_s_at","WNK1Pain1555068_at","PTNPain211737_x_at","MBNL3Pain219814_at","Hs659426Pain240599_x_at","Hs596713Pain226138_s_at","DCAF12Pain224789_at","PIK3CDPain211230_s_at","Hs666804Pain240949_x_at","Hs677263Pain216444_at","CALCAPain210727_at","COMTPain213981_at","COMTPain216204_at","CNTN1Pain1554784_at","HTR2APain211616_s_at","H05785Pain236913_at")
-
-### BioM2
-#increasedPanel <- c()
-#decreasedPanel <- c("Hs666804Pain240949_x_at","PIK3CDPain211230_s_at")
-
-### BioM test 2 not real, for checking manual against manual calculations
-#increasedPanel <- c("ZNF91Pain244259_s_at")
-#decreasedPanel <- c("PIK3CDPain211230_s_at")
 
 ########################################################
 ##           Choose prediction test type              ##
@@ -88,45 +73,36 @@ csvOutputFolder <- outputDir
 #################################################################################################################################
 
 
-###############################################
-###############################################
-#########                           ##########
-######### DO NOT EDIT ANYTHING BELOW #########
-##############################################
-##############################################
-
-
-
-
-
 # install all the packages you need but don't have
 
-require(devtools)
+# require(devtools)
 
 # Jim - commented out
 #gwidgetspackage <- c("gWidgets") %in% rownames(installed.packages())
 #gwidgetstcltkpackage <- c("gWidgetstcltk") %in% rownames(installed.packages())
-verificationpackage <- c("verification") %in% rownames(installed.packages())
+#verificationpackage <- c("verification") %in% rownames(installed.packages())
 
 # Jim - commented out
 #if(!gwidgetspackage) install_version("gWidgets", version = '0.0-54.1')
 #if(!gwidgetspackage) install_version("gWidgetstcltk", version = '0.0-55')
-if(!gwidgetspackage) install_version("verification", version = '1.42')
+#if(!gwidgetspackage) install_version("verification", version = '1.42')
 
 # Original:
 # wants <- c("coin","survival", "pROC", "xlsx", "verification", "gWidgetstcltk", "gWidgets", "tcltk", "ROCR", "ggplot2", "GGally", "VGAM", "exactRankTests")
-wants <- c("coin","survival", "pROC", "xlsx", "verification", "ROCR", "GGally", "VGAM", "exactRankTests")
-has   <- wants %in% rownames(installed.packages())
-if(any(!has)) install.packages(wants[!has])
+wants <- c("ROCR", "verification")
+# has   <- wants %in% rownames(installed.packages())
+
+# Jim: commented out (pacakges should be installed at the system level before this script runs)
+# if (any(!has)) install.packages(wants[!has])
 
 
 #load packages#
 sapply(wants, require, character.only = TRUE)
-options(guiToolkit="tcltk")
+#options(guiToolkit="tcltk")
 
 
 # load data needed 
-data <- read.csv(file=masterSheetCsvFile, header = TRUE, na.strings=c("NA", "na","Na" , ""))
+data <- read.csv(file=masterSheetCsvFile, header = TRUE, check.names = FALSE, na.strings=c("NA", "na","Na" , ""))
 
 
 #get the subject ID and visitnumber for all incomplete cases

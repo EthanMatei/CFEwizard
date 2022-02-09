@@ -20,4 +20,5 @@ public class CfeResultsSheets {
     public static final String CLINICAL_COHORT        = "clinical cohort";
     public static final String CLINICAL_COHORT_INFO   = "clinical cohort info";
     public static final String VALIDATION_COHORT      = "validation cohort";    // deprecated (but may be in old saved sheets)
+    public static final String VALIDATION_SCORES      = "validation scores";
 }

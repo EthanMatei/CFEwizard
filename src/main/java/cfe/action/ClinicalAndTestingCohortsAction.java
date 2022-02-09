@@ -360,7 +360,13 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             
             columns.add(this.discoveryPhene);
             for (PheneCondition condition: pheneConditions) {
-                columns.add(condition.getPhene());
+                String conditionPhene = condition.getPhene();
+                
+                // Avoid adding duplicate phenes, e.g. one of the condition phenes
+                // is the same as the discovery phene.
+                if (!columns.contains(conditionPhene)) {
+                    columns.add(conditionPhene);
+                }
             }
             
             columns.add("Validation");

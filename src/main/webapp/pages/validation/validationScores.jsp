@@ -22,6 +22,26 @@
 </s:if>
 
 <p>
+Validation Scoring Results:
+<s:if test="cfeResultsId != null">
+    <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+        <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+                 alt="Validation Scores" />
+            <br />
+            validation-scores.xslx
+        </div>
+    </s:a>
+</s:if>
+<s:else>
+    <p>No results generated</p>
+</s:else>
+</p>
+
+<p>
 Validation Scoring Command:
 </p>
 <pre>

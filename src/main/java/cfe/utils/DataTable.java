@@ -38,6 +38,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -146,13 +147,39 @@ public class DataTable {
                 */
                 
                 dataRow.add(value);
-            }
-            
+            }    
             this.addRow(dataRow);
         }
     }
 	
-	
+    public void initializeToWorkbookStreamingSheet(Sheet sheet) {
+        Row header = sheet.getRow(0);
+        for (int cellIndex = 0; cellIndex < header.getLastCellNum(); cellIndex++) {
+            Cell cell = header.getCell(cellIndex);
+            String columnName = cell.getStringCellValue();
+            this.addColumn(columnName, "");
+        }
+        
+        for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+            Row row = sheet.getRow(rowIndex);
+            ArrayList<String> dataRow = new ArrayList<String>();
+            
+            for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
+                Cell cell = row.getCell(cellIndex);
+                CellType cellType = cell.getCellType();
+                String value = "";
+
+                DataFormatter formatter = new DataFormatter();
+                String stringValue = formatter.formatCellValue(cell);
+                
+                value = stringValue;
+                
+                dataRow.add(value);
+            }    
+            this.addRow(dataRow);
+        }
+    }	
+    
 	/**
 	 * Initializes with MS Access table.
 	 * 

@@ -104,11 +104,18 @@ with a description of the major changes for this release.
 Code Directory Structure
 ---------------------------------------------------------------------
 
+The main files and directories for the cFE Wizard are shown below.
+
+* **docs/** - documentation directory
 * **sql/** - scripts for creating the CFE database and CFE database user
 * **src/** - source code
     * **main/** - application source code
         * **java/** - Java source code
         * **resources/**
+            * **db/**
+                * **migration/** - directory where database migrations are stored. If you
+                    need to update the CFE Wizard's MySQL database schema, then you need
+                    to create a database migration here.
             * **python/** - Python script(s)
             * **R/** - R scripts
         * **webapp/**
@@ -117,8 +124,8 @@ Code Directory Structure
             * **js/** - JavaScript files for the web pages
             * **pages/** - the JSP (Java Server Pages) web pages
     * **test/** - tests source code
-* **target/** - directory where generated WAR (Web ARchive) file (CFE.war), and asscoiated files, are stored
-* pom.xml - Maven comfiguration file (contains library dependency information)
+* **target/** - directory where generated WAR (Web ARchive) file (CFE.war), and associated files, are stored
+* pom.xml - Maven configuration file (contains library dependency information)
 
 
 

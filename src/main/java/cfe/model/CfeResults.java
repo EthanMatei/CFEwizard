@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,7 +22,10 @@ import javax.persistence.Transient;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import cfe.utils.DataTable;
 
 @Entity
 @Table(name="CfeResults")
@@ -175,6 +179,32 @@ public class CfeResults implements Serializable {
         }
         byte[] bytes = bos.toByteArray();
         this.results = bytes;
+    }
+    
+    @Transient
+    /**
+     * Gets a map of data tables that corresponds to the sheets in the results workbook.
+     * The map maps from spreadsheet name to the corresponding data table.
+     * 
+     * @return
+     * @throws Exception
+     */
+    public LinkedHashMap<String, DataTable> getDataTables() throws Exception {
+        LinkedHashMap<String, DataTable> dataTableMap = new LinkedHashMap<String, DataTable>();
+        
+        XSSFWorkbook workbook = this.getResultsSpreadsheet();
+        
+        int numSheets = workbook.getNumberOfSheets();
+        for (int i = 0; i < numSheets; i++) {
+            String sheetName = workbook.getSheetName(i);
+            XSSFSheet sheet = workbook.getSheetAt(i);
+            
+            DataTable dataTable = new DataTable(null);
+            dataTable.initializeToWorkbookSheet(sheet);
+            
+            dataTableMap.put(sheetName, dataTable);
+        }
+        return dataTableMap;
     }
     
     @Lob

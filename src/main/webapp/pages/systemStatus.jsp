@@ -52,6 +52,22 @@
   </s:iterator>
   </table>
   
+  <h3>Memory</h3>
+  <table class="dataTable" style="margin-bottom: 14px;">
+    <tr> <th>Variable</th> <th>Value</th> </tr>
+    <tr>
+      <td>Max heap size</td>
+      <td><s:property value="maxHeapSizeFormatted"/></td>
+    </tr>
+    <tr>
+      <td>Current heap size</td>
+      <td><s:property value="currentHeapSizeFormatted"/></td>
+    </tr>
+    <tr>
+      <td>Current free heap size</td>
+      <td><s:property value="currentFreeHeapSizeFormatted"/></td>
+    </tr>
+  </table>  
   
 
 </s:if>

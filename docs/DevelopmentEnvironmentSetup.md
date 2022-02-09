@@ -85,4 +85,3 @@ How to install the needed packages on Ubuntu:
     sudo apt install python3-pip
     pip install pandas==1.3.1
 
-~

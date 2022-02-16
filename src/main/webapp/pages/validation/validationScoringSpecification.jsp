@@ -58,6 +58,9 @@ Phene: <s:property value="phene" />
     <s:hidden name="validationMasterSheetFile" />
     <s:hidden name="predictorListFile" />
 
+    <s:hidden name="validationDataId" />
+    <s:hidden name="prioritizationId" />
+    
     <s:submit value="Calculate" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
     <s:token/>
 </s:form>

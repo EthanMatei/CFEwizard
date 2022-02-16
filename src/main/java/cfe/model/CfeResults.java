@@ -96,7 +96,7 @@ public class CfeResults implements Serializable {
         this.lowCutoff          = lowCutoff;
         this.highCutoff         = highCutoff;
     }
-
+/*
     public CfeResults(
             SXSSFWorkbook resultsWorkbook,
             String resultsType, 
@@ -117,6 +117,17 @@ public class CfeResults implements Serializable {
         this.phene              = phene;
         this.lowCutoff          = lowCutoff;
         this.highCutoff         = highCutoff;
+    }
+  */
+    
+    public String asString() {
+        String value = "";
+        value += "ID: " + this.cfeResultsId + "\n";
+        value += "results size: " + results.length + "\n";
+        value += "results type: " + this.resultsType + "\n";
+        value += "generated time: " + this.generatedTime + "\n";
+        value += "phene: " + this.phene + " [" + this.lowCutoff + ", " + this.highCutoff + "]\n";
+        return value;
     }
     
     //-----------------------------------------------------------------

@@ -1,12 +1,14 @@
 package cfe.dao;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import cfe.action.DiscoveryAction;
 import cfe.utils.HibernateUtils;
 
 import org.apache.commons.logging.Log;
@@ -28,7 +30,7 @@ public abstract class AbstractDao<T> extends BaseDao {
 	protected Session sess;
 	protected Transaction tx;
 	private Class<T> persistentClass;
-	protected static Log log = LogFactory.getLog(AbstractDao.class);
+    private static Logger log = Logger.getLogger(AbstractDao.class.getName());
 
 	
 	protected AbstractDao(Class<T> c, Session sess, Transaction tx ){
@@ -46,7 +48,7 @@ public abstract class AbstractDao<T> extends BaseDao {
 		} catch (HibernateException e){
 			tx.rollback();
 			//e.printStackTrace();
-			log.error("Hibernate error: " + e.toString());			
+			log.severe("Hibernate error: " + e.toString());			
 			throw e;
 		}
 	}
@@ -70,7 +72,7 @@ public abstract class AbstractDao<T> extends BaseDao {
 		} catch (HibernateException e){
 			tx.rollback();
 			e.printStackTrace();
-			log.error("Hibernate error: " + e.toString());			
+			log.severe("Hibernate error: " + e.toString());			
 			throw e;
 		}
 	}
@@ -125,7 +127,7 @@ public abstract class AbstractDao<T> extends BaseDao {
 		try {
 			data = sess.createQuery(fromTable).list();
 		} catch (HibernateException e) {
-			log.error("Hibernate error: " + e.toString());			
+			log.severe("Hibernate error: " + e.toString());			
 			//e.printStackTrace();
 			throw e;
 		}
@@ -141,7 +143,7 @@ public abstract class AbstractDao<T> extends BaseDao {
 		try {
 		    sess.delete(t);
 		} catch (HibernateException e){
-			log.error("Hibernate error: " + e.toString());
+			log.severe("Hibernate error: " + e.toString());
 			tx.rollback();
 			throw e;
 		}
@@ -158,7 +160,7 @@ public abstract class AbstractDao<T> extends BaseDao {
 			query.executeUpdate();
 
 		} catch (HibernateException e){
-			log.error("Hibernate error: " + e.toString());
+			log.severe("Hibernate error: " + e.toString());
 			tx.rollback();
 			throw e;
 		}

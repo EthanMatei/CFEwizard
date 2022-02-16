@@ -75,7 +75,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
     
     private Long validationDataId;	
 	private Long prioritizationId;
-	
+
 	private String validationMasterSheetFile;
 	private String predictorListFile;
 
@@ -93,6 +93,11 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
     
     private String validationOutputFile;
     private Long cfeResultsId;
+    
+    // Slashes and hyphens in predictors will cause an error in the R script, so these
+    // characters are replaced with the following values
+    public static final String PREDICTOR_SLASH_REPLACEMENT  = "88888";
+    public static final String PREDICTOR_HYPHEN_REPLACEMENT = "77777";
 	
 	    
 	/**
@@ -116,7 +121,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	public String validationScoringSpecification() throws Exception {
 	    String result = SUCCESS;
 	    
-	    log.info("***** GENE EXPRESSION FILE NAME: " + this.geneExpressionCsvFileName);
+	    log.info("Gene expression file name for validation scoring specification: " + this.geneExpressionCsvFileName);
 	    
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
@@ -185,19 +190,18 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 }
                 this.predictorListFile = predictorListCsvTmp.getAbsolutePath();
                 
-                log.info("****** PREDICTOR LIST FILE \"" + predictorListFile + "\" CREATED.");
-                        
                 if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
                     throw new Exception("Could not create validation predictor list file.");
                 }
-                
+                log.info("Predictor List file in validation scoring specification: \"" + predictorListFile + "\" created.");
+                                
                 this.validationMasterSheetFile = this.createValidationMasterSheet(
                         this.validationDataId,
                         predictorList,
                         this.geneExpressionCsv
                 );
                 
-                log.info("************* MASTER SHEET FILE NAME: " + this.validationMasterSheetFile);
+                log.info("Master Sheet file name: " + this.validationMasterSheetFile);
                 
                 if (this.validationMasterSheetFile == null || this.validationMasterSheetFile.isEmpty()) {
                     throw new Exception("Could not create validation master sheet.");
@@ -239,6 +243,14 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 		    this.setErrorMessage("No predictor list specified for validation scoring.");
 		    result = INPUT;
 		}
+		else if (this.prioritizationId == null) {
+	        this.setErrorMessage("No prioritization results ID specified for validation scoring.");
+	        result = INPUT;
+		}
+	    else if (this.validationDataId == null) {
+            this.setErrorMessage("No validation data results ID specified for validation scoring.");
+            result = INPUT;
+        }
 	    else {
             try {
                 log.info("Starting validation scoring");
@@ -269,6 +281,9 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 log.info("Validation Scoring Command: " + this.validationScoringCommand);
                 
                 this.scriptOutput = this.runCommand(rScriptCommand);
+                
+                // Set generate time
+                this.scoresGeneratedTime = new Date();
                 
                 File tempFile = FileUtil.createTempFile("validation-r-script-output", ".txt");
                 FileUtils.write(tempFile, scriptOutput, "UTF-8");
@@ -301,22 +316,22 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 // Create results workbook
                 //--------------------------------------------
                 CfeResults validationData = CfeResultsService.get(validationDataId);
+                if (validationData == null) {
+                    throw new Exception("Could not find validation data with ID: " + validationDataId);    
+                }
+                
                 int lowCutoff  = validationData.getLowCutoff();
                 int highCutoff = validationData.getHighCutoff();
                 
-                CfeResults prioritizationData = CfeResultsService.get(this.prioritizationId);                
+                CfeResults prioritizationData = CfeResultsService.get(this.prioritizationId);
+                if (prioritizationData == null) {
+                    throw new Exception("Could not find prioritization data with ID: " + prioritizationId);
+                }
                 
                 // Create validation scoring data table from the output CSV file
                 // generated by the Validation R Script
                 DataTable validationScoringDataTable = new DataTable(null);
-                if (validationOutputFile == null) {
-                    errorMessage = "No output file generated for discovery calculation.";
-                    log.severe(errorMessage);
-                    result = ERROR;
-                }
-                else {
-                    validationScoringDataTable.initializeToCsv(validationOutputFile);
-                }
+                validationScoringDataTable.initializeToCsv(validationOutputFile);
                 log.info("Validation scoring data data has been created.");
                 
                 
@@ -330,7 +345,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 log.info("resultsTables created - size: " + resultsTables.size());
                 
                 int rowAccessWindowSize = 100;
-                Workbook resultsWorkbook = DataTable.createStreamingWorkbook(resultsTables, rowAccessWindowSize);
+                //Workbook resultsWorkbook = DataTable.createStreamingWorkbook(resultsTables, rowAccessWindowSize);
+                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
                 log.info("resultsWorkbook created.");
                 
                 // Save the results in the database
@@ -341,9 +357,18 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                         lowCutoff, highCutoff
                 );
                 log.info("cfeResults object created.");
+                log.info("CFE RESULTS: \n" + cfeResults.asString());
+                
+                cfeResults.setDiscoveryRScriptLog(validationData.getDiscoveryRScriptLog());
+                log.info("Added discovery R script log text to cfeResults.");
                 
                 CfeResultsService.save(cfeResults);
+                log.info("cfeResults object saved.");
+                
                 this.cfeResultsId = cfeResults.getCfeResultsId();
+                if (this.cfeResultsId < 1) {
+                    throw new Exception("Validation scoring results id is not >= 1: " + cfeResultsId);
+                }
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -411,6 +436,14 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	        String predictor = predictorList.getValue(i, "Predictor");
 	        masterSheet.addColumn(predictor, "");
 	    }
+	    
+	    // Set "Validation Cohort" to 1 where "ValCategory" is "Low" or "High"
+	    for (int rowIndex = 0; rowIndex < masterSheet.getNumberOfRows(); rowIndex++) {
+	        String valCategory = masterSheet.getValue(rowIndex, "ValCategory");
+	        if (valCategory.equalsIgnoreCase("Low") || valCategory.equalsIgnoreCase("High")) {
+                masterSheet.setValue(rowIndex, "ValidationCohort", "1");
+	        }
+	    }
 	       
         //---------------------------------------------------------------------------
         // Read in the gene expression CSV file. It has the following format:
@@ -428,21 +461,37 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         HashMap<String,String> probesetToPredictorMap = new HashMap<String,String>();
         List<String> columns = masterSheet.getColumnNames();
         for (String column: columns) {
+            
+            // If this is a predictor
             if (column.contains("biom")) {
+                String predictor = column;
+                predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+                predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
+                
                 String[] mapValues = column.split("biom");
-                probesetToPredictorMap.put(mapValues[1],  column);
+                String probeset = mapValues[1];
+                probeset = probeset.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+                probeset = probeset.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);        
+                
+                probesetToPredictorMap.put(probeset,  predictor);
             }
         }
         
         String[] row;
         while ((row = csvReader.readNext()) != null) {
             String probeset = row[0];
+            probeset = probeset.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+            probeset = probeset.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
+            
             String predictor = probesetToPredictorMap.get(probeset);
 
             if (predictor != null && !predictor.isEmpty()) {
                 for (int i = 1; i < row.length; i++) {
                     String pheneVisit = header[i];
                     String value = row[i];
+                    
+                    predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+                    predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
 
                     // Set mastersheet values
                     //
@@ -551,7 +600,12 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                     }
 
                     ArrayList<String> row = new ArrayList<String>();
-                    row.add(gene + "biom" + probeset);
+                    
+                    String predictor = gene + "biom" + probeset;
+                    predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+                    predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
+                    
+                    row.add(predictor);
                     row.add(direction);
                     row.add("0"); // Male
                     row.add("0"); // Female

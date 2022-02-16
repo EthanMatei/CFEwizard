@@ -676,7 +676,7 @@ public class DataTable {
         	rowNumber++;
             xlsxRow = sheet.createRow(rowNumber);
             
-            log.info("Processing sheet \"" + sheetName + "\", data table row " + rowNumber + "/" + this.getNumberOfRows() + " (" + dataRow.size() + " columns).");
+            // log.info("Processing sheet \"" + sheetName + "\", data table row " + rowNumber + "/" + this.getNumberOfRows() + " (" + dataRow.size() + " columns).");
             
             for (int i = 0; i < dataRow.size(); i++){
             	String value = dataRow.get(i);
@@ -778,7 +778,7 @@ public class DataTable {
 	        rowNumber++;
 	        row = sheet.createRow(rowNumber);
 
-	        log.info("Processing sheet \"" + sheetName + "\", data table row " + rowNumber + "/" + this.getNumberOfRows() + " (" + dataRow.size() + " columns).");
+	        // log.info("Processing sheet \"" + sheetName + "\", data table row " + rowNumber + "/" + this.getNumberOfRows() + " (" + dataRow.size() + " columns).");
 
 	        for (int i = 0; i < dataRow.size(); i++){
 	            String value = dataRow.get(i);

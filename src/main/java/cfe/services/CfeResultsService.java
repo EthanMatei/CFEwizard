@@ -44,7 +44,7 @@ public class CfeResultsService {
 		return cfeResults;
 	}
 	
-	public static void save(CfeResults cfeResults) {
+	public static void save(CfeResults cfeResults) throws Exception {
 
         Session session = HibernateUtils.getSession();      
         Transaction tx = session.beginTransaction();
@@ -56,6 +56,7 @@ public class CfeResultsService {
         }
         catch (Exception exception) {
             tx.rollback();
+            throw new Exception("Unable to save CfeResults object: " + exception.getMessage());
         }
         finally {
             session.close();

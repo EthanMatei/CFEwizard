@@ -85,3 +85,55 @@ How to install the needed packages on Ubuntu:
     sudo apt install python3-pip
     pip install pandas==1.3.1
 
+Tomcat (Web Application Server)
+---------------------------------------------------------------
+
+Tomcat is the web application server that has been used. In theory, it should be possible
+to run the CFE Wizard on any web application server that supports Java web applications.
+
+To install Tomcat 9 on Ubuntu 20, use the following command:
+
+    sudo apt install tomcat9
+
+This will create directories place Tomcat 9 in the following directory:
+
+    /var/lib/tomcat9
+    
+**Increasing Memory**
+
+Increasing the memory in Tomcat can be done by creating/modifying the following file:
+
+    /var/lib/tomcat9/bin/setenv.sh
+    
+In this file, add the following, with numbers modified appropriately (the example below sets the
+memory size to 3GB):
+
+    export CATALINA_OPTS="-Xms3072M -Xmx3072M"
+
+You need to restart Tomcat after this option has been changed, which in Ubuntu 20,
+can be done with the following command:
+
+    sudo systemctl restart tomcat9
+
+You can verify that the amount of memory was increased by checking the system status page in the
+CFE Wizard.
+
+**Increasing the Number of Request/Post Parameters**
+
+Another limit issue that can occur is that the number of allowed request/post parameters is
+exceeded. This issue can be fixed by modifying Tomcat's **server.xml** file, which with the
+distribution version of Tomcat 9 on Ubuntu 20, will be at the following location:
+
+    /var/lib/tomcat9/conf/server.xml
+
+You need to add the **maxParameterCount** parameter in the section shown below:
+
+    <Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+           redirectPort="8443"
+           maxParameterCount="100000"
+           />
+
+
+
+  

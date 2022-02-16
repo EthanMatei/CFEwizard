@@ -1,61 +1,37 @@
 package cfe.action;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 
-import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
-import com.healthmarketscience.jackcess.Table;
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 import com.opencsv.CSVReader;
 
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
-import cfe.parser.DiscoveryDatabaseParser;
-import cfe.parser.PheneVisitParser;
-import cfe.parser.ProbesetMappingParser;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
-import cfe.utils.CohortDataTable;
-import cfe.utils.CohortTable;
-import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
 import cfe.utils.WebAppProperties;
-import cfe.utils.WorkbookUtil;
 
 public class ValidationScoringAction extends BaseAction implements SessionAware {
 
@@ -99,7 +75,12 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
     public static final String PREDICTOR_SLASH_REPLACEMENT  = "88888";
     public static final String PREDICTOR_HYPHEN_REPLACEMENT = "77777";
 	
-	    
+
+    double bonferroniScore  = 6;
+    double nominalScore     = 4;
+    double stepwiseScore    = 2;
+    double nonStepwiseScore = 0;
+
 	/**
 	 * Select validation data (cohorts + discovery and prioritization scores)
 	 * @return
@@ -334,6 +315,49 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 validationScoringDataTable.initializeToCsv(validationOutputFile);
                 log.info("Validation scoring data data has been created.");
                 
+                String scoreColumn = "ValidationScore";
+                validationScoringDataTable.addColumn(scoreColumn, "");
+                int scoreIndex = validationScoringDataTable.getColumnIndex(scoreColumn);
+                for (int rowIndex = 0; rowIndex < validationScoringDataTable.getNumberOfRows(); rowIndex++) {
+                    double validationScore = 0;
+                    int stepwiseIndex = validationScoringDataTable.getColumnIndex("Stepwise.Test");
+                    int pValueIndex   = validationScoringDataTable.getColumnIndex("ANOVA.p.value");
+                    
+                    if (stepwiseIndex < 0) {
+                        throw new Exception("Could not find stepwise column in validation scoring.");
+                    }
+                    
+                    if (pValueIndex < 0) {
+                        throw new Exception("Could not find p-value column in validation scoring.");
+                    }
+                    
+                    String stepwise = validationScoringDataTable.getValue(rowIndex, stepwiseIndex);
+                    String pValueString = validationScoringDataTable.getValue(rowIndex, pValueIndex);
+
+                    if (!stepwise.equalsIgnoreCase("Stepwise")) {
+                        validationScore = this.nonStepwiseScore;
+                    }
+                    else {
+                        int numberOfBiomarkers = validationScoringDataTable.getNumberOfRows();
+                        try {
+                            double pValue = Double.parseDouble(pValueString);
+                            if (pValue <= (0.05 / numberOfBiomarkers)) {
+                                validationScore = this.bonferroniScore;
+                            }
+                            else if (pValue <= 0.05) {
+                                validationScore = this.nominalScore;
+                            }
+                            else {
+                                validationScore = this.stepwiseScore;
+                            }
+                        } catch (Exception exception) {
+                            log.warning("Unable to parse p-value \"" + pValueString + "\".");
+                            validationScore = this.stepwiseScore;
+                        }
+                    }
+                    
+                    validationScoringDataTable.setValue(rowIndex, scoreColumn, validationScore + "");
+                }
                 
                 // Map from sheet name to data table
                 LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
@@ -890,6 +914,46 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public Date getScoresGeneratedTime() {
+        return scoresGeneratedTime;
+    }
+
+    public void setScoresGeneratedTime(Date scoresGeneratedTime) {
+        this.scoresGeneratedTime = scoresGeneratedTime;
+    }
+
+    public double getBonferroniScore() {
+        return bonferroniScore;
+    }
+
+    public void setBonferroniScore(double bonferroniScore) {
+        this.bonferroniScore = bonferroniScore;
+    }
+
+    public double getNominalScore() {
+        return nominalScore;
+    }
+
+    public void setNominalScore(double nominalScore) {
+        this.nominalScore = nominalScore;
+    }
+
+    public double getStepwiseScore() {
+        return stepwiseScore;
+    }
+
+    public void setStepwiseScore(double stepwiseScore) {
+        this.stepwiseScore = stepwiseScore;
+    }
+
+    public double getNonStepwiseScore() {
+        return nonStepwiseScore;
+    }
+
+    public void setNonStepwiseScore(double nonStepwiseScore) {
+        this.nonStepwiseScore = nonStepwiseScore;
     }
 
 }

@@ -115,6 +115,26 @@ Select Validation Data:
     </s:iterator>
 
 </table>
+
+<table class="dataTable" style="margin-top: 17px;">
+    <tr>
+        <td>Bonferroni Score</td>
+        <td> <s:textfield style="text-align: right;" name="bonferroniScore" /> </td> 
+    </tr>
+    <tr>
+        <td>Nominal Score</td>
+        <td> <s:textfield  style="text-align: right;" name="nominalScore" /></td>
+    </tr>
+    <tr>
+        <td>Stepwise Score</td>
+        <td> <s:textfield  style="text-align: right;" name="stepwiseScore" /></td>
+    </tr>
+    <tr>
+        <td>Non-Stepwise Score</td>
+        <td> <s:textfield  style="text-align: right;" name="nonStepwiseScore" /></td>
+    </tr>
+</table>
+
 <s:submit value="Select" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
 
 <s:token/>

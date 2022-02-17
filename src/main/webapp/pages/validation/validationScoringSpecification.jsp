@@ -61,10 +61,14 @@ Phene: <s:property value="phene" />
     <s:hidden name="validationDataId" />
     <s:hidden name="prioritizationId" />
     
+    <s:hidden name="scoreCutoff" />
+    
     <s:hidden name="bonferroniScore" />
     <s:hidden name="nominalScore" />
     <s:hidden name="stepwiseScore" />
     <s:hidden name="nonStepwiseScore"/>
+    
+    <s:hidden name="geneExpressionCsvFileName"/>
     
     <s:submit value="Calculate" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
     <s:token/>

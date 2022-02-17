@@ -359,6 +359,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                     validationScoringDataTable.setValue(rowIndex, scoreColumn, validationScore + "");
                 }
                 
+                DataTable validationScoresInfo = this.createValidationScoresInfoTable();
+                
                 // Map from sheet name to data table
                 LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
                 
@@ -367,6 +369,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 
                 resultsTables.put(CfeResultsSheets.VALIDATION_SCORES, validationScoringDataTable);
                 log.info("resultsTables created - size: " + resultsTables.size());
+                
+                resultsTables.put(CfeResultsSheets.VALIDATION_SCORES_INFO, validationScoresInfo);
                 
                 int rowAccessWindowSize = 100;
                 //Workbook resultsWorkbook = DataTable.createStreamingWorkbook(resultsTables, rowAccessWindowSize);
@@ -697,14 +701,49 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         row.add(VersionNumber.VERSION_NUMBER);
         infoTable.addRow(row);
         
-        //row = new ArrayList<String>();
-        //row.add("Time Scores Generated");
-        //row.add(this.scoresGeneratedTime.toString());
-        //infoTable.addRow(row);
+        row = new ArrayList<String>();
+        row.add("Time Scores Generated");
+        row.add(this.scoresGeneratedTime.toString());
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Score Cutoff");
+        row.add(this.scoreCutoff + "");
+        infoTable.addRow(row);
         
         row = new ArrayList<String>();
         row.add("");
         row.add("");
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Bonferroni Score");
+        row.add(this.bonferroniScore + "");
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Nominal Score");
+        row.add(this.nominalScore + "");
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Stepwise Score");
+        row.add(this.stepwiseScore + "");
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Non-Stepwise Score");
+        row.add(this.nonStepwiseScore + "");
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("");
+        row.add("");
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Gene Expression CSV File");
+        row.add(this.geneExpressionCsvFileName);
         infoTable.addRow(row);
         
 	    return infoTable;

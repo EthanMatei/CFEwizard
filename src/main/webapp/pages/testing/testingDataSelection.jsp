@@ -21,19 +21,23 @@
     </div>
 </s:if>
 
-<p style="font-weight: bold;">
-Select Testing Data:
+
+<s:form action="TestingScoringSpecification" theme="simple" method="post" enctype="multipart/form-data">
+
+<p>
+Gene Expression CSV File
+<s:file name="geneExpressionCsv" />
+</p>
+        
+<p>
+Score cutoff (&ge;): <s:textfield style="text-align: right;" name="scoreCutoff" />
 </p>
 
-<s:form action="TestingScoringSpecification" theme="simple">
 
-<s:hidden name="lowCutoff" />
-<s:hidden name="highCutoff" />
-<s:hidden name="pheneSelection" />
-<s:hidden name="pheneTable" />
-<s:hidden name="microarrayTable" />
 
-    
+<p style="font-weight: bold;">
+Select Testing Data:
+</p>    
 <table class="dataTable">
     <tr> 
         <th>ID</th>
@@ -65,7 +69,16 @@ Select Testing Data:
     </s:iterator>
 
 </table>
+
+
+<p>
+Special predictor list CSV file (optional)
+<s:file name="specialPredictorListCsv" />
+</p>
+
+
 <s:submit value="Select" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+<s:token/>
 </s:form>
 
 </tiles:putAttribute>

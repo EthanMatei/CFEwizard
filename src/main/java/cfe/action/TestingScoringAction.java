@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -26,6 +27,7 @@ import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
+import cfe.utils.CohortDataTable;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
 import cfe.utils.WebAppProperties;
@@ -34,20 +36,55 @@ import cfe.utils.WebAppProperties;
 public class TestingScoringAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-	private static final Log log = LogFactory.getLog(TestingScoringAction.class);
+	private static final Logger log = Logger.getLogger(TestingScoringAction.class.getName());
 
 	private Map<String, Object> webSession;
 
+    private File geneExpressionCsv;
+    private String geneExpressionCsvContentType;
+    private String geneExpressionCsvFileName;
+
+    private File specialPredictorListCsv;
+    private String specialPredictorListCsvContentType;
+    private String specialPredictorListCsvFileName;
+    
+    private String specialPredictorListTempFile;
+    
 	private Long testingDataId;
 	private List<CfeResults> cfeResults;
 	
+	private String predictorListFile;
+	private String testingMasterSheetFile;
+	   
 	private CfeResults testingData;
     private String scriptDir;
     private String scriptFile;
-    private String geneExpressionCsv;
-    private double scoreCutoff;
+    
     private List<String> genesNotFoundInPrioritization = new ArrayList<String>();
-	
+    private String scriptOutput;
+    private String tempDir;
+    private String testingScoringCommand;
+    
+    private double scoreCutoff = 8.0;
+    
+    private ArrayList<String> phenes;
+
+    
+    private boolean state;
+    private boolean stateCrossSectional;
+    private boolean stateLongitudinal;
+    
+    private String predictionPhene;
+    private Integer predictionPheneHighCutoff;
+
+    private boolean firstYear;
+    private boolean firstYearCrossSectional;
+    private boolean firstYearLongitudinal;
+
+    private boolean future;
+    private boolean futureCrossSectional;
+    private boolean futuretLongitudinal;
+
 	/**
 	 * Select testing data
 	 * @return
@@ -78,11 +115,80 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
             this.setErrorMessage("No testing data selected.");
             result = INPUT;
         }
+        else if (this.geneExpressionCsv == null || this.geneExpressionCsvFileName == null) {
+            this.setErrorMessage("No gene expression CSV file specified.");
+            result = INPUT;
+        }
+        else if (!this.geneExpressionCsvFileName.endsWith(".csv")) {
+            this.setErrorMessage("This gene expression file \"" + this.geneExpressionCsvFileName + "\" is not a .csv file.");
+            result = INPUT;
+        }
         else {
+            this.specialPredictorListTempFile = "";
+            if (this.specialPredictorListCsvFileName != null && this.specialPredictorListCsvFileName != "") {
+                File tempFile = FileUtil.createTempFile("testing-special-predictor-list-", ".csv");
+                FileUtils.copyFile(this.getSpecialPredictorListCsv(), tempFile);
+                this.specialPredictorListTempFile = tempFile.getAbsolutePath();
+            }
+            
             testingData = CfeResultsService.get(testingDataId);
             if (testingData == null) {
                 result = ERROR;
                 this.setErrorMessage("Unable to retrieve testing data for ID " + testingDataId + ".");
+            }
+            
+            XSSFWorkbook workbook = testingData.getResultsSpreadsheet();
+            if (workbook == null) {
+                result = ERROR;
+                this.setErrorMessage("Unable to retrieve resulta workbook for testing data ID " + testingDataId + ".");
+            }
+            
+            XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+            if (sheet == null) {
+                result = ERROR;
+                this.setErrorMessage(
+                        "Could not find sheet \"" + CfeResultsSheets.COHORT_DATA + "\""
+                        + " for testing scoring data workbook."
+                );
+            }
+            CohortDataTable cohortData = new CohortDataTable();
+            cohortData.initializeToWorkbookSheet(sheet);
+            cohortData.setKey("Subject Identifiers.PheneVisit");
+            
+            phenes = new ArrayList<String>();
+            phenes.add("");
+            phenes.addAll(cohortData.getPheneList());
+            
+            //--------------------------------------------
+            // Create predictor list
+            //--------------------------------------------
+            DataTable predictorList = this.createPredictorList(this.testingDataId);
+            if (predictorList == null) {
+                throw new Exception("Could not create validation predictor list.");
+            }
+            
+            String predictorListCsv = predictorList.toCsv();
+            File predictorListCsvTmp = FileUtil.createTempFile("predictor-list-",  ".csv");
+            if (predictorListCsv != null) {
+                FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
+            }
+            this.predictorListFile = predictorListCsvTmp.getAbsolutePath();
+            
+            if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
+                throw new Exception("Could not create validation predictor list file.");
+            }
+            log.info("Predictor List file in testing scoring specification: \"" + predictorListFile + "\" created.");
+
+            this.testingMasterSheetFile = this.createTestingMasterSheet(
+                    this.testingDataId,
+                    predictorList,
+                    this.geneExpressionCsv
+            );
+            
+            log.info("Master Sheet file name: " + this.testingMasterSheetFile);
+            
+            if (this.testingMasterSheetFile == null || this.testingMasterSheetFile.isEmpty()) {
+                throw new Exception("Could not create validation master sheet.");
             }
         }
 
@@ -111,10 +217,17 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
                 this.scriptFile = new File(getClass().getResource("/R/Predictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
                 
+                this.tempDir = FileUtil.getTempDir();
+                
                 String[] rScriptCommand = new String[12];
                 rScriptCommand[0] = WebAppProperties.getRscriptPath();
                 rScriptCommand[1] = this.scriptFile;
                 rScriptCommand[2] = scriptDir;
+                
+                this.testingScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
+                log.info("Testing Scoring Command: " + this.testingScoringCommand);
+                
+                //this.scriptOutput = this.runCommand(rScriptCommand);
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -268,23 +381,71 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     }
 
     
-    public DataTable createPredictorList(Long validationDataId, Long prioritizationId) throws Exception
+    public DataTable createPredictorList(Long dataId) throws Exception
     {
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
-        Map<String,Double> prioritizationScores = this.getPrioritizationScores(prioritizationId);
+        CfeResults data = CfeResultsService.get(dataId);
+        if (data == null) {
+            String message = "Could not find CFE results for ID " + dataId + " for creating testing predictor list.";
+            log.severe(message);
+            throw new Exception(message);
+        }
+        
+        XSSFWorkbook workbook = data.getResultsSpreadsheet();
+        if (workbook == null) {
+            String message = "Could not find results workbook for CFE results with ID " + dataId + ".";
+            log.severe(message);
+            throw new Exception(message);
+        }
+        
+        Map<String,Double> prioritizationScores = this.getPrioritizationScores(workbook);
         
         //----------------------------------------
         // Get the discovery scores
         //----------------------------------------
-        CfeResults discoveryScoresAndCohorts = CfeResultsService.get(validationDataId);
-        XSSFWorkbook workbook = discoveryScoresAndCohorts.getResultsSpreadsheet();
         XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES);
+        if (sheet == null) {
+            String message = "Could not find sheet \"" + CfeResultsSheets.DISCOVERY_SCORES
+                    + "\" in data for testing scoring.";
+            log.severe(message);
+            throw new Exception(message);
+        }
         
         DataTable discoveryScores = new DataTable("Probe Set ID");
         discoveryScores.initializeToWorkbookSheet(sheet);
         
+        //---------------------------------------------
+        // Get validation scores
+        //---------------------------------------------
+        XSSFSheet validationSheet = workbook.getSheet(CfeResultsSheets.VALIDATION_SCORES);
         
+        DataTable validationScoresDataTable = null;
+        Map<String,Double> validationScores = null;
+        if (validationSheet != null) {
+            validationScoresDataTable = new DataTable("Gene");
+            validationScoresDataTable.initializeToWorkbookSheet(validationSheet);
+            
+            validationScores = new HashMap<String,Double>();
+            
+            for (int i = 0; i < validationScoresDataTable.getNumberOfRows(); i++) {
+                String gene = validationScoresDataTable.getValue(i,  "Gene");
+                String scoreString = validationScoresDataTable.getValue(i, "ValidationScore");
+                double score = 0.0;
+                
+                try {
+                    score = Double.parseDouble(scoreString);
+                }
+                catch (NumberFormatException exception) {
+                    score = 0.0;
+                }
+                validationScores.put(gene, score);
+            }
+        }
+        
+        //---------------------------------------------
+        // Create predictor list data table
+        //---------------------------------------------
         String key = "Predictor";
 
         DataTable predictorList = new DataTable(key);
@@ -306,6 +467,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
             double prioritizationScore = 0.0;
             double rawDeScore = 0.0;
             double dePercentile = 0.0;
+            double validationScore = 0.0;
             
             String gene = discoveryScores.getValue(i, "Genecards Symbol");
             String probeset = discoveryScores.getValue(i, "Probe Set ID");
@@ -334,56 +496,70 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 deScore = 0.0;
             }
         
+            // ? Will validation scores have these substitutions made ???????????????????????
+            String predictor = gene + "biom" + probeset;
+            predictor = predictor.replaceAll("/", ValidationScoringAction.PREDICTOR_SLASH_REPLACEMENT);
+            predictor = predictor.replaceAll("-", ValidationScoringAction.PREDICTOR_HYPHEN_REPLACEMENT);
+            
             if (prioritizationScores.containsKey(gene)) {
-                prioritizationScore = prioritizationScores.get(gene);   
-
-                double score = deScore + prioritizationScore;
-                if (dePercentile >= 0.3333333333 && score > this.scoreCutoff) {
-                    String direction = "I";
-                    if (rawDeScore < 0.0) {
-                        direction = "D";
-                    }
-
-                    ArrayList<String> row = new ArrayList<String>();
-                    
-                    String predictor = gene + "biom" + probeset;
-                    predictor = predictor.replaceAll("/", ValidationScoringAction.PREDICTOR_SLASH_REPLACEMENT);
-                    predictor = predictor.replaceAll("-", ValidationScoringAction.PREDICTOR_HYPHEN_REPLACEMENT);
-                    
-                    row.add(predictor);
-                    row.add(direction);
-                    row.add("0"); // Male
-                    row.add("0"); // Female
-                    row.add("0"); // BP
-                    row.add("0"); // MDD
-                    row.add("0"); // SZ
-                    row.add("0"); // SZA
-                    row.add("0"); // PTSD
-                    row.add("0"); // PSYCH
-                    row.add("0"); // PSYCHOSIS
-                    row.add("1"); // All
-
-                    predictorList.addRow(row);
-                }
+                prioritizationScore = prioritizationScores.get(gene);
             }
             else {
                 this.genesNotFoundInPrioritization.add(gene);
+                prioritizationScore = 0.0;
+            }
+            
+            if (validationScores != null && validationScores.containsKey(predictor)) {
+                validationScore = validationScores.get(predictor);
+            }
+            else {
+                validationScore = 0.0;
+            }
+
+            double score = deScore + prioritizationScore + validationScore;
+
+            if (dePercentile >= 0.3333333333 && score > this.scoreCutoff) {
+                String direction = "I";
+                if (rawDeScore < 0.0) {
+                    direction = "D";
+                }
+
+                ArrayList<String> row = new ArrayList<String>();
+
+                row.add(predictor);
+                row.add(direction);
+                row.add("0"); // Male
+                row.add("0"); // Female
+                row.add("0"); // BP
+                row.add("0"); // MDD
+                row.add("0"); // SZ
+                row.add("0"); // SZA
+                row.add("0"); // PTSD
+                row.add("0"); // PSYCH
+                row.add("0"); // PSYCHOSIS
+                row.add("1"); // All
+
+                predictorList.addRow(row);
             }
         }
         
         return predictorList;
     }
     
-    public Map<String,Double> getPrioritizationScores(Long prioritizationId) throws Exception
+    public Map<String,Double> getPrioritizationScores(XSSFWorkbook workbook) throws Exception
     {
         Map<String,Double> scores = new HashMap<String,Double>();
         
-        CfeResults cfeResults = CfeResultsService.get(prioritizationId);
-        XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
-        
         String key = "Gene";
         
-        XSSFSheet sheet = workbook.getSheet("CFG Wizard Scores");
+        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.PRIORITIZATION_SCORES);
+        if (sheet == null) {
+            String message = "Could not find \"" + CfeResultsSheets.PRIORITIZATION_SCORES
+                    + "\" sheet in results workbook when trying to get prioritization scores.";
+            log.severe(message);
+            throw new Exception(message);            
+        }
+        
         DataTable cfgScoresSheet = new DataTable(key);
         cfgScoresSheet.initializeToWorkbookSheet(sheet);
 
@@ -452,7 +628,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true); // redirect standard error to standard output
         
-        log.info("*** Before process start");
+        log.info("Before prediction R script process start");
         Process process = processBuilder.start();
 
 
@@ -464,14 +640,14 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	        output.append(line + "\n");
 	    }
 
-	    log.info("*** Going to wait for process...");
+	    log.info("Going to wait for prediction R script process...");
 	    int status = process.waitFor();
 	    if (status != 0) {
             //throw new Exception("Command \"" + command + "\" exited with code " + status);
 	    }
 	    
 	    reader.close();
-        log.info("*** reader closed");
+        log.info("reader closed");
 		return output.toString();
 	}
 	
@@ -511,11 +687,27 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         this.testingData = testingData;
     }
 
-    public String getGeneExpressionCsv() {
+    public File getGeneExpressionCsv() {
         return geneExpressionCsv;
     }
 
-    public void setGeneExpressionCsv(String geneExpressionCsv) {
+    public String getGeneExpressionCsvContentType() {
+        return geneExpressionCsvContentType;
+    }
+
+    public void setGeneExpressionCsvContentType(String geneExpressionCsvContentType) {
+        this.geneExpressionCsvContentType = geneExpressionCsvContentType;
+    }
+
+    public String getGeneExpressionCsvFileName() {
+        return geneExpressionCsvFileName;
+    }
+
+    public void setGeneExpressionCsvFileName(String geneExpressionCsvFileName) {
+        this.geneExpressionCsvFileName = geneExpressionCsvFileName;
+    }
+
+    public void setGeneExpressionCsv(File geneExpressionCsv) {
         this.geneExpressionCsv = geneExpressionCsv;
     }
 
@@ -533,6 +725,190 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
     public void setGenesNotFoundInPrioritization(List<String> genesNotFoundInPrioritization) {
         this.genesNotFoundInPrioritization = genesNotFoundInPrioritization;
+    }
+
+    public String getScriptOutput() {
+        return scriptOutput;
+    }
+
+    public void setScriptOutput(String scriptOutput) {
+        this.scriptOutput = scriptOutput;
+    }
+
+    public String getTempDir() {
+        return tempDir;
+    }
+
+    public void setTempDir(String tempDir) {
+        this.tempDir = tempDir;
+    }
+
+    public String getScriptDir() {
+        return scriptDir;
+    }
+
+    public void setScriptDir(String scriptDir) {
+        this.scriptDir = scriptDir;
+    }
+
+    public String getScriptFile() {
+        return scriptFile;
+    }
+
+    public void setScriptFile(String scriptFile) {
+        this.scriptFile = scriptFile;
+    }
+
+    public String getTestingScoringCommand() {
+        return testingScoringCommand;
+    }
+
+    public void setTestingScoringCommand(String testingScoringCommand) {
+        this.testingScoringCommand = testingScoringCommand;
+    }
+
+    public ArrayList<String> getPhenes() {
+        return phenes;
+    }
+
+    public void setPhenes(ArrayList<String> phenes) {
+        this.phenes = phenes;
+    }
+
+    public boolean isState() {
+        return state;
+    }
+
+    public void setState(boolean state) {
+        this.state = state;
+    }
+
+    public boolean isStateCrossSectional() {
+        return stateCrossSectional;
+    }
+
+    public void setStateCrossSectional(boolean stateCrossSectional) {
+        this.stateCrossSectional = stateCrossSectional;
+    }
+
+    public boolean isStateLongitudinal() {
+        return stateLongitudinal;
+    }
+
+    public void setStateLongitudinal(boolean stateLongitudinal) {
+        this.stateLongitudinal = stateLongitudinal;
+    }
+
+    public String getPredictionPhene() {
+        return predictionPhene;
+    }
+
+    public void setPredictionPhene(String predictionPhene) {
+        this.predictionPhene = predictionPhene;
+    }
+
+    public Integer getPredictionPheneHighCutoff() {
+        return predictionPheneHighCutoff;
+    }
+
+    public void setPredictionPheneHighCutoff(Integer predictionPheneHighCutoff) {
+        this.predictionPheneHighCutoff = predictionPheneHighCutoff;
+    }
+
+    public boolean isFirstYear() {
+        return firstYear;
+    }
+
+    public void setFirstYear(boolean firstYear) {
+        this.firstYear = firstYear;
+    }
+
+    public boolean isFirstYearCrossSectional() {
+        return firstYearCrossSectional;
+    }
+
+    public void setFirstYearCrossSectional(boolean firstYearCrossSectional) {
+        this.firstYearCrossSectional = firstYearCrossSectional;
+    }
+
+    public boolean isFirstYearLongitudinal() {
+        return firstYearLongitudinal;
+    }
+
+    public void setFirstYearLongitudinal(boolean firstYearLongitudinal) {
+        this.firstYearLongitudinal = firstYearLongitudinal;
+    }
+
+    public boolean isFuture() {
+        return future;
+    }
+
+    public void setFuture(boolean future) {
+        this.future = future;
+    }
+
+    public boolean isFutureCrossSectional() {
+        return futureCrossSectional;
+    }
+
+    public void setFutureCrossSectional(boolean futureCrossSectional) {
+        this.futureCrossSectional = futureCrossSectional;
+    }
+
+    public boolean isFuturetLongitudinal() {
+        return futuretLongitudinal;
+    }
+
+    public void setFuturetLongitudinal(boolean futuretLongitudinal) {
+        this.futuretLongitudinal = futuretLongitudinal;
+    }
+
+    public File getSpecialPredictorListCsv() {
+        return specialPredictorListCsv;
+    }
+
+    public void setSpecialPredictorListCsv(File specialPredictorListCsv) {
+        this.specialPredictorListCsv = specialPredictorListCsv;
+    }
+
+    public String getSpecialPredictorListCsvContentType() {
+        return specialPredictorListCsvContentType;
+    }
+
+    public void setSpecialPredictorListCsvContentType(String specialPredictorListCsvContentType) {
+        this.specialPredictorListCsvContentType = specialPredictorListCsvContentType;
+    }
+
+    public String getSpecialPredictorListCsvFileName() {
+        return specialPredictorListCsvFileName;
+    }
+
+    public void setSpecialPredictorListCsvFileName(String specialPredictorListCsvFileName) {
+        this.specialPredictorListCsvFileName = specialPredictorListCsvFileName;
+    }
+
+    public String getPredictorListFile() {
+        return predictorListFile;
+    }
+
+    public void setPredictorListFile(String predictorListFile) {
+        this.predictorListFile = predictorListFile;
+    }
+
+    public String getTestingMasterSheetFile() {
+        return testingMasterSheetFile;
+    }
+
+    public void setTestingMasterSheetFile(String testingMasterSheetFile) {
+        this.testingMasterSheetFile = testingMasterSheetFile;
+    }
+
+    public String getSpecialPredictorListTempFile() {
+        return specialPredictorListTempFile;
+    }
+
+    public void setSpecialPredictorListTempFile(String specialPredictorListTempFile) {
+        this.specialPredictorListTempFile = specialPredictorListTempFile;
     }
 
 }

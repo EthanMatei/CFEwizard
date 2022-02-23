@@ -22,9 +22,50 @@
 </s:if>
 
 <p>
-Testing Data ID: <s:property value="testingDataId"/>
+Testing Data ID: <s:property value="testingDataId"/> <br/>
+Special predictor list CSV file: <s:property value="specialPredictorListCsvFileName" />
 </p>
 
+<table class="dataTable">
+    <tr> <th>Property</th> <th>Value</th> </tr>
+    <tr>
+        <td>State</td> <td><s:property value="state"/></td>
+    </tr>
+    <tr>
+        <td>State Cross-Sectional</td> <td><s:property value="stateCrossSectional"/></td>
+    </tr>
+    <tr>
+        <td>State Longitudinal</td> <td><s:property value="stateLongitudinal"/></td>
+    </tr>
+    <tr>
+        <td>Prediction Phene</td> <td><s:property value="predictionPhene"/></td>
+    </tr>
+    <tr>
+        <td>Prediction Phene High Cutoff</td> <td><s:property value="predictionPheneHighCutoff"/></td>
+    </tr>
+    
+    
+    <tr>
+        <td>First Year</td> <td><s:property value="firstYear"/></td>
+    </tr>
+    <tr>
+        <td>First Year Cross-Sectional</td> <td><s:property value="firstYearCrossSectional"/></td>
+    </tr>
+    <tr>
+        <td>First Year Longitudinal</td> <td><s:property value="firstYearLongitudinal"/></td>
+    </tr>
+
+    <tr>
+        <td>Future</td> <td><s:property value="future"/></td>
+    </tr>
+    <tr>
+        <td>Future Cross-Sectional</td> <td><s:property value="futureCrossSectional"/></td>
+    </tr>
+    <tr>
+        <td>Future Longitudinal</td> <td><s:property value="futuretLongitudinal"/></td>
+    </tr>
+
+</table>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

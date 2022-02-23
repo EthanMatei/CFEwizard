@@ -568,7 +568,7 @@
 
 
 		<action name="TestingScoringSpecification" class="cfe.action.TestingScoringAction" method="specifyTestingScoringOptions">
-		    <interceptor-ref name="basicStack"/>
+		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/testing/testingScoringSpecification.jsp</result>
 			<result name="error">pages/testing/testingDataSelection.jsp</result>	
 

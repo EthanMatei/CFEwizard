@@ -26,13 +26,82 @@ Testing Data ID: <s:property value="testingDataId"/>
 </p>
 
 
-<s:form action="TestingScoringCalculation" theme="simple">
+<p>
+Gene expression CSV file: <s:property value="geneExpressionCsvFileName" /> <br/>
+Score cutoff: <s:property value="scoreCutoff"/> <br/>
+Special predictor list CSV file: <s:property value="specialPredictorListCsvFileName" />
+</p>
+    
+<p>
+Predictor List:
+<s:a action="CsvDisplay">
+    <s:param name="csvFilePath" value="predictorListFile" />
+    <s:property value="predictorListFile" />
+</s:a>
+</p>
+    
+<p>
+Testing Master Sheet:
+<s:a action="CsvTextFileDisplay" title="Testing Mastersheet">
+    <s:param name="textFilePath" value="testingMasterSheetFile" />
+    <s:property value="testingMasterSheetFile" />
+</s:a>
+</p>
 
-    <s:hidden name="lowCutoff" />
-    <s:hidden name="highCutoff" />
-    <s:hidden name="pheneSelection" />
-    <s:hidden name="pheneTable" />
-    <s:hidden name="microarrayTable" />
+<s:form action="TestingScoringCalculation" theme="simple">
+   
+   <s:hidden name="specialPredictorListTempFile"/>
+   
+    <table class="dataTable">
+        <tr>
+            <td>
+                <s:checkbox name="state"/>State
+            </td>
+            <td>
+                <p>
+                <s:checkbox name="stateCrossSectional"/>Cross-Sectional
+                </p>
+                
+                <p>
+                <s:checkbox name="stateLongitudinal"/>Longitudinal
+                </p>
+                
+                <p>
+                Phene: <s:select name="predictionPhene" list="phenes" />
+                </p>
+                
+                <p>
+                High Cutoff: <s:textfield style="text-align: right;" name="predictionPheneHighCutoff"/>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <s:checkbox name="firstYear"/>First Year Hospitalization
+            </td>
+            <td>
+                <p>
+                <s:checkbox name="firstYearCrossSectional"/>Cross-Sectional
+                </p>
+                <p>
+                <s:checkbox name="firstYearLongitudinal"/>Longitudinal
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <s:checkbox name="future"/>Future Hospitalization
+            </td>
+            <td>
+                <p>
+                <s:checkbox name="futureCrossSectional"/>Cross-Sectional
+                </p>
+                <p>
+                <s:checkbox name="futuretLongitudinal"/>Longitudinal
+                </p>
+            </td>
+        </tr>
+    </table>
 
     <s:submit value="Calculate" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
 </s:form>

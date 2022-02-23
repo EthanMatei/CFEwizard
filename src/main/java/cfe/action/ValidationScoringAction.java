@@ -616,41 +616,42 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
             catch (NumberFormatException exception) {
                 deScore = 0.0;
             }
-        
+
             if (prioritizationScores.containsKey(gene)) {
-                prioritizationScore = prioritizationScores.get(gene);   
-
-                double score = deScore + prioritizationScore;
-                if (dePercentile >= 0.3333333333 && score > this.scoreCutoff) {
-                    String direction = "I";
-                    if (rawDeScore < 0.0) {
-                        direction = "D";
-                    }
-
-                    ArrayList<String> row = new ArrayList<String>();
-                    
-                    String predictor = gene + "biom" + probeset;
-                    predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
-                    predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
-                    
-                    row.add(predictor);
-                    row.add(direction);
-                    row.add("0"); // Male
-                    row.add("0"); // Female
-                    row.add("0"); // BP
-                    row.add("0"); // MDD
-                    row.add("0"); // SZ
-                    row.add("0"); // SZA
-                    row.add("0"); // PTSD
-                    row.add("0"); // PSYCH
-                    row.add("0"); // PSYCHOSIS
-                    row.add("1"); // All
-
-                    predictorList.addRow(row);
-                }
+                prioritizationScore = prioritizationScores.get(gene);
             }
             else {
+                prioritizationScore = 0.0;
                 this.genesNotFoundInPrioritization.add(gene);
+            }
+
+            double score = deScore + prioritizationScore;
+            if (dePercentile >= 0.3333333333 && score > this.scoreCutoff) {
+                String direction = "I";
+                if (rawDeScore < 0.0) {
+                    direction = "D";
+                }
+
+                ArrayList<String> row = new ArrayList<String>();
+
+                String predictor = gene + "biom" + probeset;
+                predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+                predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
+
+                row.add(predictor);
+                row.add(direction);
+                row.add("0"); // Male
+                row.add("0"); // Female
+                row.add("0"); // BP
+                row.add("0"); // MDD
+                row.add("0"); // SZ
+                row.add("0"); // SZA
+                row.add("0"); // PTSD
+                row.add("0"); // PSYCH
+                row.add("0"); // PSYCHOSIS
+                row.add("1"); // All
+
+                predictorList.addRow(row);
             }
         }
         

@@ -16,18 +16,21 @@ library(dplyr)
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 5) {
+if (length(args) != 8) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to Validation script")
 }
 
-scriptDir            <- args[1]
-phene                <- args[2]
-masterSheetCsvFile   <- args[3]
-predictorListCsvFile <- args[4]
-outputDir            <- args[5]
+specialPredictorList = NULL;
 
-
+scriptDir                   <- args[1]
+phene                       <- args[2]
+pheneHighCutoff             <- args[3]    # Ignored for "FirstYearScore" and "HospFreq" and 
+studyType                   <- args[4]    # "cross-sectional" or "longitudinal"
+masterSheetCsvFile          <- args[5]
+predictorListCsvFile        <- args[6]
+specialPredictorListCsvFile <- args[7]
+outputDir                   <- args[8]
 
 
 # d <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\All Future\\Mastersheet for All Future Predictions Delusions (MDH 4-16-2021).csv")
@@ -46,18 +49,24 @@ d[] <- lapply(d, function(x) type.convert(as.vector(x)))
 ## to use along with direction of change and panels   ##
 ########################################################
 
+###predictorFilePath <- "Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\Delusions Predictor List for P1 (MDH 5-31-2021).csv"
+predictorFilePath <- predictorListCsvFile
+# load list of predictors with the silos you want to test
+predictors <- read.csv(predictorFilePath)
 
-#predictorFilePath <- "Z:\\META-ANALYSIS SUICIDE\\Final Predictions for Paper\\FinalPredictorListPanel.csv"
-#predictorFilePath <- "Z:\\Suman\\Suicide project\\Predictions\\Genelist Prediction5.csv"
+if (specialPredictorListCsvFile == NULL || specialPredictorListCsvFile == "") {
+    predictorz <- predictors
+} else {
+    # predictorz <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\Delusions Predictor List (MDH 4-16-2021).csv")
+    predictorz <-read.csv(specialPredictorListCsvFile)
+}
 
-predictorz <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\Delusions Predictor List (MDH 4-16-2021).csv")
 predictors_increase <- predictorz[predictorz$Direction == "I",]
 predictors_decrease <- predictorz[predictorz$Direction == "D",]
 biomarkersstring<- as.character(predictorz$Predictor)
 
 increasedString <- as.character(predictors_increase$Predictor)
 decreasedString <- as.character(predictors_decrease$Predictor)
-predictorFilePath <- "Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\Delusions Predictor List for P1 (MDH 5-31-2021).csv"
 
 
 
@@ -68,46 +77,7 @@ predictorFilePath <- "Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah
 #####################################################
 
 increasedPanel <- increasedString
-
 decreasedPanel <- decreasedString
-
-
-
-
-##BIOM9 Delusions
-#increasedPanel <- c("ACSL4biom224091_at","AUTS2biom242721_at","CHD9biom220586_at","GNASbiom242975_s_at","GRM7biom217008_s_at","LPAR1biom204037_at","NR4A2biom204621_s_at","PDP1biom218273_s_at","RORAbiom240951_at","SRRbiom235677_at")
-#decreasedPanel <- c("DISC1biom207759_s_at","MEF2Cbiom239966_at","NRP2biom228699_at","PDE4Dbiom236610_at","SPON1biom209436_at","ZBTB20biom239955_at","POLBbiom234352_x_at")
-
-
-##M-Combined
-#increasedPanel <- c("HIST1H2BOMeta214540_at")
-
-#decreasedPanel <- c("CCL28Meta224240_s_at")
-
-##F-Depressed
-#increasedPanel <- c("PPAP2BMeta212226_s_at")
-
-#decreasedPanel <- c("SKA2Meta225686_at")
-
-##M-Depressed
-#increasedPanel <- c("SLC4A4Meta210739_x_at")
-
-#decreasedPanel <- c("ARRB1Meta218832_x_at")
-
-##F-Nonaffective
-#increasedPanel <- c("PSME4Meta237180_at")
-
-#decreasedPanel <- c("ERGMeta213541_s_at")
-
-##M-Nonaffective
-#increasedPanel <- c("PPAP2BMeta212226_s_at")
-
-#decreasedPanel <- c("ERGMeta213541_s_at")
-
-##F-Combined
-#increasedPanel <- c("SECISBP2LMeta212450_at", "CFIS")
-
-#decreasedPanel <- c("IFNGMeta210354_at")
 
 
 ########################################################
@@ -119,10 +89,13 @@ correctTies <- TRUE      ## Adjust p-values for AUCs for possible ties
 FIRSTYEARtest <- F      ## First year hospitalization with highwater marks
 FUTUREtest    <- F       ## All future hospitalization with highwater marks
 
+# SETTABLE: -----------------------------------------------------
 stateFirstYearHosp <- F  ## First year hospitalization with NO highwater marks
 stateFutureHosp <-T     ## All future hospitalization with NO highwater marks
 
 STATEtest  <- F       ## For any STATE predictions (no highwater marks) 
+#--------------------------------------------------------------------------------
+
 DEATHtest <- F           ## Set to TRUE if you want to use DEATH as an outcome
 
 
@@ -140,9 +113,19 @@ LEVELS <- T        ## LEVELS: raw value of biomarker; cross-sectional only
 ## This must correspond to aheader in your .csv database   ##
 #############################################################
 
-PHENE <- "HospFreq"
+# testing Category (state, firstYear, future)
 
-#PHENE <- "FirstYearScore"
+# could be phene from testing database, 
+
+if (stateFirstYearHosp && LEVELS) {
+    PHENE <- "FirstYearScore"
+} else if (stateFirstYearHosp && maxSlopes && slopes && MAX && LEVELS) {
+    PHENE <- "FirstYearScore"
+} else if (stateFutureHosp && LEVELS) {
+    PHENE <- "HospFreq"
+} else if (stateFutureHosp && maxSlopes && slopes && MAX && LEVELS) {
+    PHENE <- "HospFreq"
+}
 
 #PHENE <- "P1Delusions"
 
@@ -155,15 +138,6 @@ PHENE <- "HospFreq"
 
 # csvOutputFolder <- "Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\R Outputs\\All Future"
 csvOutputFolder <- outputDir
-
-
-
-###############################################
-###############################################
-##########                           ##########
-##########    END USER SETTINGS      ##########
-###############################################
-###############################################
 
 
 
@@ -231,11 +205,7 @@ if ( nrow(incompletes) > 0 ){
   }
 }
 
-# load list of predictors with the silos you want to test
-predictors <- read.csv(predictorFilePath) 
-# note: you can open up the predictor list by uncommenting and running the 
-# following code:
-# file.show(predictorFilePath)
+
 
 
 # throw an error if the user asks for a state and a hospitalization test

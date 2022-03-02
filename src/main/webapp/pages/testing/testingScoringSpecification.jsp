@@ -25,6 +25,18 @@
 Testing Data ID: <s:property value="testingDataId"/>
 </p>
 
+<p>
+<s:a action="CfeResultsXlsxDisplay" title="Testing Data Spreadsheet">
+    <s:param name="cfeResultsId" value="testingDataId" />
+    <div>
+        <img border="0"
+             style="margin-top: 2px;"
+             src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+             alt="Testing Data" /> <br />
+        testing-data-results.xlsx
+    </div>
+</s:a>
+</p>
 
 <p>
 Gene expression CSV file: <s:property value="geneExpressionCsvFileName" /> <br/>
@@ -50,7 +62,10 @@ Testing Master Sheet:
 
 <s:form action="TestingScoringCalculation" theme="simple">
    
+   <s:hidden name="predictorListFile"/>
    <s:hidden name="specialPredictorListTempFile"/>
+   <s:hidden name="testingDataId"/>
+   <s:hidden name="testingMasterSheetFile"/>
    
     <table class="dataTable">
         <tr>

@@ -23,7 +23,9 @@
 
 <p>
 Testing Data ID: <s:property value="testingDataId"/> <br/>
-Special predictor list CSV file: <s:property value="specialPredictorListCsvFileName" />
+Special predictor list CSV file: <s:property value="specialPredictorListTempFile" /> <br/>
+Pedictor list CSV file: <s:property value="predictorListFile" /> <br/>
+Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
 </p>
 
 <table class="dataTable">
@@ -66,6 +68,15 @@ Special predictor list CSV file: <s:property value="specialPredictorListCsvFileN
     </tr>
 
 </table>
+
+<p>
+Final Testing Master Sheet:
+<s:a action="CsvTextFileDisplay" title="Final Testing Mastersheet">
+    <s:param name="textFilePath" value="finalMasterSheetFile" />
+    <s:property value="finalMasterSheetFile" />
+</s:a>
+</p>
+
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

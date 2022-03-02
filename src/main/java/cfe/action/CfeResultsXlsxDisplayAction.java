@@ -81,7 +81,7 @@ public class CfeResultsXlsxDisplayAction extends BaseAction implements SessionAw
     	else {
     		//try {
     		if (cfeResultsId == null) {
-    			throw new ActionErrorException("No Discovery Results ID was specified.");
+    			throw new ActionErrorException("No cfeResultsId argument was specified.");
     		}
     		
     		log.info("cfeResultsId: " + cfeResultsId);

@@ -141,27 +141,9 @@ csvOutputFolder <- outputDir
 
 
 
-#################################################################################################################################
-
-
-
-
-
-
-
-###############################################
-###############################################
-#########                           ##########
-######### DO NOT EDIT ANYTHING BELOW #########
-##############################################
-##############################################
-
-
-
-
-
 # install all the packages you need but don't have
-wants <- c("coin","survival", "pROC", "xlsx", "verification", "gWidgetstcltk", "gWidgets", "tcltk", "ROCR", "ggplot2", "GGally", "VGAM", "exactRankTests")
+# wants <- c("coin","survival", "pROC", "xlsx", "verification", "gWidgetstcltk", "gWidgets", "tcltk", "ROCR", "ggplot2", "GGally", "VGAM", "exactRankTests")
+wants <- c("ROCR", "verification")
 has   <- wants %in% rownames(installed.packages())
 if(any(!has)) install.packages(wants[!has])
 library(dplyr)

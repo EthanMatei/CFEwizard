@@ -21,6 +21,7 @@ import org.apache.struts2.interceptor.SessionAware;
 
 import com.opencsv.CSVReader;
 
+import cfe.enums.StudyType;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
@@ -37,6 +38,12 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(TestingScoringAction.class.getName());
+	
+	private static final String END_OF_PHENES_MARKER   = "END_OF_PHENES";
+	private static final String START_OF_PHENES_MARKER = "START_OF_PHENES";
+	
+	public static final String CROSS_SECTIONAL = "cross-sectional";
+	public static final String LONGITUDINAL    = "longitudinal";
 
 	private Map<String, Object> webSession;
 
@@ -84,6 +91,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     private boolean future;
     private boolean futureCrossSectional;
     private boolean futuretLongitudinal;
+    
+    private String finalMasterSheetFile;
 
 	/**
 	 * Select testing data
@@ -124,75 +133,85 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
             result = INPUT;
         }
         else {
-            this.specialPredictorListTempFile = "";
-            if (this.specialPredictorListCsvFileName != null && this.specialPredictorListCsvFileName != "") {
-                File tempFile = FileUtil.createTempFile("testing-special-predictor-list-", ".csv");
-                FileUtils.copyFile(this.getSpecialPredictorListCsv(), tempFile);
-                this.specialPredictorListTempFile = tempFile.getAbsolutePath();
-            }
-            
-            testingData = CfeResultsService.get(testingDataId);
-            if (testingData == null) {
-                result = ERROR;
-                this.setErrorMessage("Unable to retrieve testing data for ID " + testingDataId + ".");
-            }
-            
-            XSSFWorkbook workbook = testingData.getResultsSpreadsheet();
-            if (workbook == null) {
-                result = ERROR;
-                this.setErrorMessage("Unable to retrieve resulta workbook for testing data ID " + testingDataId + ".");
-            }
-            
-            XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
-            if (sheet == null) {
-                result = ERROR;
-                this.setErrorMessage(
-                        "Could not find sheet \"" + CfeResultsSheets.COHORT_DATA + "\""
-                        + " for testing scoring data workbook."
-                );
-            }
-            CohortDataTable cohortData = new CohortDataTable();
-            cohortData.initializeToWorkbookSheet(sheet);
-            cohortData.setKey("Subject Identifiers.PheneVisit");
-            
-            phenes = new ArrayList<String>();
-            phenes.add("");
-            phenes.addAll(cohortData.getPheneList());
-            
-            //--------------------------------------------
-            // Create predictor list
-            //--------------------------------------------
-            DataTable predictorList = this.createPredictorList(this.testingDataId);
-            if (predictorList == null) {
-                throw new Exception("Could not create validation predictor list.");
-            }
-            
-            String predictorListCsv = predictorList.toCsv();
-            File predictorListCsvTmp = FileUtil.createTempFile("predictor-list-",  ".csv");
-            if (predictorListCsv != null) {
-                FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
-            }
-            this.predictorListFile = predictorListCsvTmp.getAbsolutePath();
-            
-            if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
-                throw new Exception("Could not create validation predictor list file.");
-            }
-            log.info("Predictor List file in testing scoring specification: \"" + predictorListFile + "\" created.");
+            try {
+                this.specialPredictorListTempFile = "";
+                if (this.specialPredictorListCsvFileName != null && this.specialPredictorListCsvFileName != "") {
+                    File tempFile = FileUtil.createTempFile("testing-special-predictor-list-", ".csv");
+                    FileUtils.copyFile(this.getSpecialPredictorListCsv(), tempFile);
+                    this.specialPredictorListTempFile = tempFile.getAbsolutePath();
+                }
 
-            this.testingMasterSheetFile = this.createTestingMasterSheet(
-                    this.testingDataId,
-                    predictorList,
-                    this.geneExpressionCsv
-            );
-            
-            log.info("Master Sheet file name: " + this.testingMasterSheetFile);
-            
-            if (this.testingMasterSheetFile == null || this.testingMasterSheetFile.isEmpty()) {
-                throw new Exception("Could not create validation master sheet.");
+                testingData = CfeResultsService.get(testingDataId);
+                if (testingData == null) {
+                    throw new Exception("Unable to retrieve testing data for ID " + testingDataId + ".");
+                }
+
+                XSSFWorkbook workbook = testingData.getResultsSpreadsheet();
+                if (workbook == null) {
+                    throw new Exception("Unable to retrieve resulta workbook for testing data ID " + testingDataId + ".");
+                }
+
+                XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                if (sheet == null) {
+                    String message = "Could not find sheet \"" + CfeResultsSheets.COHORT_DATA + "\""
+                                    + " for testing scoring data workbook.";
+                    throw new Exception(message);
+                }
+                
+                CohortDataTable cohortData = new CohortDataTable();
+                cohortData.initializeToWorkbookSheet(sheet);
+                cohortData.setKey("Subject Identifiers.PheneVisit");
+
+                phenes = new ArrayList<String>();
+                phenes.add("");
+                phenes.addAll(cohortData.getPheneList());
+
+                //--------------------------------------------
+                // Create predictor list
+                //--------------------------------------------
+                DataTable predictorList = this.createPredictorList(this.testingDataId);
+                if (predictorList == null) {
+                    throw new Exception("Could not create validation predictor list.");
+                }
+
+                String predictorListCsv = predictorList.toCsv();
+                File predictorListCsvTmp = FileUtil.createTempFile("predictor-list-",  ".csv");
+                if (predictorListCsv != null) {
+                    FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
+                }
+                this.predictorListFile = predictorListCsvTmp.getAbsolutePath();
+
+                if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
+                    throw new Exception("Could not create validation predictor list file.");
+                }
+                log.info("Predictor List file in testing scoring specification: \"" + predictorListFile + "\" created.");
+
+                //--------------------------------------------------------------------
+                // Create testing master sheet
+                //--------------------------------------------------------------------
+                this.testingMasterSheetFile = this.createTestingMasterSheet(
+                        this.testingDataId,
+                        predictorList,
+                        this.geneExpressionCsv
+                        );
+
+                log.info("Master Sheet file name: " + this.testingMasterSheetFile);
+
+                if (this.testingMasterSheetFile == null || this.testingMasterSheetFile.isEmpty()) {
+                    throw new Exception("Could not create testing master sheet.");
+                }
+            }
+            catch (Exception exception) {
+                result = ERROR;
+                if (exception != null) {
+                    this.setErrorMessage("Testing scoring specification failed: " + exception.getLocalizedMessage());
+                    String stackTrace = ExceptionUtils.getStackTrace(exception);
+                    this.setExceptionStack(stackTrace);
+                }
             }
         }
 
-	    return result;
+        return result;
 	}
 	
 	/**
@@ -210,24 +229,86 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		}
+        else if (testingDataId == null) {
+            this.setErrorMessage("No testing data selected.");
+            result = INPUT;
+        }
+        else if (testingMasterSheetFile == null || testingMasterSheetFile.trim().isEmpty()) {
+            this.setErrorMessage("No master sheet found.");
+            result = INPUT;
+        }
 	    else {
-            try {
+
+            try {                
                 log.info("Starting testing scoring");
                 
-                this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
-                this.scriptFile = new File(getClass().getResource("/R/Predictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
+                DataTable masterSheet = new DataTable("Subject Identifiers.PheneVisit");
+                masterSheet.initializeToCsv(testingMasterSheetFile);
                 
-                this.tempDir = FileUtil.getTempDir();
+                int startIndex = masterSheet.getColumnIndex(START_OF_PHENES_MARKER);
+                int endIndex   = masterSheet.getColumnIndex(END_OF_PHENES_MARKER);
                 
-                String[] rScriptCommand = new String[12];
-                rScriptCommand[0] = WebAppProperties.getRscriptPath();
-                rScriptCommand[1] = this.scriptFile;
-                rScriptCommand[2] = scriptDir;
+                // Delete unneeded phene columns
+                for (int i = endIndex; i >= startIndex; i--) {
+                    if (predictionPhene != null && !predictionPhene.isEmpty()
+                            && predictionPhene.equals(masterSheet.getColumnName(i))) {
+                        ; // keep this column
+                    }
+                    else {
+                        masterSheet.deleteColumn(i);
+                    }
+                }
                 
-                this.testingScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
-                log.info("Testing Scoring Command: " + this.testingScoringCommand);
+                String csv = masterSheet.toCsv();
+                File tempFile = FileUtil.createTempFile("final-master-sheet", ".csv");
+                FileUtils.write(tempFile,  csv, "UTF-8");
+                this.finalMasterSheetFile = tempFile.getAbsolutePath();
                 
-                //this.scriptOutput = this.runCommand(rScriptCommand);
+                /*
+                testingData = CfeResultsService.get(testingDataId);
+                if (testingData == null) {
+                    throw new Exception("Unable to retrieve testing data for ID " + testingDataId + ".");
+                }
+                
+                XSSFWorkbook workbook = testingData.getResultsSpreadsheet();
+                if (workbook == null) {
+                    String message = "Unable to retrieve resulta workbook for testing data ID "
+                        + testingDataId + ".";
+                    throw new Exception(message);
+                }                
+                
+                XSSFSheet testingCohortDataSheet = workbook.getSheet(CfeResultsSheets.TESTING_COHORT_DATA);
+                if (testingCohortDataSheet == null) {
+                    String message = "Could not find sheet \"" + CfeResultsSheets.TESTING_COHORT_DATA
+                            + "\" in testing data results.";
+                    throw new Exception(message);
+                }
+                */
+                
+                if (this.state && this.stateCrossSectional) {
+                    
+                }
+                
+                if (this.state && this.stateLongitudinal) {
+                    
+                }
+                
+                if (this.firstYear && this.firstYearCrossSectional) {
+                    
+                }
+                
+                if (this.firstYear && this.firstYearLongitudinal) {
+                    
+                }
+                
+                if (this.future && this.futureCrossSectional) {
+                    
+                }
+                
+                if (this.future && this.futuretLongitudinal) {
+                    
+                }
+
             }
             catch (Exception exception) {
                 result = ERROR;
@@ -242,67 +323,151 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 		return result;
 	}
 	
-    public String createTestingMasterSheet(Long validationDataId, DataTable predictorList, File geneExpressionCsvFile)
+    public String createTestingMasterSheet(Long testingDataId, DataTable predictorList, File geneExpressionCsvFile)
             throws Exception
     {
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
         
-        CfeResults cfeResults = CfeResultsService.get(validationDataId);
+        // Get the results from the previous pipeline step
+        CfeResults cfeResults = CfeResultsService.get(testingDataId);
         if (cfeResults == null) {
-            throw new Exception("Could not get saved results for ID " + validationDataId + ".");
+            throw new Exception("Could not get saved results for ID " + testingDataId + ".");
         }
         
         XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
-        
         if (workbook == null) {
             throw new Exception("Unable to get results spreadsheet from database for results ID "
-                + validationDataId + ".");
+                + testingDataId + ".");
         }
         
         String key = "Subject Identifiers.PheneVisit";
         
-        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.CLINICAL_COHORT);
+        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.TESTING_COHORT_DATA);
         if (sheet == null) {
-            sheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT); // check for old deprecated name
-            if (sheet == null) {
-                throw new Exception("Could not find \"" + CfeResultsSheets.CLINICAL_COHORT + "\" sheet in results workbook.");
+            throw new Exception("Could not find \"" + CfeResultsSheets.TESTING_COHORT_DATA + "\" sheet in results workbook.");
+        }
+        
+        DataTable masterSheetDataTable = new DataTable(key);
+        masterSheetDataTable.initializeToWorkbookSheet(sheet);
+        
+        log.info("Initial master sheet data table number of rows: " + masterSheetDataTable.getNumberOfRows());
+        log.info("Initial master sheet data table number of columns: " + masterSheetDataTable.getNumberOfColumns());
+        
+        masterSheetDataTable.deleteColumn(0);
+        
+        masterSheetDataTable.moveColumn("Subject", 0);
+        
+        masterSheetDataTable.moveColumn("Subject Identifiers.PheneVisit", 1);
+        
+        masterSheetDataTable.moveColumn("AffyVisit", 2);
+        
+        masterSheetDataTable.moveColumn("Visit Date", 3);
+        
+        masterSheetDataTable.moveColumn("Demographics.PheneVisit", 4);
+        
+        masterSheetDataTable.insertColumn("dx", 5, "");
+        for (int rowIndex = 0; rowIndex < masterSheetDataTable.getNumberOfRows(); rowIndex++) {
+            String value = masterSheetDataTable.getValue(rowIndex, "DxCode")
+                    + "-" + masterSheetDataTable.getValue(rowIndex, "Gender(M/F)");
+            masterSheetDataTable.setValue(rowIndex, "dx", value);
+        }
+        
+        masterSheetDataTable.moveColumn("Gender(M/F)", 6);
+        masterSheetDataTable.moveColumn("Age at testing (Years)", 7);
+        masterSheetDataTable.moveColumn("DxCode", 8);
+        masterSheetDataTable.moveColumn("HospitalizationCohort", 9);
+        masterSheetDataTable.insertColumn("Hospitalization.VisitNumber", 10, "");
+        masterSheetDataTable.moveColumn("HospFreq", 11);
+
+        masterSheetDataTable.moveColumn("First Year Cohort", 12);
+        masterSheetDataTable.renameColumn("First Year Cohort", "FirstYearCohort");
+        masterSheetDataTable.insertColumn("FirstYear.VisitNumber", 13, "");
+        masterSheetDataTable.moveColumn("FirstYearScore", 14);
+        masterSheetDataTable.moveColumn("time", 15);
+        
+        masterSheetDataTable.moveColumn("TestCohort", 16); 
+        masterSheetDataTable.insertColumn("Test.VisitNumber", 17, "");
+        masterSheetDataTable.insertColumn(START_OF_PHENES_MARKER, 18,  "");
+        
+        String[] unneededColumns = {"SubjectID copy", "Hospitalizations Follow-up Database.SubjectID",
+                "TestingDate", "Last Note", "Date Order", "PheneVisit Date", "first - last",
+                "Time Future", "Length of Follow up for Future", "yes/no", "duped phene", "Score", "First Date",
+                "Number of all future Hospitilzation", "VisitNumber", "Cohort",
+                "Validation", "ValCategory", "ValidationCohort",
+                "TestingCohort", "Vet/Non-Vet?", "inpt or lab CHIP Examiner",
+                "Checker+ Date", "Comments on check", "COVID positive?", "COVID vaccine date",
+                "Blood draw&Meal time", "Age at Onset of Illness",
+                "Race/Ethnicity", "Diagnosis.PheneVisit", "Primary DIGS DX",
+                "Specifiers", "Per Chip", "Confidence Rating", "DIGS Rater", "Other Dx",
+                "TestingVisit", "inpt or lab", "CHIP Examiner"
+        };
+        
+        // Delete last column, which is microarray data table column
+        int lastColumnIndex = masterSheetDataTable.getNumberOfColumns() - 1;
+        String lastColumnName = masterSheetDataTable.getColumnName(lastColumnIndex);
+        masterSheetDataTable.renameColumn(lastColumnName, END_OF_PHENES_MARKER);
+        
+        for (String column: unneededColumns) {
+            masterSheetDataTable.deleteColumnIfExists(column);
+        }
+        
+        //---------------------------------------------------------
+        // Set the visit numbers
+        //---------------------------------------------------------
+        masterSheetDataTable.sort("Subject", "Visit Date");
+        String previousSubject = "";
+        int testVisitNumber            = 0;
+        int firstYearVisitNumber       = 0;
+        int hospitalizationVisitNumber = 0;
+        
+        for (int i = 0; i < masterSheetDataTable.getNumberOfRows(); i++) {
+            String subject = masterSheetDataTable.getValue(i, "Subject");
+            if (!subject.equals(previousSubject)) {
+                previousSubject = subject;
+                String testCohort            = masterSheetDataTable.getValue(i, "TestCohort");
+                String firstYearCohort       = masterSheetDataTable.getValue(i, "FirstYearCohort");
+                String hospitalizationCohort = masterSheetDataTable.getValue(i, "HospitalizationCohort");
+                
+                if (testCohort.equals("1")) {
+                    testVisitNumber = 1;
+                }
+                else {
+                    testVisitNumber = 101;
+                }
+                
+                if (firstYearCohort.equals("1")) {
+                    firstYearVisitNumber = 1;
+                }
+                else {
+                    firstYearVisitNumber = 101;
+                }
+                
+                if (hospitalizationCohort.equals("1")) {
+                    hospitalizationVisitNumber = 1;
+                }
+                else {
+                    hospitalizationVisitNumber = 101;
+                }
             }
+            else {
+                testVisitNumber++;
+                firstYearVisitNumber++;
+                hospitalizationVisitNumber++;
+            }
+            
+            masterSheetDataTable.setValue(i, "Hospitalization.VisitNumber", hospitalizationVisitNumber + "");
+            masterSheetDataTable.setValue(i, "FirstYear.VisitNumber", firstYearVisitNumber + "");
+            masterSheetDataTable.setValue(i, "Test.VisitNumber", testVisitNumber + "");
         }
         
-        DataTable masterSheet = new DataTable(key);
-        masterSheet.initializeToWorkbookSheet(sheet);
         
-        masterSheet.deleteColumn("TestingCohort");
-        
-        // Create dx column (gender + diagnosis code)
-        masterSheet.insertColumn("dx", 9, "");
-        for (int i = 0; i < masterSheet.getNumberOfRows(); i++) {
-            String gender = masterSheet.getValue(i, "Gender(M/F)");
-            String dxCode = masterSheet.getValue(i, "DxCode");
-            masterSheet.setValue(i, "dx", gender + "-" + dxCode);
-        }
-        
-        // Create Biomarkers column (contains pheneVisit as value)
-        masterSheet.addColumn("Biomarkers",  "");
-        for (int i = 0; i < masterSheet.getNumberOfRows(); i++) {
-            String pheneVisit = masterSheet.getValue(i, key);
-            masterSheet.setValue(i, "Biomarkers", pheneVisit);
-        }
         
         // Add predictor columns (combination of gene cards symbol, "biom" and pro)beset)
         for (int i = 0; i < predictorList.getNumberOfRows(); i++) {
             String predictor = predictorList.getValue(i, "Predictor");
-            masterSheet.addColumn(predictor, "");
+            masterSheetDataTable.addColumn(predictor, "");
         }
         
-        // Set "Validation Cohort" to 1 where "ValCategory" is "Low" or "High"
-        for (int rowIndex = 0; rowIndex < masterSheet.getNumberOfRows(); rowIndex++) {
-            String valCategory = masterSheet.getValue(rowIndex, "ValCategory");
-            if (valCategory.equalsIgnoreCase("Low") || valCategory.equalsIgnoreCase("High")) {
-                masterSheet.setValue(rowIndex, "ValidationCohort", "1");
-            }
-        }
-
         //---------------------------------------------------------------------------
         // Read in the gene expression CSV file. It has the following format:
         //
@@ -317,7 +482,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         
         // Create map from probesets to predictors
         HashMap<String,String> probesetToPredictorMap = new HashMap<String,String>();
-        List<String> columns = masterSheet.getColumnNames();
+        List<String> columns = masterSheetDataTable.getColumnNames();
+        
         for (String column: columns) {
             
             // If this is a predictor
@@ -335,6 +501,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
             }
         }
         
+      
         String[] row;
         while ((row = csvReader.readNext()) != null) {
             String probeset = row[0];
@@ -356,9 +523,9 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     // ... Biomarker     <gene>biom<probeset>  <gene>biom<probeset> ...
                     // ... <phene-visit> <value>               <value>
                     // ... <phene-visit> <value>               <value>
-                    int rowIndex = masterSheet.getRowIndex("Biomarkers", pheneVisit);
+                    int rowIndex = masterSheetDataTable.getRowIndex("Subject Identifiers.PheneVisit", pheneVisit);
                     if (rowIndex >= 0) {
-                        masterSheet.setValue(rowIndex, predictor, value);    
+                        masterSheetDataTable.setValue(rowIndex, predictor, value);    
                     }
                 }
             }
@@ -368,16 +535,16 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         //-----------------------------)--------------------------
         // Write the master sheet to a CSV file
         //-------------------------------------------------------
-        String masterSheetCsv = masterSheet.toCsv();
-        File validationMasterSheetCsvTmp = FileUtil.createTempFile("validation-master-sheet-",  ".csv");
+        String masterSheetCsv = masterSheetDataTable.toCsv();
+        File testingMasterSheetCsvTmp = FileUtil.createTempFile("testing-master-sheet-",  ".csv");
         if (masterSheetCsv != null) {
-            FileUtils.write(validationMasterSheetCsvTmp, masterSheetCsv, "UTF-8");
+            FileUtils.write(testingMasterSheetCsvTmp, masterSheetCsv, "UTF-8");
         }
         else {
-            throw new Exception("Unable to create validation mastersheet.");
+            throw new Exception("Unable to create testing master sheet.");
         }
         
-        return validationMasterSheetCsvTmp.getAbsolutePath();
+        return testingMasterSheetCsvTmp.getAbsolutePath();
     }
 
     
@@ -608,7 +775,44 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	}
 	
 
-
+    public String runScript(String phene, double pheneHighCutoff, String studyType,
+            String masterSheetFile, String predictorListFile, String specialPredictorListFile,
+            String outputDir) throws Exception {
+        String result = "";
+        this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
+        this.scriptFile = new File(getClass().getResource("/R/Predictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
+        
+        this.tempDir = FileUtil.getTempDir();
+        
+        String[] rScriptCommand = new String[10];
+        rScriptCommand[0] = WebAppProperties.getRscriptPath();
+        rScriptCommand[1] = this.scriptFile;
+        rScriptCommand[2] = scriptDir;
+        rScriptCommand[3] = phene;
+        rScriptCommand[4] = pheneHighCutoff + "";
+        rScriptCommand[5] = studyType;
+        rScriptCommand[6] = masterSheetFile;
+        rScriptCommand[7] = predictorListFile;
+        rScriptCommand[8] = specialPredictorListFile;
+        rScriptCommand[9] = outputDir;
+        
+                /*
+                scriptDir                   <- args[1]
+                phene                       <- args[2]
+                pheneHighCutoff             <- args[3]    # Ignored for "FirstYearScore" and "HospFreq" and 
+                studyType                   <- args[4]    # "cross-sectional" or "longitudinal"
+                masterSheetCsvFile          <- args[5]
+                predictorListCsvFile        <- args[6]
+                specialPredictorListCsvFile <- args[7]
+                outputDir                   <- args[8]
+                */
+        
+        this.testingScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
+        log.info("Testing Scoring Command: " + this.testingScoringCommand);
+        
+        //this.scriptOutput = this.runCommand(rScriptCommand);
+        return result;
+    }
     
 	/** 
 	 * Executes the specified command and returns the output from the command.
@@ -909,6 +1113,14 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
     public void setSpecialPredictorListTempFile(String specialPredictorListTempFile) {
         this.specialPredictorListTempFile = specialPredictorListTempFile;
+    }
+
+    public String getFinalMasterSheetFile() {
+        return finalMasterSheetFile;
+    }
+
+    public void setFinalMasterSheetFile(String finalMasterSheetFile) {
+        this.finalMasterSheetFile = finalMasterSheetFile;
     }
 
 }

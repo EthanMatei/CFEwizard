@@ -329,6 +329,35 @@ public class DataTable {
 	    }
 	}
 	
+	public void moveColumn(String name, int moveToIndex) throws Exception {
+	    
+	    if (moveToIndex < 0 || moveToIndex > this.getNumberOfColumns()) {
+	        String message = "The new index for column move (" + moveToIndex + ") is out"
+	                + " of bounds.";
+	        throw new Exception(message);
+	    }
+	    
+	    // Insert the new column with a blank name
+	    this.columns.add(moveToIndex, "");
+	    
+	    // Get the original column index after the insertion of the new column
+        int moveFromIndex = this.getColumnIndex(name);
+        if (moveFromIndex < 0) {
+            String message = "Could not move column \"" + name + "\", because it could not be found.";
+            throw new Exception(message);
+        }
+        
+        // Copy the row elements from the old to new position
+	    for (ArrayList<String> row: this.data) {
+	        row.add(moveToIndex, "");
+	        row.set(moveToIndex, row.get(moveFromIndex));
+	    }
+	    
+	    // Delete the old column and set the name for the new column
+	    this.deleteColumn(moveFromIndex);
+	    this.columns.set(moveToIndex, name);    
+	}
+	
 	public void deleteColumn(int columnIndex) throws Exception {
 	    if (columnIndex < 0) {
 	        throw new Exception("Column index less than zero for delete column; value is " + columnIndex + ".");
@@ -349,6 +378,13 @@ public class DataTable {
 	public void deleteColumn(String columnName) throws Exception {
 	    int columnIndex = this.getColumnIndex(columnName);
 	    this.deleteColumn(columnIndex);
+	}
+	
+	public void deleteColumnIfExists(String columnName) throws Exception {
+	    int columnIndex = this.getColumnIndex(columnName);
+	    if (columnIndex > 0) {
+	        this.deleteColumn(columnIndex);
+	    }
 	}
 	
 	public void deleteColumns(String pattern) throws Exception {

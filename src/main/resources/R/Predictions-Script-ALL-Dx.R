@@ -16,7 +16,7 @@ library(dplyr)
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 8) {
+if (length(args) != 9) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to Validation script")
 }
@@ -24,13 +24,15 @@ if (length(args) != 8) {
 specialPredictorList = NULL;
 
 scriptDir                   <- args[1]
-phene                       <- args[2]
-pheneHighCutoff             <- args[3]    # Ignored for "FirstYearScore" and "HospFreq" and 
-studyType                   <- args[4]    # "cross-sectional" or "longitudinal"
-masterSheetCsvFile          <- args[5]
-predictorListCsvFile        <- args[6]
-specialPredictorListCsvFile <- args[7]
-outputDir                   <- args[8]
+testType                    <- args[2]    # "state", "first-year", or "future"
+studyType                   <- args[3]    # "cross-sectional" or "longitudinal"
+phene                       <- args[4]
+pheneHighCutoff             <- args[5]    # Ignored for "FirstYearScore" and "HospFreq" and 
+
+masterSheetCsvFile          <- args[6]
+predictorListCsvFile        <- args[7]
+specialPredictorListCsvFile <- args[8]
+outputDir                   <- args[9]
 
 
 # d <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\All Future\\Mastersheet for All Future Predictions Delusions (MDH 4-16-2021).csv")
@@ -38,6 +40,14 @@ d <- read.csv(masterSheetCsvFile)
 
 d <- as.data.frame((d))
 
+# Set VisitNumber column on master sheet based on the test type
+if (testType == "state") {
+  names(d)[names(d) == "Test.VisitNumber"] <- "VisitNumber"
+} else if (testType == "first-year") {
+  names(d)[names(d) == "FirstYear.VisitNumber"] <- "VisitNumber"
+}  else if (testType == "future") {
+  names(d)[names(d) == "Hospitilization.VisitNumber"] <- "VisitNumber"
+}
 
 d[] <- lapply(d, function(x) type.convert(as.vector(x)))
 
@@ -90,10 +100,19 @@ FIRSTYEARtest <- F      ## First year hospitalization with highwater marks
 FUTUREtest    <- F       ## All future hospitalization with highwater marks
 
 # SETTABLE: -----------------------------------------------------
-stateFirstYearHosp <- F  ## First year hospitalization with NO highwater marks
-stateFutureHosp <-T     ## All future hospitalization with NO highwater marks
+stateFirstYearHosp <- FALSE  ## First year hospitalization with NO highwater marks
+stateFutureHosp <- FALSE     ## All future hospitalization with NO highwater marks
 
-STATEtest  <- F       ## For any STATE predictions (no highwater marks) 
+STATEtest  <- FALSE    ## For any STATE predictions (no highwater marks) 
+
+if (testType == "state") {
+  STATEtest <- TRUE
+} else if (testType == "first-year") {
+  stateFirstYearHosp <- TRUE
+}  else if (testType == "future") {
+  stateFutureHosp <- TRUE
+}
+
 #--------------------------------------------------------------------------------
 
 DEATHtest <- F           ## Set to TRUE if you want to use DEATH as an outcome
@@ -101,31 +120,34 @@ DEATHtest <- F           ## Set to TRUE if you want to use DEATH as an outcome
 
 ############################   CORNERSTONES   ############################
 
-maxSlopes <- F     ## maxSlopes: Calculate the maximum slope value
-slopes <- F      ## slopes: Take absolute value of highest minus lowest visits
+maxSlopes <- FALSE     ## maxSlopes: Calculate the maximum slope value
+slopes <- FALSE      ## slopes: Take absolute value of highest minus lowest visits
 ##         When you ask for slopes or max slopes people 
 ##         with fewer than two visits are dropped)
-MAX <- F           ## MAX: Highwater mark
-LEVELS <- T        ## LEVELS: raw value of biomarker; cross-sectional only
+MAX <- FALSE           ## MAX: Highwater mark
+LEVELS <- TRUE        ## LEVELS: raw value of biomarker; cross-sectional only
+
+if (studyType == "longitudinal") {
+  maxSlopes <- TRUE
+  slopes    <- TRUE
+  MAX       <- TRUE
+}
 
 #############################################################
 ## Insert the PHENE to predict below within quotes.        ##
-## This must correspond to aheader in your .csv database   ##
+## This must correspond to a header in your .csv database  ##
 #############################################################
 
-# testing Category (state, firstYear, future)
-
-# could be phene from testing database, 
-
-if (stateFirstYearHosp && LEVELS) {
-    PHENE <- "FirstYearScore"
-} else if (stateFirstYearHosp && maxSlopes && slopes && MAX && LEVELS) {
-    PHENE <- "FirstYearScore"
-} else if (stateFutureHosp && LEVELS) {
-    PHENE <- "HospFreq"
-} else if (stateFutureHosp && maxSlopes && slopes && MAX && LEVELS) {
-    PHENE <- "HospFreq"
+# Set PHENE
+if (testType == "state") {
+  PHENE <- phene;
+  cutoff <- pheneHighCutoff
+} else if (testType == "first-year") {
+  PHENE <- "FirstYearScore"
+}  else if (testType == "future") {
+  PHENE <- "HospFreq"
 }
+
 
 #PHENE <- "P1Delusions"
 
@@ -233,7 +255,7 @@ if ( STATEtest ){
   
   #calculate ROC grouping variable
   #specify the PHENE variable above
-  data$ROC <- as.numeric(data[PHENE] >= 4)
+  data$ROC <- as.numeric(data[PHENE] >= cutoff)
   #Split dataset by cohort##
   data <- data[data$TestCohort == 1,]
   testName <- "STATE"

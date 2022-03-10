@@ -68,6 +68,10 @@ These packages can be installed as in the example shown below:
     install.packages("pROC")
     install.packages("ROCR")
     install.packages("verification")
+    
+    # For Prediction script
+    install.packages("data.table")
+    install.packages("readr")
 
 Python
 ----------------------------------------------------------

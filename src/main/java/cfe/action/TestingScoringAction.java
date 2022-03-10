@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -44,6 +46,10 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	
 	public static final String CROSS_SECTIONAL = "cross-sectional";
 	public static final String LONGITUDINAL    = "longitudinal";
+	
+	public static final String STATE      = "state";
+	public static final String FIRST_YEAR = "first-year";     // first year hospitalizations
+	public static final String FUTURE     = "future";         // future hospitalizations
 
 	private Map<String, Object> webSession;
 
@@ -82,7 +88,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     private boolean stateLongitudinal;
     
     private String predictionPhene;
-    private Integer predictionPheneHighCutoff;
+    private Double predictionPheneHighCutoff;
 
     private boolean firstYear;
     private boolean firstYearCrossSectional;
@@ -93,6 +99,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     private boolean futuretLongitudinal;
     
     private String finalMasterSheetFile;
+    
+    private String predictionOutputFile;
 
 	/**
 	 * Select testing data
@@ -258,11 +266,13 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                         masterSheet.deleteColumn(i);
                     }
                 }
+                log.info("Uneeded phene columns deleted.");
                 
                 String csv = masterSheet.toCsv();
                 File tempFile = FileUtil.createTempFile("final-master-sheet", ".csv");
                 FileUtils.write(tempFile,  csv, "UTF-8");
                 this.finalMasterSheetFile = tempFile.getAbsolutePath();
+                log.info("Final master sheet file created: " + this.finalMasterSheetFile);
                 
                 /*
                 testingData = CfeResultsService.get(testingDataId);
@@ -284,29 +294,78 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     throw new Exception(message);
                 }
                 */
-                
-                if (this.state && this.stateCrossSectional) {
-                    
+     
+                String testType  = null;
+                String studyType = null;
+                if (this.predictionPhene == null) {
+                    this.predictionPhene = "";
+                }
+                if (this.predictionPheneHighCutoff == null) {
+                    this.predictionPheneHighCutoff = 0.0;
                 }
                 
-                if (this.state && this.stateLongitudinal) {
-                    
+                if (this.stateCrossSectional) {
+                    log.info("Testing state cross-sectional");
+                    testType  = STATE;
+                    studyType = CROSS_SECTIONAL;
+                    String rScriptOutput = this.runScript(testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile);
                 }
                 
-                if (this.firstYear && this.firstYearCrossSectional) {
-                    
+                if (this.stateLongitudinal) {
+                    log.info("Testing state longitudinal");
+                    testType  = STATE;
+                    studyType = LONGITUDINAL;
+                    String rScriptOutput = this.runScript(testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile);
                 }
                 
-                if (this.firstYear && this.firstYearLongitudinal) {
-                    
+                if (this.firstYearCrossSectional) {
+                    log.info("Testing first year cross-sectional");
+                    testType  = FIRST_YEAR;
+                    studyType = CROSS_SECTIONAL;
+                    log.info("Before call to runScript.");
+                    String rScriptOutput = this.runScript(testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile);
+                    log.info("After call to runScript.");
                 }
                 
-                if (this.future && this.futureCrossSectional) {
-                    
+                if (this.firstYearLongitudinal) {
+                    log.info("Testing first year longitudinal");
+                    testType  = FIRST_YEAR;
+                    studyType = LONGITUDINAL;
+                    String rScriptOutput = this.runScript(testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile);
                 }
                 
-                if (this.future && this.futuretLongitudinal) {
-                    
+                if (this.futureCrossSectional) {
+                    log.info("Testing future cross-sectional");
+                    testType  = FUTURE;
+                    studyType = CROSS_SECTIONAL;
+
+                    String rScriptOutput = this.runScript(testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile);
+
+                }
+                
+                if (this.futuretLongitudinal) {
+                    log.info("Testing future longitudinal");
+                    testType  = FUTURE;
+                    studyType = LONGITUDINAL;
+                    String rScriptOutput = this.runScript(testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile);
                 }
 
             }
@@ -315,6 +374,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 if (exception != null) {
                     this.setErrorMessage("Testing scoring failed: " + exception.getLocalizedMessage());
                     String stackTrace = ExceptionUtils.getStackTrace(exception);
+                    log.severe("Testing error: " + exception.getLocalizedMessage());
+                    log.severe(stackTrace);
                     this.setExceptionStack(stackTrace);
                 }
             }
@@ -775,42 +836,75 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	}
 	
 
-    public String runScript(String phene, double pheneHighCutoff, String studyType,
-            String masterSheetFile, String predictorListFile, String specialPredictorListFile,
-            String outputDir) throws Exception {
+	/**
+	 * 
+	 * @param testType the type of the test: "state", "first-year", or "future".
+	 * @param studyType the type of the study: "cross-sectional" or "longitudinal"
+	 * @param phene prediction phene (only for state).
+	 * @param pheneHighCutoff prediction phene high cutoff (only for state)
+	 * @param masterSheetFile
+	 * @param predictorListFile
+	 * @param specialPredictorListFile
+	 * @param outputDir
+	 * @return
+	 * @throws Exception
+	 */
+    public String runScript(String testType, String studyType, String phene, double pheneHighCutoff,
+            String masterSheetFile, String predictorListFile, String specialPredictorListFile) throws Exception {
+        log.info("runScript start.");
+        log.info("Starting runScript for test type \"" + testType + "\" and study type \"" + studyType + "\".");
         String result = "";
+        
         this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
         this.scriptFile = new File(getClass().getResource("/R/Predictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
         
         this.tempDir = FileUtil.getTempDir();
+        log.info("tempDir: " + tempDir + ".");
         
-        String[] rScriptCommand = new String[10];
+        String[] rScriptCommand = new String[11];
         rScriptCommand[0] = WebAppProperties.getRscriptPath();
         rScriptCommand[1] = this.scriptFile;
         rScriptCommand[2] = scriptDir;
-        rScriptCommand[3] = phene;
-        rScriptCommand[4] = pheneHighCutoff + "";
-        rScriptCommand[5] = studyType;
-        rScriptCommand[6] = masterSheetFile;
-        rScriptCommand[7] = predictorListFile;
-        rScriptCommand[8] = specialPredictorListFile;
-        rScriptCommand[9] = outputDir;
-        
-                /*
-                scriptDir                   <- args[1]
-                phene                       <- args[2]
-                pheneHighCutoff             <- args[3]    # Ignored for "FirstYearScore" and "HospFreq" and 
-                studyType                   <- args[4]    # "cross-sectional" or "longitudinal"
-                masterSheetCsvFile          <- args[5]
-                predictorListCsvFile        <- args[6]
-                specialPredictorListCsvFile <- args[7]
-                outputDir                   <- args[8]
-                */
+        rScriptCommand[3] = testType;
+        rScriptCommand[4] = studyType;
+        rScriptCommand[5] = phene;
+        rScriptCommand[6] = pheneHighCutoff + "";
+        rScriptCommand[7] = masterSheetFile;
+        rScriptCommand[8] = predictorListFile;
+        rScriptCommand[9] = specialPredictorListFile;
+        rScriptCommand[10] = tempDir;
         
         this.testingScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
         log.info("Testing Scoring Command: " + this.testingScoringCommand);
         
         //this.scriptOutput = this.runCommand(rScriptCommand);
+        
+        result = this.runCommand(rScriptCommand);
+        this.scriptOutput = result;
+        
+        //---------------------------------------------------------------
+        // Get the Prediction script output
+        //---------------------------------------------------------------
+        String predictionFilePatternString = "Prediction output file created: (.*)";
+
+        Pattern predictionFilePattern = Pattern.compile(predictionFilePatternString);
+
+        String lines[] = scriptOutput.split("\\r?\\n");
+        for (String line: lines) {
+            Matcher predictionMatcher = predictionFilePattern.matcher(line);
+
+            if (predictionMatcher.find()) {
+                predictionOutputFile = predictionMatcher.group(1).trim();
+                log.info("Prediction output file pattern found: \"" + predictionOutputFile + "\".");
+            }             
+        }
+        
+        if (predictionOutputFile == null || predictionOutputFile.isEmpty()) {
+            String message = "Can't find output file from validation scoring R script.";
+            log.severe(message);
+            throw new Exception(message);
+        }
+        
         return result;
     }
     
@@ -1011,11 +1105,11 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         this.predictionPhene = predictionPhene;
     }
 
-    public Integer getPredictionPheneHighCutoff() {
+    public Double getPredictionPheneHighCutoff() {
         return predictionPheneHighCutoff;
     }
 
-    public void setPredictionPheneHighCutoff(Integer predictionPheneHighCutoff) {
+    public void setPredictionPheneHighCutoff(Double predictionPheneHighCutoff) {
         this.predictionPheneHighCutoff = predictionPheneHighCutoff;
     }
 
@@ -1121,6 +1215,14 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
     public void setFinalMasterSheetFile(String finalMasterSheetFile) {
         this.finalMasterSheetFile = finalMasterSheetFile;
+    }
+
+    public String getPredictionOutputFile() {
+        return predictionOutputFile;
+    }
+
+    public void setPredictionOutputFile(String predictionOutputFile) {
+        this.predictionOutputFile = predictionOutputFile;
     }
 
 }

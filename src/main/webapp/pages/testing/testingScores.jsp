@@ -30,9 +30,7 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
 
 <table class="dataTable">
     <tr> <th>Property</th> <th>Value</th> </tr>
-    <tr>
-        <td>State</td> <td><s:property value="state"/></td>
-    </tr>
+    
     <tr>
         <td>State Cross-Sectional</td> <td><s:property value="stateCrossSectional"/></td>
     </tr>
@@ -46,10 +44,6 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
         <td>Prediction Phene High Cutoff</td> <td><s:property value="predictionPheneHighCutoff"/></td>
     </tr>
     
-    
-    <tr>
-        <td>First Year</td> <td><s:property value="firstYear"/></td>
-    </tr>
     <tr>
         <td>First Year Cross-Sectional</td> <td><s:property value="firstYearCrossSectional"/></td>
     </tr>
@@ -57,9 +51,6 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
         <td>First Year Longitudinal</td> <td><s:property value="firstYearLongitudinal"/></td>
     </tr>
 
-    <tr>
-        <td>Future</td> <td><s:property value="future"/></td>
-    </tr>
     <tr>
         <td>Future Cross-Sectional</td> <td><s:property value="futureCrossSectional"/></td>
     </tr>
@@ -77,6 +68,23 @@ Final Testing Master Sheet:
 </s:a>
 </p>
 
+<p>
+Predictor List:
+<s:a action="CsvDisplay">
+    <s:param name="csvFilePath" value="predictorListFile" />
+    <s:property value="predictorListFile" />
+</s:a>
+</p>
 
+
+<p>
+Special Predictor List:
+<s:if test="specialPredictorListTempFile != null && specialPredictorListTempFile != ''">
+    <s:a action="CsvDisplay">
+        <s:param name="csvFilePath" value="specialPredictorListTempFile" />
+        <s:property value="predictorListFile" />
+    </s:a>
+</s:if>
+</p>
 </tiles:putAttribute>
 </tiles:insertTemplate>

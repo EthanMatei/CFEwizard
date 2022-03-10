@@ -61,7 +61,6 @@ Testing Master Sheet:
 </p>
 
 <s:form action="TestingScoringCalculation" theme="simple">
-   
    <s:hidden name="predictorListFile"/>
    <s:hidden name="specialPredictorListTempFile"/>
    <s:hidden name="testingDataId"/>
@@ -70,7 +69,7 @@ Testing Master Sheet:
     <table class="dataTable">
         <tr>
             <td>
-                <s:checkbox name="state"/>State
+                <span style="font-weight: bold;">State</span>
             </td>
             <td>
                 <p>
@@ -92,7 +91,7 @@ Testing Master Sheet:
         </tr>
         <tr>
             <td>
-                <s:checkbox name="firstYear"/>First Year Hospitalization
+                <span style="font-weight: bold;">First Year Hospitalization</span>
             </td>
             <td>
                 <p>
@@ -105,7 +104,7 @@ Testing Master Sheet:
         </tr>
         <tr>
             <td>
-                <s:checkbox name="future"/>Future Hospitalization
+                <span style="font-weight: bold;">Future Hospitalization</span>
             </td>
             <td>
                 <p>

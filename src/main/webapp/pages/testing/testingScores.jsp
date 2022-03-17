@@ -69,7 +69,7 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
     <tr>
         <td>First Year Cross-Sectional</td>
         <td><s:property value="firstYearCrossSectional"/></td>
-        <td> &nbsp; </td>
+        <td><s:property value="rCommandFirstYearCrossSectional"/></td>
         <td>
             <s:a action="TextFileDisplay" title="First Year Cross-Sectional R Script Output">
                 <s:param name="textFilePath" value="rScriptOutputFileFirstYearCrossSectional" />
@@ -80,6 +80,7 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
     <tr>
         <td>First Year Longitudinal</td>
         <td><s:property value="firstYearLongitudinal"/></td>
+        <td><s:property value="rCommandFirstYearLongitudinal"/></td>        
         <td> &nbsp; </td>
         <td>
             <s:a action="TextFileDisplay" title="First Year Longitudinal R Script Output">
@@ -92,6 +93,7 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
     <tr>
         <td>Future Cross-Sectional</td>
         <td><s:property value="futureCrossSectional"/></td>
+        <td><s:property value="rCommandFutureCrossSectional"/></td>        
         <td> &nbsp; </td>
         <td>
             <s:a action="TextFileDisplay" title="Future Cross-Sectional R Script Output">
@@ -103,6 +105,7 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
     <tr>
         <td>Future Longitudinal</td>
         <td><s:property value="futuretLongitudinal"/></td>
+        <td><s:property value="rCommandFutureLongitudinal"/></td>     
         <td> &nbsp; </td>
         <td>
             <s:a action="TextFileDisplay" title="Future Longitudinal R Script Output">
@@ -141,6 +144,27 @@ Special Predictor List:
 </s:if>
 </p>
 
+<hr/>
+
+<p>
+Testing Scoring Results:
+<s:if test="cfeResultsId != null">
+    <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+        <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+                 alt="Testing Scores" />
+            <br />
+            testing-scores.xslx
+        </div>
+    </s:a>
+</s:if>
+<s:else>
+    <p>No results generated</p>
+</s:else>
+</p>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

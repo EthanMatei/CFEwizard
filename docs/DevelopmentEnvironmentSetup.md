@@ -70,6 +70,7 @@ These packages can be installed as in the example shown below:
     install.packages("verification")
     
     # For Prediction script
+    install.packages("coin")
     install.packages("data.table")
     install.packages("readr")
 

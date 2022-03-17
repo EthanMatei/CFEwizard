@@ -1,16 +1,12 @@
 
 
-######################################################################################
-####################    BEGIN USER SETTINGS    ########################################
-####################                           ########################################
-
 library(dplyr)
+library(coin)
 
-########################################################
-## Enter the path for your .csv master database here. ##
-## This file should contain Phene and Gene data       ##
-##  along with subject and chip numbers               ##
-########################################################
+#----------------------------------------------------------------
+# The mastersheet CSV file should contain Phene and Gene data
+# along with subject and chip numbers
+#----------------------------------------------------------------
 
 #-------------------------------------------------
 # Process command line arguments

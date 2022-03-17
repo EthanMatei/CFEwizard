@@ -521,8 +521,12 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         
         masterSheetDataTable.insertColumn("dx", 5, "");
         for (int rowIndex = 0; rowIndex < masterSheetDataTable.getNumberOfRows(); rowIndex++) {
-            String value = masterSheetDataTable.getValue(rowIndex, "DxCode")
-                    + "-" + masterSheetDataTable.getValue(rowIndex, "Gender(M/F)");
+            String value =
+                    masterSheetDataTable.getValue(rowIndex, "Gender(M/F)")
+                    + "-"
+                    + masterSheetDataTable.getValue(rowIndex, "DxCode")
+                    ;
+
             masterSheetDataTable.setValue(rowIndex, "dx", value);
         }
         
@@ -574,13 +578,32 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         int firstYearVisitNumber       = 0;
         int hospitalizationVisitNumber = 0;
         
+        
         for (int i = 0; i < masterSheetDataTable.getNumberOfRows(); i++) {
             String subject = masterSheetDataTable.getValue(i, "Subject");
+            
+            String testCohort            = masterSheetDataTable.getValue(i, "TestCohort");
+            String firstYearCohort       = masterSheetDataTable.getValue(i, "FirstYearCohort");
+            String hospitalizationCohort = masterSheetDataTable.getValue(i, "HospitalizationCohort");            
+            
+            //-----------------------------------------------------------
+            // Make sure cohort values that are not one are set to zero
+            //-----------------------------------------------------------
+            if (!testCohort.equals("1")) {
+                masterSheetDataTable.setValue(i,"TestCohort", "0");
+            }
+            
+            if (!firstYearCohort.equals("1")) {
+                masterSheetDataTable.setValue(i,"FirstYearCohort", "0");
+            }
+            
+            if (!hospitalizationCohort.equals("1")) {
+                masterSheetDataTable.setValue(i,"HospitalizationCohort", "0");
+            }
+            
             if (!subject.equals(previousSubject)) {
                 previousSubject = subject;
-                String testCohort            = masterSheetDataTable.getValue(i, "TestCohort");
-                String firstYearCohort       = masterSheetDataTable.getValue(i, "FirstYearCohort");
-                String hospitalizationCohort = masterSheetDataTable.getValue(i, "HospitalizationCohort");
+
                 
                 if (testCohort.equals("1")) {
                     testVisitNumber = 1;
@@ -779,8 +802,10 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         predictorList.addColumn("SZ", "");
         predictorList.addColumn("SZA", "");
         predictorList.addColumn("PTSD", "");
+        predictorList.addColumn("MOOD", "");
         predictorList.addColumn("PSYCH", "");
         predictorList.addColumn("PSYCHOSIS", "");
+        predictorList.addColumn("GENDER", "");
         predictorList.addColumn("All", "");
         
         for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
@@ -856,8 +881,10 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 row.add("0"); // SZ
                 row.add("0"); // SZA
                 row.add("0"); // PTSD
+                row.add("0"); // MOOD
                 row.add("0"); // PSYCH
                 row.add("0"); // PSYCHOSIS
+                row.add("0"); // GENDER
                 row.add("1"); // All
 
                 predictorList.addRow(row);

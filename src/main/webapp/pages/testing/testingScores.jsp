@@ -29,33 +29,87 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
 </p>
 
 <table class="dataTable">
-    <tr> <th>Property</th> <th>Value</th> </tr>
+    <tr> <th>Property</th> <th>Value</th> <th>R Script Command</th> <th>R Script Output</th> </tr>
     
     <tr>
-        <td>State Cross-Sectional</td> <td><s:property value="stateCrossSectional"/></td>
+        <td>State Cross-Sectional</td>
+        <td><s:property value="stateCrossSectional"/></td>
+        <td><s:property value="rCommandStateCrossSectional"/></td>
+        <td>
+            <s:a action="TextFileDisplay" title="State Cross-Sectional R Script Output">
+                <s:param name="textFilePath" value="rScriptOutputFileStateCrossSectional" />
+                <s:property value="rScriptOutputFileStateCrossSectional" />
+            </s:a>
+        </td>
     </tr>
     <tr>
-        <td>State Longitudinal</td> <td><s:property value="stateLongitudinal"/></td>
+        <td>State Longitudinal</td>
+        <td><s:property value="stateLongitudinal"/></td>
+        <td><s:property value="rCommandStateLongitudinal"/></td>
+        <td>
+            <s:a action="TextFileDisplay" title="State Longitudinal R Script Output">
+                <s:param name="textFilePath" value="rScriptOutputFileStateLongitudinal" />
+                <s:property value="rScriptOutputFileStateLongitudinal" />
+            </s:a>
+        </td>
     </tr>
     <tr>
-        <td>Prediction Phene</td> <td><s:property value="predictionPhene"/></td>
+        <td>Prediction Phene</td>
+        <td><s:property value="predictionPhene"/></td>
+        <td> &nbsp; </td>
+        <td> &nbsp; </td>
     </tr>
     <tr>
-        <td>Prediction Phene High Cutoff</td> <td><s:property value="predictionPheneHighCutoff"/></td>
+        <td>Prediction Phene High Cutoff</td>
+        <td><s:property value="predictionPheneHighCutoff"/></td>
+        <td> &nbsp; </td>
+        <td> &nbsp; </td>
     </tr>
     
     <tr>
-        <td>First Year Cross-Sectional</td> <td><s:property value="firstYearCrossSectional"/></td>
+        <td>First Year Cross-Sectional</td>
+        <td><s:property value="firstYearCrossSectional"/></td>
+        <td> &nbsp; </td>
+        <td>
+            <s:a action="TextFileDisplay" title="First Year Cross-Sectional R Script Output">
+                <s:param name="textFilePath" value="rScriptOutputFileFirstYearCrossSectional" />
+                <s:property value="rScriptOutputFileFirstYearCrossSectional" />
+            </s:a>
+        </td>
     </tr>
     <tr>
-        <td>First Year Longitudinal</td> <td><s:property value="firstYearLongitudinal"/></td>
+        <td>First Year Longitudinal</td>
+        <td><s:property value="firstYearLongitudinal"/></td>
+        <td> &nbsp; </td>
+        <td>
+            <s:a action="TextFileDisplay" title="First Year Longitudinal R Script Output">
+                <s:param name="textFilePath" value="rScriptOutputFileFirstYearLongitudinal" />
+                <s:property value="rScriptOutputFileFirstYearLongitudinal" />
+            </s:a>
+        </td>
     </tr>
 
     <tr>
-        <td>Future Cross-Sectional</td> <td><s:property value="futureCrossSectional"/></td>
+        <td>Future Cross-Sectional</td>
+        <td><s:property value="futureCrossSectional"/></td>
+        <td> &nbsp; </td>
+        <td>
+            <s:a action="TextFileDisplay" title="Future Cross-Sectional R Script Output">
+                <s:param name="textFilePath" value="rScriptOutputFutureCrossSectional" />
+                <s:property value="rScriptOutputFutureCrossSectional" />
+            </s:a>
+        </td>        
     </tr>
     <tr>
-        <td>Future Longitudinal</td> <td><s:property value="futuretLongitudinal"/></td>
+        <td>Future Longitudinal</td>
+        <td><s:property value="futuretLongitudinal"/></td>
+        <td> &nbsp; </td>
+        <td>
+            <s:a action="TextFileDisplay" title="Future Longitudinal R Script Output">
+                <s:param name="textFilePath" value="rScriptOutputFileFutureLongitudinal" />
+                <s:property value="rScriptOutputFileFutureLongitudinal" />
+            </s:a>
+        </td>
     </tr>
 
 </table>
@@ -86,5 +140,7 @@ Special Predictor List:
     </s:a>
 </s:if>
 </p>
+
+
 </tiles:putAttribute>
 </tiles:insertTemplate>

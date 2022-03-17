@@ -29,4 +29,11 @@ public class CfeResultsSheets {
     public static final String VALIDATION_COHORT      = "validation cohort";    // deprecated (but may be in old saved sheets)
     public static final String VALIDATION_SCORES      = "validation scores";
     public static final String VALIDATION_SCORES_INFO = "validation scores info";
+    
+    public static final String TESTING_STATE_CROSS_SECTIONAL      = "testing state cross-sectional";
+    public static final String TESTING_STATE_LONGITUDINAL         = "testing state longitudinal";
+    public static final String TESTING_FIRST_YEAR_CROSS_SECTIONAL = "testing first year cross-sectional";
+    public static final String TESTING_FIRST_YEAR_LONGITUDINAL    = "testing first year longitudinal";
+    public static final String TESTING_FUTURE_CROSS_SECTIONAL     = "testing future cross-sectional";
+    public static final String TESTING_FUTURE_LONGITUDINAL        = "testing future longitudinal";
 }

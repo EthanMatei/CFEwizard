@@ -584,8 +584,8 @@
 		<action name="TestingScoringCalculation" class="cfe.action.TestingScoringAction" method="calculateTestingScores">
 		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/testing/testingScores.jsp</result>
-			<result name="error">pages/testing/testingScoringSpecification.jsp</result>	
-			<result name="input">pages/error.jsp</result>
+			<result name="error">pages/testing/testingScores.jsp</result>	
+			<result name="input">pages/testing/testingScoringSpecification.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>

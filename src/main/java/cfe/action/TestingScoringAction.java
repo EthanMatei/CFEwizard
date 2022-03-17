@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -82,6 +84,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     
     private ArrayList<String> phenes;
 
+    private Date scoresGeneratedTime;
     
     private boolean state;
     private boolean stateCrossSectional;
@@ -101,6 +104,24 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     private String finalMasterSheetFile;
     
     private String predictionOutputFile;
+    
+    private String rScriptOutputFileStateCrossSectional;
+    private String rScriptOutputFileStateLongitudinal;
+
+    private String rScriptOutputFileFirstYearCrossSectional;
+    private String rScriptOutputFileFirstYearLongitudinal;
+    
+    private String rScriptOutputFileFutureCrossSectional;
+    private String rScriptOutputFileFutureLongitudinal;
+    
+    private String rCommandStateCrossSectional;
+    private String rCommandStateLongitudinal;
+    private String rCommandFirstYearCrossSectional;
+    private String rCommandFirstYearLongitudinal;
+    private String rCommandFutureCrossSectional;
+    private String rCommandFutureLongitudinal;
+    
+    private Long cfeResultsId;
 
 	/**
 	 * Select testing data
@@ -274,27 +295,16 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 this.finalMasterSheetFile = tempFile.getAbsolutePath();
                 log.info("Final master sheet file created: " + this.finalMasterSheetFile);
                 
-                /*
                 testingData = CfeResultsService.get(testingDataId);
                 if (testingData == null) {
                     throw new Exception("Unable to retrieve testing data for ID " + testingDataId + ".");
                 }
-                
-                XSSFWorkbook workbook = testingData.getResultsSpreadsheet();
-                if (workbook == null) {
-                    String message = "Unable to retrieve resulta workbook for testing data ID "
-                        + testingDataId + ".";
-                    throw new Exception(message);
-                }                
-                
-                XSSFSheet testingCohortDataSheet = workbook.getSheet(CfeResultsSheets.TESTING_COHORT_DATA);
-                if (testingCohortDataSheet == null) {
-                    String message = "Could not find sheet \"" + CfeResultsSheets.TESTING_COHORT_DATA
-                            + "\" in testing data results.";
-                    throw new Exception(message);
-                }
-                */
      
+                // Map from sheet name to data table
+                LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
+                resultsTables = testingData.getDataTables();
+                
+                
                 String testType  = null;
                 String studyType = null;
                 if (this.predictionPhene == null) {
@@ -304,46 +314,85 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     this.predictionPheneHighCutoff = 0.0;
                 }
                 
+                
+                //-------------------------------------------------------
+                // Make specified calculations
+                //-------------------------------------------------------
                 if (this.stateCrossSectional) {
                     log.info("Testing state cross-sectional");
                     testType  = STATE;
                     studyType = CROSS_SECTIONAL;
-                    String rScriptOutput = this.runScript(testType, studyType,
+
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
                             this.predictionPhene, this.predictionPheneHighCutoff, 
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile);
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+
+                    tempFile = FileUtil.createTempFile("state-cross-sectional-r-log",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileStateCrossSectional = tempFile.getAbsolutePath();
+                    
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_STATE_CROSS_SECTIONAL, dataTable);
                 }
                 
                 if (this.stateLongitudinal) {
                     log.info("Testing state longitudinal");
                     testType  = STATE;
                     studyType = LONGITUDINAL;
-                    String rScriptOutput = this.runScript(testType, studyType,
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
                             this.predictionPhene, this.predictionPheneHighCutoff, 
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile);
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("state-longitduinal-r-log",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileStateLongitudinal = tempFile.getAbsolutePath();
+                    
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_STATE_LONGITUDINAL, dataTable);
                 }
                 
                 if (this.firstYearCrossSectional) {
                     log.info("Testing first year cross-sectional");
                     testType  = FIRST_YEAR;
                     studyType = CROSS_SECTIONAL;
-                    log.info("Before call to runScript.");
-                    String rScriptOutput = this.runScript(testType, studyType,
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
                             this.predictionPhene, this.predictionPheneHighCutoff, 
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile);
-                    log.info("After call to runScript.");
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("first-year-cross-sectional-r-log",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileFirstYearCrossSectional = tempFile.getAbsolutePath();
+                                        
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_FIRST_YEAR_CROSS_SECTIONAL, dataTable);
                 }
                 
                 if (this.firstYearLongitudinal) {
                     log.info("Testing first year longitudinal");
                     testType  = FIRST_YEAR;
                     studyType = LONGITUDINAL;
-                    String rScriptOutput = this.runScript(testType, studyType,
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
                             this.predictionPhene, this.predictionPheneHighCutoff, 
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile);
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("first-year-longitudinal-r-log",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileFirstYearLongitudinal = tempFile.getAbsolutePath();                    
+                    
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_FIRST_YEAR_LONGITUDINAL, dataTable);
                 }
                 
                 if (this.futureCrossSectional) {
@@ -351,21 +400,65 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     testType  = FUTURE;
                     studyType = CROSS_SECTIONAL;
 
-                    String rScriptOutput = this.runScript(testType, studyType,
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
                             this.predictionPhene, this.predictionPheneHighCutoff, 
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile);
-
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("future-cross-sectional-r-log",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileFutureCrossSectional = tempFile.getAbsolutePath();
+                                        
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_FUTURE_CROSS_SECTIONAL, dataTable);
                 }
                 
                 if (this.futuretLongitudinal) {
                     log.info("Testing future longitudinal");
                     testType  = FUTURE;
                     studyType = LONGITUDINAL;
-                    String rScriptOutput = this.runScript(testType, studyType,
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
                             this.predictionPhene, this.predictionPheneHighCutoff, 
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile);
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("future-longitudinal-r-log",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileFutureLongitudinal = tempFile.getAbsolutePath();                    
+                    
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_FUTURE_LONGITUDINAL, dataTable);
+                }
+                
+                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
+                log.info("Testing results workbook created.");
+                
+                // Set generate time
+                this.scoresGeneratedTime = new Date();
+                
+                // Save the results in the database
+                CfeResults cfeResults = new CfeResults(
+                        resultsWorkbook,
+                        CfeResultsType.ALL_COHORTS_PLUS_VALIDATION_SCORES,
+                        this.scoresGeneratedTime, testingData.getPhene(),
+                        testingData.getLowCutoff(), testingData.getHighCutoff()
+                );
+                log.info("cfeResults object created.");
+                log.info("CFE RESULTS: \n" + cfeResults.asString());
+                
+                cfeResults.setDiscoveryRScriptLog(testingData.getDiscoveryRScriptLog());
+                log.info("Added discovery R script log text to cfeResults.");
+                
+                CfeResultsService.save(cfeResults);
+                log.info("cfeResults object saved.");
+                
+                this.cfeResultsId = cfeResults.getCfeResultsId();
+                if (this.cfeResultsId < 1) {
+                    throw new Exception("Testing scoring results id is not >= 1: " + cfeResultsId);
                 }
 
             }
@@ -877,10 +970,35 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         this.testingScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
         log.info("Testing Scoring Command: " + this.testingScoringCommand);
         
-        //this.scriptOutput = this.runCommand(rScriptCommand);
+        // Save R command
+        if (testType == STATE && studyType == CROSS_SECTIONAL) {
+            this.rCommandStateCrossSectional = this.testingScoringCommand;
+        }
+        else if (testType == STATE && studyType == LONGITUDINAL) {
+            this.rCommandStateLongitudinal = this.testingScoringCommand;
+        }
+        else if (testType == FIRST_YEAR && studyType == CROSS_SECTIONAL) {
+            this.rCommandFirstYearCrossSectional = this.testingScoringCommand;
+        }
+        else if (testType == FIRST_YEAR && studyType == LONGITUDINAL) {
+            this.rCommandFirstYearLongitudinal = this.testingScoringCommand;
+        }
+        else if (testType == FUTURE && studyType == CROSS_SECTIONAL) {
+            this.rCommandFutureCrossSectional = this.testingScoringCommand;
+        }
+        else if (testType == FUTURE && studyType == LONGITUDINAL) {
+            this.rCommandFutureLongitudinal = this.testingScoringCommand;
+        }
         
         result = this.runCommand(rScriptCommand);
         this.scriptOutput = result;
+        
+        return result;
+    }
+    
+    
+    public DataTable getRScriptOutputFile(String rScriptOutput) throws Exception {
+        String outputFile = null;
         
         //---------------------------------------------------------------
         // Get the Prediction script output
@@ -889,24 +1007,28 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
         Pattern predictionFilePattern = Pattern.compile(predictionFilePatternString);
 
-        String lines[] = scriptOutput.split("\\r?\\n");
+        String lines[] = rScriptOutput.split("\\r?\\n");
         for (String line: lines) {
             Matcher predictionMatcher = predictionFilePattern.matcher(line);
 
             if (predictionMatcher.find()) {
-                predictionOutputFile = predictionMatcher.group(1).trim();
+                outputFile = predictionMatcher.group(1).trim();
                 log.info("Prediction output file pattern found: \"" + predictionOutputFile + "\".");
             }             
         }
         
-        if (predictionOutputFile == null || predictionOutputFile.isEmpty()) {
+        if (outputFile == null || outputFile.isEmpty()) {
             String message = "Can't find output file from validation scoring R script.";
             log.severe(message);
             throw new Exception(message);
         }
         
-        return result;
+        DataTable dataTable = new DataTable(null);
+        dataTable.initializeToCsv(outputFile);
+        
+        return dataTable;
     }
+    
     
 	/** 
 	 * Executes the specified command and returns the output from the command.
@@ -1223,6 +1345,118 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
     public void setPredictionOutputFile(String predictionOutputFile) {
         this.predictionOutputFile = predictionOutputFile;
+    }
+
+    public Date getScoresGeneratedTime() {
+        return scoresGeneratedTime;
+    }
+
+    public void setScoresGeneratedTime(Date scoresGeneratedTime) {
+        this.scoresGeneratedTime = scoresGeneratedTime;
+    }
+
+    public Long getCfeResultsId() {
+        return cfeResultsId;
+    }
+
+    public void setCfeResultsId(Long cfeResultsId) {
+        this.cfeResultsId = cfeResultsId;
+    }
+
+    public String getrScriptOutputFileStateCrossSectional() {
+        return rScriptOutputFileStateCrossSectional;
+    }
+
+    public void setrScriptOutputFileStateCrossSectional(String rScriptOutputFileStateCrossSectional) {
+        this.rScriptOutputFileStateCrossSectional = rScriptOutputFileStateCrossSectional;
+    }
+
+    public String getrScriptOutputFileStateLongitudinal() {
+        return rScriptOutputFileStateLongitudinal;
+    }
+
+    public void setrScriptOutputFileStateLongitudinal(String rScriptOutputFileStateLongitudinal) {
+        this.rScriptOutputFileStateLongitudinal = rScriptOutputFileStateLongitudinal;
+    }
+
+    public String getrScriptOutputFileFirstYearCrossSectional() {
+        return rScriptOutputFileFirstYearCrossSectional;
+    }
+
+    public void setrScriptOutputFileFirstYearCrossSectional(String rScriptOutputFileFirstYearCrossSectional) {
+        this.rScriptOutputFileFirstYearCrossSectional = rScriptOutputFileFirstYearCrossSectional;
+    }
+
+    public String getrScriptOutputFileFirstYearLongitudinal() {
+        return rScriptOutputFileFirstYearLongitudinal;
+    }
+
+    public void setrScriptOutputFileFirstYearLongitudinal(String rScriptOutputFileFirstYearLongitudinal) {
+        this.rScriptOutputFileFirstYearLongitudinal = rScriptOutputFileFirstYearLongitudinal;
+    }
+
+    public String getrScriptOutputFileFutureCrossSectional() {
+        return rScriptOutputFileFutureCrossSectional;
+    }
+
+    public void setrScriptOutputFileFutureCrossSectional(String rScriptOutputFileFutureCrossSectional) {
+        this.rScriptOutputFileFutureCrossSectional = rScriptOutputFileFutureCrossSectional;
+    }
+
+    public String getrScriptOutputFileFutureLongitudinal() {
+        return rScriptOutputFileFutureLongitudinal;
+    }
+
+    public void setrScriptOutputFileFutureLongitudinal(String rScriptOutputFileFutureLongitudinal) {
+        this.rScriptOutputFileFutureLongitudinal = rScriptOutputFileFutureLongitudinal;
+    }
+
+    public String getrCommandStateCrossSectional() {
+        return rCommandStateCrossSectional;
+    }
+
+    public void setrCommandStateCrossSectional(String rCommandStateCrossSectional) {
+        this.rCommandStateCrossSectional = rCommandStateCrossSectional;
+    }
+
+    public String getrCommandStateLongitudinal() {
+        return rCommandStateLongitudinal;
+    }
+
+    public void setrCommandStateLongitudinal(String rCommandStateLongitudinal) {
+        this.rCommandStateLongitudinal = rCommandStateLongitudinal;
+    }
+
+    public String getrCommandFirstYearCrossSectional() {
+        return rCommandFirstYearCrossSectional;
+    }
+
+    public void setrCommandFirstYearCrossSectional(String rCommandFirstYearCrossSectional) {
+        this.rCommandFirstYearCrossSectional = rCommandFirstYearCrossSectional;
+    }
+
+    public String getrCommandFirstYearLongitudinal() {
+        return rCommandFirstYearLongitudinal;
+    }
+
+    public void setrCommandFirstYearLongitudinal(String rCommandFirstYearLongitudinal) {
+        this.rCommandFirstYearLongitudinal = rCommandFirstYearLongitudinal;
+    }
+
+    public String getrCommandFutureCrossSectional() {
+        return rCommandFutureCrossSectional;
+    }
+
+    public void setrCommandFutureCrossSectional(String rCommandFutureCrossSectional) {
+        this.rCommandFutureCrossSectional = rCommandFutureCrossSectional;
+    }
+
+    public String getrCommandFutureLongitudinal() {
+        return rCommandFutureLongitudinal;
+    }
+
+    public void setrCommandFutureLongitudinal(String rCommandFutureLongitudinal) {
+        this.rCommandFutureLongitudinal = rCommandFutureLongitudinal;
     }
 
 }

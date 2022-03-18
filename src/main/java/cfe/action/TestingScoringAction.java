@@ -330,7 +330,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
 
-                    tempFile = FileUtil.createTempFile("state-cross-sectional-r-log",  ".txt");
+                    tempFile = FileUtil.createTempFile("state-cross-sectional-r-log-",  ".txt");
                     FileUtils.write(tempFile, rScriptOutput, "UTF-8");
                     this.rScriptOutputFileStateCrossSectional = tempFile.getAbsolutePath();
                     
@@ -349,7 +349,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
                     
-                    tempFile = FileUtil.createTempFile("state-longitduinal-r-log",  ".txt");
+                    tempFile = FileUtil.createTempFile("state-longitduinal-r-log-",  ".txt");
                     FileUtils.write(tempFile, rScriptOutput, "UTF-8");
                     this.rScriptOutputFileStateLongitudinal = tempFile.getAbsolutePath();
                     
@@ -368,7 +368,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
                     
-                    tempFile = FileUtil.createTempFile("first-year-cross-sectional-r-log",  ".txt");
+                    tempFile = FileUtil.createTempFile("first-year-cross-sectional-r-log-",  ".txt");
                     FileUtils.write(tempFile, rScriptOutput, "UTF-8");
                     this.rScriptOutputFileFirstYearCrossSectional = tempFile.getAbsolutePath();
                                         
@@ -387,7 +387,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
                     
-                    tempFile = FileUtil.createTempFile("first-year-longitudinal-r-log",  ".txt");
+                    tempFile = FileUtil.createTempFile("first-year-longitudinal-r-log-",  ".txt");
                     FileUtils.write(tempFile, rScriptOutput, "UTF-8");
                     this.rScriptOutputFileFirstYearLongitudinal = tempFile.getAbsolutePath();                    
                     
@@ -407,7 +407,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
                     
-                    tempFile = FileUtil.createTempFile("future-cross-sectional-r-log",  ".txt");
+                    tempFile = FileUtil.createTempFile("future-cross-sectional-r-log-",  ".txt");
                     FileUtils.write(tempFile, rScriptOutput, "UTF-8");
                     this.rScriptOutputFileFutureCrossSectional = tempFile.getAbsolutePath();
                                         
@@ -426,7 +426,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
                     
-                    tempFile = FileUtil.createTempFile("future-longitudinal-r-log",  ".txt");
+                    tempFile = FileUtil.createTempFile("future-longitudinal-r-log-",  ".txt");
                     FileUtils.write(tempFile, rScriptOutput, "UTF-8");
                     this.rScriptOutputFileFutureLongitudinal = tempFile.getAbsolutePath();                    
                     
@@ -574,13 +574,22 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         //---------------------------------------------------------
         masterSheetDataTable.sort("Subject", "Visit Date");
         String previousSubject = "";
+        
         int testVisitNumber            = 0;
         int firstYearVisitNumber       = 0;
         int hospitalizationVisitNumber = 0;
         
+        int nonCohortTestVisitNumber            = 101;
+        int nonCohortFirstYearVisitNumber       = 101;
+        int nonCohortHospitalizationVisitNumber = 101;
         
         for (int i = 0; i < masterSheetDataTable.getNumberOfRows(); i++) {
             String subject = masterSheetDataTable.getValue(i, "Subject");
+            
+            String time = masterSheetDataTable.getValue(i, "time");
+            if (time.equalsIgnoreCase("N/A") || time.equalsIgnoreCase("NA")) {
+                masterSheetDataTable.setValue(i, "time", "");
+            }
             
             String testCohort            = masterSheetDataTable.getValue(i, "TestCohort");
             String firstYearCohort       = masterSheetDataTable.getValue(i, "FirstYearCohort");
@@ -609,7 +618,9 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     testVisitNumber = 1;
                 }
                 else {
-                    testVisitNumber = 101;
+                    testVisitNumber = nonCohortTestVisitNumber;
+                    nonCohortTestVisitNumber++;
+                    
                 }
                 
                 if (firstYearCohort.equals("1")) {

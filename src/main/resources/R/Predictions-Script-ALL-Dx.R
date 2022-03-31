@@ -293,6 +293,12 @@ if (stateFirstYearHosp | stateFutureHosp | FIRSTYEARtest | FUTUREtest | DEATHtes
 table <- as.data.frame(setNames(replicate(length(tableColNames),0, simplify = F), tableColNames))
 
 
+
+# supply the source() function with the filepath of the version of the predictor variable you want to use 
+# source("Z:\\Suman\\Suicide project with new guidelines using 2 probesets\\R\\CurrentBatchFunctionFourCornerstones (SG 10-27-2020).R")
+fourCornerstonesScript <- paste(scriptDir, "CurrentBatchFunctionFourCornerstones.R", sep="/")
+source(fourCornerstonesScript)
+
 # for each predictor in your predictorFilePath....
 for (i in 1:(nrow(predictors))) {
   
@@ -304,12 +310,7 @@ for (i in 1:(nrow(predictors))) {
   
   ##Calculate PREDICTOR variable with user inputs
   
-  # supply the source() function with the filepath of the version of the predictor variable you want to use 
-  # source("Z:\\Suman\\Suicide project with new guidelines using 2 probesets\\R\\CurrentBatchFunctionFourCornerstones (SG 10-27-2020).R")
-  fourCornerstonesScript <- paste(scriptDir, "CurrentBatchFunctionFourCornerstones.R", sep="/")
-  source(fourCornerstonesScript)
-  
-  
+ 
   # for each marker, check if the user has requested any analyses
   any.requested <- rowSums(predictors[,! (names(predictors) %in% c("Predictor","Direction"))])[[i]]
   #if not, skip to the next one

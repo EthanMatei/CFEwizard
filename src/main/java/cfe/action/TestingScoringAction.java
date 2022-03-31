@@ -290,7 +290,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 log.info("Uneeded phene columns deleted.");
                 
                 String csv = masterSheet.toCsv();
-                File tempFile = FileUtil.createTempFile("final-master-sheet", ".csv");
+                File tempFile = FileUtil.createTempFile("final-master-sheet-", ".csv");
                 FileUtils.write(tempFile,  csv, "UTF-8");
                 this.finalMasterSheetFile = tempFile.getAbsolutePath();
                 log.info("Final master sheet file created: " + this.finalMasterSheetFile);

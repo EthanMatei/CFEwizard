@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,6 +13,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import cfe.action.CfeResultsAction;
 import cfe.dao.CfeResultsDao;
 import cfe.model.CfeResults;
 import cfe.utils.HibernateUtils;
@@ -19,7 +21,7 @@ import cfe.utils.HibernateUtils;
 
 public class CfeResultsService {
 	
-	private static final Log log = LogFactory.getLog(CfeResultsService.class);
+	private static final Logger log = Logger.getLogger(CfeResultsService.class.getName());
 	
 	
 	public static List<CfeResults> getAll() {

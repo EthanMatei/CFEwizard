@@ -14,7 +14,7 @@ library(coin)
 args = commandArgs(trailingOnly=TRUE)
 if (length(args) != 9) {
   print(paste("Incorrect number of arguments: ", length(args)))
-  stop("Incorrect number of arguments to Validation script")
+  stop("Incorrect number of arguments to Prediction script")
 }
 
 specialPredictorList = NULL;
@@ -32,7 +32,7 @@ outputDir                   <- args[9]
 
 
 # d <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\All Future\\Mastersheet for All Future Predictions Delusions (MDH 4-16-2021).csv")
-d <- read.csv(masterSheetCsvFile)
+d <- read.csv(masterSheetCsvFile, check.names=FALSE)
 
 d <- as.data.frame((d))
 

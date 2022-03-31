@@ -3,13 +3,14 @@ package cfe.services;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import cfe.dao.CfeResultsDao;
 import cfe.dao.DatabaseUploadInfoDao;
 import cfe.model.DatabaseUploadInfo;
 import cfe.utils.HibernateUtils;
@@ -17,7 +18,7 @@ import cfe.utils.HibernateUtils;
 
 public class DatabaseUploadInfoService {
 	
-	private static final Log log = LogFactory.getLog(DatabaseUploadInfoService.class);
+	private static final Logger log = Logger.getLogger(DatabaseUploadInfoService.class.getName());
 	
 	
 	public static List<DatabaseUploadInfo> getAll() {
@@ -58,7 +59,7 @@ public class DatabaseUploadInfoService {
 			tx.commit();
 		}
 		catch (Exception exception)	{
-			log.error( exception.getMessage() );
+			log.severe( exception.getMessage() );
 			tx.rollback();			
 		} 
 		finally	{

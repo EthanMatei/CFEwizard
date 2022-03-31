@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,7 +53,7 @@ import cfe.utils.WebAppProperties;
 public class CfeResultsAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-	private static final Log log = LogFactory.getLog(CfeResultsAction.class);
+	private static final Logger log = Logger.getLogger(CfeResultsAction.class.getName());
 
 	private Map<String, Object> webSession;
 	

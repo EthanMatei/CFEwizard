@@ -101,9 +101,10 @@ public class HibernateUtils {
 					cfe.model.Testing.class,
 					
 					//---------------------------------------
-					// Discovery
+					// All
 					//---------------------------------------
 					cfe.model.CfeResults.class,
+					cfe.model.CfeResultsFile.class,
 					
 					//------------------------------------------
 					// Prioritization

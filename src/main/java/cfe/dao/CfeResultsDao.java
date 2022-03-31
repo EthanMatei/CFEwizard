@@ -1,6 +1,7 @@
 package cfe.dao;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -8,12 +9,13 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import cfe.action.CfeResultsAction;
 import cfe.model.CfeResults;
 
 
 public class CfeResultsDao extends AbstractDao<CfeResults> {
 	
-	private static final Log log = LogFactory.getLog(CfeResultsDao.class);
+	private static final Logger log = Logger.getLogger(CfeResultsDao.class.getName());
 	
 	
 	public CfeResultsDao( Session sess, Transaction tx) {
@@ -26,7 +28,7 @@ public class CfeResultsDao extends AbstractDao<CfeResults> {
 	    String queryString = "Select new CfeResults(cfeResultsId, resultsType, generatedTime, phene, lowCutoff, highCutoff)"
 	        + " from CfeResults";
 	    
-        Query<CfeResults> query = sess.createQuery(queryString);
+        Query<CfeResults> query = sess.createQuery(queryString, CfeResults.class);
         results = query.list();
 	    return results;
 	}

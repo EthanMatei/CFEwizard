@@ -40,12 +40,12 @@ public abstract class AbstractDao<T> extends BaseDao {
 	}
 
 	
-	public void save(T t) throws HibernateException{
+	public void save(T t) throws HibernateException {
 			
 		try {
 			sess.save(t);
 			sess.flush(); // <- Allows you to "see" id after called
-		} catch (HibernateException e){
+		} catch (HibernateException e) {
 			tx.rollback();
 			//e.printStackTrace();
 			log.severe("Hibernate error: " + e.toString());			
@@ -53,8 +53,21 @@ public abstract class AbstractDao<T> extends BaseDao {
 		}
 	}
 	
+    public void saveOrUpdate(T t) throws HibernateException {
+        
+        try {
+            sess.saveOrUpdate(t);
+            sess.flush(); // <- Allows you to "see" id after called
+        } catch (HibernateException e) {
+            tx.rollback();
+            //e.printStackTrace();
+            log.severe("Hibernate error: " + e.toString());         
+            throw e;
+        }
+    }
+    
 	// Use this method for batch inserts
-	public void saveAll(List<T> ts) throws HibernateException{
+	public void saveAll(List<T> ts) throws HibernateException {
 		
 		int count = 1;
 		try {

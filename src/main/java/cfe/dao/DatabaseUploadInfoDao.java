@@ -1,6 +1,7 @@
 package cfe.dao;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,7 +14,7 @@ import cfe.model.DatabaseUploadInfo;
 
 public class DatabaseUploadInfoDao extends AbstractDao<DatabaseUploadInfo> {
 	
-	private static final Log log = LogFactory.getLog(DatabaseUploadInfoDao.class);
+	private static final Logger log = Logger.getLogger(DatabaseUploadInfoDao.class.getName());
 	
 	
 	public DatabaseUploadInfoDao( Session sess, Transaction tx) {

@@ -2,12 +2,14 @@ package cfe.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import cfe.dao.CfeResultsDao;
 import cfe.dao.DiscoveryDao;
 import cfe.model.Discovery;
 import cfe.utils.HibernateUtils;
@@ -15,7 +17,7 @@ import cfe.utils.HibernateUtils;
 
 public class DiscoveryService {
 	
-	private static final Log log = LogFactory.getLog(DiscoveryService.class);
+	private static final Logger log = Logger.getLogger(DiscoveryService.class.getName());
 	
 	public static List<Discovery> getAll() throws ServiceException {
 

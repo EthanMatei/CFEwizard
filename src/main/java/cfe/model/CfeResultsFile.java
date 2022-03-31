@@ -8,13 +8,18 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 
 /**
@@ -24,19 +29,22 @@ import javax.persistence.Transient;
  *
  */
 @Entity
-@Table(name="CfeResultsFile")
+@Table(name="CfeResultsFile", uniqueConstraints = {@UniqueConstraint(columnNames = {"cfeResultsId", "name"})})
 public class CfeResultsFile extends Model implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private Long cfeResultsFileId;
+    private String name;
     private String fileName;
     private String mimeType;
     private Date creationTime;
     private byte[] content;
     
-    private CfeResults cfeResults;  // CfeResults that this file belongs to
+    //private CfeResults cfeResults;  // CfeResults that this file belongs to
 
+    private Long cfeResultsId;
+    
     public CfeResultsFile() {
         super();
     }
@@ -79,6 +87,14 @@ public class CfeResultsFile extends Model implements Serializable {
         this.cfeResultsFileId = dbFileId;
     }
     
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getFileName() {
         return this.fileName;
     }
@@ -112,6 +128,7 @@ public class CfeResultsFile extends Model implements Serializable {
         return this.content;
     }
     
+
     @Transient
     public String getContentAsString() {
         String contentString = "";
@@ -130,4 +147,25 @@ public class CfeResultsFile extends Model implements Serializable {
         byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
         this.content = bytes;
     }
+
+    public Long getCfeResultsId() {
+        return cfeResultsId;
+    }
+
+    public void setCfeResultsId(Long cfeResultsId) {
+        this.cfeResultsId = cfeResultsId;
+    }
+    
+    
+    /*
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="cfeResultsId", unique=true)
+    public CfeResults getCfeResults() {
+        return cfeResults;
+    }
+
+    public void setCfeResults(CfeResults cfeResults) {
+        this.cfeResults = cfeResults;
+    }
+    */
 }

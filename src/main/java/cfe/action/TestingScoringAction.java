@@ -200,7 +200,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 //--------------------------------------------
                 DataTable predictorList = this.createPredictorList(this.testingDataId);
                 if (predictorList == null) {
-                    throw new Exception("Could not create validation predictor list.");
+                    throw new Exception("Could not create testing predictor list.");
                 }
 
                 String predictorListCsv = predictorList.toCsv();
@@ -211,7 +211,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 this.predictorListFile = predictorListCsvTmp.getAbsolutePath();
 
                 if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
-                    throw new Exception("Could not create validation predictor list file.");
+                    throw new Exception("Could not create testing predictor list file.");
                 }
                 log.info("Predictor List file in testing scoring specification: \"" + predictorListFile + "\" created.");
 
@@ -443,7 +443,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 // Save the results in the database
                 CfeResults cfeResults = new CfeResults(
                         resultsWorkbook,
-                        CfeResultsType.ALL_COHORTS_PLUS_VALIDATION_SCORES,
+                        CfeResultsType.ALL_COHORTS_PLUS_ALL_SCORES,
                         this.scoresGeneratedTime, testingData.getPhene(),
                         testingData.getLowCutoff(), testingData.getHighCutoff()
                 );
@@ -1056,7 +1056,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         }
         
         if (outputFile == null || outputFile.isEmpty()) {
-            String message = "Can't find output file from validation scoring R script.";
+            String message = "Can't find output file from Prediction R script.";
             log.severe(message);
             throw new Exception(message);
         }

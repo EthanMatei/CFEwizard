@@ -8,13 +8,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -47,8 +52,12 @@ public class CfeResults implements Serializable {
 	private Integer lowCutoff;
 	private Integer highCutoff;
 	
+	// private Set<CfeResultsFile> cfeResultsFile;
+	
 	public CfeResults() {
 		this.cfeResultsId = null;
+		
+		// this.cfeResultsFile = new HashSet<CfeResultsFile>(0);
 	}
 
 	/**
@@ -259,5 +268,16 @@ public class CfeResults implements Serializable {
     public void setHighCutoff(Integer highCutoff) {
         this.highCutoff = highCutoff;
     }
+
+    /*
+    @OneToMany(fetch=FetchType.EAGER, mappedBy="cfeResults", cascade= {CascadeType.REMOVE, CascadeType.PERSIST})
+    public Set<CfeResultsFile> getCfeResultsFile() {
+        return cfeResultsFile;
+    }
+
+    public void setCfeResultsFile(Set<CfeResultsFile> cfeResultsFile) {
+        this.cfeResultsFile = cfeResultsFile;
+    }
+    */
 	
 }

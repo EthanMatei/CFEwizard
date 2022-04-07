@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,20 +31,28 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name="CfeResultsFile", uniqueConstraints = {@UniqueConstraint(columnNames = {"cfeResultsId", "name"})})
-public class CfeResultsFile extends Model implements Serializable {
+public class CfeResultsFile implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id @GeneratedValue(strategy=IDENTITY)
     private Long cfeResultsFileId;
+    
     private String name;
     private String fileName;
     private String mimeType;
     private Date creationTime;
+
+    @Lob
+    @Column(name="content", nullable=true, columnDefinition="mediumblob")
     private byte[] content;
     
-    //private CfeResults cfeResults;  // CfeResults that this file belongs to
+    @ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinColumn(name="cfeResultsId", unique=true)
+    private CfeResults cfeResults;  // CfeResults that this file belongs to
 
-    private Long cfeResultsId;
+
+    //private Long cfeResultsId;
     
     public CfeResultsFile() {
         super();
@@ -77,14 +86,12 @@ public class CfeResultsFile extends Model implements Serializable {
         this.creationTime = new Date();
     }
     
-    @Id @GeneratedValue(strategy=IDENTITY)
-    @Column(unique=true, nullable=false)
     public Long getCfeResultsFileId() {
         return this.cfeResultsFileId;
     }
 
-    public void setCfeResultsFileId(Long dbFileId) {
-        this.cfeResultsFileId = dbFileId;
+    public void setCfeResultsFileId(Long cfeResultsFileId) {
+        this.cfeResultsFileId = cfeResultsFileId;
     }
     
     public String getName() {
@@ -122,8 +129,7 @@ public class CfeResultsFile extends Model implements Serializable {
         this.creationTime = creationTime;
     }
     
-    @Lob
-    @Column(name="content", nullable=true, columnDefinition="mediumblob")
+
     public byte[] getContent() {
         return this.content;
     }
@@ -148,6 +154,8 @@ public class CfeResultsFile extends Model implements Serializable {
         this.content = bytes;
     }
 
+    
+    /*
     public Long getCfeResultsId() {
         return cfeResultsId;
     }
@@ -155,11 +163,8 @@ public class CfeResultsFile extends Model implements Serializable {
     public void setCfeResultsId(Long cfeResultsId) {
         this.cfeResultsId = cfeResultsId;
     }
+    */
     
-    
-    /*
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="cfeResultsId", unique=true)
     public CfeResults getCfeResults() {
         return cfeResults;
     }
@@ -167,5 +172,4 @@ public class CfeResultsFile extends Model implements Serializable {
     public void setCfeResults(CfeResults cfeResults) {
         this.cfeResults = cfeResults;
     }
-    */
 }

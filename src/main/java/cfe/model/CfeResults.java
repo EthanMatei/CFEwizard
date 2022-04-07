@@ -43,16 +43,22 @@ public class CfeResults implements Serializable {
 
 	private Date generatedTime;
 
+    @Lob
+    @Column(name="results", nullable=true, columnDefinition="mediumblob")
 	private byte[] results;
 	
 	private String resultsType;
 	
+    @Lob
+    @Column(nullable=true, columnDefinition="mediumtext")
 	private String discoveryRScriptLog;
+    
 	private String phene;
 	private Integer lowCutoff;
 	private Integer highCutoff;
 	
-	// private Set<CfeResultsFile> cfeResultsFile;
+    @OneToMany(fetch=FetchType.EAGER, targetEntity=CfeResultsFile.class, mappedBy="cfeResults", cascade= {CascadeType.REMOVE, CascadeType.PERSIST})
+	private Set<CfeResultsFile> cfeResultsFile;
 	
 	public CfeResults() {
 		this.cfeResultsId = null;
@@ -162,8 +168,6 @@ public class CfeResults implements Serializable {
     }
 
     
-    @Lob
-    @Column(name="results", nullable=true, columnDefinition="mediumblob")
     public byte[] getResults() {
         return results;
     }
@@ -227,8 +231,6 @@ public class CfeResults implements Serializable {
         return dataTableMap;
     }
     
-    @Lob
-    @Column(nullable=true, columnDefinition="mediumtext")
     public String getDiscoveryRScriptLog() {
         return this.discoveryRScriptLog;
     }
@@ -269,8 +271,6 @@ public class CfeResults implements Serializable {
         this.highCutoff = highCutoff;
     }
 
-    /*
-    @OneToMany(fetch=FetchType.EAGER, mappedBy="cfeResults", cascade= {CascadeType.REMOVE, CascadeType.PERSIST})
     public Set<CfeResultsFile> getCfeResultsFile() {
         return cfeResultsFile;
     }
@@ -278,6 +278,5 @@ public class CfeResults implements Serializable {
     public void setCfeResultsFile(Set<CfeResultsFile> cfeResultsFile) {
         this.cfeResultsFile = cfeResultsFile;
     }
-    */
 	
 }

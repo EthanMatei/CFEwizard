@@ -2,6 +2,8 @@ package cfe.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,10 +12,15 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 //import org.hibernate.service.ServiceRegistryBuilder;
 
+import cfe.action.CfeResultsAction;
+
 
 // http://stackoverflow.com/questions/8621906/is-buildsessionfactory-deprecated-in-hibernate-4 
 // http://stackoverflow.com/questions/8640619/hibernate-serviceregistrybuilder
 public class HibernateUtils {
+    
+    private static final Logger log = Logger.getLogger(HibernateUtils.class.getName());
+    
 	public static int BATCH_SIZE = 200;
 	
 	public static String BATCH_SIZE_STR =  "200";
@@ -181,8 +188,7 @@ public class HibernateUtils {
 			return sessionFactory;			 
 			
 		} catch (Throwable ex) {
-
-			System.err.println("Initial SessionFactory creation failed. " + ex); 
+            log.severe("Hibernate initialization error: " + ex.getLocalizedMessage());
 			ex.printStackTrace();
 			throw new ExceptionInInitializerError(ex);
 		}

@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -57,13 +59,13 @@ public class CfeResults implements Serializable {
 	private Integer lowCutoff;
 	private Integer highCutoff;
 	
-    @OneToMany(fetch=FetchType.EAGER, targetEntity=CfeResultsFile.class, mappedBy="cfeResults", cascade= {CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToMany(fetch=FetchType.EAGER, targetEntity=CfeResultsFile.class, mappedBy="cfeResults", cascade=CascadeType.ALL)
 	private Set<CfeResultsFile> cfeResultsFile;
 	
 	public CfeResults() {
 		this.cfeResultsId = null;
 		
-		// this.cfeResultsFile = new HashSet<CfeResultsFile>(0);
+		this.cfeResultsFile = new HashSet<CfeResultsFile>(0);
 	}
 
 	/**
@@ -88,6 +90,8 @@ public class CfeResults implements Serializable {
         this.highCutoff         = highCutoff;
         
         this.results = null;
+        
+        this.cfeResultsFile = new HashSet<CfeResultsFile>(0);
     }
 
     public CfeResults(
@@ -110,6 +114,8 @@ public class CfeResults implements Serializable {
         this.phene              = phene;
         this.lowCutoff          = lowCutoff;
         this.highCutoff         = highCutoff;
+        
+        this.cfeResultsFile = new HashSet<CfeResultsFile>(0);
     }
 /*
     public CfeResults(
@@ -277,6 +283,50 @@ public class CfeResults implements Serializable {
 
     public void setCfeResultsFile(Set<CfeResultsFile> cfeResultsFile) {
         this.cfeResultsFile = cfeResultsFile;
+    }
+    
+    @Transient Map<String, CfeResultsFile> getCfeResultsFileMap() {
+        Map<String, CfeResultsFile> map = new HashMap<String, CfeResultsFile>();
+        
+        for (CfeResultsFile file: this.getCfeResultsFile()) {
+            map.put(file.getFileType(), file);
+        }
+        
+        return map;
+    }
+    
+    
+    @Transient
+    /**
+     * Gets the file with the specified type and returns it, or null, if the
+     * file is not founds.
+     * 
+     * @param fileType the type of the file to get.
+     * @return
+     */
+    public CfeResultsFile getFile(String fileType) {
+        CfeResultsFile file = null;
+        for (CfeResultsFile searchFile: this.getCfeResultsFile()) {
+            if (searchFile.getFileType().contentEquals(fileType)) {
+                file = searchFile;
+                break;
+            }
+        }
+        return file;
+    }
+    
+    public void addTextFile(String fileType, String content) {
+        CfeResultsFile file = new CfeResultsFile();
+        file.setToTextFile(fileType, content);
+        file.setCfeResults(this);   // Set the file's parent to this object
+        this.cfeResultsFile.add(file);
+    }
+    
+    public void addCsvFile(String fileType, String content) {
+        CfeResultsFile file = new CfeResultsFile();
+        file.setToCsvFile(fileType, content);
+        file.setCfeResults(this);   // Set the file's parent to this object
+        this.cfeResultsFile.add(file);
     }
 	
 }

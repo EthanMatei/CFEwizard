@@ -30,7 +30,7 @@ import javax.persistence.UniqueConstraint;
  *
  */
 @Entity
-@Table(name="CfeResultsFile", uniqueConstraints = {@UniqueConstraint(columnNames = {"cfeResultsId", "name"})})
+@Table(name="CfeResultsFile", uniqueConstraints = {@UniqueConstraint(columnNames = {"cfeResultsId", "fileType"})})
 public class CfeResultsFile implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,9 +38,13 @@ public class CfeResultsFile implements Serializable {
     @Id @GeneratedValue(strategy=IDENTITY)
     private Long cfeResultsFileId;
     
-    private String name;
-    private String fileName;
+    // CfeResultsFileType
+    private String fileType;
+
     private String mimeType;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="creationTime", nullable=false)
     private Date creationTime;
 
     @Lob
@@ -65,8 +69,8 @@ public class CfeResultsFile implements Serializable {
      * @param mimeType
      * @param content
      */
-    public CfeResultsFile(String fileName, String mimeType, byte[] content) {
-        this.fileName = fileName;
+    public CfeResultsFile(String fileType, String mimeType, byte[] content) {
+        this.fileType = fileType;
         this.mimeType = mimeType;
         this.content  = content;
         this.creationTime = new Date();
@@ -79,9 +83,23 @@ public class CfeResultsFile implements Serializable {
      * @param mimeType
      * @param content
      */
-    public CfeResultsFile(String fileName, String mimeType, String content) {
-        this.fileName = fileName;
+    public CfeResultsFile(String fileType, String mimeType, String content) {
+        this.fileType = fileType;
         this.mimeType = mimeType;
+        this.content  = content.getBytes(StandardCharsets.UTF_8);
+        this.creationTime = new Date();
+    }
+    
+    public void setToTextFile(String fileType, String content) {
+        this.fileType = fileType;
+        this.mimeType = "text/plain";
+        this.content  = content.getBytes(StandardCharsets.UTF_8);
+        this.creationTime = new Date();
+    }
+    
+    public void setToCsvFile(String fileType, String content) {
+        this.fileType = fileType;
+        this.mimeType = "text/csv";
         this.content  = content.getBytes(StandardCharsets.UTF_8);
         this.creationTime = new Date();
     }
@@ -93,21 +111,13 @@ public class CfeResultsFile implements Serializable {
     public void setCfeResultsFileId(Long cfeResultsFileId) {
         this.cfeResultsFileId = cfeResultsFileId;
     }
-    
-    public String getName() {
-        return name;
+
+    public String getFileType() {
+        return fileType;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFileName() {
-        return this.fileName;
-    }
-    
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
     
     public String getMimeType() {
@@ -118,9 +128,6 @@ public class CfeResultsFile implements Serializable {
         this.mimeType = mimeType;
     }
 
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="creationTime", nullable=false, length=0)
     public Date getCreationTime() {
         return this.creationTime;
     }
@@ -171,5 +178,20 @@ public class CfeResultsFile implements Serializable {
 
     public void setCfeResults(CfeResults cfeResults) {
         this.cfeResults = cfeResults;
+    }
+    
+    @Transient
+    public String getFileSuffix() {
+        String suffix = "";
+        if (this.mimeType.equals("text/plain")) {
+            suffix = ".txt";
+        }
+        else if (this.mimeType.equals("text/csv")) {
+            suffix = ".csv";
+        }
+        else {
+            suffix = ".txt";
+        }
+        return suffix;
     }
 }

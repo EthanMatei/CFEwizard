@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import com.healthmarketscience.jackcess.Table;
 import com.opencsv.CSVReader;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsFile;
+import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
@@ -360,6 +363,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 CfeResults cfeResults = new CfeResults(cohortWorkbook, CfeResultsType.DISCOVERY_COHORT,
                         this.cohortGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
+                cfeResults.addCsvFile(CfeResultsFileType.DISCOVERY_COHORT, cohort.toCsv());
+                cfeResults.addCsvFile(CfeResultsFileType.DISCOVERY_COHORT_INFO, infoTable.toCsv());
+                
                 CfeResultsService.save(cfeResults);
                 this.cfeResultsId = cfeResults.getCfeResultsId();
 			} catch (Exception exception) {

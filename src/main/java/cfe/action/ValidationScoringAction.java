@@ -7,9 +7,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +26,8 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.opencsv.CSVReader;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsFile;
+import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
@@ -389,6 +393,14 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 
                 cfeResults.setDiscoveryRScriptLog(validationData.getDiscoveryRScriptLog());
                 log.info("Added discovery R script log text to cfeResults.");
+                
+                Set<CfeResultsFile> cfeResultsFiles = new HashSet<CfeResultsFile>();
+                CfeResultsFile cfeResultsFile =
+                        new CfeResultsFile(CfeResultsFileType.VALIDATION_R_SCRIPT_LOG, "text/plain", this.scriptOutput);
+                
+                cfeResultsFiles.add(cfeResultsFile);
+                
+                cfeResults.setCfeResultsFile(cfeResultsFiles);
                 
                 CfeResultsService.save(cfeResults);
                 log.info("cfeResults object saved.");

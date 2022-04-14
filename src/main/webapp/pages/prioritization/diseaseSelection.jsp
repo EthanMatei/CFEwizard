@@ -218,6 +218,20 @@ function selectBox(element) {
 
 <s:actionerror />
 
+<p>
+Import a diseases CSV file with columns "Domain", "SubDomain", "Relavant Disorder", "Coefficient". <b>OR</b>,
+manually select diseases and enter coefficients.
+</p>
+
+<%-- Diseases import form --%>
+<div style="border: 1px solid #222222; padding: 4px; margin-bottom: 32px;">
+<h4>Diseases CSV File Import</h4>
+<s:form id ="importDiseases" action="PrioritizationDiseasesImport" method="post" enctype="multipart/form-data">
+    <s:file name="diseasesImport" label="Disease Selection CSV File" />
+    <s:submit value="Import"/>
+    <s:token />
+</s:form>
+</div>
 
 <s:form action="PrioritizationDiseaseSelectionProcess" theme="simple" cssStyle="margin-bottom: 10px;">
     <s:hidden name="score" />

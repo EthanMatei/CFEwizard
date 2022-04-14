@@ -448,6 +448,18 @@
             </result>
 		</action>
 		
+		<!--  For processing of import of diseases (an alternative to selecting them manually) -->
+	    <action name="PrioritizationDiseasesImport" class="cfe.action.prioritization.DiseaseSelectionAction" method="importDiseases">
+			<interceptor-ref name="cfeStack"/>
+			<result name="success" type="redirectAction">
+                <param name="actionName">PrioritizationCalculateScores</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
 		<!--  Step 4 -->
 		<action name="PrioritizationCalculateScores" class="cfe.action.prioritization.CalculateScores">
 				<interceptor-ref name="basicStack"/>

@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -327,6 +328,19 @@ public class CfeResults implements Serializable {
         file.setToCsvFile(fileType, content);
         file.setCfeResults(this);   // Set the file's parent to this object
         this.cfeResultsFile.add(file);
+    }
+    
+    @Transient
+    /**
+     * Gets the set of all file types (whether generated, imported, or both)
+     * @return
+     */
+    public Set<String> getFileTypes() {
+        Set<String> set = new TreeSet<String>();  // Use TreeSet, so file types are ordered alphabetically
+        for (CfeResultsFile file: this.cfeResultsFile) {
+            set.add(file.getFileType());
+        }
+        return set;
     }
 	
 }

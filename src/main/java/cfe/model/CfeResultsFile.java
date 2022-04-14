@@ -5,6 +5,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -58,8 +60,22 @@ public class CfeResultsFile implements Serializable, Comparable<CfeResultsFile> 
     @JoinColumn(name="cfeResultsId", unique=true)
     private CfeResults cfeResults;  // CfeResults that this file belongs to
 
-
-    //private Long cfeResultsId;
+    // Import file version (want to be able to store generated and imported file so they could be compared for differences)
+    // NOTE: Don't want to allow import of info files, since these are metadata files, which are not used in calculations, and might
+    // have info on what files were imported and generated ???
+    // Note: Also don't want to allow import of script files ??? - might if script is run externally
+    /*
+    private String importFileName;
+    private Date importTime;
+    
+    @Lob
+    @Column(name="content", nullable=true, columnDefinition="mediumblob")
+    private byte[] importContent;
+    
+    @Lob
+    @Column(nullable=true, columnDefinition="text")
+    String importComment;
+    */
     
     @Override
     public int compareTo(CfeResultsFile file) {
@@ -217,4 +233,5 @@ public class CfeResultsFile implements Serializable, Comparable<CfeResultsFile> 
         fileName = this.fileType + this.getFileSuffix();
         return fileName;
     }
+    
 }

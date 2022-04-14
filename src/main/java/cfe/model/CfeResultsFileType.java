@@ -12,6 +12,7 @@ import java.util.List;
 public class CfeResultsFileType {
     
     public final static String DISCOVERY_COHORT      = "discovery_cohort";
+    public final static String DISCOVERY_COHORT_DATA = "discovery_cohort_data";
     public final static String DISCOVERY_COHORT_INFO = "discovery_cohort_info";
     
     public final static String DISCOVERY_R_SCRIPT_LOG = "discovery_r_script_log";

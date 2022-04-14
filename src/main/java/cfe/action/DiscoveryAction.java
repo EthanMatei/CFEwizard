@@ -363,7 +363,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 CfeResults cfeResults = new CfeResults(cohortWorkbook, CfeResultsType.DISCOVERY_COHORT,
                         this.cohortGeneratedTime, this.pheneSelection,
                         lowCutoff, highCutoff);
+                
+                // Save all the discovery cohort data files
                 cfeResults.addCsvFile(CfeResultsFileType.DISCOVERY_COHORT, cohort.toCsv());
+                cfeResults.addCsvFile(CfeResultsFileType.DISCOVERY_COHORT_DATA, cohortData.toCsv());
                 cfeResults.addCsvFile(CfeResultsFileType.DISCOVERY_COHORT_INFO, infoTable.toCsv());
                 
                 CfeResultsService.save(cfeResults);

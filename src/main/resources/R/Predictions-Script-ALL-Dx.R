@@ -39,10 +39,17 @@ d <- as.data.frame((d))
 # Set VisitNumber column on master sheet based on the test type
 if (testType == "state") {
   names(d)[names(d) == "Test.VisitNumber"] <- "VisitNumber"
+  # doesn't need time
 } else if (testType == "first-year") {
   names(d)[names(d) == "FirstYear.VisitNumber"] <- "VisitNumber"
+  
+  # Change time column name: "Time to 1st Hosp" => "time"
+  names(d)[names(d) == "Time to 1st Hosp"] <- "time"
 }  else if (testType == "future") {
   names(d)[names(d) == "Hospitilization.VisitNumber"] <- "VisitNumber"
+  
+  # Change time column name: "Time Future" => "time"
+  names(d)[names(d) == "Time Future"] <- "time"
 }
 
 d[] <- lapply(d, function(x) type.convert(as.vector(x)))

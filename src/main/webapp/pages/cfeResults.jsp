@@ -15,7 +15,7 @@
 
 <table class="dataTable">
     <tr>
-        <th>Results</th> <th>Results Type</th>
+        <th>Results</th> <th>Results Type</th> <th>Details</th>
         <th>Time Generated</th>
         <th>Phene</th> <th>Phene Low Cutoff</th> <th>Phene High Cutoff</th>
         <th>Discovery R Script Log</th>
@@ -32,6 +32,12 @@
                  </s:a>
             </td>
             <td> <s:property value="resultsType"/> </td>
+            <td>
+                <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
+                    <s:param name="cfeResultsId" value="cfeResultsId" />
+                    details
+                 </s:a>
+            </td>
             <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
             <td> <s:property value="phene"/> </td>
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>

@@ -4,12 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsFile;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 
@@ -35,6 +38,8 @@ public class CfeResultsDetailAction extends BaseAction implements SessionAware {
 	private Long cfeResultsId;
 	
 	private CfeResults cfeResults;
+	
+	private Set<CfeResultsFile> cfeResultsFiles = new TreeSet<CfeResultsFile>();
     
 	public String execute() throws Exception {
 		String result = SUCCESS;
@@ -45,6 +50,8 @@ public class CfeResultsDetailAction extends BaseAction implements SessionAware {
 		else {
 		    try {
 		        this.cfeResults = CfeResultsService.get(this.cfeResultsId);
+		        
+		        this.cfeResultsFiles = cfeResults.getCfeResultsFile();
 		        
 		        this.tempDir = System.getProperty("java.io.tmpdir");
 		        
@@ -107,6 +114,14 @@ public class CfeResultsDetailAction extends BaseAction implements SessionAware {
 
     public void setCfeResults(CfeResults cfeResults) {
         this.cfeResults = cfeResults;
+    }
+
+    public Set<CfeResultsFile> getCfeResultsFiles() {
+        return cfeResultsFiles;
+    }
+
+    public void setCfeResultsFiles(Set<CfeResultsFile> cfeResultsFiles) {
+        this.cfeResultsFiles = cfeResultsFiles;
     }
 
 }

@@ -210,4 +210,11 @@ public class CfeResultsFile implements Serializable, Comparable<CfeResultsFile> 
         }
         return suffix;
     }
+    
+    @Transient
+    public String getFileName() {
+        String fileName = "";
+        fileName = this.fileType + this.getFileSuffix();
+        return fileName;
+    }
 }

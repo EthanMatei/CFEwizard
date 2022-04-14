@@ -34,18 +34,25 @@
     </tr>
 </table>
 
+
+<h3 style="margin-top: 24px; margin-bottom: 4px;">Files</h3>
+
 <table class="dataTable">       
+    <tr><th>File Type</th><th>File</th></tr>
+        
     <s:iterator value="cfeResultsFiles" var="file">
+
         <tr>
             <td>
                 <s:property value="fileType"/>
             </td>
-            <%--
-                <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
-                    <s:param name="cfeResultsId" value="cfeResultsId" />
-                    results.xlsx
-                 </s:a>
-            --%>
+            
+            <td>
+               <s:a action="CfeResultsFileDisplay" title="Discovery Cohort">
+                   <s:param name="cfeResultsId" value="cfeResultsId" />
+                   <s:param name="fileType" value="fileType" />
+                   <s:property value="fileName" />
+               </s:a>       
         </tr>
     </s:iterator>
 </table>

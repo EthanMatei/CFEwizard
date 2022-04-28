@@ -721,8 +721,13 @@ public class DataTable {
             	value = value.trim();
             	
             	if (INT_PATTERN.matcher(value).matches()) {
-            	    int ivalue = Integer.parseInt(value);
-                    xlsxRow.createCell(i).setCellValue(ivalue);
+            	    try {
+            	        int ivalue = Integer.parseInt(value);
+                        xlsxRow.createCell(i).setCellValue(ivalue);
+            	    } catch (NumberFormatException exception) {
+            	        // Can get this if the number is too large, which can happen for PubMed IDs
+                        xlsxRow.createCell(i).setCellValue(value);
+            	    }
             	}
             	else if (FLOAT_PATTERN.matcher(value).matches()) {
             		double dvalue = Double.parseDouble(value);

@@ -60,7 +60,7 @@ Testing Master Sheet:
 </s:a>
 </p>
 
-<s:form action="TestingScoringCalculation" theme="simple">
+<s:form action="TestingScoringCalculation" theme="simple" style="margin-bottom: 14px;">
    <s:hidden name="predictorListFile"/>
    <s:hidden name="specialPredictorListTempFile"/>
    <s:hidden name="testingDataId"/>

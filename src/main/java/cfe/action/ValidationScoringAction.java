@@ -394,13 +394,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 cfeResults.setDiscoveryRScriptLog(validationData.getDiscoveryRScriptLog());
                 log.info("Added discovery R script log text to cfeResults.");
                 
-                Set<CfeResultsFile> cfeResultsFiles = new HashSet<CfeResultsFile>();
-                CfeResultsFile cfeResultsFile =
-                        new CfeResultsFile(CfeResultsFileType.VALIDATION_R_SCRIPT_LOG, "text/plain", this.scriptOutput);
-                
-                cfeResultsFiles.add(cfeResultsFile);
-                
-                cfeResults.setCfeResultsFile(cfeResultsFiles);
+                // cfeResults.addTextFile(CfeResultsFileType.VALIDATION_R_SCRIPT_LOG, this.scriptOutput);
                 
                 CfeResultsService.save(cfeResults);
                 log.info("cfeResults object saved.");
@@ -413,9 +407,12 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
             catch (Exception exception) {
                 result = ERROR;
                 if (exception != null) {
-                    this.setErrorMessage("Validation scoring failed: " + exception.getLocalizedMessage());
+                    String message = "Validation scoring failed: " + exception.getLocalizedMessage();
+                    this.setErrorMessage(message);
                     String stackTrace = ExceptionUtils.getStackTrace(exception);
                     this.setExceptionStack(stackTrace);
+                    log.severe(message);
+                    log.severe(stackTrace);
                 }
             }
         }

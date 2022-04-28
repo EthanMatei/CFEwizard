@@ -46,7 +46,7 @@ if (testType == "state") {
   # Change time column name: "Time to 1st Hosp" => "time"
   names(d)[names(d) == "Time to 1st Hosp"] <- "time"
 }  else if (testType == "future") {
-  names(d)[names(d) == "Hospitilization.VisitNumber"] <- "VisitNumber"
+  names(d)[names(d) == "Hospitalization.VisitNumber"] <- "VisitNumber"
   
   # Change time column name: "Time Future" => "time"
   names(d)[names(d) == "Time Future"] <- "time"

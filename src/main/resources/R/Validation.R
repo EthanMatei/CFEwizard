@@ -100,7 +100,6 @@ wants <- c("ROCR", "verification")
 sapply(wants, require, character.only = TRUE)
 #options(guiToolkit="tcltk")
 
-
 # load data needed 
 data <- read.csv(file=masterSheetCsvFile, header = TRUE, check.names = FALSE, na.strings=c("NA", "na","Na" , ""))
 
@@ -336,10 +335,13 @@ for (i in 1:(nrow(predictors))) {
 
 
 table <- table[-1,] #remove first placeholder row
+
+currentTimeStamp = Sys.time()
+
 if (correctTies ) {
-  csvOutput <- paste0(csvOutputFolder, "/predictions output CORRECT TIES ", testName, Sys.Date())
+  csvOutput <- paste0(csvOutputFolder, "/predictions output CORRECT TIES ", testName, " ", currentTimeStamp)
 } else {
-  csvOutput <- paste0(csvOutputFolder, "/predictions output", testName, Sys.Date())
+  csvOutput <- paste0(csvOutputFolder, "/predictions output", testName, " ", currentTimeStamp)
 }
 
 if (LEVELS){

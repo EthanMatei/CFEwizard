@@ -289,7 +289,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 }
                 log.info("Uneeded phene columns deleted.");
                 
-                String csv = masterSheet.toCsv();
+                boolean convertDatesToTimestamps = false;
+                String csv = masterSheet.toCsv(convertDatesToTimestamps);
                 File tempFile = FileUtil.createTempFile("final-master-sheet-", ".csv");
                 FileUtils.write(tempFile,  csv, "UTF-8");
                 this.finalMasterSheetFile = tempFile.getAbsolutePath();
@@ -517,6 +518,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         
         masterSheetDataTable.moveColumn("Visit Date", 3);
         
+        masterSheetDataTable.convertTimestampsToDates(3);
+        
         masterSheetDataTable.moveColumn("Demographics.PheneVisit", 4);
         
         masterSheetDataTable.insertColumn("dx", 5, "");
@@ -612,35 +615,56 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
             
             if (!subject.equals(previousSubject)) {
                 previousSubject = subject;
-
-                
+              
                 if (testCohort.equals("1")) {
                     testVisitNumber = 1;
                 }
                 else {
                     testVisitNumber = nonCohortTestVisitNumber;
                     nonCohortTestVisitNumber++;
-                    
                 }
                 
                 if (firstYearCohort.equals("1")) {
                     firstYearVisitNumber = 1;
                 }
                 else {
-                    firstYearVisitNumber = 101;
+                    firstYearVisitNumber = nonCohortFirstYearVisitNumber;
+                    nonCohortFirstYearVisitNumber++;
                 }
                 
                 if (hospitalizationCohort.equals("1")) {
                     hospitalizationVisitNumber = 1;
                 }
                 else {
-                    hospitalizationVisitNumber = 101;
+                    hospitalizationVisitNumber = nonCohortHospitalizationVisitNumber;
+                    nonCohortHospitalizationVisitNumber++;
                 }
             }
             else {
-                testVisitNumber++;
-                firstYearVisitNumber++;
-                hospitalizationVisitNumber++;
+                
+                if (testCohort.equals("1")) {
+                    testVisitNumber++;
+                }
+                else {
+                    testVisitNumber = nonCohortTestVisitNumber;
+                    nonCohortTestVisitNumber++;
+                }
+                
+                if (firstYearCohort.equals("1")) {
+                    firstYearVisitNumber++;
+                }
+                else {
+                    firstYearVisitNumber = nonCohortFirstYearVisitNumber;
+                    nonCohortFirstYearVisitNumber++;
+                }
+                
+                if (hospitalizationCohort.equals("1")) {
+                    hospitalizationVisitNumber++;
+                }
+                else {
+                    hospitalizationVisitNumber = nonCohortHospitalizationVisitNumber;
+                    nonCohortHospitalizationVisitNumber++;
+                }
             }
             
             masterSheetDataTable.setValue(i, "Hospitalization.VisitNumber", hospitalizationVisitNumber + "");
@@ -723,7 +747,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         //-----------------------------)--------------------------
         // Write the master sheet to a CSV file
         //-------------------------------------------------------
-        String masterSheetCsv = masterSheetDataTable.toCsv();
+        boolean convertDatesToTimestamps = false;
+        String masterSheetCsv = masterSheetDataTable.toCsv(convertDatesToTimestamps);
         File testingMasterSheetCsvTmp = FileUtil.createTempFile("testing-master-sheet-",  ".csv");
         if (masterSheetCsv != null) {
             FileUtils.write(testingMasterSheetCsvTmp, masterSheetCsv, "UTF-8");

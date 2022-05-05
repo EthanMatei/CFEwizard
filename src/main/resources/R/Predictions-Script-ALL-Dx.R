@@ -33,6 +33,8 @@ outputDir                   <- args[9]
 
 # d <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\All Future\\Mastersheet for All Future Predictions Delusions (MDH 4-16-2021).csv")
 d <- read.csv(masterSheetCsvFile, check.names=FALSE)
+names(d)[names(d) == "Visit Date"] <- "Visit.Date"
+# d <- read.csv(masterSheetCsvFile)
 
 d <- as.data.frame((d))
 
@@ -64,15 +66,16 @@ d[] <- lapply(d, function(x) type.convert(as.vector(x)))
 
 ###predictorFilePath <- "Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\Delusions Predictor List for P1 (MDH 5-31-2021).csv"
 predictorFilePath <- predictorListCsvFile
+
 # load list of predictors with the silos you want to test
 predictors <- read.csv(predictorFilePath)
+predictorz <- predictors
 
-if (specialPredictorListCsvFile == NULL || specialPredictorListCsvFile == "") {
-    predictorz <- predictors
-} else {
-    # predictorz <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\Delusions Predictor List (MDH 4-16-2021).csv")
-    predictorz <-read.csv(specialPredictorListCsvFile)
+if (!is.null(specialPredictorListCsvFile) && specialPredictorListCsvFile != "") {
+  predictorFilePath <- specialPredictorListCsvFile
+  predictors <-read.csv(specialPredictorListCsvFile)
 }
+
 
 predictors_increase <- predictorz[predictorz$Direction == "I",]
 predictors_decrease <- predictorz[predictorz$Direction == "D",]

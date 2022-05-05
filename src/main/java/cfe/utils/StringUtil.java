@@ -62,6 +62,22 @@ public class StringUtil {
         }
         return value;
     }    
+ 
+    
+    public static String timestampToMdyDate(String value) {
+        SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("M/d/yy");
+
+        try {
+            Date date = inputDateFormat.parse( value );
+            value = outputDateFormat.format( date ); 
+        }
+        catch (ParseException exception) {
+            ;
+        }
+        return value;
+    }
+    
     
     public static String expandMdyDate(String value) {
         SimpleDateFormat inputDateFormat = new SimpleDateFormat("M/d/yy");
@@ -76,6 +92,7 @@ public class StringUtil {
         }
         return value;
     }
+
     
     public static int compareTo(String value1, String value2) {
         int compare = 0;

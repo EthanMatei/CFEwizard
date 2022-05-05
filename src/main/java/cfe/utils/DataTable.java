@@ -424,6 +424,15 @@ public class DataTable {
         }
 	}
 	
+	public void convertTimestampsToDates(int columnIndex) throws Exception {
+        for (int rowIndex = 0; rowIndex < this.data.size(); rowIndex++) {
+            String originalDate = this.data.get(rowIndex).get(columnIndex);
+            String newDate = StringUtil.timestampToMdyDate(originalDate);
+            this.setValue(rowIndex, columnIndex, newDate);
+        }
+	}
+	
+	
 	public List<String[]> getValuesAsListOfArrays() {
 		List<String[]> values = new ArrayList<String[]>();
 		
@@ -571,63 +580,74 @@ public class DataTable {
 		return merge;
 	}
 
+	public String toCsv(boolean convertDatesToTimestamps) {
+        StringBuffer csv = new StringBuffer();
+        //csv.append(this.key);
+        boolean first = true;
+        for (String column: this.columns) {
+            column = "\"" + column + "\"";
+            
+            if (first) {
+                csv.append(column);
+                first = false;
+            }
+            else {
+                csv.append("," + column);
+            }
+        }
+        csv.append("\n");
+        
+        for (ArrayList<String> dataRow: this.data) {
+            //csv.append(entry.getKey());
+            first = true;
+            for (String value: dataRow) {
+                if (first) {
+                    first = false;
+                }
+                else {
+                    csv.append(",");
+                }
+                
+                value = value.trim();
+                
+                if (INT_PATTERN.matcher(value).matches()) {
+                    csv.append(value);
+                }
+                else if (FLOAT_PATTERN.matcher(value).matches()) {
+                    csv.append(value);
+                }
+                else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
+                    csv.append(value);
+                }
+                else if (StringUtil.isMdyDate(value)) {
+                    if (convertDatesToTimestamps) {
+                        String timestamp = StringUtil.mdyDateToTimestamp(value);
+                        csv.append(timestamp);
+                    }
+                    else {
+                        csv.append(value);
+                    }
+                }
+                else {
+                    String modifiedValue = value;
+                    modifiedValue = modifiedValue.replace("\"",  "\"\"");
+                    csv.append("\"" + modifiedValue + "\"");
+                }
+            }
+            csv.append("\n");
+        }
+        return csv.toString();	
+	}
+	
 	/**
 	 * Converts the data table to a CSV string.
 	 * 
 	 * @return string representation of the data table in CSV format.
 	 */
 	public String toCsv() {
-		StringBuffer csv = new StringBuffer();
-		//csv.append(this.key);
-		boolean first = true;
-		for (String column: this.columns) {
-            column = "\"" + column + "\"";
-		    
-			if (first) {
-			    csv.append(column);
-			    first = false;
-			}
-			else {
-			    csv.append("," + column);
-			}
-		}
-		csv.append("\n");
-		
-	    for (ArrayList<String> dataRow: this.data) {
-	        //csv.append(entry.getKey());
-	        first = true;
-	        for (String value: dataRow) {
-	        	if (first) {
-	        		first = false;
-	        	}
-	        	else {
-	        		csv.append(",");
-	        	}
-	        	
-	        	value = value.trim();
-	        	
-	        	if (INT_PATTERN.matcher(value).matches()) {
-	        		csv.append(value);
-	        	}
-            	else if (FLOAT_PATTERN.matcher(value).matches()) {
-	        		csv.append(value);
-            	}
-	          	else if (value.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$")) {
-	        		csv.append(value);
-	        	}
-	          	else if (StringUtil.isMdyDate(value)) {
-	          	    String timestamp = StringUtil.mdyDateToTimestamp(value);
-	          	    csv.append(timestamp);
-	          	}
-	        	else {
-	        	    String modifiedValue = value;
-	        	    modifiedValue = modifiedValue.replace("\"",  "\"\"");
-	        	    csv.append("\"" + modifiedValue + "\"");
-	        	}
-	        }
-	        csv.append("\n");
-	    }
-	    return csv.toString();
+        boolean convertDatesToTimestamps = true;
+        String csv = this.toCsv(convertDatesToTimestamps);
+        return csv;
 	}
 	
 	/**
@@ -1191,6 +1211,19 @@ public class DataTable {
 	    }
 	}
 	
+    public void setValue(int rowIndex, int columnIndex, String value) throws Exception {
+
+        if (columnIndex < 0 || columnIndex >= this.getNumberOfColumns()) {
+            throw new Exception("Attempt to set value with out of range column index " + columnIndex + ".");
+        }
+        
+        if (rowIndex < 0 || rowIndex > this.data.size()) {
+            throw new Exception("Attempt to set value in data table with invalid row index " + rowIndex + ".");
+        }
+
+        this.data.get(rowIndex).set(columnIndex, value);
+    }
+    
 	public void setValue(int rowIndex, String columnName, String value) throws Exception {
 	    int columnIndex = this.getColumnIndex(columnName);
 

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -108,6 +109,32 @@ public class DataTable {
 		
 		csvReader.close();
 	}
+    
+    /**
+     * Initialize to CSV data represented as a string.
+     * 
+     * @param csvString
+     * @throws IOException
+     */
+    public void initializeToCsvString(String csvString) throws IOException {
+        Reader reader = new StringReader(csvString);
+        CSVReader csvReader = new CSVReader(reader);  
+        
+        String[] header = csvReader.readNext();
+        
+        if (header != null && header.length > 0) {
+            for (String columnName: header) {
+                this.columns.add(columnName);    
+            }
+            
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+                this.addRow(line);
+            }
+        }
+        
+        csvReader.close();
+    }
     
     public void initializeToWorkbookSheet(XSSFSheet sheet) {
         XSSFRow header = sheet.getRow(0);

@@ -182,6 +182,31 @@ public class CfeResults implements Serializable {
     public void setResults(byte[] results) {
         this.results = results;
     }
+
+    @Transient
+    /**
+     * Get the spreadsheet consisting of the individual CSV Files.
+     * 
+     * @return
+     * @throws Exception
+     */
+    public XSSFWorkbook getSpreadsheet() throws Exception {
+        Set<CfeResultsFile> files = this.getCfeResultsFile();
+        
+        Map<String,DataTable> sheetMap = new LinkedHashMap<String,DataTable>();
+        for (CfeResultsFile file: files) {
+            if (file.getMimeType().contentEquals("text/csv")) {
+                String csvString = file.getContentAsString();
+                DataTable dataTable = new DataTable(null);
+                dataTable.initializeToCsvString(csvString);
+                String sheetName = file.getFileType();
+                sheetMap.put(sheetName, dataTable);
+            }
+        }
+        
+        XSSFWorkbook workbook = DataTable.createWorkbook(sheetMap);
+        return workbook;
+    }
     
     @Transient
     public XSSFWorkbook getResultsSpreadsheet() throws Exception {

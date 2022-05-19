@@ -99,7 +99,7 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
         <td>
             <s:a action="TextFileDisplay" title="Future Cross-Sectional R Script Output">
                 <s:param name="textFilePath" value="rScriptOutputFutureCrossSectional" />
-                <s:property value="rScriptOutputFutureCrossSectional" />
+                <s:property value="rScriptOutputFileFutureCrossSectional" />
             </s:a>
         </td>        
     </tr>

@@ -26,9 +26,11 @@
 
 <p>
 Testing Data ID: <s:property value="testingDataId"/> <br/>
-Special predictor list CSV file: <s:property value="specialPredictorListTempFile" /> <br/>
-Pedictor list CSV file: <s:property value="predictorListFile" /> <br/>
-Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
+Predictor list CSV file: <s:property value="predictorListFile" /> <br/>
+Updated predictor list CSV file: <s:property value="specialPredictorListTempFile" /> <br/>
+Testing Master Sheet: <s:property value="testingMasterSheetFile"/> <br/>
+Prediction Phene: <s:property value="predictionPhene"/> <br/>
+Prediction Phene High Cutoff: <s:property value="predictionPheneHighCutoff"/>
 </p>
 
 <table class="dataTable">
@@ -55,18 +57,6 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
                 <s:property value="rScriptOutputFileStateLongitudinal" />
             </s:a>
         </td>
-    </tr>
-    <tr>
-        <td>Prediction Phene</td>
-        <td><s:property value="predictionPhene"/></td>
-        <td> &nbsp; </td>
-        <td> &nbsp; </td>
-    </tr>
-    <tr>
-        <td>Prediction Phene High Cutoff</td>
-        <td><s:property value="predictionPheneHighCutoff"/></td>
-        <td> &nbsp; </td>
-        <td> &nbsp; </td>
     </tr>
     
     <tr>
@@ -98,11 +88,12 @@ Testing Master Sheet: <s:property value="testingMasterSheetFile"/>
         <td><s:property value="rCommandFutureCrossSectional"/></td>        
         <td>
             <s:a action="TextFileDisplay" title="Future Cross-Sectional R Script Output">
-                <s:param name="textFilePath" value="rScriptOutputFutureCrossSectional" />
+                <s:param name="textFilePath" value="rScriptOutputFileFutureCrossSectional" />
                 <s:property value="rScriptOutputFileFutureCrossSectional" />
             </s:a>
         </td>        
     </tr>
+    
     <tr>
         <td>Future Longitudinal</td>
         <td><s:property value="futuretLongitudinal"/></td>
@@ -135,11 +126,11 @@ Predictor List:
 
 
 <p>
-Special Predictor List:
+Updated Predictor List:
 <s:if test="specialPredictorListTempFile != null && specialPredictorListTempFile != ''">
     <s:a action="CsvDisplay">
         <s:param name="csvFilePath" value="specialPredictorListTempFile" />
-        <s:property value="predictorListFile" />
+        <s:property value="specialPredictorListCsvFileName" />
     </s:a>
 </s:if>
 </p>

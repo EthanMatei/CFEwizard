@@ -36,4 +36,5 @@ public class CfeResultsSheets {
     public static final String TESTING_FIRST_YEAR_LONGITUDINAL    = "testing first year longitudinal";
     public static final String TESTING_FUTURE_CROSS_SECTIONAL     = "testing future cross-sectional";
     public static final String TESTING_FUTURE_LONGITUDINAL        = "testing future longitudinal";
+    public static final String TESTING_SCORES_INFO                = "testing scores info";
 }

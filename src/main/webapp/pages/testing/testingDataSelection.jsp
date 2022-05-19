@@ -44,9 +44,9 @@ Select Testing Data:
         <th>Results</th>
         <th>Results Type</th>
         <th>Time Generated</th>
-        <th>Phene</th>
-        <th>Phene Low Cutoff</th>
-        <th>Phene High Cutoff</th>
+        <th>Discovery Phene</th>
+        <th>Discovery Phene Low Cutoff</th>
+        <th>Discovery Phene High Cutoff</th>
     </tr>
 
     <s:iterator value="cfeResults" var="result">
@@ -71,13 +71,9 @@ Select Testing Data:
 </table>
 
 
-<p>
-Special predictor list CSV file (optional)
-<s:file name="specialPredictorListCsv" />
-</p>
 
 
-<s:submit value="Select" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+<s:submit value="Select" style="margin-top: 17px; margin-bottom: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
 <s:token/>
 </s:form>
 

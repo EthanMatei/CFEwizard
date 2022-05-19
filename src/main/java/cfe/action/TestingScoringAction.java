@@ -122,6 +122,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     private String rCommandFutureLongitudinal;
     
     private Long cfeResultsId;
+    
+    private double comparisonThreshold = 0.0001;
 
 	/**
 	 * Select testing data
@@ -163,12 +165,6 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         }
         else {
             try {
-                this.specialPredictorListTempFile = "";
-                if (this.specialPredictorListCsvFileName != null && this.specialPredictorListCsvFileName != "") {
-                    File tempFile = FileUtil.createTempFile("testing-special-predictor-list-", ".csv");
-                    FileUtils.copyFile(this.getSpecialPredictorListCsv(), tempFile);
-                    this.specialPredictorListTempFile = tempFile.getAbsolutePath();
-                }
 
                 testingData = CfeResultsService.get(testingDataId);
                 if (testingData == null) {
@@ -270,6 +266,14 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
             try {                
                 log.info("Starting testing scoring");
+
+                // Process special predictor list, if any
+                this.specialPredictorListTempFile = "";
+                if (this.specialPredictorListCsvFileName != null && this.specialPredictorListCsvFileName != "") {
+                    File tempFile = FileUtil.createTempFile("testing-special-predictor-list-", ".csv");
+                    FileUtils.copyFile(this.getSpecialPredictorListCsv(), tempFile);
+                    this.specialPredictorListTempFile = tempFile.getAbsolutePath();
+                }
                 
                 DataTable masterSheet = new DataTable("Subject Identifiers.PheneVisit");
                 masterSheet.initializeToCsv(testingMasterSheetFile);
@@ -308,13 +312,14 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 
                 String testType  = null;
                 String studyType = null;
+                
                 if (this.predictionPhene == null) {
                     this.predictionPhene = "";
                 }
+                
                 if (this.predictionPheneHighCutoff == null) {
                     this.predictionPheneHighCutoff = 0.0;
                 }
-                
                 
                 //-------------------------------------------------------
                 // Make specified calculations
@@ -326,9 +331,11 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
                     String rScriptOutput = this.runScript(
                             testType, studyType,
-                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.predictionPhene,
+                            (this.predictionPheneHighCutoff - this.comparisonThreshold), 
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile
+                            this.predictorListFile,
+                            this.specialPredictorListTempFile
                     );
 
                     tempFile = FileUtil.createTempFile("state-cross-sectional-r-log-",  ".txt");
@@ -435,11 +442,15 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     resultsTables.put(CfeResultsSheets.TESTING_FUTURE_LONGITUDINAL, dataTable);
                 }
                 
-                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
-                log.info("Testing results workbook created.");
-                
                 // Set generate time
                 this.scoresGeneratedTime = new Date();
+                
+                // Add testing scores info table
+                DataTable testingScoresInfo = this.createTestingScoresInfoTable();
+                resultsTables.put(CfeResultsSheets.TESTING_SCORES_INFO, testingScoresInfo);
+                
+                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
+                log.info("Testing results workbook created.");
                 
                 // Save the results in the database
                 CfeResults cfeResults = new CfeResults(
@@ -978,14 +989,29 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         row.add(VersionNumber.VERSION_NUMBER);
         infoTable.addRow(row);
         
-        //row = new ArrayList<String>();
-        //row.add("Time Scores Generated");
-        //row.add(this.scoresGeneratedTime.toString());
-        //infoTable.addRow(row);
+        row = new ArrayList<String>();
+        row.add("Time Scores Generated");
+        row.add(this.scoresGeneratedTime.toString());
+        infoTable.addRow(row);
         
         row = new ArrayList<String>();
-        row.add("");
-        row.add("");
+        row.add("Gene Expression CSV File");
+        row.add(this.geneExpressionCsvFileName);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Score Cutoff");
+        row.add(this.scoreCutoff + "");
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Prediction Phene");
+        row.add(this.predictionPhene);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Prediction Phene High Cutoff");
+        row.add(this.predictionPheneHighCutoff + "");
         infoTable.addRow(row);
         
 	    return infoTable;
@@ -1520,6 +1546,14 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
     public void setrCommandFutureLongitudinal(String rCommandFutureLongitudinal) {
         this.rCommandFutureLongitudinal = rCommandFutureLongitudinal;
+    }
+
+    public double getComparisonThreshold() {
+        return comparisonThreshold;
+    }
+
+    public void setComparisonThreshold(double comparisonThreshold) {
+        this.comparisonThreshold = comparisonThreshold;
     }
 
 }

@@ -220,11 +220,12 @@ public class CfeResults implements Serializable {
         CfeResultsFile file = this.getFile(fileType);
 
         if (file != null) {
-            if (!file.getMimeType().contentEquals("text.csv")) {
+            if (!file.getMimeType().contentEquals("text/csv")) {
                 throw new Exception("File with mime type \"" + file.getMimeType() + "\" cannot be converted to a data table.");
             }
 
             String csvString = file.getContentAsString();
+            dataTable = new DataTable(null);
             dataTable.initializeToCsvString(csvString);
         }
         

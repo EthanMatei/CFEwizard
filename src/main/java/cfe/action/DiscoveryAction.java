@@ -42,6 +42,7 @@ import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.ProbesetMappingParser;
+import cfe.services.CfeResultsFileService;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
@@ -141,8 +142,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private int dePercentileScore3 = 2;
 	private int dePercentileScore4 = 4;
 	
-	private String errorMessage;
-	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	private String scriptOutputTextFileName;
 	
@@ -162,12 +161,12 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			result = LOGIN;
 		}
 		else if (this.discoveryDb == null || this.discoveryDbFileName == null) {
-		    this.errorMessage = "No discovery database was specified.";
+		    this.setErrorMessage("No discovery database was specified.");
 		    result = ERROR;
 		}
 		else if (!this.discoveryDbFileName.endsWith(".accdb")) {
-		    this.errorMessage = "Discovery database file \"" + discoveryDbFileName
-		            + "\" does not have MS Access database file extension \".accdb\".";
+		    this.setErrorMessage("Discovery database file \"" + discoveryDbFileName
+		            + "\" does not have MS Access database file extension \".accdb\".");
 		    result = ERROR;
 		}
 		else {
@@ -192,7 +191,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			
 			    this.microarrayTables = dbParser.getMicroarrayTables();
 		    } catch (Exception exception) {
-		        this.errorMessage = "The Discovery database could not be processed. " + exception.getLocalizedMessage();
+		        this.setErrorMessage("The Discovery database could not be processed. " + exception.getLocalizedMessage());
 		        result = ERROR;
 		    }
 		}
@@ -373,8 +372,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 this.cfeResultsId = cfeResults.getCfeResultsId();
 			} catch (Exception exception) {
 				result = ERROR;
-				errorMessage = exception.getMessage();
-				log.warning("*** ERROR: " + errorMessage);
+				String message = exception.getMessage();
+				this.setErrorMessage(message);
+				log.warning("*** ERROR: " + message);
 				exception.printStackTrace();
 			}
 		}
@@ -407,7 +407,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             result = LOGIN;
         }
         else if (discoveryId == null) {
-            this.errorMessage = "No discovery cohort selected.";
+            this.setErrorMessage("No discovery cohort selected.");
             result = ERROR;
         }
         else {
@@ -434,10 +434,19 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 ArrayList<String> row;
                 
                 // Get the phene table from the cohort info sheet
-                XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
-                                
-                DataTable cohortInfo = new DataTable("attribute");
-                cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+                // OLD CODE:
+                // XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
+                //                
+                // DataTable cohortInfo = new DataTable("attribute");
+                // cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+                DataTable cohortInfo = results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_INFO);
+                
+                if (cohortInfo == null) {
+                    String message = "Could not find file \"" + CfeResultsFileType.DISCOVERY_COHORT_INFO + "\".";
+                    log.severe(message);
+                    throw new Exception(message);    
+                }
+                cohortInfo.setKey("attribute");
                 
                 row = cohortInfo.getRow("Phene Table");
                 if (row == null) {
@@ -489,10 +498,18 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 }
                 
                 // Get diagnosis codes
-                XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
-                DataTable diagnosisData = new DataTable("DxCode");
-                diagnosisData.initializeToWorkbookSheet(sheet);
-
+                // OLD CODE:
+                // XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                // DataTable diagnosisData = new DataTable("DxCode");
+                // diagnosisData.initializeToWorkbookSheet(sheet);
+                DataTable diagnosisData = results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_DATA);
+                
+                if (diagnosisData == null) {
+                    String message = "Could not find file \"" + CfeResultsFileType.DISCOVERY_COHORT_DATA + "\".";
+                    log.severe(message);
+                    throw new Exception(message);      
+                }
+                
                 diagnosisCodes = new HashMap<String,String>();
 
                 for (int i = 0; i < diagnosisData.getNumberOfRows(); i++) {
@@ -517,7 +534,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 }
             }
             catch (Exception exception) {
-                this.errorMessage = exception.getLocalizedMessage();
+                String message = exception.getLocalizedMessage();
+                if (message == null) {
+                    message = "An unknown error occurred.";
+                }
+                this.setErrorMessage(message);
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                log.severe("STACK TRACE: " + stackTrace);
+                this.setExceptionStack(stackTrace);
                 result = ERROR;
             }
         }
@@ -550,21 +574,21 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         //    result = INPUT;
         //}		
 		else if (this.discoveryCsv == null || this.discoveryCsvFileName == null) {
-	        this.errorMessage = "No gene expression CSV file was specified.";
+	        this.setErrorMessage("No gene expression CSV file was specified.");
 	        result = INPUT;
 	    }
 	    else if (!this.discoveryCsvFileName.endsWith(".csv")) {
-	        this.errorMessage = "Gene expression file \"" + discoveryCsvFileName
-	                + "\" is not a \".csv\" file.";
+	        this.setErrorMessage("Gene expression file \"" + discoveryCsvFileName
+	                + "\" is not a \".csv\" file.");
 	        result = INPUT;
 	    }
 	    else if (this.probesetMappingDb == null || this.probesetMappingDbFileName == null) {
-	        this.errorMessage = "No probeset to gene mapping database file was specified.";
+	        this.setErrorMessage("No probeset to gene mapping database file was specified.");
 	        result = INPUT;
 	    }
 	    else if (!this.probesetMappingDbFileName.endsWith(".accdb")) {
-	        this.errorMessage = "Probeset to gene mapping database file \"" + probesetMappingDbFileName
-	                + "\" is not a \".accdb\" (MS Access) file.";
+	        this.setErrorMessage("Probeset to gene mapping database file \"" + probesetMappingDbFileName
+	                + "\" is not a \".accdb\" (MS Access) file.");
 	        result = INPUT;
 	    }
 	    else {
@@ -742,8 +766,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 // Discovery R Script
                 DataTable outputDataTable = new DataTable(null);
                 if (outputFile == null) {
-                    errorMessage = "No output file generated for discovery calculation.";
+                    String errorMessage = "No output file generated for discovery calculation.";
                     log.severe(errorMessage);
+                    this.setErrorMessage(errorMessage);
                     result = ERROR;
                 }
                 else {
@@ -1457,14 +1482,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	public void setCohortXlsxFile(String cohortXlsxFile) {
 		this.cohortXlsxFile = cohortXlsxFile;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
 	}
 
 	public int getNumberOfSubjects() {

@@ -18,6 +18,11 @@
 <s:if test="errorMessage != null && errorMessage != ''">
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+        <s:if test="exceptionStack != null && exceptionStack != ''">
+            <p>
+                <s:property value="exceptionStack" />
+            </p>
+        </s:if>
     </div>
 </s:if>
 
@@ -65,7 +70,7 @@ Select a Discovery Cohort:
     </s:iterator>
 
 </table>
-<s:submit value="Select" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+<s:submit value="Select" style="margin-top: 17px; margin-bottom: 24px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
 </s:form>
 
 </tiles:putAttribute>

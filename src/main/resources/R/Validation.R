@@ -262,7 +262,11 @@ for (i in 1:(nrow(predictors))) {
     if (predictors[i,"MDD"]){
       dxList <- c(dxList,"MDD")
     }
-
+    
+    if (predictors[i,"MOOD"]){
+      dxList <- c(dxList,"MOOD")
+    }
+    
     if (predictors[i,"SZ"]){
       dxList <- c(dxList,"SZ")
     }

@@ -488,15 +488,22 @@ for (i in 1:(nrow(predictors))) {
         
         
         if ( sum(data.subset.Gender.Dx$ROC) > 1 & 0 %in% data.subset.Gender.Dx$ROC){
+                  
+          lengthX = length(data.subset.Gender.Dx$PREDICTOR[data.subset.Gender.Dx$ROC == 1])
+          lengthY = length(data.subset.Gender.Dx$PREDICTOR[data.subset.Gender.Dx$ROC == 0])
           
+          if (lengthY < lengthX) {
+            # If there aren't enough y values
+            tableRow <- c(tableRow, "NA")
+          } else {      
+            #All t-test between presence of SI and no SI
+            tFit <- t.test(data.subset.Gender.Dx$PREDICTOR[data.subset.Gender.Dx$ROC == 1],
+                data.subset.Gender.Dx$PREDICTOR[data.subset.Gender.Dx$ROC == 0],       
+                alternative = "greater" )
           
-          #All t-test between presence of SI and no SI
-          tFit <- t.test(data.subset.Gender.Dx$PREDICTOR[data.subset.Gender.Dx$ROC == 1],
-              data.subset.Gender.Dx$PREDICTOR[data.subset.Gender.Dx$ROC == 0],       
-              alternative = "greater" )
-          
-          tableRow <- c(tableRow, tFit$p.value)
-        }else{
+            tableRow <- c(tableRow, tFit$p.value)
+          }
+        } else{
           tableRow <- c(tableRow, "NA")
           
         }

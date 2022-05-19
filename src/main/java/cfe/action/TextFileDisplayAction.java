@@ -42,8 +42,6 @@ public class TextFileDisplayAction extends BaseAction implements SessionAware {
 	private String fileName;
 	private String fileContentType;
     private InputStream fileStream;
-    
-    private String reportFileName;
 	
     public TextFileDisplayAction() {
         errorMessage    = "";
@@ -74,7 +72,6 @@ public class TextFileDisplayAction extends BaseAction implements SessionAware {
     			throw new ActionErrorException("No text file was specified.");
     		}
 
-    		reportFileName = "R script output";
     	    Path path = Paths.get(textFilePath); 
     	    textFileName = path.getFileName().toString();
     	    String textFileBaseName = FilenameUtils.getBaseName(textFileName);
@@ -145,14 +142,6 @@ public class TextFileDisplayAction extends BaseAction implements SessionAware {
 
 	public void setTextFileName(String textFileName) {
 		this.textFileName = textFileName;
-	}
-
-	public String getReportFileName() {
-		return reportFileName;
-	}
-
-	public void setReportFileName(String reportFileName) {
-		this.reportFileName = reportFileName;
 	}
 	
 }

@@ -417,6 +417,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 CfeResults results = CfeResultsService.get(this.discoveryId);
                 XSSFWorkbook workbook = results.getResultsSpreadsheet();
                 
+                // Use these to get files
+                // results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_INFO);
+                // results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_DATA);
+                // results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT);
+                
                 this.lowCutoff      = results.getLowCutoff();
                 this.highCutoff     = results.getHighCutoff();
                 this.pheneSelection = results.getPhene();

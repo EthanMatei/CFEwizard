@@ -208,6 +208,29 @@ public class CfeResults implements Serializable {
         return workbook;
     }
     
+    /**
+     * Gets the specified file as a data table (only works for CSV files).
+     * 
+     * @param fileType
+     * @return the specified file as a data table, or null if the file does not exist.
+     * @throws Exception
+     */
+    public DataTable getFileAsDataTable(String fileType) throws Exception {
+        DataTable dataTable = null;
+        CfeResultsFile file = this.getFile(fileType);
+
+        if (file != null) {
+            if (!file.getMimeType().contentEquals("text.csv")) {
+                throw new Exception("File with mime type \"" + file.getMimeType() + "\" cannot be converted to a data table.");
+            }
+
+            String csvString = file.getContentAsString();
+            dataTable.initializeToCsvString(csvString);
+        }
+        
+        return dataTable;
+    }
+    
     @Transient
     public XSSFWorkbook getResultsSpreadsheet() throws Exception {
         InputStream fileStream;

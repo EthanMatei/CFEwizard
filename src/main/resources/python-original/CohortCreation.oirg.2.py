@@ -4,28 +4,10 @@ import numpy as np
 import re
 import datetime as dt
 from pandas.core.reshape.concat import concat
-import sys # for command line arguments
-import uuid   # for temporary file name
 pd.options.mode.chained_assignment = None  # default='warn'
-
-expectedNumArgs = 5
-if len(sys.argv) != expectedNumArgs:
-    sys.exit("Incorrect number of arguments for \"" + sys.argv[0] + "\" script expected: " + expectedNumArgs)
-
-scoring_data_file = sys.argv[1]
-phene_visit_file  = sys.argv[2]
-admission_phene   = sys.argv[3]
-temp_dir          = sys.argv[4]
-
-# Print out command line arguments for debugging purposes
-print("scoring data file:", scoring_data_file)
-print("phene_visit_file:", phene_visit_file)
-print("admission phene:", admission_phene)
-print("temp dir:", temp_dir)
-
 #### IMPORT FILES HERE  ####
-data = pd.read_csv(scoring_data_file)
-visit_dates = pd.read_csv(phene_visit_file)
+data = pd.read_csv("./InputFiles/Scoringdata1.csv",encoding= 'unicode_escape')
+visit_dates = pd.read_csv('./InputFiles/Phenevisits for project.csv')
 #### IMPORT FILES HERE  ####
 
 ### remove the following with this data ###
@@ -82,7 +64,7 @@ for index, row in data.iterrows():
             data = data.drop(index)
 ### end duplicate dropping ###
 
-data['Score'] = data[admission_phene]    # Admission phene set here
+data['Score'] = data[['Delusions', 'Delusions1']].max(axis=1) 
 
 # Score of 0
 data['Score'] = data['Score'].fillna(0)
@@ -112,7 +94,7 @@ data['first - last'] = data['first - last'].ffill()
 data['First Date'] = (data.groupby('Actuarial and Subject Info.SubjectID')
                       .apply(lambda x: x['Admit date'].where(x['Score'] == 1).bfill())
                       .fillna('12/30/1899').reset_index(level=0, drop=True))
-
+# data['First Date'] = data.groupby('Actuarial and Subject Info.SubjectID').bfill()
 data['First Date'] = data.groupby(['SubjectID copy']).apply(lambda x: x['First Date'].bfill()).reset_index(drop=True)# data['First Date'] = data['First Date'].bfill()
 data['First Date'] = data['First Date'].fillna('12/30/1899')
 
@@ -156,6 +138,7 @@ for x in data['TestingVisit'].unique():
     dct[x] = len(dfd)
 
 fin_df = pd.DataFrame({'TestingVisit':list(dct.keys()),'FirstYearScore':list(dct.values())})
+
 #### finished firstyearscore ###
 
 
@@ -185,22 +168,20 @@ finished['HospitalizationCohort'] = 1 #cohort creation
 finished.loc[finished['Time to 1st Hosp'] != 'N/A', 'First Year Cohort'] = 1 #cohort creation give 1 where not N/A
 finished['Time to 1st Hosp'].fillna(0) 
 
+# finished['First Date']
+# finished.loc[finished['First Date'] == '1899-12-30', 'First Date'] = [finished['Length of Follow up for Future']]
 finished.loc[finished['First Date'] == '1899-12-30', 'Time Future'] = finished['Length of Follow up for Future']
 
 m = ~finished['Time Future'].apply(lambda x: isinstance(x, int))
 finished.loc[m, 'Time Future'] = finished['Time Future'][m].apply(lambda x: pd.Timedelta(x).days)
 
+# finished['Time Future']  = pd.Timedelta(finished['Time Future']).days
+
+
 find_df = pd.merge(fin_df,finished,left_on='TestingVisit', right_on = 'TestingVisit', how='inner') #combine
 
 find_df.dropna(how='all', axis=1, inplace=True)
-
-output_file_name = temp_dir + "/prediction-cohort-" + str(uuid.uuid4()) + ".csv"
-
-find_df.to_csv(output_file_name)
-
-print ("Output file created: " + output_file_name)
-
-# find_df.to_csv('./OutputFiles/cohort_finished.csv')
+find_df.to_csv('./OutputFiles/cohort_finished.csv')
 
 
 

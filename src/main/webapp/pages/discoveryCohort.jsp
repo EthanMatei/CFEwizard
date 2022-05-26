@@ -67,5 +67,18 @@
     </div>
 </s:a>
 
+<br/>
+
+<s:a action="CfeResultsFilesXlsxDisplay" title="CFE Results">
+  <s:param name="cfeResultsId" value="cfeResultsId" />
+    <div>
+      <img border="0"
+           style="margin-top: 2px;"
+           src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+           alt="Report" /> <br />
+      cfe-results.xlsx
+    </div>
+</s:a>
+
 </tiles:putAttribute>
 </tiles:insertTemplate>

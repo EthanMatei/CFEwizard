@@ -27,6 +27,8 @@
   <tr> <th>Data</th> <th>Inputs</th> <th>Stats</th> </tr>
   <tr>
     <td>
+    
+      <%-- OLD APPROACH:
       <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
         <s:param name="cfeResultsId" value="cfeResultsId" />
           <div>
@@ -37,6 +39,18 @@
             discovery-cohort.xlsx
           </div>
       </s:a>
+      --%>
+      
+		<s:a action="CfeResultsFilesXlsxDisplay" title="CFE Results">
+		  <s:param name="cfeResultsId" value="cfeResultsId" />
+		    <div>
+		      <img border="0"
+		           style="margin-top: 2px;"
+		           src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+		           alt="Report" /> <br />
+		      discovery-cohort.xlsx
+		    </div>
+		</s:a>      
     </td>
     
     <td>
@@ -55,30 +69,10 @@
   </tr>
 </table>
 
-<s:a action="CfeResultsFileDisplay" title="Discovery Cohort">
-    <s:param name="cfeResultsId" value="cfeResultsId" />
-    <s:param name="fileType" value="@cfe.model.CfeResultsFileType@DISCOVERY_COHORT" />
-    <div>
-        <img border="0"
-             style="margin-top: 2px;"
-             src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-             alt="Report" /> <br />
-        discovery_cohort.csv
-    </div>
-</s:a>
 
 <br/>
 
-<s:a action="CfeResultsFilesXlsxDisplay" title="CFE Results">
-  <s:param name="cfeResultsId" value="cfeResultsId" />
-    <div>
-      <img border="0"
-           style="margin-top: 2px;"
-           src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-           alt="Report" /> <br />
-      cfe-results.xlsx
-    </div>
-</s:a>
+
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

@@ -110,7 +110,7 @@ public class CfeResultsFilesXlsxDisplayAction extends BaseAction implements Sess
     		//}
 
    			String fileSuffix = ".xlsx";
-    		fileName = "cfe-results" + fileSuffix;
+    		fileName = "discovery-cohort" + fileSuffix;
     		reportName = fileName;
     		fileContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     	}

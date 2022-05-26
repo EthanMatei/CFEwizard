@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
@@ -193,7 +194,7 @@ public class CfeResults implements Serializable {
     public XSSFWorkbook getSpreadsheet() throws Exception {
         Set<CfeResultsFile> files = this.getCfeResultsFile();
         
-        Map<String,DataTable> sheetMap = new LinkedHashMap<String,DataTable>();
+        Map<String,DataTable> sheetMap = new TreeMap<String,DataTable>();   // Might need custom sorting here?
         for (CfeResultsFile file: files) {
             if (file.getMimeType().contentEquals("text/csv")) {
                 String csvString = file.getContentAsString();

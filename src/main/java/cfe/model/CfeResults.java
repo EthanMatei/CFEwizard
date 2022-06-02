@@ -234,6 +234,26 @@ public class CfeResults implements Serializable {
     }
     
     @Transient
+    public DataTable getSheetAsDataTable(String sheetName, String key) throws Exception {
+        DataTable dataTable = new DataTable(key);
+        
+        XSSFWorkbook workbook = this.getResultsSpreadsheet();
+        
+        if (workbook == null) {
+            throw new Exception("No results spreadsheet found for data table.");
+        }
+        
+        XSSFSheet sheet = workbook.getSheet(sheetName);
+        if (sheet == null) {
+            throw new Exception("No sheet \"" + sheetName + "\" found in results workbook.");
+        }
+        
+        dataTable.initializeToWorkbookSheet(sheet);
+        
+        return dataTable;
+    }
+    
+    @Transient
     public XSSFWorkbook getResultsSpreadsheet() throws Exception {
         InputStream fileStream;
         fileStream = new ByteArrayInputStream( this.results );

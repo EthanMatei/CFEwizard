@@ -110,8 +110,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	private String cohortCsvFile;
 	private String cohortXlsxFile;
 	
-	private Set<String> microarrayTables;
-	private String microarrayTable;
+	private Set<String> genomicsTables;
+	private String genomicsTable;
 	
 	private int numberOfSubjects;
 	private int lowVisits;
@@ -189,7 +189,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 			    this.phenes = dbParser.getTableColumnMap();
 			
-			    this.microarrayTables = dbParser.getMicroarrayTables();
+			    this.genomicsTables = dbParser.getGenomicsTables();
 		    } catch (Exception exception) {
 		        this.setErrorMessage("The Discovery database could not be processed. " + exception.getLocalizedMessage());
 		        result = ERROR;
@@ -230,7 +230,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				Table demographics       = db.getTable("Demographics");
 				Table diagnosis          = db.getTable("Diagnosis");
 				//Table pheneData          = db.getTable(this.pheneTable);
-				Table chips              = db.getTable(this.microarrayTable);
+				Table chips              = db.getTable(this.genomicsTable);
 
 				CohortDataTable subjectIdentifiersData = new CohortDataTable();
 				subjectIdentifiersData.initializeToAccessTable(subjectIdentifiers);
@@ -395,6 +395,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	    } else {
 	        this.discoveryCohortResultsList =
 	                CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT);
+	                // CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.ALL_COHORTS);
 	    }
 	    
 	    return result;
@@ -461,7 +462,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
                 row = cohortInfo.getRow("Microarray Table");
                 if (row != null && row.size() >= 2) {
-                    this.microarrayTable = row.get(1);
+                    this.genomicsTable = row.get(1);
                 }
                 
                 row = cohortInfo.getRow("Number of Cohort Subjects");
@@ -1137,7 +1138,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		
 		row = new ArrayList<String>();
 		row.add("Microarray Table");
-		row.add(this.microarrayTable);
+		row.add(this.genomicsTable);
 		infoTable.addRow(row);
 
         row = new ArrayList<String>();
@@ -1452,23 +1453,23 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		this.cohortCsvFile = cohortCsvFile;
 	}
 
-	public Set<String> getMicroarrayTables() {
-		return microarrayTables;
-	}
+	public Set<String> getGenomicsTables() {
+        return genomicsTables;
+    }
 
-	public void setMicroarrayTables(Set<String> microarrayTables) {
-		this.microarrayTables = microarrayTables;
-	}
+    public void setGenomicsTables(Set<String> genomicsTables) {
+        this.genomicsTables = genomicsTables;
+    }
 
-	public String getMicroarrayTable() {
-		return microarrayTable;
-	}
+    public String getGenomicsTable() {
+        return genomicsTable;
+    }
 
-	public void setMicroarrayTable(String microarrayTable) {
-		this.microarrayTable = microarrayTable;
-	}
+    public void setGenomicsTable(String genomicsTable) {
+        this.genomicsTable = genomicsTable;
+    }
 
-	public String getCohortDataXlsxFile() {
+    public String getCohortDataXlsxFile() {
 		return cohortDataXlsxFile;
 	}
 

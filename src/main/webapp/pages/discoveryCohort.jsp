@@ -58,7 +58,7 @@
       Phene: <s:property value="pheneSelection" /> <br />
       Low Cutoff: <s:property value="lowCutoff" /> <br />
       High Cutoff: <s:property value="highCutoff" /> <br />
-      Microarray Table: <s:property value="microarrayTable" />
+      Genomics Table: <s:property value="genomicsTable" />
     </td>
     
     <td style="vertical-align: top;">

@@ -158,18 +158,19 @@ public class DiscoveryDatabaseParser extends AccessDatabaseParser {
 		return pheneTables;
 	}
 	
-	public Set<String> getMicroarrayTables() throws Exception {
-		Set<String> microarrayTables = new TreeSet<String>();
+	public Set<String> getGenomicsTables() throws Exception {
+		Set<String> genomicsTables = new TreeSet<String>();
 		
 		Set<String> tables = this.database.getTableNames();
 		
 		for (String table: tables) {
-			if (table.toLowerCase().contains("microarray") || table.toLowerCase().contains("chip")) {
-			    microarrayTables.add(table);	
+			if (table.toLowerCase().contains("microarray") || table.toLowerCase().contains("chip")
+			        || table.toLowerCase().contains("rna")) {
+			    genomicsTables.add(table);	
 			}
 		}
 
-		return microarrayTables;
+		return genomicsTables;
 	}
 	
 	public Map<String,ArrayList<String>> getPhenes() throws Exception {

@@ -36,7 +36,7 @@ Select a Discovery Cohort:
 <s:hidden name="highCutoff" />
 <s:hidden name="pheneSelection" />
 <s:hidden name="pheneTable" />
-<s:hidden name="microarrayTable" />
+<s:hidden name="genomicsTable" />
 
     
 <table class="dataTable">

@@ -43,7 +43,7 @@
     </p>
 
     <p>
-    Microarray table <s:select name="microarrayTable" list="microarrayTables"/>
+    Genomics table <s:select name="genomicsTable" list="genomicsTables"/>
     </p>
 
     <br/>

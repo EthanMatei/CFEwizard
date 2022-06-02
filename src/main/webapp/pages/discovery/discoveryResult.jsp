@@ -96,8 +96,8 @@ Discovery R Script Output:
         <td><s:property value="discoveryCsvFileName" /></td>
     </tr>
     <tr>
-        <th>Microarray Table</th>
-        <td><s:property value="microarrayTable" /></td>
+        <th>Genomics Table</th>
+        <td><s:property value="genomicsTable" /></td>
     </tr>    
 </table>
 

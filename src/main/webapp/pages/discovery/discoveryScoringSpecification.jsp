@@ -25,9 +25,15 @@
 
 <s:if test="errorMessage != null && errorMessage != ''">
     <div class="cfeError">
-        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+        ERROR: <s:property value="errorMessage" />
+        <p>
+        <s:if test="exceptionStack != ''">
+            <s:property value="exceptionStack" />
+        </s:if>
+        </p>
     </div>
 </s:if>
+
 
 <table class="dataTable">
   <tr> <th>Data</th> <th>Inputs</th> <th>Stats</th> </tr>
@@ -51,7 +57,7 @@
       Phene: <s:property value="pheneSelection" /> <br />
       Low Cutoff: <s:property value="lowCutoff" /> <br />
       High Cutoff: <s:property value="highCutoff" /> <br />
-      Microarray Table: <s:property value="microarrayTable" />
+      Genomics Table: <s:property value="genomicsTable" />
     </td>
     
     <td style="vertical-align: top;">
@@ -81,7 +87,7 @@
     <s:hidden name="discoveryDbTempFileName" />
     <s:hidden name="pheneSelection" />
     <s:hidden name="pheneTable" />
-    <s:hidden name="microarrayTable" />
+    <s:hidden name="genomicsTable" />
     <s:hidden name="cohortGeneratedTime" />
     <s:hidden name="discoveryId" />
     

@@ -1450,5 +1450,33 @@ public class DataTable {
     public void setName(String name) {
         this.name = name;
     }
-
+    
+    /**
+     * Gets the unique values of the specified column.
+     * 
+     * @param columnName
+     * @return
+     */
+    public Set<String> getUniqueValues(String columnName) {
+        Set<String> values = new TreeSet<String>();
+        
+        int columnNumber = this.getColumnIndex(columnName);
+        for (int rowNumber = 0; rowNumber < this.getNumberOfRows(); rowNumber++) {
+            String value = this.getValue(rowNumber, columnNumber);
+            values.add(value);
+        }
+        return values;
+    }
+    
+    public Set<String> getUniqueCombinedValues(String columnName1, String columnName2, String separator) {
+        Set<String> values = new TreeSet<String>();
+        
+        int columnNumber1 = this.getColumnIndex(columnName1);
+        int columnNumber2 = this.getColumnIndex(columnName2);
+        for (int rowNumber = 0; rowNumber < this.getNumberOfRows(); rowNumber++) {
+            String value = this.getValue(rowNumber, columnNumber1) + separator + this.getValue(rowNumber, columnNumber2);
+            values.add(value);
+        }
+        return values;
+    }
 }

@@ -500,7 +500,18 @@
             </result>
         </action>
 
-		
+        
+		<action name="ValidationCohortSpecification"
+		        class="cfe.action.ValidationCohortAction"
+		        method="specification">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/validation_cohort/validationCohortSpecification.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+        		
         <!-- ==================================================================================== -->
  
         <!-- Clinical (Validation) and Testing Cohort Creation -->

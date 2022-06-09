@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -138,7 +139,19 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		} else {
-            this.discoveryResultsList = CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.DISCOVERY_SCORES);
+		    try {
+                this.discoveryResultsList = CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.DISCOVERY_SCORES);
+		    }
+		    catch (Exception exception) {
+                result = ERROR;
+                String message = "Clinical and testing cohort creation initialization error: " + exception.getLocalizedMessage();
+                this.setErrorMessage(message);
+                log.severe(message);
+                
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
+                log.severe(stackTrace);
+		    }
 		}
 	    return result;
 	}
@@ -149,40 +162,52 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         } else {
-            ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-            this.discoveryResults = CfeResultsService.get(discoveryId);
-            
-            this.discoveryPhene      = discoveryResults.getPhene();
-            this.discoveryLowCutoff  = discoveryResults.getLowCutoff();
-            this.discoveryHighCutoff = discoveryResults.getHighCutoff();
-            
-            XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
-            
-            // Get the discovery database phene table name
-            XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
-            DataTable cohortInfo = new DataTable("attribute");
-            cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
-            ArrayList<String> row = cohortInfo.getRow("Phene Table");
-            if (row == null) {
-                throw new Exception("Unable to find Phene Table row in sheet \""
-                        + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+            try {
+                ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+                this.discoveryResults = CfeResultsService.get(discoveryId);
+
+                this.discoveryPhene      = discoveryResults.getPhene();
+                this.discoveryLowCutoff  = discoveryResults.getLowCutoff();
+                this.discoveryHighCutoff = discoveryResults.getHighCutoff();
+
+                XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
+
+                // Get the discovery database phene table name
+                XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
+                DataTable cohortInfo = new DataTable("attribute");
+                cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+                ArrayList<String> row = cohortInfo.getRow("Phene Table");
+                if (row == null) {
+                    throw new Exception("Unable to find Phene Table row in sheet \""
+                            + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                }
+                this.discoveryPheneTable = row.get(1);
+                if (this.discoveryPheneTable == null || this.discoveryPheneTable.isEmpty()) {
+                    throw new Exception("Could not get phene table information from workbook sheet \""
+                            + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                }       
+
+                XSSFSheet cohortDataSheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                CohortDataTable cohortData = new CohortDataTable(this.discoveryPheneTable);
+                cohortData.initializeToWorkbookSheet(cohortDataSheet);
+                cohortData.setKey("Subject Identifiers.PheneVisit");
+
+                phenes = new ArrayList<String>();
+                phenes.add("");
+                phenes.addAll(cohortData.getPheneList());
+
+                pheneMap = cohortData.getPheneMap();
             }
-            this.discoveryPheneTable = row.get(1);
-            if (this.discoveryPheneTable == null || this.discoveryPheneTable.isEmpty()) {
-                throw new Exception("Could not get phene table information from workbook sheet \""
-                        + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
-            }       
-            
-            XSSFSheet cohortDataSheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
-            CohortDataTable cohortData = new CohortDataTable(this.discoveryPheneTable);
-            cohortData.initializeToWorkbookSheet(cohortDataSheet);
-            cohortData.setKey("Subject Identifiers.PheneVisit");
-            
-            phenes = new ArrayList<String>();
-            phenes.add("");
-            phenes.addAll(cohortData.getPheneList());
-            
-            pheneMap = cohortData.getPheneMap();
+            catch (Exception exception) {
+                result = ERROR;
+                String message = "Clinical and testing cohort specification error: " + exception.getLocalizedMessage();
+                this.setErrorMessage(message);
+                log.severe(message);
+                
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
+                log.severe(stackTrace);                
+            }
         }
         return result;
     }
@@ -564,6 +589,10 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                 String message = "Clinical and testing cohort creation error: " + exception.getLocalizedMessage();
                 this.setErrorMessage(message);
                 log.severe(message);
+                
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
+                log.severe(stackTrace);
             }  
         }
         

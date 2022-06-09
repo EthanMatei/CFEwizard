@@ -1,6 +1,12 @@
 CFE Pipeline
 ================
 
+Overview
+-----------------------
+
+![CFE Pipeline](cfe-pipeline-overview.png)
+
+
 Cohort Creation
 -----------------------------------
 

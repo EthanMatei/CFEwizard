@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -34,6 +35,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import cfe.action.DiscoveryAction;
 import cfe.utils.DataTable;
 
 @Entity
@@ -41,7 +43,9 @@ import cfe.utils.DataTable;
 public class CfeResults implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
+    
+	private static Logger log = Logger.getLogger(CfeResults.class.getName());
+    
 	@Id @GeneratedValue(strategy=IDENTITY)
     private Long cfeResultsId;
 
@@ -376,9 +380,11 @@ public class CfeResults implements Serializable {
      * @return
      */
     public CfeResultsFile getFile(String fileType) {
+        log.info("******* SEARCH FILE FILE TYPE: \"" + fileType + "\"");
         CfeResultsFile file = null;
         for (CfeResultsFile searchFile: this.getCfeResultsFile()) {
             if (searchFile.getFileType().contentEquals(fileType)) {
+                log.info("******* SEARCH FILE \"" + searchFile.getFileType() + "\"    \"" + fileType + "\"");
                 file = searchFile;
                 break;
             }

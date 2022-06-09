@@ -394,8 +394,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	        result = LOGIN;
 	    } else {
 	        this.discoveryCohortResultsList =
-	                CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT);
-	                // CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.ALL_COHORTS);
+	                CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.ALL_COHORTS);
 	    }
 	    
 	    return result;
@@ -436,18 +435,26 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
                 // Get the phene table from the cohort info sheet
                 // OLD CODE:
-                // XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
-                //                
-                // DataTable cohortInfo = new DataTable("attribute");
-                // cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
-                DataTable cohortInfo = results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_INFO);
+                XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 
-                if (cohortInfo == null) {
-                    String message = "Could not find file \"" + CfeResultsFileType.DISCOVERY_COHORT_INFO + "\".";
+                if (discoveryCohortInfoSheet == null) {
+                    String message = "Could not find sheet \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".";
                     log.severe(message);
                     throw new Exception(message);    
                 }
-                cohortInfo.setKey("attribute");
+                
+                DataTable cohortInfo = new DataTable("attribute");
+                cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+                
+                // NEW CODE:
+                // DataTable cohortInfo = results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_INFO);
+                // 
+                // if (cohortInfo == null) {
+                //    String message = "Could not find file \"" + CfeResultsFileType.DISCOVERY_COHORT_INFO + "\".";
+                //    log.severe(message);
+                //    throw new Exception(message);    
+                //}
+                //cohortInfo.setKey("attribute");
                 
                 row = cohortInfo.getRow("Phene Table");
                 if (row == null) {
@@ -500,16 +507,18 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
                 // Get diagnosis codes
                 // OLD CODE:
-                // XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
-                // DataTable diagnosisData = new DataTable("DxCode");
-                // diagnosisData.initializeToWorkbookSheet(sheet);
-                DataTable diagnosisData = results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_DATA);
+                XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                DataTable diagnosisData = new DataTable("DxCode");
+                diagnosisData.initializeToWorkbookSheet(sheet);
                 
-                if (diagnosisData == null) {
-                    String message = "Could not find file \"" + CfeResultsFileType.DISCOVERY_COHORT_DATA + "\".";
-                    log.severe(message);
-                    throw new Exception(message);      
-                }
+                // NEW CODE:
+                //DataTable diagnosisData = results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_DATA);
+                //
+                //if (diagnosisData == null) {
+                //    String message = "Could not find file \"" + CfeResultsFileType.DISCOVERY_COHORT_DATA + "\".";
+                //    log.severe(message);
+                //    throw new Exception(message);      
+                //}
                 
                 diagnosisCodes = new HashMap<String,String>();
 

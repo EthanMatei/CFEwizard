@@ -193,8 +193,12 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 }                
             }
             catch (Exception exception) {
-                this.setErrorMessage(exception.getLocalizedMessage());
-                result = ERROR;
+                String message = "Validation scoring specification failed: " + exception.getLocalizedMessage();
+                this.setErrorMessage(message);
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
+                log.severe(message);
+                log.severe(stackTrace);
             }
         }
 
@@ -252,15 +256,32 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 }
                 
                 this.tempDir = FileUtil.getTempDir();
+
+                // Get the validation data
+                CfeResults validationData = CfeResultsService.get(validationDataId);
+                if (validationData == null) {
+                    throw new Exception("Could not find validation data with ID: " + validationDataId);    
+                }
+
+                DataTable cohortData = validationData.getSheetAsDataTable(CfeResultsSheets.COHORT_DATA, null);
+                Set<String> diagnosesSet = cohortData.getUniqueValues("DxCode");
+                String diagnoses = String.join(",", diagnosesSet);
                 
-                String[] rScriptCommand = new String[7];
+                Set<String> genderDiagnosesSet = cohortData.getUniqueCombinedValues("Gender(M/F)", "DxCode", "-");
+                String genderDiagnoses = String.join(",", genderDiagnosesSet);
+                log.info("Gender Diagnoses: " + genderDiagnoses);
+
+                // Create the R script command
+                String[] rScriptCommand = new String[9];
                 rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
                 rScriptCommand[1] = scriptFile;     // The R script to run
                 rScriptCommand[2] = scriptDir;   // The directory that contains R scripts
                 rScriptCommand[3] = this.phene;
-                rScriptCommand[4] = this.validationMasterSheetFile;
-                rScriptCommand[5] = this.predictorListFile;
-                rScriptCommand[6] = this.tempDir;
+                rScriptCommand[4] = diagnoses;
+                rScriptCommand[5] = genderDiagnoses;
+                rScriptCommand[6] = this.validationMasterSheetFile;
+                rScriptCommand[7] = this.predictorListFile;
+                rScriptCommand[8] = this.tempDir;
                 
                 this.validationScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
                 log.info("Validation Scoring Command: " + this.validationScoringCommand);
@@ -300,11 +321,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 //--------------------------------------------
                 // Create results workbook
                 //--------------------------------------------
-                CfeResults validationData = CfeResultsService.get(validationDataId);
-                if (validationData == null) {
-                    throw new Exception("Could not find validation data with ID: " + validationDataId);    
-                }
-                
                 int lowCutoff  = validationData.getLowCutoff();
                 int highCutoff = validationData.getHighCutoff();
                 
@@ -575,6 +591,11 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         
         DataTable discoveryScores = new DataTable("Probe Set ID");
         discoveryScores.initializeToWorkbookSheet(sheet);
+        
+        sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+        DataTable cohortData = new DataTable(null);
+        cohortData.initializeToWorkbookSheet(sheet);
+        Set<String> diagnoses = cohortData.getUniqueValues("DxCode");
 	    
         
 	    String key = "Predictor";
@@ -584,13 +605,21 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    predictorList.addColumn("Direction", "");
         predictorList.addColumn("Male", "");
         predictorList.addColumn("Female", "");
-        predictorList.addColumn("BP", "");
-        predictorList.addColumn("MDD", "");
-        predictorList.addColumn("SZ", "");
-        predictorList.addColumn("SZA", "");
-        predictorList.addColumn("PTSD", "");
-        predictorList.addColumn("PSYCH", "");
-        predictorList.addColumn("PSYCHOSIS", "");
+        
+        // OLD (hard coded):
+        //predictorList.addColumn("BP", "");
+        //predictorList.addColumn("MDD", "");
+        //predictorList.addColumn("SZ", "");
+        //predictorList.addColumn("SZA", "");
+        //predictorList.addColumn("PTSD", "");
+        //predictorList.addColumn("PSYCH", "");
+        //predictorList.addColumn("PSYCHOSIS", "");
+        
+        // NEW:
+        for (String dx: diagnoses) {
+            predictorList.addColumn(dx,  "");    
+        }
+        
         predictorList.addColumn("All", "");
         
         for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
@@ -651,13 +680,20 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 row.add(direction);
                 row.add("0"); // Male
                 row.add("0"); // Female
-                row.add("0"); // BP
-                row.add("0"); // MDD
-                row.add("0"); // SZ
-                row.add("0"); // SZA
-                row.add("0"); // PTSD
-                row.add("0"); // PSYCH
-                row.add("0"); // PSYCHOSIS
+                
+                for (String dx: diagnoses) {
+                    row.add("0");
+                }
+                
+                // OLD CODE (hard coded):
+                // row.add("0"); // BP
+                // row.add("0"); // MDD
+                // row.add("0"); // SZ
+                // row.add("0"); // SZA
+                // row.add("0"); // PTSD
+                // row.add("0"); // PSYCH
+                // row.add("0"); // PSYCHOSIS
+
                 row.add("1"); // All
 
                 predictorList.addRow(row);

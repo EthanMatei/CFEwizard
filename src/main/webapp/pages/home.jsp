@@ -14,7 +14,10 @@
 <h2>Cohort Creation</h2>
 <ul>
     <li><s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a></li>
-    <li> <s:a action="ClinicalAndTestingCohortsDiscoveryCohortSelection">Clinical and Testing Cohorts Creation</s:a> </li>
+    <%--
+    <li><s:a action="ValidationCohortDiscoveryCohortSelection">Validation Cohort Creation</s:a> (WORK IN PROGRESS)</li>
+    --%>
+    <li> <s:a action="ClinicalAndTestingCohortsDiscoveryCohortSelection">Validation and Testing Cohorts Creation</s:a> </li>
 </ul>
 
 <h2>Discovery</h2>

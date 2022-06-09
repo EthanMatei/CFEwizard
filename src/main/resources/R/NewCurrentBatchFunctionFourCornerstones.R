@@ -1,4 +1,4 @@
-
+i
 
 
 ## This function calculates the PREDICTOR variable, including z-scoring all (and only) 
@@ -101,16 +101,9 @@ calculatePREDICTOR <- function(data, predictor, genderDiagnoses, direction, incr
       
     }
     
-
-    
   }
   
-  
-  
 
-
-  
-  
   
   ##Check if the user input was zero increased predictors and only one decreased predictor
   #set singleNegativePredictor to TRUE if this is the case
@@ -138,8 +131,6 @@ calculatePREDICTOR <- function(data, predictor, genderDiagnoses, direction, incr
   # the program from trying to Z-score the RNA panel directly, which would be unecessary#
   
   
-  
-  
   if ("decreasedPanel" %in% c(increasedZ, decreasedZ)){
     
     #add the genes that compose the panel to the list of genes we'll have to z-score 
@@ -150,7 +141,6 @@ calculatePREDICTOR <- function(data, predictor, genderDiagnoses, direction, incr
     decreasedZ <- decreasedZ[!decreasedZ %in% "decreasedPanel"]
     
   }
-  
   
   if ("increasedPanel" %in% c(increasedZ, decreasedZ)){
     increasedZ<- c(increasedZ, increasedPanel)
@@ -454,81 +444,42 @@ calculatePREDICTOR <- function(data, predictor, genderDiagnoses, direction, incr
       
   ######### END FOLD CHANGE
   
+  dataTemp <- NULL
+  # rowNames <- c()
   
+  cat("\n")
   for (gdx in genderDiagnoses) {
-  }
-  
-  ##Split dataset by dx and gender
-  dataMBP <- data[data$dx == "M-BP",]
-  dataFBP <- data[data$dx == "F-BP",]
-  dataMSZ <- data[data$dx == "M-SZ",]
-  dataFSZ <- data[data$dx == "F-SZ",]  
-  dataMSZA <- data[data$dx == "M-SZA",]
-  dataFSZA <- data[data$dx == "F-SZA",]
-  dataMMDD <- data[data$dx == "M-MDD",]
-  dataFMDD <- data[data$dx == "F-MDD",]
-  dataMPTSD <- data[data$dx == "M-PTSD",]
-  dataFPTSD <- data[data$dx == "F-PTSD",]
-  dataMPsych <- data[data$dx == "M-PSYCH",]
-  dataMMood <- data[data$dx == "M-MOOD",]
-  
-  
-  
-  
-  
-  
-  for (column in c(increasedZ, decreasedZ)) {
+    cat("    GDX: ", gdx, "\n")
+    # rowNames <- c(rowNames, sub("-", "", gdx))
+    # print(rowNames)
+    cat("\n\n")
+    dataGdx <- data[data$dx == gdx,]
+
+    for (column in c(increasedZ, decreasedZ)) {
     
-    if (!(column %in%  names(data))  ){
-      
-      stop("The marker " ,column," (part of the panel ",predictor,") does not exist in the database")
+      if (!(column %in%  names(data))) {
+        stop("The marker " ,column," (part of the panel ",predictor,") does not exist in the database")
+      }
+    
+      # for each of the requested genes/columns, including those that form the composite 
+      # panels, create a new column that has the same name but with a z at the end so 
+      # that we know it's the z-scored version##
+      newCol <- paste(column, "z", sep="")
+
+      # for each of the requested columns, calculate z scores by dx
+      # and put the values into the new column we just created## 
+      dataGdx[newCol] <- scale(dataGdx[column])
     }
-    
-    ##for each of the requested genes/columns, including those that form the composite 
-    #panels, create a new column that has the same name but with a z at the end so 
-    #that we know it's the z-scored version##
-    newCol <- paste(column, "z", sep="")
-    
+  
+    ##aggregate all the z scored data## 
 
-      ##for each of the requested columns, calculate z scores by dx
-      #and put the values into the new column we just created## 
-      dataMBP[newCol] <- scale(dataMBP[column])
-      
-      dataFBP[newCol] <- scale(dataFBP[column])
-      
-      dataMSZ[newCol] <- scale(dataMSZ[column])
-      
-      dataFSZ[newCol] <- scale(dataFSZ[column])
-      
-      dataMSZA[newCol] <- scale(dataMSZA[column])
-      
-      dataFSZA[newCol] <- scale(dataFSZA[column])
-      
-      dataMMDD[newCol] <- scale(dataMMDD[column])
-      
-      dataFMDD[newCol] <- scale(dataFMDD[column])
-      
-      dataMPTSD[newCol] <- scale(dataMPTSD[column])
-      
-      dataFPTSD[newCol] <- scale(dataFPTSD[column])
-      
-      dataMMood[newCol] <- scale(dataMMood[column])
-      
-      dataMPsych[newCol] <- scale(dataMPsych[column])
-   
-    
+    dataTemp = rbind(dataTemp, dataGdx)
+
+    # rownames(dataTemp) <- rowNames
   }
-  
-  ##aggregate all the z scored data## 
-  data <- rbind(dataMBP, dataFBP, dataMMDD, dataFMDD, 
-                dataMSZ, dataFSZ, dataMSZA, dataFSZA, dataMPTSD, 
-                dataFPTSD, dataMMood, dataMPsych)
 
-  
-  
-  
-  
-  
+  data <- dataTemp
+
   
   
   ###### DEAL WITH CORNERSTONE VARIABLES AS NEEDED

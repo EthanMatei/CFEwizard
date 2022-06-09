@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Clinical and Testing Cohort Specification</title>
+    <title>CFE Wizard - Validation and Testing Cohort Specification</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
@@ -12,7 +12,7 @@
 <tiles:putAttribute name="content">
 
 
-<h2>Clinical and Testing Cohort Specification</h2>
+<h2>Validation and Testing Cohort Specification</h2>
 
 <s:actionerror />
 
@@ -26,7 +26,7 @@
 
 <div style="border: 1px solid #222222; border-radius: 10px; maring-top: 20px; padding: 10px;">
 
-    <p style="font-weight: bold; margin-top: 12px;">Clinical Cohort Constraint</p>
+    <p style="font-weight: bold; margin-top: 12px;">Validation Cohort Constraint</p>
     <s:form theme="simple" action="ClinicalAndTestingCohortsProcess" method="post" enctype="multipart/form-data">
         <s:hidden name="discoveryId"/>
         <s:hidden name="discoveryPhene"/>
@@ -71,7 +71,7 @@
         </table>
         
         <div style="margin-top: 14px; margin-bottom: 14px;">
-            % Subjects in Clinical Cohort:
+            % Subjects in Validation Cohort:
             <s:textfield name="percentInValidationCohort" value="50" size="4" style="text-align: right;"/>
         </div>
     

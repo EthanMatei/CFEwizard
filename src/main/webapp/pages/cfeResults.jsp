@@ -15,6 +15,7 @@
 
 <table class="dataTable">
     <tr>
+        <th>ID</th>
         <th>Results</th> <th>Results Type</th> <th>Details</th>
         <th>Time Generated</th>
         <th>Phene</th> <th>Phene Low Cutoff</th> <th>Phene High Cutoff</th>
@@ -25,6 +26,7 @@
     </tr>
     <s:iterator value="discoveryResults" var="result">
         <tr>
+            <td> <s:property value="cfeResultsId"/> </td>
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
                     <s:param name="cfeResultsId" value="cfeResultsId" />

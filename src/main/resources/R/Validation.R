@@ -6,19 +6,23 @@
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 5) {
+if (length(args) != 7) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to Validation script")
 }
 
 scriptDir            <- args[1]
 phene                <- args[2]
-masterSheetCsvFile   <- args[3]
-predictorListCsvFile <- args[4]
-outputDir            <- args[5]
+diagnoses            <- args[3]
+genderDiagnoses      <- args[4]
+masterSheetCsvFile   <- args[5]
+predictorListCsvFile <- args[6]
+outputDir            <- args[7]
 
 predictorFilePath <- predictorListCsvFile
 
+diagnoses <- unlist(strsplit(diagnoses, ","))
+genderDiagnoses <- unlist(strsplit(genderDiagnoses, ","))
 
 
 ########################################################
@@ -221,7 +225,7 @@ for (i in 1:(nrow(predictors))) {
   ##Calculate PREDICTOR variable with user inputs
   
   # supply the source() function with the filepath of the version of the predictor variable you want to use 
-  fourCornerstonesScript <- paste(scriptDir, "CurrentBatchFunctionFourCornerstones.R", sep="/")
+  fourCornerstonesScript <- paste(scriptDir, "NewCurrentBatchFunctionFourCornerstones.R", sep="/")
   source(fourCornerstonesScript)
   
   
@@ -231,7 +235,7 @@ for (i in 1:(nrow(predictors))) {
   #if not, skip to the next one
   if (any.requested > 0) {
     # by now, all the variables needed for the calculatePREDICTOR() function have been set. no need to adjust anything
-    output <- calculatePREDICTOR(data, predictor, direction, increasedPanel, decreasedPanel, LEVELS, slopes, MAX, maxSlopes)
+    output <- calculatePREDICTOR(data, predictor, genderDiagnoses, direction, increasedPanel, decreasedPanel, LEVELS, slopes, MAX, maxSlopes)
   
   
     #get processed data
@@ -255,29 +259,37 @@ for (i in 1:(nrow(predictors))) {
     }
   
     dxList <- NULL 
-    if (predictors[i,"BP"]){
-      dxList <- "BP"
-    }
-
-    if (predictors[i,"MDD"]){
-      dxList <- c(dxList,"MDD")
-    }
     
-    if (predictors[i,"SZ"]){
-      dxList <- c(dxList,"SZ")
+    for (dx in diagnoses) {
+        if (predictors[i, dx]) {
+            dxList <- c(dxList, dx)
+        }  
     }
 
-    if (predictors[i,"SZA"]){
-      dxList <- c(dxList,"SZA")
-    }
-
-    if (predictors[i,"PTSD"]){
-      dxList <- c(dxList,"PTSD")
-    }
-
-    if (predictors[i,"PSYCHOSIS"]){
-      dxList <- c(dxList,"PSYCHOSIS")
-    }
+    # OLD CODE:
+#    if (predictors[i,"BP"]){
+#      dxList <- "BP"
+#    }
+#
+#    if (predictors[i,"MDD"]){
+#      dxList <- c(dxList,"MDD")
+#    }
+#    
+#    if (predictors[i,"SZ"]){
+#      dxList <- c(dxList,"SZ")
+#    }
+#
+#    if (predictors[i,"SZA"]){
+#      dxList <- c(dxList,"SZA")
+#    }
+#
+#    if (predictors[i,"PTSD"]){
+#      dxList <- c(dxList,"PTSD")
+#    }
+#
+#    if (predictors[i,"PSYCHOSIS"]){
+#      dxList <- c(dxList,"PSYCHOSIS")
+#    }
 
     all <- FALSE
     if (predictors[i,"All"]){

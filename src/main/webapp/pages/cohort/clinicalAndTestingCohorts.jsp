@@ -12,7 +12,7 @@
 <tiles:putAttribute name="content">
 
 
-<h2>Clinical and Testing Cohorts</h2>
+<h2>Validation and Testing Cohorts</h2>
 
 <s:actionerror />
 
@@ -25,6 +25,7 @@
     </tr>
 </table>
 
+<%--
 <table class="dataTable" style="margin-bottom: 20px;">
     <tr> <th>Clinical Phene</th> <th>High Cutoff</th> </tr>
     <tr>
@@ -32,16 +33,16 @@
         <td style="text-align: right;"> <s:property value="clinicalHighCutoff"/> </td>
     </tr>
 </table>
+--%>
 
 <p>
 Follow-up Database File: <s:property value="followUpDbFileName" />
 </p>
 
-<%--
 <s:if test="(phene1 != '' && value1 != '') || (phene2 != '' && value2 != '') || (phene3 != '' && value3 != '')">
 <p style="font-weight: bold; margin-top: 24px;">Additional Validation and Testing Cohort Constraints</p>
    
-<table class="dataTable">
+<table class="dataTable" style="margin-bottom: 32px;">
 
 
     <tr> <th>Phene</th> <th>Relation</th> <th>Value</th> </tr>
@@ -71,14 +72,14 @@ Follow-up Database File: <s:property value="followUpDbFileName" />
     </s:if>
 </table>
 </s:if>
---%>
+
 
 <table class="dataTable">
     <tr>
         <th> Cohort </th> <th> Number of Subjects </th>
     </tr>
     <tr>
-        <td> Clinical </td>
+        <td> Validation </td>
         <td style="text-align: right;"> <s:property value="numberOfValidationSubjects" />
     </tr>
     <tr>
@@ -88,7 +89,7 @@ Follow-up Database File: <s:property value="followUpDbFileName" />
 </table>
     
 <div style="margin-top: 14px; margin-bottom: 14px;">
-    Subjects specified in Clinical Cohort:
+    Subjects specified in Validation Cohort:
     <s:property value="percentInValidationCohort"/>%
 </div>
     
@@ -140,22 +141,22 @@ Prediction Cohort:
 </s:a>
 </p>
 
-
-<s:a action="CfeResultsXlsxDisplay" title="Cohort Spreadsheet">
-    <s:param name="cfeResultsId" value="cfeResultsId" />
-    <div>
-        <img border="0"
-             style="margin-top: 2px;"
-             src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
-             alt="Report" /> <br />
-        results.xlsx
-    </div>
-</s:a>
-         
+<div style="margin-bottom: 17px;">
+    <s:a action="CfeResultsXlsxDisplay" title="Cohort Spreadsheet">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+        <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+                 alt="Report" /> <br />
+            results.xlsx
+        </div>
+    </s:a>
+</div>
 
 
 <%--       
-<h4>Clinical Cohort</h4>
+<h4>Validation Cohort</h4>
 <s:iterator value="validationSubjects" var="subject">
     <s:property value="subject"/> <br/>
 </s:iterator>

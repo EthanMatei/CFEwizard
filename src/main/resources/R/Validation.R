@@ -225,7 +225,7 @@ for (i in 1:(nrow(predictors))) {
   ##Calculate PREDICTOR variable with user inputs
   
   # supply the source() function with the filepath of the version of the predictor variable you want to use 
-  fourCornerstonesScript <- paste(scriptDir, "NewCurrentBatchFunctionFourCornerstones.R", sep="/")
+  fourCornerstonesScript <- paste(scriptDir, "CurrentBatchFunctionFourCornerstones.R", sep="/")
   source(fourCornerstonesScript)
   
   

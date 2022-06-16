@@ -1056,7 +1056,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         String result = "";
         
         this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
-        this.scriptFile = new File(getClass().getResource("/R/NewPredictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
+        this.scriptFile = new File(getClass().getResource("/R/Predictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
         
         this.tempDir = FileUtil.getTempDir();
         log.info("tempDir: " + tempDir + ".");

@@ -12,7 +12,7 @@ library(coin)
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 9) {
+if (length(args) != 11) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to Prediction script")
 }
@@ -25,11 +25,16 @@ studyType                   <- args[3]    # "cross-sectional" or "longitudinal"
 phene                       <- args[4]
 pheneHighCutoff             <- args[5]    # Ignored for "FirstYearScore" and "HospFreq" and 
 
-masterSheetCsvFile          <- args[6]
-predictorListCsvFile        <- args[7]
-specialPredictorListCsvFile <- args[8]
-outputDir                   <- args[9]
+diagnoses                   <- args[6]    # Comma-separated string of diagnoses
+genderDiagnoses             <- args[7]    # Comma-separated string of gender diagnoses, for example: "F-BP,F-SZ,M-BP,M-MDD"  
 
+masterSheetCsvFile          <- args[8]
+predictorListCsvFile        <- args[9]
+specialPredictorListCsvFile <- args[10]
+outputDir                   <- args[11]
+
+diagnoses <- unlist(strsplit(diagnoses, ","))
+genderDiagnoses <- unlist(strsplit(genderDiagnoses, ","))
 
 # d <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\All Future\\Mastersheet for All Future Predictions Delusions (MDH 4-16-2021).csv")
 d <- read.csv(masterSheetCsvFile, check.names=FALSE)
@@ -328,7 +333,7 @@ for (i in 1:(nrow(predictors))) {
     
     # by now, all the variables needed for the calculatePREDICTOR() function have been set. no need to adjust anything
     # note: we add 1 to markers with any zero values... this is to avoid dividing by zero
-    output <- calculatePREDICTOR(data, predictor, direction, increasedPanel, decreasedPanel, LEVELS, slopes, MAX, maxSlopes)
+    output <- calculatePREDICTOR(data, predictor, genderDiagnoses, direction, increasedPanel, decreasedPanel, LEVELS, slopes, MAX, maxSlopes)
     
     
     #get processed data
@@ -353,39 +358,48 @@ for (i in 1:(nrow(predictors))) {
     }
     
     dxList <- NULL 
-    if (predictors[i,"BP"]){
-      dxList <- "BP"
+
+    for (dx in diagnoses) {
+        if (predictors[i, dx]) {
+            dxList <- c(dxList, dx)
+        }
     }
-    if (predictors[i,"MDD"]){
-      dxList <- c(dxList,"MDD") 
-    }
-    if (predictors[i,"SZ"]){
-      dxList <- c(dxList,"SZ")
-    }
-    if (predictors[i,"SZA"]){
-      dxList <- c(dxList,"SZA")
-    }
-    if (predictors[i,"PTSD"]){
-      dxList <- c(dxList,"PTSD")
-    }
-    if (predictors[i,"MOOD"]){
-      dxList <- c(dxList,"MOOD")
-    }
-    if (predictors[i,"PSYCH"]){
-      dxList <- c(dxList,"PSYCH")
-    }
-    if (predictors[i,"PSYCHOSIS"]){
-      dxList <- c(dxList,"PSYCHOSIS")
-    }
-    if (predictors[i,"GENDER"]){
-      dxList <- c(dxList,"GENDER")
-    }
+
+# OLD CODE:
+#    if (predictors[i,"BP"]){
+#      dxList <- "BP"
+#    }
+#    if (predictors[i,"MDD"]){
+#      dxList <- c(dxList,"MDD") 
+#    }
+#    if (predictors[i,"SZ"]){
+#      dxList <- c(dxList,"SZ")
+#    }
+#    if (predictors[i,"SZA"]){
+#      dxList <- c(dxList,"SZA")
+#    }
+#    if (predictors[i,"PTSD"]){
+#      dxList <- c(dxList,"PTSD")
+#    }
+#    if (predictors[i,"MOOD"]){
+#      dxList <- c(dxList,"MOOD")
+#    }
+#    if (predictors[i,"PSYCH"]){
+#      dxList <- c(dxList,"PSYCH")
+#    }
+#    if (predictors[i,"PSYCHOSIS"]){
+#      dxList <- c(dxList,"PSYCHOSIS")
+#    }
+#    if (predictors[i,"GENDER"]){
+#      dxList <- c(dxList,"GENDER")
+#    }
     #if (predictors[i,"CONTROL"]){
     #dxList <- c(dxList,"CONTROL")
     #}
     #if (predictors[i,"AX"]){
     # dxList <- c(dxList,"AX")
     #}
+
     all <- FALSE
     if (predictors[i,"All"]){
       all <- TRUE
@@ -404,15 +418,18 @@ for (i in 1:(nrow(predictors))) {
       data.subset.Gender <- data.out[data.out$Gender == sex,]
       
       #subset that gender further by requested diagnosis
-      for (dx in dxList){
+      for (dx in dxList) {
         
         
-        if (dx == "PSYCHOSIS"){
+        if (dx == "PSYCHOSIS") {
           data.subset.Gender.Dx <- subset(data.subset.Gender, DxCode %in% c("SZ","SZA"))
         } 
-        if (dx == "GENDER"){
-          data.subset.Gender.Dx <- subset(data.subset.Gender, DxCode %in% c("SZ","SZA","BP","MDD","PTSD","MOOD","PSYCH","OCD","AX"))
+
+        if (dx == "GENDER") {
+          # OLD CODE: data.subset.Gender.Dx <- subset(data.subset.Gender, DxCode %in% c("SZ","SZA","BP","MDD","PTSD","MOOD","PSYCH","OCD","AX"))
+          data.subset.Gender.Dx <- subset(data.subset.Gender, DxCode %in% diagnoses)
         } 
+
         if (!(dx %in% c("PSYCHOSIS", "GENDER", "PLACEHOLDERDX") ) ) {
           data.subset.Gender.Dx <- data.subset.Gender[data.subset.Gender$DxCode == dx,]
         }

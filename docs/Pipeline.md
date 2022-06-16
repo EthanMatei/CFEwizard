@@ -14,7 +14,7 @@ The following cohorts need to be created:
 
 1. Discovery Cohort
 2. Clinical Chort (previously referred to as the Validation Cohort)
-3. Testing Cohort - consists of the following 3 subgroups, which may overlap:
+3. Testing Cohorts - consists of the following 3 subgroups, which may overlap:
     * State (test)
     * First year
     * Future (hospitalization)

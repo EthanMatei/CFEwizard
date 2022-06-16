@@ -6,9 +6,9 @@ to run virtual machines on our PCs.
 
 You need to download and install Oracle's VirtualBox software: [https://www.virtualbox.org/](https://www.virtualbox.org/)
 
-Then, you need to download [Ubuntu 18](http://releases.ubuntu.com/18.04/), the
+Then, you need to download [Ubuntu 20](https://releases.ubuntu.com/20.04/), the
 current version of Ubuntu we are using, and create a VM 
-in VirutalBox using the Ubuntu 18 download file.
+in VirutalBox using the Ubuntu download file.
 
 Unless otherwise stated, the setup instructions in this document are for Ubuntu.
 

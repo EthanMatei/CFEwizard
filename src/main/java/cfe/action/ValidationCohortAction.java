@@ -97,19 +97,10 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 	private Long cfeResultsId;
     private String cohortCheckCsvFileName;
 	
-    // Fllow-up MS Access database
-    
-    private File followUpDb;
-    private String followUpDbContentType;
-    private String followUpDbFileName;
     private String scoringDataFileName;
     private String pheneVisitsFileName;
     
     private List<String> admissionReasons;
-    private String predictionCohortCreationCommand;
-    private String scriptOutput;
-    private String outputFile;
-    private String scriptOutputFile;
     
 	public ValidationCohortAction() {
 	    this.cohortSubjects     = new TreeSet<String>();
@@ -196,8 +187,6 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
             try {
                 this.discoveryResults = CfeResultsService.get(discoveryId);
 
-                log.info("Testing follow-up database file name: " + this.followUpDbFileName);
-
                 ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
                 this.discoveryResults = CfeResultsService.get(discoveryId);
 
@@ -248,71 +237,10 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 List<String> subjects = new ArrayList<String>();
                 subjects.addAll(cohortSubjects);
 
-                //-----------------------------------------------------------
-                // Process hospitalization data
-                //-----------------------------------------------------------
-                this.processHospitalizations();
-
                 //--------------------------------------------------
                 // Create phene visits CSV file
                 //--------------------------------------------------
                 this.createPheneVistsCsvFile();
-
-                //------------------------------------------------------------
-                // Run Python script
-                //------------------------------------------------------------
-                String scriptFile = new File(getClass().getResource("/python/CohortCreation.py").toURI()).getAbsolutePath();
-                String tempDir = WebAppProperties.getTempDir();
-
-                String[] pythonScriptCommand = new String[6];
-                pythonScriptCommand[0] = WebAppProperties.getPython3Path();
-                pythonScriptCommand[1] = scriptFile;     // Python script to run
-                pythonScriptCommand[2] = this.scoringDataFileName;
-                pythonScriptCommand[3] = this.pheneVisitsFileName;
-                pythonScriptCommand[4] = this.admissionPhene;
-                pythonScriptCommand[5] = tempDir;
-
-                log.info("PYTHON CREATE COHORT COMMAND: " + String.join(" ", pythonScriptCommand));
-
-                this.predictionCohortCreationCommand = "\"" + String.join("\" \"",  pythonScriptCommand) + "\"";
-
-                this.scriptOutput = this.runCommand(pythonScriptCommand);
-
-                File tempFile = FileUtil.createTempFile("prediction-cohort-creation-python-script-output-", ".txt");
-                FileUtils.write(tempFile, scriptOutput, "UTF-8");
-                this.scriptOutputFile = tempFile.getAbsolutePath();
-
-
-                //---------------------------------------------------------------
-                // Get the output file path
-                //---------------------------------------------------------------
-                String outputFilePatternString = "Output file created: (.*)";
-
-                Pattern outputFilePattern = Pattern.compile(outputFilePatternString);
-
-                String lines[] = scriptOutput.split("\\r?\\n");
-                for (String line: lines) {
-                    Matcher outputMatcher = outputFilePattern.matcher(line);
-
-                    if (outputMatcher.find()) {
-                        this.outputFile = outputMatcher.group(1).trim();
-                    }             
-                }
-
-                if (this.outputFile == null || this.outputFile.isEmpty()) {
-                    throw new Exception("Could not find output file for Python Cohort Creation script.");
-                }
-
-                //Path path = Paths.get(outputFile);
-                //String fileName = path.getFileName().toString();
-                //this.outputFile = System.getProperty("java.io.tmpdir") + "/" + fileName;
-                log.info("Updated prediction cohort output file:" + this.outputFile);
-
-
-                // Create hospitalizations data table
-                DataTable hospitalizationsData = new DataTable("hospitalizations cohort data", "TestingVisit");
-                hospitalizationsData.initializeToCsv(this.outputFile);
-
 
                 //-------------------------------------------------------------------------------
                 // Create new CFE results that has all the cohorts plus previous information
@@ -486,43 +414,16 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 
                 cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
 
-                //
-                DataTable cohortDataForTesting = cohortData;
-
-                cohortDataForTesting.deleteRow("Cohort", "discovery");
-                cohortDataForTesting.deleteRow("Cohort", "validation");   // "validation" deprecated; new name "clinical"
-                cohortDataForTesting.deleteRow("Cohort", "clinical");
-
-
-                DataTable testingCohortData = DataTable.join("TestingVisit", "TestingVisit", "Subject Identifiers.PheneVisit",
-                        hospitalizationsData, cohortDataForTesting, DataTable.JoinType.RIGHT_OUTER);
-                testingCohortData.renameColumn("Time to 1st Hosp", "time");
-
-                // Create TestCohort column that is 0 if the discovery phene value is not set
-                // and 1 if it is set
-                testingCohortData.addColumn("TestCohort", "1");
-                for (int rowIndex = 0; rowIndex < testingCohortData.getNumberOfRows(); rowIndex++) {
-                    String pheneValue = testingCohortData.getValue(rowIndex, this.discoveryPhene);
-                    if (pheneValue == null || pheneValue.trim().isEmpty()) {
-                        testingCohortData.setValue(rowIndex, "TestCohort", "0");
-                    }
-                }
-                testingCohortData.sort("Subject", "VisitNumber");
-
-
-                hospitalizationsData.addToWorkbook(resultsWorkbook, CfeResultsSheets.PREDICTION_COHORT);
-                testingCohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT_DATA);
-
                 //-------------------------------------------
                 // Create and save CFE results
                 //-------------------------------------------
                 CfeResults cfeResults = new CfeResults();
 
                 if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
-                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
+                    cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT);
                 }
                 else if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
-                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+                    cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT_PLUS_DISCOVERY_SCORES);
                 }
 
                 cfeResults.setResultsSpreadsheet(resultsWorkbook);
@@ -598,51 +499,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
         return output.toString();
     }
     
-    public void processHospitalizations() throws Exception {
-        AccessDatabaseParser dbParser = new AccessDatabaseParser(this.followUpDb);
-        
-        //---------------------------------------------------------------
-        // Get the actuarial table
-        //---------------------------------------------------------------
-        Table actuarialTable = dbParser.getTable(ACTUARIAL_TABLE_NAME);
-        
-        if (actuarialTable == null) {
-            String errorMessage = "The acturial table \"" + ACTUARIAL_TABLE_NAME + "\""
-                    + " could not be found in the follow-up database \"" + this.followUpDbFileName + "\".";
-            throw new IOException(errorMessage);
-        }
-        
-        DataTable actuarialAndSubjectInfo = new DataTable(ACTUARIAL_TABLE_NAME, "ID");
-        actuarialAndSubjectInfo.initializeToAccessTable(actuarialTable);
-        
-        //----------------------------------------------------------------
-        // Get the hospitalization table
-        //----------------------------------------------------------------
-        Table hospitalizationsTable = dbParser.getTable(HOSPITALIZATIONS_TABLE_NAME);
-        
-        if (hospitalizationsTable == null) {
-            String errorMessage = "The hospitalizations table \"" + HOSPITALIZATIONS_TABLE_NAME + "\""
-                    + " could not be found in the follow-up database \"" + this.followUpDbFileName + "\".";
-            throw new IOException(errorMessage);
-        }
-        
-        DataTable hospitalizations = new DataTable(HOSPITALIZATIONS_TABLE_NAME, "ID");
-        hospitalizations.initializeToAccessTable(hospitalizationsTable);
-        
-        // Join tables
-        DataTable scoringData = null;
-        String keyColumn = null;
-        String joinColumn = "SubjectID";
-        scoringData = DataTable.join(keyColumn, joinColumn, actuarialAndSubjectInfo, hospitalizations);
-        
-        String scoringDataCsv = scoringData.toCsv();
-        File scoringDataCsvFile = FileUtil.createTempFile("testing-scoring-data-",  ".csv");
-        if (scoringDataCsv != null) {
-            FileUtils.write(scoringDataCsvFile, scoringDataCsv, "UTF-8");
-        }
-        this.scoringDataFileName = scoringDataCsvFile.getAbsolutePath();
-    }
-    
+
     /**
      * Creates the phene visit CSV file that is used for input into the Python script
      * for calculating the hospitalization cohort.
@@ -928,30 +785,6 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
         this.cohortCheckCsvFileName = cohortCheckCsvFileName;
     }
 
-    public File getFollowUpDb() {
-        return followUpDb;
-    }
-
-    public void setFollowUpDb(File followUpDb) {
-        this.followUpDb = followUpDb;
-    }
-
-    public String getFollowUpDbContentType() {
-        return followUpDbContentType;
-    }
-
-    public void setFollowUpDbContentType(String followUpDbContentType) {
-        this.followUpDbContentType = followUpDbContentType;
-    }
-
-    public String getFollowUpDbFileName() {
-        return followUpDbFileName;
-    }
-
-    public void setFollowUpDbFileName(String followUpDbFileName) {
-        this.followUpDbFileName = followUpDbFileName;
-    }
-
     public String getScoringDataFileName() {
         return scoringDataFileName;
     }
@@ -984,38 +817,6 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
         this.admissionPhene = admissionPhene;
     }
 
-    public String getPredictionCohortCreationCommand() {
-        return predictionCohortCreationCommand;
-    }
-
-    public void setPredictionCohortCreationCommand(String predictionCohortCreationCommand) {
-        this.predictionCohortCreationCommand = predictionCohortCreationCommand;
-    }
-
-    public String getScriptOutput() {
-        return scriptOutput;
-    }
-
-    public void setScriptOutput(String scriptOutput) {
-        this.scriptOutput = scriptOutput;
-    }
-
-    public String getScriptOutputFile() {
-        return scriptOutputFile;
-    }
-
-    public void setScriptOutputFile(String scriptOutputFile) {
-        this.scriptOutputFile = scriptOutputFile;
-    }
-
-    public String getOutputFile() {
-        return outputFile;
-    }
-
-    public void setOutputFile(String outputFile) {
-        this.outputFile = outputFile;
-    }
-
     public Map<String, ArrayList<ColumnInfo>> getPheneMap() {
         return pheneMap;
     }
@@ -1023,5 +824,4 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
     public void setPheneMap(Map<String, ArrayList<ColumnInfo>> pheneMap) {
         this.pheneMap = pheneMap;
     }
-
 }

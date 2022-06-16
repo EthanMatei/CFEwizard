@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Validation Cohort/title>
+    <title>CFE Wizard - Validation Cohort</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
@@ -44,12 +44,8 @@
 </table>
 --%>
 
-<p>
-Follow-up Database File: <s:property value="followUpDbFileName" />
-</p>
-
 <s:if test="(phene1 != '' && value1 != '') || (phene2 != '' && value2 != '') || (phene3 != '' && value3 != '')">
-<p style="font-weight: bold; margin-top: 24px;">Additional Validation and Testing Cohort Constraints</p>
+<p style="font-weight: bold; margin-top: 24px;">Additional Validation Cohort Constraints</p>
    
 <table class="dataTable" style="margin-bottom: 32px;">
 
@@ -127,17 +123,27 @@ Follow-up Database File: <s:property value="followUpDbFileName" />
     </s:a>
 </p>
 
+
+<div style="margin-bottom: 17px;">
+    <s:a action="CfeResultsXlsxDisplay" title="Cohort Spreadsheet">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+        <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+                 alt="Report" /> <br />
+            validation-cohort-results.xlsx
+        </div>
+    </s:a>
+</div>
+
+
 <br/>
 
 
 <%--       
 <h4>Validation Cohort</h4>
 <s:iterator value="validationSubjects" var="subject">
-    <s:property value="subject"/> <br/>
-</s:iterator>
-
-<h4>Testing Cohort</h4>
-<s:iterator value="testingSubjects" var="subject">
     <s:property value="subject"/> <br/>
 </s:iterator>
 --%>

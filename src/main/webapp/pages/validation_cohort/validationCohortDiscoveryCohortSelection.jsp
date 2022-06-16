@@ -19,7 +19,7 @@
 Select a Discovery Cohort:
 </p>
 
-<s:form action="ValidationCohortSpecification" theme="simple">
+<s:form action="ValidationCohortSpecification" theme="simple" style="margin-bottom: 24px;">
 <table class="dataTable">
     <tr> 
         <th>ID</th>

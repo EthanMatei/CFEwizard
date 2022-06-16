@@ -43,6 +43,8 @@
         <li> <s:a action="PrioritizationDBSelectionInitialize">Upload Databases </s:a></li>
     </s:if>
     
+    <li> <s:a action="DatabaseStatusAction">CFE Prioritization Database Status</s:a></li>
+    
     <li><s:a action="PrioritizationGeneListUpload">Calculate Scores</s:a></li>
 </ul>
 
@@ -69,24 +71,26 @@
 <h3>Admin</h3>
     <ul>
         <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>
-        <li> <s:a action="DatabaseStatusAction">CFE Database Status</s:a></li>
         <li> <s:a action="SystemStatusAction">System Status</s:a></li>
     </ul>
 </s:if>
 
+<%--
 <hr/>
-
 <h3>Prototype Process</h3>
 <ul>  
-    
+ --%>   
  <%-- Only allow admins see and make database uploads --%>
+<%--
     <s:if test="#session.username==adminUser">
-        <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>
+
         <li> <s:a action="DBSelectionInitialize">Upload Databases </s:a></li>
     </s:if>
     
     <li><s:a action="ScoringWeights">Calculate Scores</s:a></li>
     
 </ul>
+--%>
+
 </tiles:putAttribute>
 </tiles:insertTemplate>

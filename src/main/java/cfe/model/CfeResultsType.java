@@ -8,6 +8,7 @@ public class CfeResultsType {
     public final static String DISCOVERY_SCORES                   = "discovery scores";
     
     public final static String VALIDATION_COHORT                             = "validation cohort";
+    public final static String VALIDATION_COHORT_PLUS_DISCOVERY_SCORES       = "validation cohort + discovery scores";
     public final static String VALIDATION_COHORT_PLUS_PRIORITIZATION_SCORES  = "validation cohort + prioritization scores";
     public final static String VALIDATION_COHORT_PLUS_VALIDATION_SCORES      = "validation cohort + validation scores";
     

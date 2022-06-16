@@ -10,11 +10,11 @@
 
 <%-- User: <s:property value="#session.username" /> --%>
 
-<h2>Database Status</h2>
+<h2>CFE Prioritization Database Status</h2>
 
 <div style="float: right;">
   <s:form id ="clearForm" name="clearForm" action="DatabaseClear" method="post">
-    <s:submit value="Clear All" id="clearAllButton"/>
+    <s:submit value="Clear All" id="clearAllButton" style="font-weight: bold;"/>
   </s:form>
 </div>
 
@@ -34,7 +34,7 @@
   <h3>Prioritization Database Table Map</h3>
   
   <table class="dataTable" style="margin-bottom: 14px;">
-  <tr> <th>MS Access Table</th> <th>CFG MySQL Table</th> <th>CFG MySQL Table Rows</th> </tr>
+  <tr> <th>MS Access Table</th> <th>CFE MySQL Table</th> <th>CFE MySQL Table Rows</th> </tr>
   <s:iterator value="prioritizationTableMap">
     <tr>
       <td><s:property value="key"/></td>
@@ -46,9 +46,10 @@
   
   <p>
   Note: MS Access tables not shown in the database table map
-  above, and the linkage tables shown above, are ignored by the CFG Wizard.
+  above, and the linkage tables shown above, are ignored by Prioritization.
   </p>
-  
+
+<%-->  
   <h3>Prototype Database Table Map</h3>
   
   <table class="dataTable" style="margin-bottom: 14px;">
@@ -61,11 +62,7 @@
     </tr>
   </s:iterator>
   </table>
-  
-  <p>
-  Note: MS Access tables not shown in the database table map
-  above are ignored by the CFE Wizard.
-  </p>
+--%>
   
 </s:if>
 <s:else>

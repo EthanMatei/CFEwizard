@@ -36,7 +36,7 @@
 <div style="border: 1px solid #222222; border-radius: 10px; maring-top: 20px; padding: 10px;">
 
     <p style="font-weight: bold; margin-top: 12px;">Validation Cohort Constraint</p>
-    <s:form theme="simple" action="ClinicalAndTestingCohortsProcess" method="post" enctype="multipart/form-data">
+    <s:form theme="simple" action="ValidationCohortProcess" method="post" enctype="multipart/form-data">
         <s:hidden name="discoveryId"/>
         <s:hidden name="discoveryPhene"/>
         <s:hidden name="discoveryLowCutoff"/>

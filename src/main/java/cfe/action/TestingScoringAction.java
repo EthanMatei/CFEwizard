@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -305,10 +306,18 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     throw new Exception("Unable to retrieve testing data for ID " + testingDataId + ".");
                 }
      
+                DataTable cohortData = testingData.getSheetAsDataTable(CfeResultsSheets.COHORT_DATA, null);
+                if (cohortData == null) {
+                    throw new Exception("Unable to retrieve sheet \"" + CfeResultsSheets.COHORT_DATA + "\" from testing data.");
+                }
+                Set<String> diagnoses = cohortData.getUniqueValues("DxCode");
+                Set<String> genderDiagnoses = cohortData.getUniqueCombinedValues("Gender(M/F)", "DxCode", "-");
+                
                 // Map from sheet name to data table
                 LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
                 resultsTables = testingData.getDataTables();
                 
+
                 
                 String testType  = null;
                 String studyType = null;
@@ -332,7 +341,9 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     String rScriptOutput = this.runScript(
                             testType, studyType,
                             this.predictionPhene,
-                            (this.predictionPheneHighCutoff - this.comparisonThreshold), 
+                            (this.predictionPheneHighCutoff - this.comparisonThreshold),
+                            diagnoses,
+                            genderDiagnoses,
                             this.finalMasterSheetFile,
                             this.predictorListFile,
                             this.specialPredictorListTempFile
@@ -352,7 +363,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     studyType = LONGITUDINAL;
                     String rScriptOutput = this.runScript(
                             testType, studyType,
-                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
@@ -371,7 +383,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     studyType = CROSS_SECTIONAL;
                     String rScriptOutput = this.runScript(
                             testType, studyType,
-                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
@@ -390,7 +403,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     studyType = LONGITUDINAL;
                     String rScriptOutput = this.runScript(
                             testType, studyType,
-                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
@@ -410,7 +424,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
                     String rScriptOutput = this.runScript(
                             testType, studyType,
-                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
@@ -429,7 +444,8 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     studyType = LONGITUDINAL;
                     String rScriptOutput = this.runScript(
                             testType, studyType,
-                            this.predictionPhene, this.predictionPheneHighCutoff, 
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
                             this.predictorListFile, this.specialPredictorListTempFile
                     );
@@ -1031,19 +1047,24 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	 * @return
 	 * @throws Exception
 	 */
-    public String runScript(String testType, String studyType, String phene, double pheneHighCutoff,
+    public String runScript(String testType, String studyType,
+            String phene, double pheneHighCutoff,
+            Set<String> diagnoses, Set<String> genderDiagnoses,
             String masterSheetFile, String predictorListFile, String specialPredictorListFile) throws Exception {
         log.info("runScript start.");
         log.info("Starting runScript for test type \"" + testType + "\" and study type \"" + studyType + "\".");
         String result = "";
         
         this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
-        this.scriptFile = new File(getClass().getResource("/R/Predictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
+        this.scriptFile = new File(getClass().getResource("/R/NewPredictions-Script-ALL-Dx.R").toURI()).getAbsolutePath();
         
         this.tempDir = FileUtil.getTempDir();
         log.info("tempDir: " + tempDir + ".");
         
-        String[] rScriptCommand = new String[11];
+        String diagnosesString = String.join(",", diagnoses);
+        String genderDiagnosesString = String.join(",", genderDiagnoses);
+        
+        String[] rScriptCommand = new String[13];
         rScriptCommand[0] = WebAppProperties.getRscriptPath();
         rScriptCommand[1] = this.scriptFile;
         rScriptCommand[2] = scriptDir;
@@ -1051,10 +1072,12 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         rScriptCommand[4] = studyType;
         rScriptCommand[5] = phene;
         rScriptCommand[6] = pheneHighCutoff + "";
-        rScriptCommand[7] = masterSheetFile;
-        rScriptCommand[8] = predictorListFile;
-        rScriptCommand[9] = specialPredictorListFile;
-        rScriptCommand[10] = tempDir;
+        rScriptCommand[7] = diagnosesString;
+        rScriptCommand[8] = genderDiagnosesString;
+        rScriptCommand[9] = masterSheetFile;
+        rScriptCommand[10] = predictorListFile;
+        rScriptCommand[11] = specialPredictorListFile;
+        rScriptCommand[12] = tempDir;
         
         this.testingScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
         log.info("Testing Scoring Command: " + this.testingScoringCommand);

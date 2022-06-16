@@ -511,7 +511,19 @@
                 <param name="actionName">LoginAction</param>
             </result>
         </action>
-        		
+        
+                   
+		<action name="ValidationCohortProcess"
+		        class="cfe.action.ValidationCohortAction"
+		        method="process">
+			<interceptor-ref name="fileUploadStack"/>
+		    <result name="success">pages/validation_cohort/validationCohort.jsp</result>
+		    <result name="error">pages/validation_cohort/validationCohort.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+        
         <!-- ==================================================================================== -->
  
         <!-- Clinical (Validation) and Testing Cohort Creation -->

@@ -1,5 +1,3 @@
-i
-
 
 ## This function calculates the PREDICTOR variable, including z-scoring all (and only) 
 #the needed columns

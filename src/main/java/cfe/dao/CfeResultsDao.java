@@ -33,12 +33,14 @@ public class CfeResultsDao extends AbstractDao<CfeResults> {
 	    return results;
 	}
 
+	
 	/**
 	 * Gets the metadata for the results with the specified results type.
 	 * 
 	 * @param resultsType
 	 * @return
 	 */
+	/*
     public List<CfeResults> getMetadata(String resultsType) {
         List<CfeResults> results = null;
         
@@ -60,6 +62,33 @@ public class CfeResultsDao extends AbstractDao<CfeResults> {
         Query<CfeResults> query = sess.createQuery(queryString);
         query.setParameter("resultsType1", resultsType1);
         query.setParameter("resultsType2", resultsType2);
+        results = query.list();
+        return results;
+    }
+    */
+
+    
+    public List<CfeResults> getMetadata(String ... resultsTypes) {
+        List<CfeResults> results = null;
+        
+        String queryString = "Select new CfeResults(cfeResultsId, resultsType, generatedTime, phene, lowCutoff, highCutoff)"
+            + " from CfeResults where resultsType in (";
+        
+        for (int i = 0; i < resultsTypes.length; i++) {
+            if (i > 0) {
+                queryString += ", ";
+            }
+            queryString += ":resultsType" + i;
+        }
+        queryString += ")";
+        
+        Query<CfeResults> query = sess.createQuery(queryString, CfeResults.class);
+        
+        for (int i = 0; i < resultsTypes.length; i++) {
+            String parameter = "resultsType" + i;
+            query.setParameter(parameter, resultsTypes[i]);
+        }
+        
         results = query.list();
         return results;
     }

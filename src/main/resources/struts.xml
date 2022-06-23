@@ -524,6 +524,46 @@
             </result>
         </action>
         
+		
+        <!-- ==================================================================================== -->
+ 
+        <!-- Testing Cohort Creation -->
+        
+		<action name="TestingCohortsValidationCohortSelection"
+		        class="cfe.action.TestingCohortsAction"
+		        method="initialize">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/testing_cohort/testingCohortsValidationCohortSelection.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+
+
+		<action name="TestingCohortsSpecification"
+		        class="cfe.action.TestingCohortsAction"
+		        method="specification">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/testing_cohort/testingCohortsSpecification.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+                  
+		<action name="TestingCohortsProcess"
+		        class="cfe.action.TestingCohortsAction"
+		        method="process">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/testing_cohort/testingCohorts.jsp</result>
+		    <result name="error">pages/testing_cohort/testingCohorts.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+
+        
         <!-- ==================================================================================== -->
  
         <!-- Clinical (Validation) and Testing Cohort Creation -->

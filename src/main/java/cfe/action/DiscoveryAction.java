@@ -800,6 +800,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                         outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
                     }
                 }
+                outputDataTable.deleteRow("Probe Set ID", "VisitNumber");
+                
                 log.info("Calculation of outputDataTable complete.");
 
                 // Create "Discovery Report" data table

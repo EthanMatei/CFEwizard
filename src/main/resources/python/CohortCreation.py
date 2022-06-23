@@ -147,6 +147,9 @@ from datetime import datetime
 for x in data['TestingVisit'].unique(): 
     val = data[data['TestingVisit']==x]['TestingDate'].unique()
     subj = data[data['TestingVisit'] == x]['SubjectID copy'].unique()
+    
+    print("Subject:", subj, " - Visit Date:", val)
+    
     if not val: 
         continue
     else:

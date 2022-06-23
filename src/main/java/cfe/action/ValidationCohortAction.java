@@ -58,8 +58,6 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 	private String[] operators = {">=", ">", "<=", "<"};
 	
 	private Long discoveryId;
-	
-	private String admissionPhene;
     
 	private String errorMessage;
 	
@@ -100,27 +98,10 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
     private String scoringDataFileName;
     private String pheneVisitsFileName;
     
-    private List<String> admissionReasons;
-    
 	public ValidationCohortAction() {
 	    this.cohortSubjects     = new TreeSet<String>();
 	    this.validationSubjects = new TreeSet<String>();
 	    this.testingSubjects    = new TreeSet<String>();
-	    
-	    admissionReasons = new ArrayList<String>();
-	    admissionReasons.add("Suicide");
-	    admissionReasons.add("Violence");
-	    admissionReasons.add("Depression");
-	    admissionReasons.add("Mania");
-	    admissionReasons.add("Hallucinations");
-	    admissionReasons.add("Delusion");
-	    admissionReasons.add("Other Psychosis"); 
-	    admissionReasons.add("Anxiety"); 
-	    admissionReasons.add("Stress");
-	    admissionReasons.add("Alcohol");
-	    admissionReasons.add("Drugs");
-	    admissionReasons.add("Pain");
-	    Collections.sort(admissionReasons);
 	}
 	
 	public String initialize() throws Exception {
@@ -240,7 +221,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 //--------------------------------------------------
                 // Create phene visits CSV file
                 //--------------------------------------------------
-                this.createPheneVistsCsvFile();
+                // this.createPheneVistsCsvFile();
 
                 //-------------------------------------------------------------------------------
                 // Create new CFE results that has all the cohorts plus previous information
@@ -315,7 +296,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 //    row.add(subject);
                 //    validationCohort.addRow(row);
                 //}
-                validationCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.CLINICAL_COHORT);
+                validationCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT);
 
                 // Create testing cohort data table
                 DataTable testingCohort = new DataTable("Subject");
@@ -410,7 +391,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 }
                 validationCohortInfo.addRow(row);
 
-                validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.CLINICAL_COHORT_INFO);
+                validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT_INFO);
 
                 cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
 
@@ -471,33 +452,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
         return result;
     }
     	
-    public String runCommand(String[] command) throws Exception {
-        StringBuilder output = new StringBuilder();
-        
-        log.info("run command: " + String.join(" ", command));
-        
-        // This allows debugging:
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.redirectErrorStream(true); // redirect standard error to standard output
-        
-        Process process = processBuilder.start();
 
-        BufferedReader reader = new BufferedReader(
-        new InputStreamReader(process.getInputStream()));
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            output.append(line + "\n");
-        }
-
-        int status = process.waitFor();
-        if (status != 0) {
-            //throw new Exception("Command \"" + command + "\" exited with code " + status);
-        }
-        
-        reader.close();
-        return output.toString();
-    }
     
 
     /**
@@ -506,6 +461,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
      * 
      * @throws Exception
      */
+    /*
     public void createPheneVistsCsvFile() throws Exception {
         XSSFWorkbook workbook = this.discoveryResults.getResultsSpreadsheet();
         
@@ -535,6 +491,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
         
         this.pheneVisitsFileName = pheneVisitsCsvFile.getAbsolutePath();
     }
+    */
     
 	public void setSession(Map<String, Object> session) {
 		this.webSession = session;
@@ -799,22 +756,6 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 
     public void setPheneVisitsFileName(String pheneVisitsFileName) {
         this.pheneVisitsFileName = pheneVisitsFileName;
-    }
-
-    public List<String> getAdmissionReasons() {
-        return admissionReasons;
-    }
-
-    public void setAdmissionReasons(List<String> admissionReasons) {
-        this.admissionReasons = admissionReasons;
-    }
-
-    public String getAdmissionPhene() {
-        return admissionPhene;
-    }
-
-    public void setAdmissionPhene(String admissionPhene) {
-        this.admissionPhene = admissionPhene;
     }
 
     public Map<String, ArrayList<ColumnInfo>> getPheneMap() {

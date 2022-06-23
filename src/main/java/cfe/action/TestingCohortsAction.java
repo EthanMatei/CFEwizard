@@ -37,10 +37,10 @@ import cfe.utils.FileUtil;
 import cfe.utils.PheneCondition;
 import cfe.utils.WebAppProperties;
 
-public class ClinicalAndTestingCohortsAction extends BaseAction implements SessionAware {
+public class TestingCohortsAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(ClinicalAndTestingCohortsAction.class.getName());
+    private static final Logger log = Logger.getLogger(TestingCohortsAction.class.getName());
     
 	private Map<String, Object> webSession;
     
@@ -49,21 +49,24 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 	public static final String ACTUARIAL_TABLE_NAME = "Actuarial and Subject Info";
 	public static final String HOSPITALIZATIONS_TABLE_NAME = "Hospitalizations Follow-up Database";
 	
-	private List<CfeResults> discoveryResultsList;
-	private CfeResults discoveryResults;
+	private List<CfeResults> validationResultsList;
+	private CfeResults validationResults;
 	
 	private ArrayList<String> phenes;
 	
 	private Map<String,ArrayList<ColumnInfo>> pheneMap;
 	
-	private String[] operators = {">=", ">", "<=", "<"};
-	
-	private Long discoveryId;
+	private Long validationId;
 	
 	private String admissionPhene;
     
 	private String errorMessage;
 	
+	private String validationConstraint1;
+	private String validationConstraint2;
+	private String validationConstraint3;
+	
+	/*
 	private String phene1;
 	private String phene2;
 	private String phene3;
@@ -75,6 +78,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 	private String value1;
 	private String value2;
 	private String value3;
+	*/
 	
 	/*
 	private String clinicalPhene;
@@ -112,7 +116,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
     private String outputFile;
     private String scriptOutputFile;
     
-	public ClinicalAndTestingCohortsAction() {
+	public TestingCohortsAction() {
 	    this.cohortSubjects     = new TreeSet<String>();
 	    this.validationSubjects = new TreeSet<String>();
 	    this.testingSubjects    = new TreeSet<String>();
@@ -140,11 +144,16 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 			result = LOGIN;
 		} else {
 		    try {
-                this.discoveryResultsList = CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.DISCOVERY_SCORES);
+                this.validationResultsList = CfeResultsService.getMetadata(
+                        CfeResultsType.VALIDATION_COHORT,
+                        CfeResultsType.VALIDATION_COHORT_PLUS_DISCOVERY_SCORES,
+                        CfeResultsType.VALIDATION_COHORT_PLUS_PRIORITIZATION_SCORES,
+                        CfeResultsType.VALIDATION_COHORT_PLUS_VALIDATION_SCORES
+                );
 		    }
 		    catch (Exception exception) {
                 result = ERROR;
-                String message = "Clinical and testing cohort creation initialization error: " + exception.getLocalizedMessage();
+                String message = "Testing cohorts creation initialization error: " + exception.getLocalizedMessage();
                 this.setErrorMessage(message);
                 log.severe(message);
                 
@@ -164,19 +173,51 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
         } else {
             try {
                 ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-                this.discoveryResults = CfeResultsService.get(discoveryId);
+                this.validationResults = CfeResultsService.get(validationId);
 
-                this.discoveryPhene      = discoveryResults.getPhene();
-                this.discoveryLowCutoff  = discoveryResults.getLowCutoff();
-                this.discoveryHighCutoff = discoveryResults.getHighCutoff();
+                this.discoveryPhene      = validationResults.getPhene();
+                this.discoveryLowCutoff  = validationResults.getLowCutoff();
+                this.discoveryHighCutoff = validationResults.getHighCutoff();
 
-                XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
+                XSSFWorkbook workbook = validationResults.getResultsSpreadsheet();
 
-                // Get the discovery database phene table name
+                //------------------------------------------------------
+                // Get the validation constraints
+                //------------------------------------------------------
+                XSSFSheet validationCohortInfoSheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT_INFO);
+                if (validationCohortInfoSheet == null) {
+                    validationCohortInfoSheet = workbook.getSheet(CfeResultsSheets.CLINICAL_COHORT_INFO); // check for old deprecated name
+                    if (validationCohortInfoSheet == null) {
+                        throw new Exception("Could not find \"" + CfeResultsSheets.VALIDATION_COHORT_INFO + "\" sheet in results workbook.");
+                    }
+                }
+                DataTable validationCohortInfo = new DataTable("attribute");
+                validationCohortInfo.initializeToWorkbookSheet(validationCohortInfoSheet);
+                
                 XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 DataTable cohortInfo = new DataTable("attribute");
                 cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+                
+                ArrayList<String> constraintRow = validationCohortInfo.getRow("Constraint1");
+                if (constraintRow != null) {
+                    this.validationConstraint1 = constraintRow.get(1);    
+                }
+                
+                constraintRow = validationCohortInfo.getRow("Constraint2");
+                if (constraintRow != null) {
+                    this.validationConstraint2 = constraintRow.get(1);    
+                }
+                
+                constraintRow = validationCohortInfo.getRow("Constraint3");
+                if (constraintRow != null) {
+                    this.validationConstraint3 = constraintRow.get(1);
+                }
+                
+                //-----------------------------------------------
+                // Get the discovery database phene table name
+                //-----------------------------------------------
                 ArrayList<String> row = cohortInfo.getRow("Phene Table");
+
                 if (row == null) {
                     throw new Exception("Unable to find Phene Table row in sheet \""
                             + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
@@ -219,15 +260,15 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
             result = LOGIN;
         } else {
             try {
-                this.discoveryResults = CfeResultsService.get(discoveryId);
+                this.validationResults = CfeResultsService.get(validationId);
 
                 log.info("Testing follow-up database file name: " + this.followUpDbFileName);
 
                 ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-                this.discoveryResults = CfeResultsService.get(discoveryId);
+                this.validationResults = CfeResultsService.get(validationId);
 
-                XSSFWorkbook discoveryWorkbook = discoveryResults.getResultsSpreadsheet();
-                XSSFSheet sheet = discoveryWorkbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                XSSFWorkbook validationWorkbook = validationResults.getResultsSpreadsheet();
+                XSSFSheet sheet = validationWorkbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 CohortDataTable cohortData = new CohortDataTable();
                 cohortData.initializeToWorkbookSheet(sheet);
                 cohortData.setKey("Subject Identifiers.PheneVisit");
@@ -236,24 +277,6 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                 PheneCondition pheneCondition;
                 List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
 
-
-                if (phene1 != null && !phene1.isEmpty() && value1 != null && !value1.isEmpty()) {
-                    value = Double.parseDouble(value1);
-                    pheneCondition = new PheneCondition(phene1, operator1, value);
-                    pheneConditions.add(pheneCondition);
-                }
-
-                if (phene2 != null && !phene2.isEmpty() && value2 != null && !value2.isEmpty()) {
-                    value = Double.parseDouble(value2);
-                    pheneCondition = new PheneCondition(phene2, operator2, value);
-                    pheneConditions.add(pheneCondition);
-                }
-
-                if (phene3 != null && !phene3.isEmpty() && value3 != null && !value3.isEmpty()) {
-                    value = Double.parseDouble(value3);
-                    pheneCondition = new PheneCondition(phene3, operator3, value);
-                    pheneConditions.add(pheneCondition);
-                }
 
 
                 double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
@@ -344,26 +367,26 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                 //-------------------------------------------------------------------------------
                 XSSFWorkbook resultsWorkbook = new XSSFWorkbook();
 
-                if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
+                if (validationResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
                     // Discovery scores table
-                    DataTable discoveryScores = new DataTable(null);
-                    discoveryScores.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES));
-                    discoveryScores.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES);
+                    DataTable validationScores = new DataTable(null);
+                    validationScores.initializeToWorkbookSheet(validationWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES));
+                    validationScores.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES);
 
                     // Discovery scores info table
-                    DataTable discoveryScoresInfo = new DataTable(null);
-                    discoveryScoresInfo.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES_INFO));
-                    discoveryScoresInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES_INFO);                
+                    DataTable validationScoresInfo = new DataTable(null);
+                    validationScoresInfo.initializeToWorkbookSheet(validationWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES_INFO));
+                    validationScoresInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES_INFO);                
                 }
 
                 // Discovery cohort table
                 DataTable discoveryCohort = new DataTable(null);
-                discoveryCohort.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
+                discoveryCohort.initializeToWorkbookSheet(validationWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
                 discoveryCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT);
 
                 // Discovery cohort info table
                 DataTable discoveryCohortInfo = new DataTable(null);
-                discoveryCohortInfo.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO));
+                discoveryCohortInfo.initializeToWorkbookSheet(validationWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO));
                 discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
 
                 // Modify (all) cohort data table
@@ -486,6 +509,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                  */
 
 
+                /*
                 row = new ArrayList<String>();
                 row.add("Constraint 1");
                 if (!this.phene1.isEmpty() && !this.value1.isEmpty()) {
@@ -506,7 +530,8 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                     row.add(this.phene3 + " " + this.operator3 + " " + this.value3);
                 }
                 validationCohortInfo.addRow(row);
-
+                */
+                
                 validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT_INFO);
 
                 cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
@@ -543,10 +568,10 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                 //-------------------------------------------
                 CfeResults cfeResults = new CfeResults();
 
-                if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
+                if (validationResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
                     cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
                 }
-                else if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
+                else if (validationResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
                     cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
                 }
 
@@ -679,7 +704,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
      * @throws Exception
      */
     public void createPheneVistsCsvFile() throws Exception {
-        XSSFWorkbook workbook = this.discoveryResults.getResultsSpreadsheet();
+        XSSFWorkbook workbook = this.validationResults.getResultsSpreadsheet();
         
         XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
         
@@ -729,28 +754,28 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 		this.errorMessage = errorMessage;
 	}
 
-    public List<CfeResults> getDiscoveryResultsList() {
-        return discoveryResultsList;
+    public List<CfeResults> getValidationResultsList() {
+        return validationResultsList;
     }
 
-    public void setDiscoveryResultsList(List<CfeResults> discoveryResultsList) {
-        this.discoveryResultsList = discoveryResultsList;
+    public void setValidationResultsList(List<CfeResults> validationResultsList) {
+        this.validationResultsList = validationResultsList;
     }
 
-    public CfeResults getDiscoveryResults() {
-        return discoveryResults;
+    public CfeResults getValidationResults() {
+        return validationResults;
     }
 
-    public void setDiscoveryResults(CfeResults discoveryResults) {
-        this.discoveryResults = discoveryResults;
+    public void setValidationResults(CfeResults validationResults) {
+        this.validationResults = validationResults;
     }
 
-    public Long getDiscoveryId() {
-        return discoveryId;
+    public Long getValidationId() {
+        return validationId;
     }
 
-    public void setDiscoveryId(Long discoveryId) {
-        this.discoveryId = discoveryId;
+    public void setValidationId(Long validationId) {
+        this.validationId = validationId;
     }
 
     public ArrayList<String> getPhenes() {
@@ -760,88 +785,6 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
     public void setPhenes(ArrayList<String> phenes) {
         this.phenes = phenes;
     }
-
-    public String[] getOperators() {
-        return operators;
-    }
-
-    public void setOperators(String[] operators) {
-        this.operators = operators;
-    }
-
-    public String getPhene1() {
-        return phene1;
-    }
-
-    public void setPhene1(String phene1) {
-        this.phene1 = phene1;
-    }
-
-    public String getPhene2() {
-        return phene2;
-    }
-
-    public void setPhene2(String phene2) {
-        this.phene2 = phene2;
-    }
-
-    public String getPhene3() {
-        return phene3;
-    }
-
-    public void setPhene3(String phene3) {
-        this.phene3 = phene3;
-    }
-
-    public String getOperator1() {
-        return operator1;
-    }
-
-    public void setOperator1(String operator1) {
-        this.operator1 = operator1;
-    }
-
-    public String getOperator2() {
-        return operator2;
-    }
-
-    public void setOperator2(String operator2) {
-        this.operator2 = operator2;
-    }
-
-    public String getOperator3() {
-        return operator3;
-    }
-
-    public void setOperator3(String operator3) {
-        this.operator3 = operator3;
-    }
-    
-    public String getValue1() {
-        return value1;
-    }
-
-    public void setValue1(String value1) {
-        this.value1 = value1;
-    }
-
-    public String getValue2() {
-        return value2;
-    }
-
-    public void setValue2(String value2) {
-        this.value2 = value2;
-    }
-
-    public String getValue3() {
-        return value3;
-    }
-
-    public void setValue3(String value3) {
-        this.value3 = value3;
-    }
-    
-    
 
     public String getDiscoveryPhene() {
         return discoveryPhene;
@@ -874,6 +817,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
     public void setDiscoveryHighCutoff(Integer discoveryHighCutoff) {
         this.discoveryHighCutoff = discoveryHighCutoff;
     }
+
     
     /*
     public String getClinicalPhene() {
@@ -893,6 +837,30 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
     }
     */
     
+    public String getValidationConstraint1() {
+        return validationConstraint1;
+    }
+
+    public void setValidationConstraint1(String validationConstraint1) {
+        this.validationConstraint1 = validationConstraint1;
+    }
+
+    public String getValidationConstraint2() {
+        return validationConstraint2;
+    }
+
+    public void setValidationConstraint2(String validationConstraint2) {
+        this.validationConstraint2 = validationConstraint2;
+    }
+
+    public String getValidationConstraint3() {
+        return validationConstraint3;
+    }
+
+    public void setValidationConstraint3(String validationConstraint3) {
+        this.validationConstraint3 = validationConstraint3;
+    }
+
     public String getPercentInValidationCohort() {
         return percentInValidationCohort;
     }

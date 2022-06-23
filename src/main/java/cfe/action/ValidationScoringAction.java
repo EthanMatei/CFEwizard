@@ -456,11 +456,11 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    
 	    String key = "Subject Identifiers.PheneVisit";
 	    
-	    XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.CLINICAL_COHORT);
+	    XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT);
 	    if (sheet == null) {
-	        sheet = workbook.getSheet(CfeResultsSheets.VALIDATION_COHORT); // check for old deprecated name
+	        sheet = workbook.getSheet(CfeResultsSheets.CLINICAL_COHORT); // check for old deprecated name
 	        if (sheet == null) {
-	            throw new Exception("Could not find \"" + CfeResultsSheets.CLINICAL_COHORT + "\" sheet in results workbook.");
+	            throw new Exception("Could not find \"" + CfeResultsSheets.VALIDATION_COHORT + "\" sheet in results workbook.");
 	        }
 	    }
 	    

@@ -208,7 +208,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                         // clinicalPhene, clinicalHighCutoff,
                         pheneConditions, percentInValidation
                         );
-
+                
                 this.validationSubjects = results.get(0);
                 this.testingSubjects    = results.get(1);
 
@@ -251,7 +251,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
 
                 // Modify (all) cohort data table
-                cohortData.addCohort("clinical", validationSubjects);
+                cohortData.addCohort("validation", validationSubjects);
                 cohortData.addCohort("testing", testingSubjects);
                 String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
                 cohortData.sortWithBlanksLast(sortColumns);            
@@ -328,12 +328,12 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 
 
                 row = new ArrayList<String>();
-                row.add("% in clinical cohort specified");
+                row.add("% in validation cohort specified");
                 row.add(this.percentInValidationCohort);
                 validationCohortInfo.addRow(row);
 
                 row = new ArrayList<String>();
-                row.add("Number of clinical cohort subjects");
+                row.add("Number of validation cohort subjects");
                 row.add(this.numberOfValidationSubjects + "");
                 validationCohortInfo.addRow(row);            
 

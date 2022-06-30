@@ -34,11 +34,11 @@
 </table>
 
 <s:if test="validationConstraint1 != '' || validationConstraint2 != '' || validationConstraint3 != ''">
-<p style="font-weight: bold; margin-top: 24px;">Additional Validation Cohort Constraints</p>
+<p style="font-weight: bold;">&nbsp;</p>
    
 <table class="dataTable" style="margin-bottom: 32px;">
 
-    <tr> <th>Validation Constraint</th> </tr>
+    <tr> <th>Validation Cohort Constraints</th> </tr>
     
     <s:if test="validationConstraint1 != ''">
     <tr>
@@ -67,7 +67,13 @@
         <s:hidden name="discoveryPhene"/>
         <s:hidden name="discoveryLowCutoff"/>
         <s:hidden name="discoveryHighCutoff"/>
-    
+        
+        <s:hidden name="validationConstraint1"/>
+        <s:hidden name="validationConstraint2"/>
+        <s:hidden name="validationConstraint3"/>
+        
+        <s:hidden name="percentInValidationCohort"/>
+                    
         <%--
         <table class="dataTable">
             <tr>
@@ -121,22 +127,6 @@
         <p>
         Admission phene: <s:select name="admissionPhene" list="admissionReasons"/>
         </p>
-    
-    
-        <%--
-        <h3>Phenes:</h3>
-
-        <div class="scrollable" style="height: 240px;">
-            <div id="tree">
-                <s:iterator value="pheneMap" var="table" status="pstat">
-                    <span style="font-weight: bold;"><s:property value="key"/></span> <br/>
-                    <s:iterator value="value" var="pheneValue">
-                        <s:radio name="pheneSelection" list="#{#pheneValue.tableAndColumnName:#pheneValue.columnName}" /> <br/>
-                    </s:iterator>
-                </s:iterator>
-            </div>
-        </div>
-        --%>
     
     
         <div>

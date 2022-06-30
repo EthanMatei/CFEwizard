@@ -281,7 +281,8 @@ public class CohortDataTable extends DataTable {
      * @param lowCutoff
      * @param highCutoff
      * @param pheneConditions
-     * @return
+     * @return a list with the first element containing a set of validation subjects and the second element containing
+     *     a set of testing subjects
      */
     public List<TreeSet<String>> setValidationAndTestingCohorts(
             String phene, double lowCutoff, double highCutoff,
@@ -494,6 +495,16 @@ public class CohortDataTable extends DataTable {
         results.add(testingSubjects);
         return results;
     }
+ 
+    public TreeSet<String> getCohort(String cohort) throws Exception {
+        // OR, we could start with all in, and then randomly select 
+        List<String> validationCohortSubjectsList = this.getValues("Subject", cohort, "Cohort");
+        TreeSet<String> validationCohortSubjects = new TreeSet<String>();
+        validationCohortSubjects.addAll(validationCohortSubjectsList);
+
+        return validationCohortSubjects;
+    }
+
     
 	/**
 	 * Gets the Discovery cohort.

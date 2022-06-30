@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -194,54 +195,23 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                 DataTable validationCohortInfo = new DataTable("attribute");
                 validationCohortInfo.initializeToWorkbookSheet(validationCohortInfoSheet);
                 
+                this.validationConstraint1 = validationCohortInfo.getValue("Constraint 1", "value");
+                this.validationConstraint2 = validationCohortInfo.getValue("Constraint 2", "value");
+                this.validationConstraint3 = validationCohortInfo.getValue("Constraint 3", "value");
+                
+                this.percentInValidationCohort = validationCohortInfo.getValue("% in validation cohort specified", "value");
+                if (this.percentInValidationCohort == null || this.percentInValidationCohort == "") {
+                    // For older workbooks
+                    this.percentInValidationCohort = validationCohortInfo.getValue("% in clinical cohort specified", "value");   
+                }
+                
                 XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 DataTable cohortInfo = new DataTable("attribute");
                 cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
-                
-                ArrayList<String> constraintRow = validationCohortInfo.getRow("Constraint1");
-                if (constraintRow != null) {
-                    this.validationConstraint1 = constraintRow.get(1);    
-                }
-                
-                constraintRow = validationCohortInfo.getRow("Constraint2");
-                if (constraintRow != null) {
-                    this.validationConstraint2 = constraintRow.get(1);    
-                }
-                
-                constraintRow = validationCohortInfo.getRow("Constraint3");
-                if (constraintRow != null) {
-                    this.validationConstraint3 = constraintRow.get(1);
-                }
-                
-                //-----------------------------------------------
-                // Get the discovery database phene table name
-                //-----------------------------------------------
-                ArrayList<String> row = cohortInfo.getRow("Phene Table");
-
-                if (row == null) {
-                    throw new Exception("Unable to find Phene Table row in sheet \""
-                            + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
-                }
-                this.discoveryPheneTable = row.get(1);
-                if (this.discoveryPheneTable == null || this.discoveryPheneTable.isEmpty()) {
-                    throw new Exception("Could not get phene table information from workbook sheet \""
-                            + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
-                }       
-
-                XSSFSheet cohortDataSheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
-                CohortDataTable cohortData = new CohortDataTable(this.discoveryPheneTable);
-                cohortData.initializeToWorkbookSheet(cohortDataSheet);
-                cohortData.setKey("Subject Identifiers.PheneVisit");
-
-                phenes = new ArrayList<String>();
-                phenes.add("");
-                phenes.addAll(cohortData.getPheneList());
-
-                pheneMap = cohortData.getPheneMap();
             }
             catch (Exception exception) {
                 result = ERROR;
-                String message = "Clinical and testing cohort specification error: " + exception.getLocalizedMessage();
+                String message = "Testing cohorts specification error: " + exception.getLocalizedMessage();
                 this.setErrorMessage(message);
                 log.severe(message);
                 
@@ -281,15 +251,23 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
 
                 double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
 
+                // NEED TO RESET THIS TO JUST GET THE INFORMATION ???
+                /*
                 List<TreeSet<String>> results = cohortData.setValidationAndTestingCohorts(
                         discoveryPhene, discoveryLowCutoff, discoveryHighCutoff, 
                         // clinicalPhene, clinicalHighCutoff,
                         pheneConditions, percentInValidation
                         );
-
+                
                 this.validationSubjects = results.get(0);
                 this.testingSubjects    = results.get(1);
-
+                */
+                
+                this.validationSubjects = cohortData.getCohort("validation");
+                TreeSet<String> clinicalSubjects   = cohortData.getCohort("clinical");   // for old workbooks
+                validationSubjects.addAll(clinicalSubjects);
+                this.testingSubjects    = cohortData.getCohort("testing");
+                
                 this.numberOfValidationSubjects = this.validationSubjects.size();
                 this.numberOfTestingSubjects    = this.testingSubjects.size();
 
@@ -365,178 +343,15 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                 //-------------------------------------------------------------------------------
                 // Create new CFE results that has all the cohorts plus previous information
                 //-------------------------------------------------------------------------------
-                XSSFWorkbook resultsWorkbook = new XSSFWorkbook();
-
-                if (validationResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
-                    // Discovery scores table
-                    DataTable validationScores = new DataTable(null);
-                    validationScores.initializeToWorkbookSheet(validationWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES));
-                    validationScores.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES);
-
-                    // Discovery scores info table
-                    DataTable validationScoresInfo = new DataTable(null);
-                    validationScoresInfo.initializeToWorkbookSheet(validationWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES_INFO));
-                    validationScoresInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES_INFO);                
-                }
-
-                // Discovery cohort table
-                DataTable discoveryCohort = new DataTable(null);
-                discoveryCohort.initializeToWorkbookSheet(validationWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
-                discoveryCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT);
-
-                // Discovery cohort info table
-                DataTable discoveryCohortInfo = new DataTable(null);
-                discoveryCohortInfo.initializeToWorkbookSheet(validationWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO));
-                discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
-
-                // Modify (all) cohort data table
-                cohortData.addCohort("clinical", validationSubjects);
-                cohortData.addCohort("testing", testingSubjects);
-                String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
-                cohortData.sortWithBlanksLast(sortColumns);            
-
-                // Create validation cohort data table
-                ArrayList<String> columns = new ArrayList<String>();
-                columns.add("Subject");
-                columns.add("VisitNumber");
-                columns.add("Subject Identifiers.PheneVisit");
-                columns.add("AffyVisit");
-                columns.add("Visit Date");
-                columns.add("Gender(M/F)");
-                columns.add("Age at testing (Years)");
-                columns.add("Race/Ethnicity");
-                columns.add("DxCode");
-
-                columns.add(this.discoveryPhene);
-                for (PheneCondition condition: pheneConditions) {
-                    String conditionPhene = condition.getPhene();
-
-                    // Avoid adding duplicate phenes, e.g. one of the condition phenes
-                    // is the same as the discovery phene.
-                    if (!columns.contains(conditionPhene)) {
-                        columns.add(conditionPhene);
-                    }
-                }
-
-                columns.add("Validation");
-                columns.add("ValCategory");
-                columns.add("ValidationCohort");
-                columns.add("TestingCohort");
-
-
-                DataTable validationCohort = cohortData.filter("Subject Identifiers.PheneVisit", columns);
-
-                String[] validationSortColumns = {"Subject", "VisitNumber"};
-                validationCohort.sort(validationSortColumns);  
-
-                //validationCohort.addColumn("Subject",  "");
-                //for (String subject: validationSubjects) {
-                //    ArrayList<String> row = new ArrayList<String>();
-                //    row.add(subject);
-                //    validationCohort.addRow(row);
-                //}
-                validationCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT);
-
-                // Create testing cohort data table
-                DataTable testingCohort = new DataTable("Subject");
-                testingCohort.addColumn("Subject",  "");
-                for (String subject: testingSubjects) {
-                    ArrayList<String> row = new ArrayList<String>();
-                    row.add(subject);
-                    testingCohort.addRow(row);
-                }
-
-                testingCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT);
-
-                // Create validation cohort info table
-                DataTable validationCohortInfo = new DataTable("attribute");
-                validationCohortInfo.addColumn("attribute", "");
-                validationCohortInfo.addColumn("value", "");
-
-                ArrayList<String> row;
-
-                row = new ArrayList<String>();
-                row.add("CFE Version");
-                row.add(VersionNumber.VERSION_NUMBER);
-                validationCohortInfo.addRow(row);
-
-                row = new ArrayList<String>();
-                row.add("Time Cohort Generated");
-                row.add(new Date().toString());
-                validationCohortInfo.addRow(row);
-
-
-                row = new ArrayList<String>();
-                row.add("% in clinical cohort specified");
-                row.add(this.percentInValidationCohort);
-                validationCohortInfo.addRow(row);
-
-                row = new ArrayList<String>();
-                row.add("Number of clinical cohort subjects");
-                row.add(this.numberOfValidationSubjects + "");
-                validationCohortInfo.addRow(row);            
-
-                row = new ArrayList<String>();
-                row.add("Number of testing cohort subjects");
-                row.add(this.numberOfTestingSubjects + "");
-                validationCohortInfo.addRow(row); 
-
-                row = new ArrayList<String>();
-                row.add("Discovery Phene");
-                row.add(this.discoveryPhene);
-                validationCohortInfo.addRow(row);
-
-                row = new ArrayList<String>();
-                row.add("Discovery Low Cutoff");
-                row.add(this.discoveryLowCutoff + "");
-                validationCohortInfo.addRow(row);
-
-                row = new ArrayList<String>();
-                row.add("Discovery High Cutoff");
-                row.add(this.discoveryHighCutoff + "");
-                validationCohortInfo.addRow(row);
-
-                /*
-            row = new ArrayList<String>();
-            row.add("Clincal Phene");
-            row.add(this.clinicalPhene);
-            validationCohortInfo.addRow(row);
-
-            row = new ArrayList<String>();
-            row.add("Clinical High Cutoff");
-            row.add(this.clinicalHighCutoff + "");
-            validationCohortInfo.addRow(row);
-                 */
-
-
-                /*
-                row = new ArrayList<String>();
-                row.add("Constraint 1");
-                if (!this.phene1.isEmpty() && !this.value1.isEmpty()) {
-                    row.add(this.phene1 + " " + this.operator1 + " " + this.value1);
-                }
-                validationCohortInfo.addRow(row);
-
-                row = new ArrayList<String>();
-                row.add("Constraint 2");
-                if (!this.phene2.isEmpty() && !this.value2.isEmpty()) {
-                    row.add(this.phene2 + " " + this.operator2 + " " + this.value2);
-                }
-                validationCohortInfo.addRow(row);            
-
-                row = new ArrayList<String>();
-                row.add("Constraint 3");
-                if (!this.phene3.isEmpty() && !this.value3.isEmpty()) {
-                    row.add(this.phene3 + " " + this.operator3 + " " + this.value3);
-                }
-                validationCohortInfo.addRow(row);
-                */
+                LinkedHashMap<String, DataTable> validationResultsDataTables = validationResults.getDataTables();
                 
-                validationCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.VALIDATION_COHORT_INFO);
+                // //Remove the cohort data table from validation; it will be replaced
+                // validationResultsDataTables.remove(CfeResultsSheets.COHORT_DATA);
+                
+                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(validationResultsDataTables);
+                
 
-                cohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.COHORT_DATA);
 
-                //
                 DataTable cohortDataForTesting = cohortData;
 
                 cohortDataForTesting.deleteRow("Cohort", "discovery");
@@ -562,6 +377,17 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
 
                 hospitalizationsData.addToWorkbook(resultsWorkbook, CfeResultsSheets.PREDICTION_COHORT);
                 testingCohortData.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT_DATA);
+                
+                // Create testing cohorts info table
+                DataTable testingCohortsInfo = this.createTestingCohortsInfo();
+
+                testingCohortsInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.TESTING_COHORT_INFO);
+                
+                // DEBUGGING
+                int numberOfSheets = resultsWorkbook.getNumberOfSheets();
+                for (int i = 0; i < numberOfSheets; i++) {
+                   log.info("********** TESTING COHORT RESULTS SHEET " + i + ": " + resultsWorkbook.getSheetName(i)); 
+                }
 
                 //-------------------------------------------
                 // Create and save CFE results
@@ -570,6 +396,12 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
 
                 if (validationResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
                     cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
+                }
+                else if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_COHORT)) {
+                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
+                }
+                else if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_COHORT_PLUS_VALIDATION_SCORES)) {
+                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_VALIDATION_SCORES);
                 }
                 else if (validationResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
                     cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
@@ -696,6 +528,59 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
         }
         this.scoringDataFileName = scoringDataCsvFile.getAbsolutePath();
     }
+
+    public DataTable createTestingCohortsInfo() {
+        DataTable testingCohortsInfo = new DataTable("attribute");
+        testingCohortsInfo.addColumn("attribute", "");
+        testingCohortsInfo.addColumn("value", "");
+
+        ArrayList<String> row;
+
+        row = new ArrayList<String>();
+        row.add("CFE Version");
+        row.add(VersionNumber.VERSION_NUMBER);
+        testingCohortsInfo.addRow(row);
+
+        row = new ArrayList<String>();
+        row.add("Time Cohort Generated");
+        row.add(new Date().toString());
+        testingCohortsInfo.addRow(row);
+
+        row = new ArrayList<String>();
+        row.add("% in validation cohort specified");
+        row.add(this.percentInValidationCohort);
+        testingCohortsInfo.addRow(row);
+
+        row = new ArrayList<String>();
+        row.add("Number of validation cohort subjects");
+        row.add(this.numberOfValidationSubjects + "");
+        testingCohortsInfo.addRow(row);            
+
+        row = new ArrayList<String>();
+        row.add("Number of testing cohort subjects");
+        row.add(this.numberOfTestingSubjects + "");
+        testingCohortsInfo.addRow(row); 
+
+        row = new ArrayList<String>();
+        row.add("Discovery Phene");
+        row.add(this.discoveryPhene);
+        testingCohortsInfo.addRow(row);
+
+        row = new ArrayList<String>();
+        row.add("Discovery Low Cutoff");
+        row.add(this.discoveryLowCutoff + "");
+        testingCohortsInfo.addRow(row);
+
+        row = new ArrayList<String>();
+        row.add("Discovery High Cutoff");
+        row.add(this.discoveryHighCutoff + "");
+        testingCohortsInfo.addRow(row);
+        
+        return testingCohortsInfo;
+    }
+    
+    
+    
     
     /**
      * Creates the phene visit CSV file that is used for input into the Python script

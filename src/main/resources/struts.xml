@@ -555,7 +555,7 @@
 		<action name="TestingCohortsProcess"
 		        class="cfe.action.TestingCohortsAction"
 		        method="process">
-			<interceptor-ref name="basicStack"/>
+			<interceptor-ref name="fileUploadStack"/>
 		    <result name="success">pages/testing_cohort/testingCohorts.jsp</result>
 		    <result name="error">pages/testing_cohort/testingCohorts.jsp</result>
 		    <result name="login" type="redirectAction">

@@ -1193,7 +1193,12 @@ public class DataTable {
 
 	    
 	    if (row != null && !row.isEmpty()) {
-	        value = row.get(columnIndex);
+	        if (columnIndex > (row.size() - 1)) {
+	            value = "";
+	        }
+	        else {
+	            value = row.get(columnIndex);
+	        }
 	    }
 	    
 	    return value;
@@ -1312,6 +1317,37 @@ public class DataTable {
            }
        }
        return rowIndex;
+    }
+    
+    /**
+     * Gets the values from column "columnName" in the data table that have value "value" for column "matchColumnName".
+     * 
+     * @param column
+     * @param value
+     * @return
+     */
+    public List<String> getValues(String columnName, String value, String matchColumnName) throws Exception {
+        List<String> values = new ArrayList<String>();
+        
+        int columnIndex      = this.getColumnIndex(columnName);
+        int matchColumnIndex = this.getColumnIndex(matchColumnName);
+        
+        if (columnIndex < 0) {
+            throw new Exception("Column name \"" + columnName + "\" not found in call to getValues");
+        }
+        
+        if (matchColumnIndex < 0) {
+            throw new Exception("Column name \"" + matchColumnName + "\" not found in call to getValues");
+        }       
+        
+        for (ArrayList<String> row: this.data) {
+            if (row.get(matchColumnIndex).contentEquals(value)) {
+                String dataValue = row.get(columnIndex);
+                values.add(dataValue);
+            }
+        }
+        
+        return values;
     }
     
     /**

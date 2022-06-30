@@ -48,40 +48,32 @@
 Follow-up Database File: <s:property value="followUpDbFileName" />
 </p>
 
-<s:if test="(phene1 != '' && value1 != '') || (phene2 != '' && value2 != '') || (phene3 != '' && value3 != '')">
-<p style="font-weight: bold; margin-top: 24px;">Additional Validation and Testing Cohort Constraints</p>
+<s:if test="validationConstraint1 != '' || validationConstraint2 != '' || validationConstraint3 != ''">
+<p style="font-weight: bold; margin-top: 24px;">Additional Validation Cohort Constraints</p>
    
 <table class="dataTable" style="margin-bottom: 32px;">
 
-
-    <tr> <th>Phene</th> <th>Relation</th> <th>Value</th> </tr>
+    <tr> <th>Validation Cohort Constraints</th> </tr>
     
-    <s:if test="phene1 != '' && value1 != ''">
+    <s:if test="validationConstraint1 != ''">
     <tr>
-        <td> <s:property value="phene1"/> </td>
-        <td style="text-align: center"> <s:property value="operator1"/> </td>
-        <td style="text-align: right;"> <s:property value="value1"/> </td>
+        <td> <s:property value="validationConstraint1"/> </td>
     </tr>
     </s:if>
     
-    <s:if test="phene2 != '' && value2 != ''">
+    <s:if test="validationConstraint2 != ''">
     <tr>
-        <td> <s:property value="phene2"/> </td>
-        <td style="text-align: center"> <s:property value="operator2"/> </td>
-        <td style="text-align: right;"> <s:property value="value2"/> </td>
+        <td> <s:property value="validationConstraint2"/> </td>
     </tr>
     </s:if>
     
-    <s:if test="phene3 != '' && value3 != ''">
+    <s:if test="validationConstraint3 != ''">
         <tr>
-            <td> <s:property value="phene3"/> </td>
-            <td style="text-align: center"> <s:property value="operator3"/> </td>
-            <td style="text-align: right;"> <s:property value="value3"/> </td>
+            <td> <s:property value="validationConstraint3"/> </td>
         </tr>
     </s:if>
 </table>
 </s:if>
-
 
 <table class="dataTable">
     <tr>

@@ -444,12 +444,12 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
 
 
                 row = new ArrayList<String>();
-                row.add("% in clinical cohort specified");
+                row.add("% in validation cohort specified");
                 row.add(this.percentInValidationCohort);
                 validationCohortInfo.addRow(row);
 
                 row = new ArrayList<String>();
-                row.add("Number of clinical cohort subjects");
+                row.add("Number of validation cohort subjects");
                 row.add(this.numberOfValidationSubjects + "");
                 validationCohortInfo.addRow(row);            
 

@@ -96,7 +96,10 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    if (!Authorization.isAdmin(webSession)) {
 	        result = LOGIN;
 	    } else {
-	        this.discoveryScores  = CfeResultsService.getMetadata(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+	        this.discoveryScores  = CfeResultsService.getMetadata(
+	                CfeResultsType.VALIDATION_COHORT_PLUS_DISCOVERY_SCORES,
+	                CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES
+	        );
 	        this.prioritizationScores = CfeResultsService.getMetadata(CfeResultsType.PRIORITIZATION_SCORES);
 	    }
 	    

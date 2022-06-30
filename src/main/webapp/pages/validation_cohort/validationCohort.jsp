@@ -140,6 +140,14 @@
 
 <br/>
 
+<p>
+<s:a action="TestingCohortsSpecification" title="Testing Cohorts Creation" class="linkButton">
+    <s:param name="validationId" value="cfeResultsId" />
+    Testing Cohorts Creation
+</s:a>
+</p>
+
+<br/>
 
 <%--       
 <h4>Validation Cohort</h4>

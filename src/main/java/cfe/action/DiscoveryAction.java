@@ -394,7 +394,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	        result = LOGIN;
 	    } else {
 	        this.discoveryCohortResultsList =
-	                CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.ALL_COHORTS);
+	                CfeResultsService.getMetadata(
+	                        CfeResultsType.DISCOVERY_COHORT,
+	                        CfeResultsType.VALIDATION_COHORT,
+	                        CfeResultsType.ALL_COHORTS
+	                );
 	    }
 	    
 	    return result;

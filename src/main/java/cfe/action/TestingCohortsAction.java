@@ -576,6 +576,12 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
         row.add(this.discoveryHighCutoff + "");
         testingCohortsInfo.addRow(row);
         
+
+        row = new ArrayList<String>();
+        row.add("Admission Phene");
+        row.add(this.admissionPhene + "");
+        testingCohortsInfo.addRow(row);
+        
         return testingCohortsInfo;
     }
     

@@ -367,7 +367,7 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                 discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
 
                 // Modify (all) cohort data table
-                cohortData.addCohort("clinical", validationSubjects);
+                cohortData.addCohort("validation", validationSubjects);
                 cohortData.addCohort("testing", testingSubjects);
                 String[] sortColumns = {"Cohort", "Subject", "Subject Identifiers.PheneVisit"};
                 cohortData.sortWithBlanksLast(sortColumns);            

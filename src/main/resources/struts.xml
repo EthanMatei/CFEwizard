@@ -112,9 +112,9 @@
 		
 		<action name="DiscoveryDbUpload" class="cfe.action.DiscoveryAction" method="initialize">
 		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/discoveryDatabaseUpload.jsp</result>
+	        <result name="success">pages/discovery_cohort/discoveryDatabaseUpload.jsp</result>
 			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discoveryDatabaseUpload.jsp</result>
+			<result name="input">pages/discovery_cohort/discoveryDatabaseUpload.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>
@@ -123,9 +123,9 @@
 		<!--  Upload specified database, and parse it to get values for cohort specification -->
 		<action name="DiscoveryCohortSpecification" class="cfe.action.DiscoveryAction" method="uploadDatabase">
 		    <interceptor-ref name="fileUploadStack"/>
-	        <result name="success">pages/discoveryCohortSpecification.jsp</result>
-			<result name="error">pages/discoveryDatabaseUpload.jsp</result>
-			<result name="input">pages/discoveryDatabaseUpload.jsp</result>
+	        <result name="success">pages/discovery_cohort/discoveryCohortSpecification.jsp</result>
+			<result name="error">pages/discovery_cohort/discoveryDatabaseUpload.jsp</result>
+			<result name="input">pages/discovery_cohort/discoveryDatabaseUpload.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>
@@ -133,9 +133,9 @@
 		
 		<action name="DiscoveryCohort" class="cfe.action.DiscoveryAction" method="cohortSpecification">
 		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/discoveryCohort.jsp</result>
+	        <result name="success">pages/discovery_cohort/discoveryCohort.jsp</result>
 			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discoveryCohort.jsp</result>
+			<result name="input">pages/discovery_cohort/discoveryCohort.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>
@@ -399,12 +399,33 @@
 			<result name="success" type="redirectAction">
             	<param name="actionName">PrioritizationScoringWeights</param>
             </result>
+            <result name="input" type="redirectAction">
+                <param name="actionName">PrioritizationGeneListUpload</param>
+			    <param name="errorMessage">${errorMessage}</param>
+            </result>
 			<result name="error">pages/error.jsp</result>
 		    <result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result> 			
 		</action>
 
+		<action name="PrioritizationDiscoveryGeneListProcess"
+		        class="cfe.action.prioritization.GeneListUpload"
+		        method="processDiscoveryResults">
+		    <interceptor-ref name="basicStack"/>
+			<result name="success" type="redirectAction">
+            	<param name="actionName">PrioritizationScoringWeights</param>
+            </result>
+            <result name="input" type="redirectAction">
+                <param name="actionName">PrioritizationGeneListUpload</param>
+			    <param name="errorMessage">${errorMessage}</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result> 			
+		</action>
+		
 		<!-- Step 2 -->	
 		<action name="PrioritizationScoringWeights" class="cfe.action.prioritization.ScoringWeights" method="initialize">
 			<interceptor-ref name="basicStack"/>
@@ -464,7 +485,7 @@
 		<action name="PrioritizationCalculateScores" class="cfe.action.prioritization.CalculateScores">
 				<interceptor-ref name="basicStack"/>
 			    <result name="success">pages/prioritization/calculatedScores.jsp</result>
-			    <result name="error">/pages/error.jsp</result>
+			    <result name="error">pages/error.jsp</result>
 			    <result name="login" type="redirectAction">
                     <param name="actionName">LoginAction</param>
                 </result>
@@ -828,7 +849,13 @@
             <result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>
-		</action>				
+		</action>
+		
+	    <!-- Error Action -->
+		<action name="ErrorAction" class="cfe.action.ErrorAction">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/error.jsp</result>
+		</action>					
 	</package>
 </struts>
 

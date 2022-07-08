@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Logger;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -37,62 +40,84 @@ import cfe.utils.Authorization;
 public class CalculateScores extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 0L;
-	private static final Log log = LogFactory.getLog(CalculateScores.class);
+	private static final Logger log = Logger.getLogger(CalculateScores.class.getName());
 	private String score;
 	private Map<String, ScoreResults> scores;
 	private boolean otherCompleted = false;
 	
+	private Long discoveryId;
+	private Double discoveryScoreCutoff;
+	private String geneListFileName;
+	
 	private Results results;
 	
 	private Map<String, Object> session;
-	
+
 	private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
 
 	public String execute() {
-		String status = SUCCESS;
+	    log.info("Starting prioritization scoring.");
+	    
+	    String status = SUCCESS;
 
-		if (!Authorization.isLoggedIn(session)) {
-			status = LOGIN;
-		}
-		else {
-			//-----------------------------------------------------
-			// Get input selections
-			//-----------------------------------------------------
-			Object diseasesObject = session.get("diseaseSelectors");
-			Object weightsObject  = session.get("weights");
+	    if (!Authorization.isLoggedIn(session)) {
+	        status = LOGIN;
+	    }
+	    else {
+	        try {
+	            //-----------------------------------------------------
+	            // Get input selections
+	            //-----------------------------------------------------
+	            Object diseasesObject = session.get("diseaseSelectors");
+	            Object weightsObject  = session.get("weights");
 
-			if (diseasesObject == null || weightsObject == null) {
-				this.setErrorMessage("Unfortunately, your session has expired. You will need to restart your score calculation.");
-				status = ERROR;
-			}
-			else {
-				diseaseSelectors = (List<DiseaseSelector>) diseasesObject;
-				GeneListInput geneListInput = (GeneListInput) session.get("geneListInput");
-				List<cfe.enums.prioritization.ScoringWeights> weights = (List<cfe.enums.prioritization.ScoringWeights>) weightsObject;
+	            if (diseasesObject == null || weightsObject == null) {
+	                status = ERROR;
+	                throw new Exception("Unfortunately, your session has expired. You will need to restart your score calculation.");
+	            }
+	            else {
+	                diseaseSelectors = (List<DiseaseSelector>) diseasesObject;
+	                log.info("Number of disease selectors: " + diseaseSelectors.size());
 
-				score = Scores.OTHER.getLabel();
+	                GeneListInput geneListInput = (GeneListInput) session.get("geneListInput");
+	                if (geneListInput == null) {
+	                    geneListInput = new GeneListInput();
+	                }
 
-				DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
-				try {
-					results = Score.calculate(geneListInput, diseaseSelection, weights);
-					Date generatedTime = new Date();
-					
-					// Generate a workbook with the prioritization scores
-					XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(results, scores, weights, diseaseSelectors);
-					
-					CfeResults cfeResults = new CfeResults();
-					cfeResults.setResultsSpreadsheet(workbook);
-					cfeResults.setResultsType(CfeResultsType.PRIORITIZATION_SCORES);
-					cfeResults.setGeneratedTime(generatedTime);
-					CfeResultsService.save(cfeResults);
-				}
-				catch (Exception exception) {
-					this.setErrorMessage( exception.getMessage() );
-					status = ERROR;	
-				}
+	                List<cfe.enums.prioritization.ScoringWeights> weights
+	                = (List<cfe.enums.prioritization.ScoringWeights>) weightsObject;
 
-				session.put("results", results);
-			}
+	                score = Scores.OTHER.getLabel();
+
+	                DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
+
+	                results = Score.calculate(geneListInput, diseaseSelection, weights);
+	                Date generatedTime = new Date();
+
+	                // Generate a workbook with the prioritization scores
+	                XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(
+	                        results, scores, weights, diseaseSelectors, geneListInput,
+	                        discoveryId, discoveryScoreCutoff, geneListFileName 
+	                        );
+
+	                CfeResults cfeResults = new CfeResults();
+	                cfeResults.setResultsSpreadsheet(workbook);
+	                cfeResults.setResultsType(CfeResultsType.PRIORITIZATION_SCORES);
+	                cfeResults.setGeneratedTime(generatedTime);
+	                CfeResultsService.save(cfeResults);
+
+	                session.put("results", results);
+	            }
+	        } catch (Exception exception) {
+	            if (status == SUCCESS) {
+	                status = ERROR;
+	            }
+                String message = "Prioritization score calculation error: " + exception.getLocalizedMessage();
+                log.severe(message);
+                this.setErrorMessage(message);
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
+	        }
 		}
 		return status;
 	}
@@ -163,5 +188,32 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	public void setResults(Results results) {
 		this.results = results;
 	}
+
+
+    public Long getDiscoveryId() {
+        return discoveryId;
+    }
+
+
+    public void setDiscoveryId(Long discoveryId) {
+        this.discoveryId = discoveryId;
+    }
+
+
+    public Double getDiscoveryScoreCutoff() {
+        return discoveryScoreCutoff;
+    }
+
+    public void setDiscoveryScoreCutoff(Double discoveryScoreCutoff) {
+        this.discoveryScoreCutoff = discoveryScoreCutoff;
+    }
+
+    public String getGeneListFileName() {
+        return geneListFileName;
+    }
+
+    public void setGeneListFileName(String geneListFileName) {
+        this.geneListFileName = geneListFileName;
+    }
 
 }

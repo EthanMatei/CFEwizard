@@ -33,7 +33,10 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 	
     private static final Logger log = Logger.getLogger(DiseaseSelectionAction.class.getName());
 
-	
+    private Long discoveryId;
+    private Double discoveryScoreCutoff;
+    private String geneListFileName;
+    
 	private Map<String, Object> session;
 	
 	private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
@@ -176,11 +179,13 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 	    }
 	    catch (Exception exception) {
 	        String message = "Diseases import error: " + exception.getLocalizedMessage();
+	        log.severe(message);
 	        this.setErrorMessage(message);
 	        result = ERROR;
 	    }
 	   
-	   return result;
+	    log.info("Disease import completed with status: \"" + result + "\".");
+	    return result;
 	}
 	
 	
@@ -267,6 +272,30 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 
     public void setDiseasesImportFileName(String diseasesImportFileName) {
         this.diseasesImportFileName = diseasesImportFileName;
+    }
+
+    public Long getDiscoveryId() {
+        return discoveryId;
+    }
+
+    public void setDiscoveryId(Long discoveryId) {
+        this.discoveryId = discoveryId;
+    }
+
+    public Double getDiscoveryScoreCutoff() {
+        return discoveryScoreCutoff;
+    }
+
+    public void setDiscoveryScoreCutoff(Double discoveryScoreCutoff) {
+        this.discoveryScoreCutoff = discoveryScoreCutoff;
+    }
+
+    public String getGeneListFileName() {
+        return geneListFileName;
+    }
+
+    public void setGeneListFileName(String geneListFileName) {
+        this.geneListFileName = geneListFileName;
     }
 
 }

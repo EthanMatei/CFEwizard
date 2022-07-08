@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard - Database Upload</title>
+    <title>Prioritization - Database Upload</title>
     <s:head />
 </tiles:putAttribute>
 <tiles:putAttribute name="content">

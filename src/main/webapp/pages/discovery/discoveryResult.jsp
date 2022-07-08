@@ -101,6 +101,15 @@ Discovery R Script Output:
     </tr>    
 </table>
 
+<s:if test="false">
+    <br/>
+    <s:a action="DiscoveryScoringSpecification" title="Discovery Scoring" class="linkButton" style="margin-left: 2em;">
+        <s:param name="discoveryId" value="cfeResultsId" />
+        Discovery Scoring
+    </s:a>
+    <br/>
+</s:if>
+
 <s:if test="debugDiscoveryScoring">
 
     <hr style="margin-top: 12px;"/>

@@ -4,7 +4,7 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard - Dynamic Disease Scoring</title>
+    <title>Prioritization - Disease Selection</title>
     <s:head />
 
 
@@ -196,7 +196,7 @@ function selectBox(element) {
 
 <div style="width:100%">
     <div style="float:left">
-        <h1>Disease Selection</h1>
+        <h1>Prioritization - Disease Selection</h1>
     </div>
     
     <div style="float:right">
@@ -215,6 +215,18 @@ function selectBox(element) {
 
 <div style="clear:both">
 </div>
+
+
+<s:if test="errorMessage != null && errorMessage != ''">
+    <div class="cfeError">
+        ERROR: <s:property value="errorMessage" />
+        <p>
+        <s:if test="exceptionStack != ''">
+            <s:property value="exceptionStack" />
+        </s:if>
+        </p>
+    </div>
+</s:if>
 
 <s:actionerror />
 
@@ -236,6 +248,9 @@ manually select diseases and enter coefficients.
 <s:form action="PrioritizationDiseaseSelectionProcess" theme="simple" cssStyle="margin-bottom: 10px;">
     <s:hidden name="score" />
     <s:hidden name="otherCompleted" />
+    <s:hidden name="discoveryId"/>
+    <s:hidden name="discoveryScoreCutoff"/>
+    <s:hidden name="geneListFileName"/>
 
 
 <s:set var="previousDomain" value="" />

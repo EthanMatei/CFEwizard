@@ -23,11 +23,12 @@ public class CfeResultsSheets {
     public static final String CLINICAL_COHORT        = "clinical cohort";  // deprecated (but may be in old saved sheets)
     public static final String CLINICAL_COHORT_INFO   = "clinical cohort info";  // deprecated (but may be in old saved sheets)
     
-    public static final String PRIORITIZATION_SCORES            = "CFG Wizard Scores";
-    public static final String PRIORITIZATION_SCORE_DETAILS     = "Scores Details";
-    public static final String PRIORITIZATION_SCORING_WEIGHTS   = "Global Scoring Weights";
-    public static final String PRIORITIZATION_SELECTED_DISEASES = "Selected Diseases";
-    public static final String PRIORITIZATION_SCORES_INFO       = "Version";
+    public static final String PRIORITIZATION_SCORES            = "prioritization scores";
+    public static final String PRIORITIZATION_SCORE_DETAILS     = "prioritization score details";
+    public static final String PRIORITIZATION_SCORING_WEIGHTS   = "prioritization scoring weights";
+    public static final String PRIORITIZATION_DISEASES          = "prioritization diseases";
+    public static final String PRIORITIZATION_GENE_LIST         = "prioritization gene list";
+    public static final String PRIORITIZATION_SCORES_INFO       = "prioritization scores info";
     
     public static final String VALIDATION_COHORT      = "validation cohort";   
     public static final String VALIDATION_COHORT_INFO = "validation cohort info";

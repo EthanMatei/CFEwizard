@@ -10,63 +10,51 @@
 
 <%-- User: <s:property value="#session.username" /> --%>
 
-
-<h2>Cohort Creation</h2>
+<h2>1. Discovery</h2>
 <ul>
-    <li>
-        <s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a>
-    </li>
-     <li>
-        <s:a action="ValidationCohortDiscoveryCohortSelection">Validation Cohort Creation</s:a>
-    </li>
-    <li>   
-        <s:a action="TestingCohortsValidationCohortSelection">Testing Cohorts Creation</s:a>
-    </li>
-</ul>
-<ul>
-    <li>
-        <s:a action="ClinicalAndTestingCohortsDiscoveryCohortSelection">Validation and Testing Cohorts Creation</s:a>
-        <i>(deprecated)</i>
-    </li>
+    <li> <s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a> </li>
+    <li> <s:a action="DiscoveryCohortSelection">Discovery Scoring</s:a> </li>
 </ul>
 
-<h2>Discovery</h2>
+<h2>2. Prioritization</h2>
+
+<div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
+    <ul style="margin-top: 0;">        
+        <li><s:a action="PrioritizationGeneListUpload">Prioritization Scoring</s:a></li>
+    </ul>
+</div>
+
+<div style="display: inline-block; vertical-align: top;">
+    <ul style="margin-top: 0;">
+        <li>
+            <s:a action="PrioritizationReport">
+                <s:param name="reportName" value="'diseases'" />
+                <s:param name="reportFormat" value="'xlsx'" />
+                Diseases Report
+            </s:a>
+        </li>   
+    
+        <%-- Only allow admins see and make database uploads --%>
+        <s:if test="#session.username==adminUser">
+            <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>
+            <li> <s:a action="PrioritizationDBSelectionInitialize">Upload Databases </s:a></li>
+        </s:if>
+    
+        <li> <s:a action="DatabaseStatusAction">CFE Prioritization Database Status</s:a></li>
+    </ul>
+</div>
+
+
+<h2>3. Validation</h2>
+
 <ul>
-    <li><s:a action="DiscoveryCohortSelection">Discovery Scoring</s:a></li>
-</ul>
-
-<h2>Prioritization</h2>
-
-<ul>
-    <li>
-        <s:a action="PrioritizationReport">
-            <s:param name="reportName" value="'diseases'" />
-            <s:param name="reportFormat" value="'xlsx'" />
-            Diseases Report
-        </s:a>
-    </li>
-    
-    
-    <%-- Only allow admins see and make database uploads --%>
-    <s:if test="#session.username==adminUser">
-        <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>
-        <li> <s:a action="PrioritizationDBSelectionInitialize">Upload Databases </s:a></li>
-    </s:if>
-    
-    <li> <s:a action="DatabaseStatusAction">CFE Prioritization Database Status</s:a></li>
-    
-    <li><s:a action="PrioritizationGeneListUpload">Calculate Scores</s:a></li>
-</ul>
-
-<h2>Validation</h2>
-
-<ul>
+    <li> <s:a action="ValidationCohortDiscoveryCohortSelection">Validation Cohort Creation</s:a> </li>
     <li> <s:a action="ValidationDataSelection">Validation Scoring</s:a></li>
 </ul>
 
-<h2>Testing</h2>
-
+<h2>4. Testing</h2>
 <ul>
+    <li> <s:a action="TestingCohortsValidationCohortSelection">Testing Cohorts Creation</s:a> </li>
     <li> <s:a action="TestingDataSelection">Testing Scoring</s:a></li>
 </ul>
 

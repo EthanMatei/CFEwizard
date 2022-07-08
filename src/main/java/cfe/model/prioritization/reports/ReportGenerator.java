@@ -15,8 +15,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import cfe.enums.prioritization.ScoringWeights;
 import cfe.model.prioritization.Disorder;
+import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.Research;
 import cfe.model.prioritization.ScoreResults;
+import cfe.model.CfeResultsSheets;
 import cfe.model.VersionNumber;
 import cfe.model.prioritization.disease.DiseaseSelector;
 import cfe.model.prioritization.results.CategoryResult;
@@ -49,14 +51,28 @@ public class ReportGenerator {
 	 * 
 	 * @throws ReportException
 	 */
-	public static InputStream generate(String reportName, String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.prioritization.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) throws ReportException {
+	public static InputStream generate(
+	        String reportName,
+	        String reportFormat,
+	        Results results,
+	        Map<String, ScoreResults> scores,
+	        List<cfe.enums.prioritization.ScoringWeights> weights,
+	        List<DiseaseSelector> diseaseSelectors,
+	        GeneListInput geneListInput,
+	        Long discoveryId,
+	        Double discoveryScoreCutoff,
+	        String geneListFileName
+	    ) throws ReportException {
 		InputStream fileStream = null;
 
 		log.info("############### GENERATE: " + reportName);
 		
 		if (reportName.equals("scores")) {
 			
-			fileStream = generateScoresReport( reportFormat, results, scores, weights, diseaseSelectors );
+			fileStream = generateScoresReport(
+			        reportFormat, results, scores, weights, diseaseSelectors, geneListInput,
+			        discoveryId, discoveryScoreCutoff, geneListFileName
+			        );
 		}
 		else if (reportName.equals("diseases")) {
 			fileStream =  generateDiseasesReport( reportFormat );
@@ -110,7 +126,16 @@ public class ReportGenerator {
 	 * @param diseaseSelectors
 	 * @return an InputStream for the generated spreadsheet.
 	 */
-	public static Report generateScoresReportObject(Results results, Map<String, ScoreResults> scores, List<cfe.enums.prioritization.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) {
+	public static Report generateScoresReportObject(
+	        Results results,
+	        Map<String, ScoreResults> scores,
+	        List<cfe.enums.prioritization.ScoringWeights> weights,
+	        List<DiseaseSelector> diseaseSelectors,
+	        GeneListInput geneListInput,
+	        Long discoveryId,
+	        Double discoveryScoreCutoff,
+	        String geneListFileName
+	    ) {
 
 		log.info("############### IN GENERATE SCORES REPORT.");
 		Report report = new Report();
@@ -144,26 +169,58 @@ public class ReportGenerator {
 	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
-	    // Version Sheet
+        // Gene List Sheet
+        //----------------------------------------------------------------------------------------
+        sheet = getPrioritizationGeneListSheet(geneListInput);
+        if (sheet != null) sheets.add(sheet);
+
+        
 	    //----------------------------------------------------------------------------------------
-	    sheet = getVersionSheet(scores, diseaseSelectors);
+	    // Prioritization Scores Info Sheet
+	    //----------------------------------------------------------------------------------------
+	    sheet = getPrioritizationScoresInfoSheet(discoveryId, discoveryScoreCutoff, geneListFileName);
 	    if (sheet != null) sheets.add(sheet);
 	    
 		report.setReportSheets( sheets ); 
 		return report;
 	}
 	
-	public static XSSFWorkbook generateScoresWorkbook(Results results, Map<String, ScoreResults> scores, List<cfe.enums.prioritization.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) {
-	    Report report = ReportGenerator.generateScoresReportObject(results, scores, weights, diseaseSelectors);
+	public static XSSFWorkbook generateScoresWorkbook(
+	        Results results,
+	        Map<String, ScoreResults> scores,
+	        List<cfe.enums.prioritization.ScoringWeights> weights,
+	        List<DiseaseSelector> diseaseSelectors,
+	        GeneListInput geneListInput,
+	        Long discoveryId,
+	        Double discoveryScoreCutoff,
+	        String geneListFileName
+	    ) {
+	    Report report = ReportGenerator.generateScoresReportObject(
+	            results, scores, weights, diseaseSelectors, geneListInput,
+	            discoveryId, discoveryScoreCutoff, geneListFileName
+	    );
         boolean isLandscape = false;
 	    XSSFWorkbook workbook = report.getWorkbook(isLandscape);
 	    return workbook;
 	}
 	
-    private static InputStream generateScoresReport(String reportFormat, Results results, Map<String, ScoreResults> scores, List<cfe.enums.prioritization.ScoringWeights> weights, List<DiseaseSelector> diseaseSelectors) {
+    private static InputStream generateScoresReport(
+            String reportFormat,
+            Results results,
+            Map<String, ScoreResults> scores,
+            List<cfe.enums.prioritization.ScoringWeights> weights,
+            List<DiseaseSelector> diseaseSelectors,
+            GeneListInput geneListInput,
+            Long discoveryId,
+            Double discoveryScoreCutoff,
+            String geneListFileName
+        ) {
         InputStream fileStream = null;
         
-        Report report = ReportGenerator.generateScoresReportObject(results, scores, weights, diseaseSelectors);
+        Report report = ReportGenerator.generateScoresReportObject(
+                results, scores, weights, diseaseSelectors, geneListInput,
+                discoveryId, discoveryScoreCutoff, geneListFileName
+                );
 		
         boolean isLandscape = false;
 		boolean xlsxFormat  = false;
@@ -211,7 +268,7 @@ public class ReportGenerator {
 	private static ReportSheet getScoresSheet(String reportFormat, Map<String, ScoreResults> scores) {
 		ReportSheet sheet = new ReportSheet();
 		
-		sheet.setTitle( "CFG Wizard Scores" );
+		sheet.setTitle( CfeResultsSheets.PRIORITIZATION_SCORES );
 
 		String[] columnNames = {" ", "Gene", "Score", "Direction Of Change", "Tissue", "PubMed"};
 		sheet.setColumnNames( columnNames );
@@ -261,7 +318,7 @@ public class ReportGenerator {
 	private static ReportSheet getScoresSheet2(Results results) {
 		ReportSheet sheet = new ReportSheet();
 		
-		sheet.setTitle( "CFG Wizard Scores" );
+		sheet.setTitle( CfeResultsSheets.PRIORITIZATION_SCORES );
 		
 		String[] columnNames = {" ", "Gene", "Score",  "Direction Of Change", "Tissue","Disorder", "PubMed"};
 		sheet.setColumnNames( columnNames );
@@ -335,7 +392,7 @@ public class ReportGenerator {
 		List<String> categoryHeaders = results.getCategoryHeaders();
 		int numberOfColumns = 2 + (categoryHeaders.size() * 2);
 		
-		sheet.setTitle( "Score Details" );
+		sheet.setTitle( CfeResultsSheets.PRIORITIZATION_SCORE_DETAILS );
 		
 		//---------------------------------------------------------------
 		// Set the column names
@@ -458,8 +515,9 @@ public class ReportGenerator {
 		if (diseaseSelectors != null) {
 			sheet = new ReportSheet();
 
-			sheet.setTitle( "Selected Diseases" );
-
+			//sheet.setTitle( "Selected Diseases" );
+            sheet.setTitle( CfeResultsSheets.PRIORITIZATION_DISEASES );
+			
 			String[] columnNames = {"Domain", "SubDomain", "Relevant Disorder", "Coefficient"};
 			sheet.setColumnNames( columnNames );
 
@@ -487,14 +545,19 @@ public class ReportGenerator {
 		return sheet;
 	}
 	
-	private static ReportSheet getVersionSheet(Map<String, ScoreResults> scores, List<DiseaseSelector> diseaseSelectors) {
+	private static ReportSheet getPrioritizationScoresInfoSheet(
+	        Long discoveryId, Double discoveryScoreCutoff, String geneListFileName
+	) {
 
 		ReportSheet sheet = new ReportSheet();
 
-		sheet.setTitle( "Version" );
+		sheet.setTitle( CfeResultsSheets.PRIORITIZATION_SCORES_INFO );
 
-		String[] columnNames = {"CFG Wizard Version", "Time Output Genereated"};
-		sheet.setColumnNames( columnNames );
+	    String[] columnNames = {"attribute", "value"};
+		
+	    //String[] columnNames = {"CFG Wizard Version", "Time Output Genereated"};
+		
+	    sheet.setColumnNames( columnNames );
 
 		int[] columnWidths = {0, 0};
 		sheet.setColumnWidths(columnWidths);
@@ -507,13 +570,60 @@ public class ReportGenerator {
 
 
 		List<String> row = new ArrayList<String>();
-
+		row.add( "CFE Version" );
 		row.add( VersionNumber.VERSION_NUMBER );
+	    sheet.addData( row );
+	    
+	    row = new ArrayList<String>();
+	    row.add("Time Scores Generated");
 		row.add( dateFormat.format(date) );
-
 		sheet.addData( row );
-
+        
+        row = new ArrayList<String>();
+        row.add("Gene List File");
+        row.add(geneListFileName);
+        sheet.addData( row );
+        
+        row = new ArrayList<String>();
+        row.add("Discovery Results ID");
+        row.add(discoveryId + "");
+        sheet.addData( row );
+        
+        row = new ArrayList<String>();
+        row.add("Discovery Score Cutoff");
+        row.add(discoveryScoreCutoff + "");
+        sheet.addData( row );
+                       
 		return sheet;
+	}
+	
+	private static ReportSheet getPrioritizationGeneListSheet(GeneListInput geneListInput) {
+
+	    List<String> geneList = geneListInput.getGeneList();
+	    if (geneList == null) {
+	        geneList = new ArrayList<String>();
+	    }
+	    
+	    ReportSheet sheet = new ReportSheet();
+
+	    sheet.setTitle( CfeResultsSheets.PRIORITIZATION_GENE_LIST );
+
+	    String[] columnNames = {"Gene"};
+	    sheet.setColumnNames( columnNames );
+
+	    int[] columnWidths = {0};
+	    sheet.setColumnWidths(columnWidths);
+
+	    String[] columnTypes = {"string"};
+	    sheet.setColumnTypes(columnTypes);
+
+	    for (String gene: geneList) {
+	        List<String> row = new ArrayList<String>();
+	        row.add( gene );
+	        sheet.addData( row );
+	    }
+
+	    return sheet;
 	}
 	
 	
@@ -521,7 +631,7 @@ public class ReportGenerator {
 
 		ReportSheet sheet = new ReportSheet();
 
-		sheet.setTitle( "Global Scoring Weights" );
+		sheet.setTitle( CfeResultsSheets.PRIORITIZATION_SCORING_WEIGHTS );
 
 		String[] columnNames = {"Name", "Weight"};
 		sheet.setColumnNames( columnNames );

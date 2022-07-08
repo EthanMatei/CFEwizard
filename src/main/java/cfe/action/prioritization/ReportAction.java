@@ -12,7 +12,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.ServletActionContext;
 
 import cfe.action.BaseAction;
-
+import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.ScoreResults;
 import cfe.model.prioritization.disease.DiseaseSelector;
 import cfe.model.prioritization.reports.ReportException;
@@ -54,6 +54,10 @@ public class ReportAction extends BaseAction implements SessionAware {
 	private String fileName;
 	private String fileContentType;
     private InputStream fileStream;
+    
+    private Long discoveryId;
+    private Double discoveryScoreCutoff;
+    private String geneListFileName;
     
     private String published;
     
@@ -98,6 +102,11 @@ public class ReportAction extends BaseAction implements SessionAware {
     		Object scoresObject = session.get("scores");
     		scores = (Map<String, ScoreResults>) scoresObject;
 
+            GeneListInput geneListInput = (GeneListInput) session.get("geneListInput");
+            if (geneListInput == null) {
+                geneListInput = new GeneListInput();
+            }
+            
     		List<DiseaseSelector> diseaseSelectors;
     		diseaseSelectors = (List<DiseaseSelector>) session.get("diseaseSelectors");
 
@@ -120,7 +129,18 @@ public class ReportAction extends BaseAction implements SessionAware {
     		//try {
     		log.info("Trying to generate report with name " + reportName + " and format " + reportFormat + ".");
 
-    		fileStream = ReportGenerator.generate( reportName,  reportFormat, results, scores, weights, diseaseSelectors );
+    		fileStream = ReportGenerator.generate(
+    		        reportName, 
+    		        reportFormat,
+    		        results,
+    		        scores,
+    		        weights,
+    		        diseaseSelectors,
+    		        geneListInput,
+    		        discoveryId,
+    		        discoveryScoreCutoff,
+    		        geneListFileName
+    		);
     		if (fileStream == null) {
     			throw new ReportException("No data could be retrieved for this report.");
     		}
@@ -243,4 +263,30 @@ public class ReportAction extends BaseAction implements SessionAware {
 	public void setReportFormat(String reportFormat) {
 		this.reportFormat = reportFormat;
 	}
+
+    public Long getDiscoveryId() {
+        return discoveryId;
+    }
+
+    public void setDiscoveryId(Long discoveryId) {
+        this.discoveryId = discoveryId;
+    }
+
+    public Double getDiscoveryScoreCutoff() {
+        return discoveryScoreCutoff;
+    }
+
+    public void setDiscoveryScoreCutoff(Double discoveryScoreCutoff) {
+        this.discoveryScoreCutoff = discoveryScoreCutoff;
+    }
+
+    public String getGeneListFileName() {
+        return geneListFileName;
+    }
+
+    public void setGeneListFileName(String geneListFileName) {
+        this.geneListFileName = geneListFileName;
+    }
+	
+	
 }

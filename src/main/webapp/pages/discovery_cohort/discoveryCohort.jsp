@@ -72,11 +72,6 @@
 
 <br/>
 
-<s:a action="ValidationCohortSpecification" title="Validation Cohort Creation" class="linkButton">
-    <s:param name="discoveryId" value="cfeResultsId" />
-    Validation Cohort Creation
-</s:a>
-
 <s:a action="DiscoveryScoringSpecification" title="Discovery Scoring" class="linkButton" style="margin-left: 2em;">
     <s:param name="discoveryId" value="cfeResultsId" />
     Discovery Scoring

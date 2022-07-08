@@ -30,6 +30,10 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 	
 	private Map<String, Object> userSession;
 	
+	private Long discoveryId;
+	private Double discoveryScoreCutoff;
+	private String geneListFileName;
+	
 	private double huBrainScore;
 	private double huPerScore;
 	private double huGeneCnvScore;
@@ -211,7 +215,28 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 		this.nhGeneLinkageScore = nhGeneLinkageScore;
 	}
 	
-	@Override
+	public Long getDiscoveryId() {
+        return discoveryId;
+    }
+    public void setDiscoveryId(Long discoveryId) {
+        this.discoveryId = discoveryId;
+    }
+    public Double getDiscoveryScoreCutoff() {
+        return discoveryScoreCutoff;
+    }
+    public void setDiscoveryScoreCutoff(Double discoveryScoreCutoff) {
+        this.discoveryScoreCutoff = discoveryScoreCutoff;
+    }
+    
+    
+    
+    public String getGeneListFileName() {
+        return geneListFileName;
+    }
+    public void setGeneListFileName(String geneListFileName) {
+        this.geneListFileName = geneListFileName;
+    }
+    @Override
 	public void setSession(Map<String, Object> session) {
 		this.userSession = session;
 	}

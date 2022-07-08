@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,10 +15,13 @@ import org.apache.struts2.interceptor.SessionAware;
 
 
 import cfe.action.BaseAction;
-
+import cfe.model.CfeResults;
+import cfe.model.CfeResultsType;
 import cfe.model.prioritization.GeneList;
 import cfe.model.prioritization.GeneListInput;
+import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
+import cfe.utils.DataTable;
 
 /**
  * Action class for uploading a custom gene list.
@@ -28,8 +33,10 @@ import cfe.utils.Authorization;
 public class GeneListUpload extends BaseAction implements SessionAware {
 	
 	private static final long serialVersionUID = 6507655467803486283L;
-	private static final Log log = LogFactory.getLog(GeneListUpload.class);
+	private static final Logger log = Logger.getLogger(GeneListUpload.class.getName());
 	private Map<String, Object> session;
+	
+	private String geneListButton;
 	
 	private File file;
     @SuppressWarnings("unused")
@@ -37,6 +44,13 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     @SuppressWarnings("unused")
 	private String filename;
     
+    private String geneListFileName;
+    
+    private double comparisonThreshold = 0.0001;
+    
+    private List<CfeResults> discoveryScoringResultsList;
+    private Long discoveryId;
+    private Double discoveryScoreCutoff;
     
     public void setUpload(File file) {
        this.file = file;
@@ -51,42 +65,103 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     }
 
     public String initialize() {
+        
         String result = SUCCESS;
+        
+        this.discoveryScoringResultsList =
+                CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_SCORES);
+        
         return result;
     }
     
-    public String execute() throws IOException  {
+    public String execute() throws Exception {
 		String result = SUCCESS;
 
 		if (!Authorization.isLoggedIn(session)) {
 			result = LOGIN;
 		}
 		else {
-			GeneListInput geneListInput = new GeneListInput();
 
-			//GeneListService.reset();
+		    try {
+		        GeneListInput geneListInput = new GeneListInput();
 
-			if (file != null)	{
-				//ArrayList<GeneList> genes = processFile(file.getPath());
-				//GeneListService.save(genes);
+		        // File upload
 
-				try {
-					geneListInput = processFile2(file.getPath());
-				}
-				catch (Exception exception) {
-					log.error("************ GENE LIST UPLOAD ERROR: " + exception.getMessage());
-	    			this.setErrorMessage( exception.getMessage() );
-					result = ERROR;
-				}
+		        //GeneListService.reset();
 
-			}
+		        if (file != null)   {
+		            //ArrayList<GeneList> genes = processFile(file.getPath());
+		            //GeneListService.save(genes);
 
-			session.put("geneListInput",  geneListInput);
+		            geneListInput = processFile2(file.getPath());
+		        }
+
+		        geneListFileName = filename;
+		        
+		        session.put("geneListInput",  geneListInput);
+		    }
+		    catch (Exception exception) {
+		        String message = "Gene list upload error: " + exception.getLocalizedMessage();
+		        log.severe(message);
+		        this.setErrorMessage(message);
+		    }
 		}
 		
     	log.info("gene list update process result: " + result);
     	return result;
     }
+    
+    public String processDiscoveryResults() throws Exception {
+        String result = SUCCESS;
+
+        if (!Authorization.isLoggedIn(session)) {
+            result = LOGIN;
+        }
+        else {
+
+            try {
+                GeneListInput geneListInput = new GeneListInput();
+
+                // Generating from Discovery results
+                if (this.discoveryScoreCutoff == null || this.discoveryScoreCutoff <= 0.0) {
+                    result = INPUT;
+                    String message = "Discovery score cutoff unset for gene list generation for prioritization.";
+                    throw new Exception(message);
+                }
+                if (this.discoveryId == null || this.discoveryId <= 0) {
+                    result = INPUT;
+                    throw new Exception("No discovery results specified for gene list generation for prioritization.");
+                }
+
+                CfeResults discoveryResults = CfeResultsService.get(discoveryId);
+                if (discoveryResults == null) {
+                    result = INPUT;
+                    throw new Exception("Discovery result with ID \"" + discoveryId + "\" could not be found.");
+                }
+
+                geneListInput = this.processDiscoveryResults(discoveryResults);
+                
+                if (geneListInput == null || geneListInput.size() < 1) {
+                    result = INPUT;
+                    String message = "Discovery score cutoff of " + this.discoveryScoreCutoff + " generates no genes.";
+                    throw new Exception(message);
+                }
+                
+                log.info("Gene list input size: " + geneListInput.size());
+
+                session.put("geneListInput",  geneListInput);
+            }
+            catch (Exception exception) {
+                String message = "Gene list upload error: " + exception.getLocalizedMessage();
+                log.severe(message);
+                this.setErrorMessage(message);
+            }
+        }
+        
+        log.info("gene list update process result: " + result);
+        return result;
+    }
+    
     
     
     /**
@@ -108,7 +183,7 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     			 gene.setGenecardSymbol(_gene);
     			 genes.add(gene);
     		 } else {
-    			 log.warn("Invalid gene " + _gene + " in file " + filename);
+    			 log.warning("Invalid gene " + _gene + " in file " + filename);
     		 }
     	}
     	
@@ -133,7 +208,7 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     		 } 
     		 else {
     			 String message = "Invalid gene name \"" + geneCardSymbol + "\" in gene list.";
-    			 log.warn( message  + " File: " + filename);
+    			 log.warning( message  + " File: " + filename);
     			 br.close();
     			 throw new Exception( message );
     		 }
@@ -143,9 +218,101 @@ public class GeneListUpload extends BaseAction implements SessionAware {
 		return geneList;
 	}
 	
+	public GeneListInput processDiscoveryResults(CfeResults discoveryResults) throws Exception {
+	    GeneListInput geneList = new GeneListInput();
+	    
+	    String key = "Probe Set ID";
+	    DataTable discoveryScores = discoveryResults.getSheetAsDataTable(CfeResultsType.DISCOVERY_SCORES, key);
+	    
+	    Map<String,String> row = null;
+	    
+	    for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
+	        row = discoveryScores.getRowMap(i);
+	        
+	        String deScore = "DE Score";
+	        
+	        if (!row.containsKey(deScore)) {
+	            String message = "Row for discovery scores does not contain the \"" + deScore + "\" column.";
+	            log.severe(message);
+	            throw new Exception(message);
+	        }
+	        
+	        String scoreString = row.get(deScore);
+	        
+	        if (scoreString == null) {
+	            
+	        }
+	        
+	        double score = 0.0;
+	        
+	        try {
+	            score = Double.parseDouble(scoreString);
+	        }
+	        catch (NumberFormatException exception) {
+	            score = 0.0;    
+	        }
+	        
+	        if (score >= this.discoveryScoreCutoff - this.comparisonThreshold) {
+	            String genecardsSymbol = row.get("Genecards Symbol");
+	            geneList.add(genecardsSymbol);
+	        }
+	    }
+	    
+	    return geneList;
+	}
+	
 
 	@Override
 	public void setSession(Map<String, Object> session) {
 		this.session = session;
 	}
+
+    public List<CfeResults> getDiscoveryScoringResultsList() {
+        return discoveryScoringResultsList;
+    }
+
+    public void setDiscoveryScoringResultsList(List<CfeResults> discoveryScoringResultsList) {
+        this.discoveryScoringResultsList = discoveryScoringResultsList;
+    }
+
+    public Long getDiscoveryId() {
+        return discoveryId;
+    }
+
+    public void setDiscoveryId(Long discoveryId) {
+        this.discoveryId = discoveryId;
+    }
+
+    public Double getDiscoveryScoreCutoff() {
+        return discoveryScoreCutoff;
+    }
+
+    public void setDiscoveryScoreCutoff(Double discoveryScoreCutoff) {
+        this.discoveryScoreCutoff = discoveryScoreCutoff;
+    }
+
+    public String getGeneListButton() {
+        return geneListButton;
+    }
+
+    public void setGeneListButton(String geneListButton) {
+        this.geneListButton = geneListButton;
+    }
+
+    public double getComparisonThreshold() {
+        return comparisonThreshold;
+    }
+
+    public void setComparisonThreshold(double comparisonThreshold) {
+        this.comparisonThreshold = comparisonThreshold;
+    }
+
+    public String getGeneListFileName() {
+        return geneListFileName;
+    }
+
+    public void setGeneListFileName(String geneListFileName) {
+        this.geneListFileName = geneListFileName;
+    }
+    
 }

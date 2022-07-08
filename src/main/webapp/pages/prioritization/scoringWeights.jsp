@@ -4,22 +4,25 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFe Wizard - Prioritization Scoring Weights</title>
+    <title>Prioritization - Scoring Weights</title>
     <s:head />
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h1>Global Scoring Weights</h1>
+<h1>Prioritization - Global Scoring Weights</h1>
 <s:actionerror />
 Enter the scoring weights:
 <s:form action="PrioritizationScoringWeightsProcess" >
-
-<s:iterator value="@cfe.enums.prioritization.ScoringWeights@values()" var="scoringWeight">
-	<s:textfield label= "%{#scoringWeight.label}" name="%{#scoringWeight.name}" value="%{#scoringWeight.score}"
-	             cssStyle="text-align:right;"/>
-</s:iterator>
-<s:submit value="Next" />
-<s:token />
+    <s:hidden name="discoveryId"/>
+    <s:hidden name="discoveryScoreCutoff"/>
+    <s:hidden name="geneListFileName"/>
+    
+    <s:iterator value="@cfe.enums.prioritization.ScoringWeights@values()" var="scoringWeight">
+	    <s:textfield label= "%{#scoringWeight.label}" name="%{#scoringWeight.name}" value="%{#scoringWeight.score}"
+	                 cssStyle="text-align:right;"/>
+    </s:iterator>
+    <s:submit value="Next" />
+    <s:token />
 </s:form>
 
 </tiles:putAttribute>

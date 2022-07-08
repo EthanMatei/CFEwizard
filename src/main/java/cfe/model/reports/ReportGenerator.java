@@ -207,7 +207,7 @@ public class ReportGenerator {
 		List<String> categoryHeaders = results.getCategoryHeaders();
 		int numberOfColumns = 2 + (categoryHeaders.size() * 2);
 		
-		sheet.setTitle( "Score Details" );
+		sheet.setTitle( CfeResultsSheets.PRIORITIZATION_SCORE_DETAILS );
 		
 		//---------------------------------------------------------------
 		// Set the column names

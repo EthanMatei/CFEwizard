@@ -4,11 +4,22 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFG Wizard - Calculated Scores</title>
+    <title>Prioritization - Calculated Scores</title>
     <s:head />
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
+
+<s:if test="errorMessage != null && errorMessage != ''">
+    <div class="cfeError">
+        ERROR: <s:property value="errorMessage" />
+        <p>
+        <s:if test="exceptionStack != ''">
+            <s:property value="exceptionStack" />
+        </s:if>
+        </p>
+    </div>
+</s:if>
 
 <s:url var="download" namespace="/pages" action="downloadScores" ></s:url>
 
@@ -19,6 +30,9 @@
 <s:a action="PrioritizationReport" title="Download Excel spreadsheet">
     <s:param name="reportName" value="'scores'" />
     <s:param name="reportFormat" value="'xlsx'" />
+    <s:param name="discoveryId" value="discoveryId" />
+    <s:param name="discoveryScoreCutoff" value="discoveryScoreCutoff" />
+    <s:param name="geneListFileName" value="geneListFileName" />
     <div style="text-align:center">
     <img border="0"
      style="margin-top: 2px;"
@@ -45,8 +59,18 @@
 --%>
 
             
-<h1 style="padding-top:0px; margin-top:4px;">CFG Scores </h1>
+<h1 style="padding-top:0px; margin-top:4px;">Prioritization Scores </h1>
 <s:actionerror />
+
+<p>
+Discovery ID: <s:property value="discoveryId"/>
+</p>
+<p>
+Discovery Score Cutoff: <s:property values="discoveryScoreCutoff"/>
+</p>
+<p>
+Gene List File Name: <s:property value="geneListFileName"/>
+</p>
 
 
 <%--

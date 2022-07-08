@@ -715,7 +715,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         
         String key = "Gene";
         
-        XSSFSheet sheet = workbook.getSheet("CFG Wizard Scores");
+        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.PRIORITIZATION_SCORES);
         DataTable cfgScoresSheet = new DataTable(key);
         cfgScoresSheet.initializeToWorkbookSheet(sheet);
 

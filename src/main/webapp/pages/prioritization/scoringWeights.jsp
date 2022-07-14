@@ -11,7 +11,11 @@
 
 <h1>Prioritization - Global Scoring Weights</h1>
 <s:actionerror />
+
+<p>
 Enter the scoring weights:
+</p>
+
 <s:form action="PrioritizationScoringWeightsProcess" >
     <s:hidden name="discoveryId"/>
     <s:hidden name="discoveryScoreCutoff"/>

@@ -23,36 +23,51 @@
     </div>
 </s:if>
 
-<p>
-(Optional) Upload the Gene List File:
-</p>
-<p>
-To process all genes, don't specify a file and click on the Upload button.
-</p>
  <!-- http://stackoverflow.com/questions/5633949/jquery-solution-for-dynamically-uploading-multiple-files -->
  <!-- http://stackoverflow.com/questions/8906910/struts2-dynamically-add-remove-list-of-objects-from-page -->
 <s:actionerror />
+
+<hr/>
+
+<s:form id ="uploadGeneForm" theme="simple" action="PrioritizationAllGenesProcess"
+        method="post" enctype="multipart/form-data">
+
+    <p>
+	<s:submit value="Use All Genes" name="allGenesButton" style="font-weight: bold;"/>
+    </p>
+    
+
+</s:form>
+
+<hr />
 
 <s:form id ="uploadGeneForm" theme="simple" action="PrioritizationGeneListUploadProcess"
         method="post" enctype="multipart/form-data">
 
     <p>
-    <s:file name="upload" label="Gene List File" />
-	<s:submit value="Upload Gene List File" name="geneListButton" style="font-weight: bold;"/>
+    <s:submit value="Upload Gene List File" name="geneListButton" style="font-weight: bold;"/>
+    <s:file style="margin-left: 1em;" name="upload" label="Gene List File" />
     </p>
     
-    <hr />
+
 </s:form>
 
+<hr />
+
 <s:form id ="processDiscoveryGeneForm" theme="simple" action="PrioritizationDiscoveryGeneListProcess" method="post">    
+    <p>
+    <s:submit value="Generate Gene List from Discovery Results" name="geneListButton"
+          style="font-weight: bold;"/>
+    
+    </p>
+    
     <p>
     Discovery score cutoff: <s:textfield style="text-align: right;" name="discoveryScoreCutoff" size="4"/>
 
     <span style="margin-left: 1em;">Comparison Threshold:</span>
     <s:textfield size="8" style="text-align: right;" name="comparisonThreshold"/>
 
-    <s:submit value="Generate Gene List from Discovery Results" name="geneListButton"
-              style="font-weight: bold; margin-left: 2em;"/>
+
     </p>
     
     Discovery Scoring Results:

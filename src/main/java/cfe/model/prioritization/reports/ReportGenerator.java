@@ -579,9 +579,10 @@ public class ReportGenerator {
 		row.add( dateFormat.format(date) );
 		sheet.addData( row );
         
+		// Gene List File (if any)
         row = new ArrayList<String>();
         row.add("Gene List File");
-        row.add(geneListFileName);
+        row.add(geneListFileName + "");
         sheet.addData( row );
         
         row = new ArrayList<String>();

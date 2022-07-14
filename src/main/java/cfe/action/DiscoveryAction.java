@@ -393,12 +393,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	    if (!Authorization.isAdmin(webSession)) {
 	        result = LOGIN;
 	    } else {
-	        this.discoveryCohortResultsList =
-	                CfeResultsService.getMetadata(
-	                        CfeResultsType.DISCOVERY_COHORT,
-	                        CfeResultsType.VALIDATION_COHORT,
-	                        CfeResultsType.ALL_COHORTS
-	                );
+	        this.discoveryCohortResultsList = CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT);
 	    }
 	    
 	    return result;
@@ -880,6 +875,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
                 cfeResults.setDiscoveryRScriptLog(scriptOutput);
                 log.info("Discovery scoring results object created.");
+                
+                // Add a file for the R script log
+                cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, scriptOutput);
                 
                 CfeResultsService.save(cfeResults);
                 log.info("Discovery scoring results object saved.");

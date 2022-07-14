@@ -85,16 +85,12 @@ public class GeneListUpload extends BaseAction implements SessionAware {
 		    try {
 		        GeneListInput geneListInput = new GeneListInput();
 
-		        // File upload
-
-		        //GeneListService.reset();
-
-		        if (file != null)   {
-		            //ArrayList<GeneList> genes = processFile(file.getPath());
-		            //GeneListService.save(genes);
-
-		            geneListInput = processFile2(file.getPath());
+		        if (file == null) {
+		            result = INPUT;
+		            throw new Exception("No gene list file specified for upload.");
 		        }
+
+		        geneListInput = processFile2(file.getPath());
 
 		        geneListFileName = filename;
 		        
@@ -109,6 +105,30 @@ public class GeneListUpload extends BaseAction implements SessionAware {
 		
     	log.info("gene list update process result: " + result);
     	return result;
+    }
+    
+    public String processAllGenes() throws Exception {
+        String result = SUCCESS;
+
+        if (!Authorization.isLoggedIn(session)) {
+            result = LOGIN;
+        }
+        else {
+
+            try {
+                GeneListInput geneListInput = new GeneListInput();
+                geneListFileName = "";
+                session.put("geneListInput",  geneListInput);
+            }
+            catch (Exception exception) {
+                String message = "Gene list upload error: " + exception.getLocalizedMessage();
+                log.severe(message);
+                this.setErrorMessage(message);
+            }
+        }
+        
+        log.info("process all genes result: " + result);
+        return result;
     }
     
     public String processDiscoveryResults() throws Exception {

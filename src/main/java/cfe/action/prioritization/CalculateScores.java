@@ -3,6 +3,7 @@ package cfe.action.prioritization;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,6 +20,8 @@ import cfe.action.BaseAction;
 
 import cfe.enums.prioritization.Scores;
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsFile;
+import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsType;
 import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.Score;
@@ -29,6 +32,7 @@ import cfe.model.prioritization.reports.ReportGenerator;
 import cfe.model.prioritization.results.Results;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
+import cfe.utils.DataTable;
 
 /**
  * Action that calculates the scores.
@@ -49,6 +53,8 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	private Double discoveryScoreCutoff;
 	private String geneListFileName;
 	
+	private Long cfeResultsId;
+	
 	private Results results;
 	
 	private Map<String, Object> session;
@@ -57,7 +63,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 
 	public String execute() {
 	    log.info("Starting prioritization scoring.");
-	    
+	    log.info("************** prioritization socring Discovery ID: " + this.discoveryId);
 	    String status = SUCCESS;
 
 	    if (!Authorization.isLoggedIn(session)) {
@@ -85,7 +91,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	                }
 
 	                List<cfe.enums.prioritization.ScoringWeights> weights
-	                = (List<cfe.enums.prioritization.ScoringWeights>) weightsObject;
+	                    = (List<cfe.enums.prioritization.ScoringWeights>) weightsObject;
 
 	                score = Scores.OTHER.getLabel();
 
@@ -93,18 +99,49 @@ public class CalculateScores extends BaseAction implements SessionAware {
 
 	                results = Score.calculate(geneListInput, diseaseSelection, weights);
 	                Date generatedTime = new Date();
-
+	               
+	                
 	                // Generate a workbook with the prioritization scores
 	                XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(
 	                        results, scores, weights, diseaseSelectors, geneListInput,
 	                        discoveryId, discoveryScoreCutoff, geneListFileName 
 	                        );
 
+	                // If the gene list was created from Discovery results, include
+	                // the Discovery results in the workbook
+	                CfeResults discoveryResults = null;
+	                LinkedHashMap<String,DataTable> discoveryDataTables = new LinkedHashMap<String,DataTable>();
+	                if (discoveryId != null && discoveryId > 0) {
+	                    discoveryResults = CfeResultsService.get(discoveryId);
+	                    discoveryDataTables = discoveryResults.getDataTables();
+	                }
+	                    
 	                CfeResults cfeResults = new CfeResults();
 	                cfeResults.setResultsSpreadsheet(workbook);
-	                cfeResults.setResultsType(CfeResultsType.PRIORITIZATION_SCORES);
+	                
+	                LinkedHashMap<String,DataTable> dataTables = discoveryDataTables;
+	                dataTables.putAll(cfeResults.getDataTables());
+	                
+	                workbook = DataTable.createWorkbook(dataTables);
+                    cfeResults.setResultsSpreadsheet(workbook);
+                    
 	                cfeResults.setGeneratedTime(generatedTime);
+	                if (discoveryResults != null) {
+	                    // If there are discovery results, integrate discovery results into prioritization results
+	                    cfeResults.setResultsType(CfeResultsType.PRIORITIZATION_SCORES);
+	                    cfeResults.setPhene(discoveryResults.getPhene());
+	                    cfeResults.setLowCutoff(discoveryResults.getLowCutoff());
+	                    cfeResults.setHighCutoff(discoveryResults.getHighCutoff());
+	                    CfeResultsFile cfeFile = discoveryResults.getFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG);
+	                    if (cfeFile != null) {
+	                        cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, cfeFile.getContentAsString());
+	                    }
+	                }
+	                else {
+	                    cfeResults.setResultsType(CfeResultsType.PRIORITIZATION_SCORES_ONLY);
+	                }
 	                CfeResultsService.save(cfeResults);
+	                this.cfeResultsId = cfeResults.getCfeResultsId();
 
 	                session.put("results", results);
 	            }
@@ -214,6 +251,16 @@ public class CalculateScores extends BaseAction implements SessionAware {
 
     public void setGeneListFileName(String geneListFileName) {
         this.geneListFileName = geneListFileName;
+    }
+
+
+    public Long getCfeResultsId() {
+        return cfeResultsId;
+    }
+
+
+    public void setCfeResultsId(Long cfeResultsId) {
+        this.cfeResultsId = cfeResultsId;
     }
 
 }

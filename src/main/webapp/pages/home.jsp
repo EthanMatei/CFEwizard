@@ -41,20 +41,29 @@
         </s:if>
     
         <li> <s:a action="DatabaseStatusAction">CFE Prioritization Database Status</s:a></li>
+        <li> <s:a action="">Merge Priority Scores with Discovery Scores</s:a></li>
     </ul>
 </div>
 
 
 <h2>3. Validation</h2>
 
-<ul>
-    <li> <s:a action="ValidationCohortDiscoveryCohortSelection">Validation Cohort Creation</s:a> </li>
-    <li> <s:a action="ValidationDataSelection">Validation Scoring</s:a></li>
-</ul>
+<div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
+    <ul style="margin-top: 0;">
+        <li> <s:a action="ValidationCohortDataSelection">Validation Cohort Creation</s:a> </li>
+        <li> <s:a action="ValidationDataSelection">Validation Scoring</s:a></li>
+    </ul>
+</div>
+
+<div style="display: inline-block; vertical-align: top;">
+    <ul style="margin-top: 0;">
+        <li> <s:a action="">Merge Priority Scores with Discovery Scores</s:a></li>
+    </ul>
+</div>
 
 <h2>4. Testing</h2>
 <ul>
-    <li> <s:a action="TestingCohortsValidationCohortSelection">Testing Cohorts Creation</s:a> </li>
+    <li> <s:a action="TestingCohortsDataSelection">Testing Cohorts Creation</s:a> </li>
     <li> <s:a action="TestingDataSelection">Testing Scoring</s:a></li>
 </ul>
 

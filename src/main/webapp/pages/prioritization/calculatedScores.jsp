@@ -21,8 +21,7 @@
     </div>
 </s:if>
 
-<s:url var="download" namespace="/pages" action="downloadScores" ></s:url>
-
+<%-- OLD CODE:
 <div style="float:right">
 <table style="border:0">
 <tr>
@@ -38,12 +37,26 @@
      style="margin-top: 2px;"
      src="<s:url includeParams='none' value='/images/application-vnd.ms-excel.png'/>"
      alt="SCORES" /> <br />
-    cfg-scores.xlsx
+    prioritization-scores.xlsx
     </div>
 </s:a>
 </td>
 </tr>
 </table>
+</div>
+--%>
+
+<div style="float: right;">
+    <s:a action="CfeResultsXlsxDisplay" title="Prioritization Scores">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+        <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+                 alt="Prioritization Scores" /> <br />
+            prioritization-scores.xlsx
+        </div>
+    </s:a>
 </div>
 
 <div style="clear:both;"></div>
@@ -62,16 +75,17 @@
 <h1 style="padding-top:0px; margin-top:4px;">Prioritization Scores </h1>
 <s:actionerror />
 
+<%-- FOR DEBUGGING:
 <p>
 Discovery ID: <s:property value="discoveryId"/>
 </p>
 <p>
-Discovery Score Cutoff: <s:property values="discoveryScoreCutoff"/>
+Discovery Score Cutoff: <s:property value="discoveryScoreCutoff"/>
 </p>
 <p>
 Gene List File Name: <s:property value="geneListFileName"/>
 </p>
-
+--%>
 
 <%--
 <table border="1">

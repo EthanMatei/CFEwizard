@@ -18,8 +18,7 @@
         <th>ID</th>
         <th>Results</th> <th>Results Type</th> <th>Details</th>
         <th>Time Generated</th>
-        <th>Phene</th> <th>Phene Low Cutoff</th> <th>Phene High Cutoff</th>
-        <th>Discovery R Script Log</th>
+        <th>Discovery Phene</th> <th>Discovery Phene<br/>Low Cutoff</th> <th>Discovery Phene<br/>High Cutoff</th>
         <s:if test="#session.username==adminUser">
             <th>Delete</th>
         </s:if>
@@ -44,14 +43,6 @@
             <td> <s:property value="phene"/> </td>
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
             <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
-            <td>
-                <s:if test="resultsType == @cfe.model.CfeResultsType@DISCOVERY_SCORES">
-                    <s:a action="CfeResultsDiscoveryRScriptLogDisplay" title="Discovery R Script Log">
-                        <s:param name="cfeResultsId" value="cfeResultsId" />
-                        discovery-r-script-log.txt
-                     </s:a>
-                 </s:if>
-            </td>
             <s:if test="#session.username==adminUser">
                 <td>
                     <s:url var="deleteUrl" action="CfeResultsDelete">

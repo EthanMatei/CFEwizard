@@ -110,7 +110,10 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		} else {
-            this.discoveryResultsList = CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT, CfeResultsType.DISCOVERY_SCORES);
+            this.discoveryResultsList = CfeResultsService.getMetadata(
+                    CfeResultsType.DISCOVERY_COHORT,
+                    CfeResultsType.PRIORITIZATION_SCORES
+            );
 		}
 	    return result;
 	}
@@ -401,10 +404,10 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 CfeResults cfeResults = new CfeResults();
 
                 if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
-                    cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT);
+                    cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT_ONLY);
                 }
-                else if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
-                    cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT_PLUS_DISCOVERY_SCORES);
+                else if (discoveryResults.getResultsType().equals(CfeResultsType.PRIORITIZATION_SCORES)) {
+                    cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT);
                 }
 
                 cfeResults.setResultsSpreadsheet(resultsWorkbook);

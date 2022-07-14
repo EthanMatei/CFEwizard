@@ -86,14 +86,17 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 	    try {
 
 	        if (this.diseasesImportFileName == null || this.diseasesImportFileName.isEmpty()) {
+	            result = INPUT;
 	            throw new Exception("Diseases import file not specified.");    
 	        }
 	        
 	        if (this.diseasesImport == null) {
+	            result = INPUT;
 	            throw new Exception("Diseases import file \"" + this.diseasesImportFileName +"\" could not be accessed.");
 	        }
 	        
 	        if (!this.diseasesImportFileName.endsWith(".csv")) {
+	            result = INPUT;
 	            throw new Exception("Diseases import file \"" + this.diseasesImportFileName + "\" is not a \".csv\" file.");
 	        }
 
@@ -116,26 +119,31 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 	        log.info("Diseases import file has " + data.size() + " data rows.");
 
 	        if (header.length != 4) {
+	            result = INPUT;
 	            String message = "Imported diseases file has " + header.length + "header columns, instead of 4.";
 	            throw new Exception(message);
 	        }
 
 	        if (!header[0].contentEquals("Domain")) {
+	            result = INPUT;
 	            throw new Exception("First header column in imported diseases CSV file is \"" + header[0] + "\" and not \"Domain\"");
 	        }
 
 	        if (!header[1].contentEquals("SubDomain")) {
+	            result = INPUT;
 	            String message = "Second header column in imported diseases CSV file is \"" + header[1] + "\" and not \"SubDomain\"";
 	            throw new Exception(message);
 	        }
 
             if (!header[2].contentEquals("Relevant Disorder")) {
+                result = INPUT;
                 String message = "Third header column in imported diseases CSV file is \""
                     + header[1] + "\" and not \"Relevant Disorder\"";
                 throw new Exception(message);
             }
 
             if (!header[3].contentEquals("Coefficient")) {
+                result = INPUT;
                 String message = "Fourth header column in imported diseases CSV file is \""
                     + header[1] + "\" and not \"Coefficient\"";
                 throw new Exception(message);
@@ -178,10 +186,10 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 	        session.put("diseaseSelectors",  diseaseSelectors);
 	    }
 	    catch (Exception exception) {
+	        if (result == SUCCESS) result = ERROR;
 	        String message = "Diseases import error: " + exception.getLocalizedMessage();
 	        log.severe(message);
 	        this.setErrorMessage(message);
-	        result = ERROR;
 	    }
 	   
 	    log.info("Disease import completed with status: \"" + result + "\".");

@@ -22,6 +22,10 @@
     </tr>
     
     <tr>
+        <td>Type</td> <td><s:property value="cfeResults.resultsType"/></td>
+    </tr>
+    
+    <tr>
         <td>Discovery Phene</td> <td><s:property value="cfeResults.phene"/></td>
     </tr>
     

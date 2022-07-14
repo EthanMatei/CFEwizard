@@ -206,9 +206,10 @@ function selectBox(element) {
             <div style="text-align:center">
                 <img border="0"
                      style="margin-top: 2px;"
-                     src="<s:url includeParams='none' value='/images/application-vnd.ms-excel.png'/>"
+                     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
                      alt="SCORES" />
             </div>
+            Diseases
         </s:a>
     </div>
 </div>
@@ -231,19 +232,29 @@ function selectBox(element) {
 <s:actionerror />
 
 <p>
-Import a diseases CSV file with columns "Domain", "SubDomain", "Relavant Disorder", "Coefficient". <b>OR</b>,
+Import a diseases CSV file with columns "Domain", "SubDomain", "Relevant Disorder", "Coefficient". <b>OR</b>,
 manually select diseases and enter coefficients.
 </p>
 
+<hr/>
+
 <%-- Diseases import form --%>
+<h3>Diseases - CSV File Import</h3>
 <div style="border: 1px solid #222222; padding: 4px; margin-bottom: 32px;">
-<h4>Diseases CSV File Import</h4>
-<s:form id ="importDiseases" action="PrioritizationDiseasesImport" method="post" enctype="multipart/form-data">
+
+<s:form id ="importDiseases" theme="simple" action="PrioritizationDiseasesImport" method="post" enctype="multipart/form-data">
+    <s:hidden name="discoveryId"/>
+    <s:hidden name="discoveryScoreCutoff"/>
+    <s:hidden name="geneListFileName"/>
     <s:file name="diseasesImport" label="Disease Selection CSV File" />
-    <s:submit value="Import"/>
+    <s:submit value="Import" style="font-weight: bold;"/>
     <s:token />
 </s:form>
 </div>
+
+<hr/>
+
+<h3>Diseases - Manual Entry</h3>
 
 <s:form action="PrioritizationDiseaseSelectionProcess" theme="simple" cssStyle="margin-bottom: 10px;">
     <s:hidden name="score" />
@@ -257,6 +268,8 @@ manually select diseases and enter coefficients.
 <s:set var="previousSubDomain" value="" />
 
 <div class="scrollable">
+
+
 
 <div>
 <s:iterator value="diseaseSelectors" var="dSelectors" status="status">

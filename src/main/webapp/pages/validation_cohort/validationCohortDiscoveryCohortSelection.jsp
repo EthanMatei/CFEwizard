@@ -16,7 +16,7 @@
 <s:actionerror />
 
 <p style="font-weight: bold;">
-Select a Discovery Cohort:
+Select Input Data:
 </p>
 
 <s:form action="ValidationCohortSpecification" theme="simple" style="margin-bottom: 24px;">
@@ -39,7 +39,7 @@ Select a Discovery Cohort:
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
                     <s:param name="cfeResultsId" value="cfeResultsId" />
-                    discovery-results.xlsx
+                    results.xlsx
                  </s:a>
             </td>
             <td> <s:property value="resultsType"/>

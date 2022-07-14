@@ -137,10 +137,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	    if (!Authorization.isAdmin(webSession)) {
 	        result = LOGIN;
 	    } else {
-	        this.cfeResults = CfeResultsService.getMetadata(
-	                CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES,
-	                CfeResultsType.ALL_COHORTS_PLUS_VALIDATION_SCORES
-	            );
+	        this.cfeResults = CfeResultsService.getMetadata( CfeResultsType.TESTING_COHORTS );
 	    }
 	    
 	    return result;
@@ -471,7 +468,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 // Save the results in the database
                 CfeResults cfeResults = new CfeResults(
                         resultsWorkbook,
-                        CfeResultsType.ALL_COHORTS_PLUS_ALL_SCORES,
+                        CfeResultsType.TESTING_SCORES,
                         this.scoresGeneratedTime, testingData.getPhene(),
                         testingData.getLowCutoff(), testingData.getHighCutoff()
                 );

@@ -37,6 +37,11 @@ import cfe.utils.FileUtil;
 import cfe.utils.PheneCondition;
 import cfe.utils.WebAppProperties;
 
+/**
+ * OBSOLETE CODE
+ * @author lab
+ *
+ */
 public class ClinicalAndTestingCohortsAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
@@ -544,11 +549,11 @@ public class ClinicalAndTestingCohortsAction extends BaseAction implements Sessi
                 CfeResults cfeResults = new CfeResults();
 
                 if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
-                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
+                    cfeResults.setResultsType(CfeResultsType.TESTING_COHORTS);
                 }
-                else if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
-                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
-                }
+                //else if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
+                //    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+                //}
 
                 cfeResults.setResultsSpreadsheet(resultsWorkbook);
                 cfeResults.setPhene(discoveryPhene);

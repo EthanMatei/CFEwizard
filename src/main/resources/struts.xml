@@ -393,6 +393,23 @@
                 <param name="actionName">LoginAction</param>
             </result> 
 		</action>
+
+		<action name="PrioritizationAllGenesProcess"
+		        class="cfe.action.prioritization.GeneListUpload"
+		        method="processAllGenes">
+		    <interceptor-ref name="basicStack"/>
+			<result name="success" type="redirectAction">
+            	<param name="actionName">PrioritizationScoringWeights</param>
+            </result>
+            <result name="input" type="redirectAction">
+                <param name="actionName">PrioritizationGeneListUpload</param>
+			    <param name="errorMessage">${errorMessage}</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result> 			
+		</action>
 		
 		<action name="PrioritizationGeneListUploadProcess" class="cfe.action.prioritization.GeneListUpload">
 		    <interceptor-ref name="cfeStack"/>
@@ -415,6 +432,9 @@
 		    <interceptor-ref name="basicStack"/>
 			<result name="success" type="redirectAction">
             	<param name="actionName">PrioritizationScoringWeights</param>
+            	<param name="discoveryId">${discoveryId}</param>
+            	<param name="discoveryScoreCutoff">${discoveryScoreCutoff}</param>
+            	<param name="geneListFileName">${geneListFileName}</param>
             </result>
             <result name="input" type="redirectAction">
                 <param name="actionName">PrioritizationGeneListUpload</param>
@@ -440,6 +460,9 @@
 			<interceptor-ref name="cfeStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">PrioritizationDiseaseSelection</param>
+                <param name="discoveryId">${discoveryId}</param>
+            	<param name="discoveryScoreCutoff">${discoveryScoreCutoff}</param>
+            	<param name="geneListFileName">${geneListFileName}</param>
             </result>
 			<result name="error">pages/error.jsp</result>
 			<result name="input">pages/prioritization/scoringWeights.jsp</result>
@@ -462,6 +485,13 @@
 			<interceptor-ref name="cfeStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">PrioritizationCalculateScores</param>
+                <param name="discoveryId">${discoveryId}</param>
+            	<param name="discoveryScoreCutoff">${discoveryScoreCutoff}</param>
+            	<param name="geneListFileName">${geneListFileName}</param>
+            </result>
+            <result name="input" type="redirectAction">
+                <param name="actionName">PrioritizationDiseaseSelection</param>
+			    <param name="errorMessage">${errorMessage}</param>
             </result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
@@ -474,6 +504,13 @@
 			<interceptor-ref name="cfeStack"/>
 			<result name="success" type="redirectAction">
                 <param name="actionName">PrioritizationCalculateScores</param>
+                <param name="discoveryId">${discoveryId}</param>
+            	<param name="discoveryScoreCutoff">${discoveryScoreCutoff}</param>
+            	<param name="geneListFileName">${geneListFileName}</param>
+            </result>
+            <result name="input" type="redirectAction">
+                <param name="actionName">PrioritizationDiseaseSelection</param>
+			    <param name="errorMessage">${errorMessage}</param>
             </result>
 			<result name="error">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
@@ -510,7 +547,7 @@
  
         <!-- Validation Cohort Creation -->
         
-		<action name="ValidationCohortDiscoveryCohortSelection"
+		<action name="ValidationCohortDataSelection"
 		        class="cfe.action.ValidationCohortAction"
 		        method="initialize">
 			<interceptor-ref name="basicStack"/>
@@ -550,7 +587,7 @@
  
         <!-- Testing Cohort Creation -->
         
-		<action name="TestingCohortsValidationCohortSelection"
+		<action name="TestingCohortsDataSelection"
 		        class="cfe.action.TestingCohortsAction"
 		        method="initialize">
 			<interceptor-ref name="basicStack"/>

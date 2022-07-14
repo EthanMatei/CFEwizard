@@ -4,14 +4,20 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Validation Scoring - Validation Data Selection</title>
+    <title>CFE Wizard - Validation Scoring - Validation Data Merge</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h2>Validation Scoring - Validation Data Selection</h2>
+<h2>Validation Scoring - Validation Data Merge</h2>
+
+<p>
+This page merges Prioritization Only Scores with Discovery Scores to create a result that
+can be used as an input for Validation Scoring.
+</p>
+
 
 <s:actionerror />
 
@@ -41,11 +47,11 @@ Score cutoff (&ge;): <s:textfield style="text-align: right;" name="scoreCutoff" 
 
 
 <p style="font-weight: bold;">
-Select Validation Data:
+Select Merge Data:
 </p>
             
 <table class="dataTable">
-    <caption>Validation Cohorts</caption>
+    <caption>DiscoveryScores</caption>
     <tr> 
         <th>ID</th>
         <th>Results</th>
@@ -56,13 +62,13 @@ Select Validation Data:
         <th>Phene High Cutoff</th>
     </tr>
 
-    <s:iterator value="validationCohorts" var="result">
+    <s:iterator value="discoveryData" var="result">
         <tr>
             <td>
-                 <s:radio name="validationDataId" list="{cfeResultsId}"/>
+                 <s:radio name="discoveryDataId" list="{cfeResultsId}"/>
             </td>
             <td>
-                <s:a action="CfeResultsXlsxDisplay" title="Validation Cohorts">
+                <s:a action="CfeResultsXlsxDisplay" title="Discovery Scores">
                     <s:param name="cfeResultsId" value="cfeResultsId" />
                     results.xlsx
                  </s:a>
@@ -78,7 +84,6 @@ Select Validation Data:
 
 </table>
 
-<%--
 <table class="dataTable" style="margin-top: 17px;">
     <caption>Prioritization Scores</caption>
     <tr> 
@@ -103,30 +108,13 @@ Select Validation Data:
             <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
         </tr>
     </s:iterator>
---%>
 
 </table>
 
-<table class="dataTable" style="margin-top: 17px;">
-    <tr>
-        <td>Bonferroni Score</td>
-        <td> <s:textfield style="text-align: right;" name="bonferroniScore" /> </td> 
-    </tr>
-    <tr>
-        <td>Nominal Score</td>
-        <td> <s:textfield  style="text-align: right;" name="nominalScore" /></td>
-    </tr>
-    <tr>
-        <td>Stepwise Score</td>
-        <td> <s:textfield  style="text-align: right;" name="stepwiseScore" /></td>
-    </tr>
-    <tr>
-        <td>Non-Stepwise Score</td>
-        <td> <s:textfield  style="text-align: right;" name="nonStepwiseScore" /></td>
-    </tr>
-</table>
 
-<s:submit value="Select" style="margin-top: 17px; margin-bottom: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+
+<s:submit value="Merge Data"
+          style="margin-top: 17px; margin-bottom: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
 
 <s:token/>
 </s:form>

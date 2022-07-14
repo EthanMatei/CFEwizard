@@ -146,10 +146,8 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
 		} else {
 		    try {
                 this.validationResultsList = CfeResultsService.getMetadata(
-                        CfeResultsType.VALIDATION_COHORT,
-                        CfeResultsType.VALIDATION_COHORT_PLUS_DISCOVERY_SCORES,
-                        CfeResultsType.VALIDATION_COHORT_PLUS_PRIORITIZATION_SCORES,
-                        CfeResultsType.VALIDATION_COHORT_PLUS_VALIDATION_SCORES
+                        CfeResultsType.VALIDATION_COHORT_ONLY,
+                        CfeResultsType.VALIDATION_SCORES
                 );
 		    }
 		    catch (Exception exception) {
@@ -394,17 +392,11 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                 //-------------------------------------------
                 CfeResults cfeResults = new CfeResults();
 
-                if (validationResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
-                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
+                if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_COHORT_ONLY)) {
+                    cfeResults.setResultsType(CfeResultsType.TESTING_COHORTS_ONLY);
                 }
-                else if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_COHORT)) {
-                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS);
-                }
-                else if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_COHORT_PLUS_VALIDATION_SCORES)) {
-                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_VALIDATION_SCORES);
-                }
-                else if (validationResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
-                    cfeResults.setResultsType(CfeResultsType.ALL_COHORTS_PLUS_DISCOVERY_SCORES);
+                else if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_SCORES)) {
+                    cfeResults.setResultsType(CfeResultsType.TESTING_COHORTS);
                 }
 
                 cfeResults.setResultsSpreadsheet(resultsWorkbook);

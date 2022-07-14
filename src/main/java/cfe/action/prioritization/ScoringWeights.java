@@ -3,6 +3,7 @@ package cfe.action.prioritization;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,7 +27,7 @@ import cfe.utils.HibernateUtils;
 public class ScoringWeights extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 4461152837155935053L;
-	private static final Log log = LogFactory.getLog(ScoringWeights.class);
+	private static final Logger log = Logger.getLogger(ScoringWeights.class.getName());
 	
 	private Map<String, Object> userSession;
 	
@@ -50,6 +51,7 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 	public double getHuBrainScore() {		
 		return huBrainScore;
 	}
+	
 	public void setHuBrainScore(double huBrainScore) {
 		this.huBrainScore = huBrainScore;
 	}
@@ -60,6 +62,7 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 			result = LOGIN;
 		}
 		log.info("result: " + result);
+		log.info("**************** DISCOVERY ID: " + this.discoveryId);
 		return result;
 	}
 	
@@ -218,12 +221,15 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 	public Long getDiscoveryId() {
         return discoveryId;
     }
+	
     public void setDiscoveryId(Long discoveryId) {
         this.discoveryId = discoveryId;
     }
+    
     public Double getDiscoveryScoreCutoff() {
         return discoveryScoreCutoff;
     }
+    
     public void setDiscoveryScoreCutoff(Double discoveryScoreCutoff) {
         this.discoveryScoreCutoff = discoveryScoreCutoff;
     }

@@ -213,135 +213,6 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-
-    <!-- PROTOTYPE ===================================================================== -->
-    		
-   		<!-- Step 1 -->
-   		<!--  Action for database upload log
-		<action name="DatabaseList" class="cfe.action.DatabaseList" method="initialize">
-			<interceptor-ref name="basicStack"/>
-			<result name="success">pages/dbList.jsp</result>
-			<result name="error">pages/error.jsp</result>
-		</action>     
-        -->
-        		
-	<!-- Upload database flow -->
-	
-		<!-- Step 1 -->
-		<action name="DBSelectionInitialize" class="cfe.action.DBSelection" method="initialize">
-			<interceptor-ref name="basicStack"/>
-			<result name="success">pages/dbSelection.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-		
-		<action name="DBSelection" class="cfe.action.DBSelection">
-			<result name="success">pages/fileUpload.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/dbSelection.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-		
-		<!-- Step 2 -->
-		<!-- 
-		<action name="FileUpload" class="cfe.action.FileUpload">
-			<interceptor-ref name="fileUploadStack"/>
-
-		    <result name="wait">pages/wait.jsp</result>
-	    	<result name="success">pages/success.jsp</result>
-	    	<result name="error">pages/error.jsp</result>
-	    	<result name="input">pages/fileUpload.jsp</result>
-	    	<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>   	
-		</action>
-        -->
-        
-		<action name="FileUpload" class="cfe.action.FileUploadSerial">
-			<interceptor-ref name="fileUploadStack"/>
-	    	<result name="success">pages/dbUploadStatus.jsp</result>
-	    	<!-- <result name="error">pages/error.jsp</result> -->
-	        <result name="error">pages/dbUploadStatus.jsp</result>
-	    	<result name="input">pages/fileUpload.jsp</result>
-	    	<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>   	
-		</action>
-
-		
-	<!-- Calculate scores flow -->
-		
-		<!-- Step 1 -->	
-		<action name="ScoringWeights" class="cfe.action.ScoringWeightsAction" method="initialize">
-			<interceptor-ref name="basicStack"/>
-			<result name="success">pages/scoringWeights.jsp</result>	
-			<result name="error">pages/error.jsp</result>   
-		    <result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-		
-		<action name="ScoringWeightsProcess" class="cfe.action.ScoringWeightsAction">
-			<interceptor-ref name="cfeStack"/>
-
-			<result name="success" type="redirectAction">
-                <param name="actionName">ValidationWeights</param>
-            </result>            
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/scoringWeights.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>			    
-		</action>
-		
-		<!-- Step 2 -->	
-		<action name="ValidationWeights" class="cfe.action.ValidationWeightsAction" method="initialize">
-			<interceptor-ref name="basicStack"/>
-			<result name="success">pages/validationWeights.jsp</result>	
-			<result name="error">pages/error.jsp</result>   
-		    <result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-		
-		<action name="ValidationWeightsProcess" class="cfe.action.ValidationWeightsAction">
-			<interceptor-ref name="cfeStack"/>
-			<result name="success" type="redirectAction">
-                <param name="actionName">CalculateScores</param>
-            </result>  
-			<result name="error">pages/error.jsp</result>   
-		    <result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-				
-		<!--  Step 3 -->
-		<action name="CalculateScores" class="cfe.action.CalculateScores">
-				<interceptor-ref name="basicStack"/>
-			    <result name="success">pages/calculatedScores.jsp</result>
-			    <result name="error">/pages/error.jsp</result>
-			    <result name="login" type="redirectAction">
-                    <param name="actionName">LoginAction</param>
-                </result>
-		</action>
-		
-		<!--  Step 5 -->
-		<action name="Report" class="cfe.action.ReportAction" method="view">
-			<interceptor-ref name="basicStack"/>
-		    <result name="success" type="stream">
-                <param name="inputName">fileStream</param>
-	            <param name="contentType">${fileContentType}</param>
-                <param name="contentDisposition">attachment; filename="${fileName}"</param>
-            </result>
-            <result name="error">pages/error.jsp</result>
-            <result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>	
 		
 		
     <!-- PRIORITIZATION ===================================================================== -->
@@ -362,7 +233,7 @@
 		<action name="PrioritizationDBSelection" class="cfe.action.prioritization.DBSelection">
 			<result name="success">pages/prioritization/fileUpload.jsp</result>
 			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/dbSelection.jsp</result>
+			<result name="input">pages/prioritization/dbSelection.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>

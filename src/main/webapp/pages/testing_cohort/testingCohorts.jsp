@@ -155,6 +155,14 @@ Prediction Cohort:
     </s:a>
 </div>
 
+<!-- Next Button -->
+<p>
+<s:a action="TestingDataSelection" title="Testing Scoring" class="linkButton">
+    <s:param name="validationId" value="cfeResultsId" />
+Testing Scoring
+</s:a>
+</p>
+
 
 <%--       
 <h4>Validation Cohort</h4>

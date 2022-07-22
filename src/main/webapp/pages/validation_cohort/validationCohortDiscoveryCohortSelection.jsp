@@ -4,14 +4,14 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Validation Cohort - Discovery Cohort Selection</title>
+    <title>CFE Wizard - Validation Cohort - Prioritization Scores Selection</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h2>Validation and Testing Cohorts - Discovery Cohort Selection</h2>
+<h2>Validation Cohort - Prioritization Scores Selection</h2>
 
 <s:actionerror />
 

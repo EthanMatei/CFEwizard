@@ -26,8 +26,19 @@
 </s:if>
 
 <table class="dataTable" style="margin-bottom: 20px;">
-    <tr> <th>Discovery Phene</th> <th>Low Cutoff</th> <th>High Cutoff</th> </tr>
+    <tr> <th>ID</th> <th>Prioritization Scores</th> <th>Discovery Phene</th> <th>Low Cutoff</th> <th>High Cutoff</th> </tr>
     <tr>
+        <td>
+            <s:property value="discoveryId"/>
+        </td>
+        <td>
+            <s:set var="prioritizationFileName" value="'prioritization-scores.xlsx'" />
+            <s:a action="CfeResultsXlsxDisplay" title="Discovery Prioritization Merge">
+                    <s:param name="cfeResultsId" value="discoveryId" />
+                    <s:param name="fileName" value="prioritizationFileName" />
+                    <s:property value="prioritizationFileName"/>
+                 </s:a>
+        </td>
         <td style="text-align: right;"> <s:property value="discoveryPhene"/> </td>
         <td style="text-align: right;"> <s:property value="discoveryLowCutoff"/> </td>
         <td style="text-align: right;"> <s:property value="discoveryHighCutoff"/> </td>

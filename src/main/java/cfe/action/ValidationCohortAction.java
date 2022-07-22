@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -23,6 +24,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.healthmarketscience.jackcess.Table;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
@@ -175,6 +177,8 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 this.discoveryResults = CfeResultsService.get(discoveryId);
 
                 XSSFWorkbook discoveryWorkbook = discoveryResults.getResultsSpreadsheet();
+                LinkedHashMap<String,DataTable> dataTables = discoveryResults.getDataTables();
+                
                 XSSFSheet sheet = discoveryWorkbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 CohortDataTable cohortData = new CohortDataTable();
                 cohortData.initializeToWorkbookSheet(sheet);
@@ -229,30 +233,10 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 //-------------------------------------------------------------------------------
                 // Create new CFE results that has all the cohorts plus previous information
                 //-------------------------------------------------------------------------------
-                XSSFWorkbook resultsWorkbook = new XSSFWorkbook();
-
-                if (discoveryResults.getResultsType().equals(CfeResultsType.DISCOVERY_SCORES)) {
-                    // Discovery scores table
-                    DataTable discoveryScores = new DataTable(null);
-                    discoveryScores.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES));
-                    discoveryScores.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES);
-
-                    // Discovery scores info table
-                    DataTable discoveryScoresInfo = new DataTable(null);
-                    discoveryScoresInfo.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES_INFO));
-                    discoveryScoresInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_SCORES_INFO);                
-                }
-
-                // Discovery cohort table
-                DataTable discoveryCohort = new DataTable(null);
-                discoveryCohort.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT));
-                discoveryCohort.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT);
-
-                // Discovery cohort info table
-                DataTable discoveryCohortInfo = new DataTable(null);
-                discoveryCohortInfo.initializeToWorkbookSheet(discoveryWorkbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO));
-                discoveryCohortInfo.addToWorkbook(resultsWorkbook, CfeResultsSheets.DISCOVERY_COHORT_INFO);           
-
+                dataTables.remove(CfeResultsSheets.COHORT_DATA);  // Remove cohort data, which will be replaced
+                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(dataTables);
+                
+                
                 // Modify (all) cohort data table
                 cohortData.addCohort("validation", validationSubjects);
                 cohortData.addCohort("testing", testingSubjects);
@@ -408,6 +392,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 }
                 else if (discoveryResults.getResultsType().equals(CfeResultsType.PRIORITIZATION_SCORES)) {
                     cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT);
+                    cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, discoveryResults.getDiscoveryRScriptLog());
                 }
 
                 cfeResults.setResultsSpreadsheet(resultsWorkbook);

@@ -32,12 +32,24 @@ Select a Discovery Cohort:
 
 <s:form action="DiscoveryScoringSpecification" theme="simple">
 
+<p>
+WORK IN PROGRESS...
+</p>
+<s:file name="discoveryCohortFile"/>
+<s:submit value="Upload Discovery Cohort" style="margin-top: 17px; margin-bottom: 24px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+
+<s:token/>
+</s:form>
+
+<s:form action="DiscoveryScoringSpecification" theme="simple">
+
 <s:hidden name="lowCutoff" />
 <s:hidden name="highCutoff" />
 <s:hidden name="pheneSelection" />
 <s:hidden name="pheneTable" />
 <s:hidden name="genomicsTable" />
 
+<s:submit value="Select Discovery Cohort" style="margin-top: 17px; margin-bottom: 24px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
     
 <table class="dataTable">
     <tr> 
@@ -70,7 +82,8 @@ Select a Discovery Cohort:
     </s:iterator>
 
 </table>
-<s:submit value="Select" style="margin-top: 17px; margin-bottom: 24px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+
+<s:token/>
 </s:form>
 
 </tiles:putAttribute>

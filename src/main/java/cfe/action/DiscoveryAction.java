@@ -2,8 +2,10 @@ package cfe.action;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -61,10 +63,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	private Map<String, Object> webSession;
 	
+	private File discoveryCohortFile;
+	private String discoveryCohortFileContentType;
+	private String discoveryCohortFileName;
+	
 	private File discoveryCsv;
 	private String discoveryCsvContentType;
 	private String discoveryCsvFileName;
-	
+	    
 	private File discoveryDb;
 	private String discoveryDbContentType;
 	private String discoveryDbFileName;
@@ -405,15 +411,87 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }
-        else if (discoveryId == null) {
+        else if (discoveryId == null && discoveryCohortFile != null) {
             this.setErrorMessage("No discovery cohort selected.");
             result = ERROR;
         }
         else {
             try {
+                CfeResults discoveryCohortFileResults = null;
+                if (this.discoveryCohortFile != null) {
+                    FileInputStream input = new FileInputStream(discoveryCohortFile);
+                    XSSFWorkbook discoveryCohortWorkbook = new XSSFWorkbook(input);
+                    
+                    //--------------------------------------------------------
+                    // Get phene and low and high cutoff
+                    //--------------------------------------------------------
+                    XSSFSheet sheet = discoveryCohortWorkbook.getSheet( CfeResultsSheets.DISCOVERY_COHORT_INFO );
+                    if (sheet == null) {
+                        discoveryCohortWorkbook.close();
+                        throw new Exception("Could not get \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO
+                                + "\" sheet from discovery cohort data workbook.");
+                    }
+                    
+                    DataTable discoveryCohortInfo = new DataTable("attribute");
+                    discoveryCohortInfo.initializeToWorkbookSheet(sheet);
+                    
+                    // get phene
+                    ArrayList<String> row = discoveryCohortInfo.getRow("Phene");
+                    if (row == null || row.size() == 0) {
+                        discoveryCohortWorkbook.close();
+                        throw new Exception("Could not find Phene row in \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO
+                                + "\" sheet in discovery cohort data workbook.");
+                    }
+                    String phene = row.get(1);
+                    
+                    // get low cutoff
+                    row = discoveryCohortInfo.getRow("Low Cutoff");
+                    if (row == null || row.size() == 0) {
+                        discoveryCohortWorkbook.close();
+                        throw new Exception("Could not find low cutoff row in \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO
+                                + "\" sheet in discovery cohort data workbook.");
+                    }
+                    String lowCutoffString = row.get(1);
+                    Integer lowCutoff = 0;
+                    lowCutoff = Integer.parseInt(lowCutoffString);
+
+                    // get low cutoff
+                    row = discoveryCohortInfo.getRow("High Cutoff");
+                    if (row == null || row.size() == 0) {
+                        discoveryCohortWorkbook.close();
+                        throw new Exception("Could not find high cutoff row in \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO
+                                + "\" sheet in discovery cohort data workbook.");
+                    }
+                    String highCutoffString = row.get(1);
+                    Integer highwCutoff = 0;
+                    highCutoff = Integer.parseInt(highCutoffString);
+                    
+                    // generated time
+                    Date uploadTime = new Date();
+                    Integer highCutoff = 0;
+                    
+                    discoveryCohortFileResults = new CfeResults(
+                            discoveryCohortWorkbook,
+                            CfeResultsType.DISCOVERY_COHORT, 
+                            uploadTime,   // generated time
+                            phene,
+                            lowCutoff,
+                            highCutoff
+                    );
+                    CfeResultsService.save(discoveryCohortFileResults);
+                    this.discoveryId = discoveryCohortFileResults.getCfeResultsId();
+                }
+                
                 ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
-                CfeResults results = CfeResultsService.get(this.discoveryId);
+                CfeResults results = null;
+                if (discoveryCohortFileResults != null) {
+                    results = discoveryCohortFileResults;
+                }
+                else {
+                    results = CfeResultsService.get(this.discoveryId);
+                }
+                
                 XSSFWorkbook workbook = results.getResultsSpreadsheet();
                 
                 // Use these to get files
@@ -1656,6 +1734,30 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
     public void setDePercentileScore4(int dePercentileScore4) {
         this.dePercentileScore4 = dePercentileScore4;
+    }
+
+    public File getDiscoveryCohortFile() {
+        return discoveryCohortFile;
+    }
+
+    public void setDiscoveryCohortFile(File discoveryCohortFile) {
+        this.discoveryCohortFile = discoveryCohortFile;
+    }
+
+    public String getDiscoveryCohortFileContentType() {
+        return discoveryCohortFileContentType;
+    }
+
+    public void setDiscoveryCohortFileContentType(String discoveryCohortFileContentType) {
+        this.discoveryCohortFileContentType = discoveryCohortFileContentType;
+    }
+
+    public String getDiscoveryCohortFileName() {
+        return discoveryCohortFileName;
+    }
+
+    public void setDiscoveryCohortFileName(String discoveryCohortFileName) {
+        this.discoveryCohortFileName = discoveryCohortFileName;
     }
 
 }

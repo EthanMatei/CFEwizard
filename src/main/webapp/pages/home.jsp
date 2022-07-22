@@ -11,17 +11,17 @@
 <%-- User: <s:property value="#session.username" /> --%>
 
 <h2>1. Discovery</h2>
-<ul>
+<ol type="A">
     <li> <s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a> </li>
     <li> <s:a action="DiscoveryCohortSelection">Discovery Scoring</s:a> </li>
-</ul>
+</ol>
 
 <h2>2. Prioritization</h2>
 
 <div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
-    <ul style="margin-top: 0;">        
+    <ol type="A" style="margin-top: 0;">        
         <li><s:a action="PrioritizationGeneListUpload">Prioritization Scoring</s:a></li>
-    </ul>
+    </ol>
 </div>
 
 <div style="display: inline-block; vertical-align: top;">
@@ -41,7 +41,6 @@
         </s:if>
     
         <li> <s:a action="DatabaseStatusAction">CFE Prioritization Database Status</s:a></li>
-        <li> <s:a action="">Merge Priority Scores with Discovery Scores</s:a></li>
     </ul>
 </div>
 
@@ -49,23 +48,23 @@
 <h2>3. Validation</h2>
 
 <div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
-    <ul style="margin-top: 0;">
+    <ol type="A" style="margin-top: 0;">
         <li> <s:a action="ValidationCohortDataSelection">Validation Cohort Creation</s:a> </li>
         <li> <s:a action="ValidationDataSelection">Validation Scoring</s:a></li>
-    </ul>
+    </ol>
 </div>
 
 <div style="display: inline-block; vertical-align: top;">
     <ul style="margin-top: 0;">
-        <li> <s:a action="">Merge Priority Scores with Discovery Scores</s:a></li>
+        <li> <s:a action="ValidationDataMergeSelection">Merge Priority Scores with Discovery Scores</s:a></li>
     </ul>
 </div>
 
 <h2>4. Testing</h2>
-<ul>
+<ol type="A">
     <li> <s:a action="TestingCohortsDataSelection">Testing Cohorts Creation</s:a> </li>
     <li> <s:a action="TestingDataSelection">Testing Scoring</s:a></li>
-</ul>
+</ol>
 
 
 <h2>Results</h2>

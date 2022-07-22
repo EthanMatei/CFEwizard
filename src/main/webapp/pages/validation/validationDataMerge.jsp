@@ -4,14 +4,14 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Validation Scoring - Validation Data Merge</title>
+    <title>CFE Wizard - Validation - Validation Input Data Merge</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h2>Validation Scoring - Validation Data Merge</h2>
+<h2>Validation - Validation Input Data Merge</h2>
 
 <p>
 This page merges Prioritization Only Scores with Discovery Scores to create a result that
@@ -28,23 +28,7 @@ can be used as an input for Validation Scoring.
 </s:if>
 
 
-<s:form action="ValidationScoringSpecification" theme="simple" method="post" enctype="multipart/form-data">
-
-<%--
-<p>
-Probeset to Gene Mapping Database: <s:file name="probesetMappingDb"/>
-</p>
---%>
-
-<p>
-Gene Expression CSV File
-<s:file name="geneExpressionCsv" />
-</p>
-        
-<p>
-Score cutoff (&ge;): <s:textfield style="text-align: right;" name="scoreCutoff" />
-</p>
-
+<s:form action="ValidationDataMerge" theme="simple" method="post" enctype="multipart/form-data">
 
 <p style="font-weight: bold;">
 Select Merge Data:
@@ -62,10 +46,10 @@ Select Merge Data:
         <th>Phene High Cutoff</th>
     </tr>
 
-    <s:iterator value="discoveryData" var="result">
+    <s:iterator value="discoveryScores" var="result">
         <tr>
             <td>
-                 <s:radio name="discoveryDataId" list="{cfeResultsId}"/>
+                 <s:radio name="discoveryId" list="{cfeResultsId}"/>
             </td>
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="Discovery Scores">
@@ -85,7 +69,7 @@ Select Merge Data:
 </table>
 
 <table class="dataTable" style="margin-top: 17px;">
-    <caption>Prioritization Scores</caption>
+    <caption>Prioritization Only Scores</caption>
     <tr> 
         <th>ID</th>
         <th>Results</th>

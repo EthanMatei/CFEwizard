@@ -66,6 +66,15 @@ Discovery R Script Output:
     </s:else>
 </s:a>
 
+<s:if test="true">
+    <p>
+    <s:a action="PrioritizationGeneListUpload" title="Prioritization" class="linkButton" style="margin-left: 2em;">
+        <s:param name="discoveryId" value="cfeResultsId" />
+        <s:param name="includeNonDiscoveryOptions" value="false"/>
+        Prioritization
+    </s:a>
+    </p>
+</s:if>
 
 <hr style="margin-top: 12px;"/>
 
@@ -101,14 +110,8 @@ Discovery R Script Output:
     </tr>    
 </table>
 
-<s:if test="false">
-    <br/>
-    <s:a action="DiscoveryScoringSpecification" title="Discovery Scoring" class="linkButton" style="margin-left: 2em;">
-        <s:param name="discoveryId" value="cfeResultsId" />
-        Discovery Scoring
-    </s:a>
-    <br/>
-</s:if>
+
+
 
 <s:if test="debugDiscoveryScoring">
 
@@ -173,6 +176,7 @@ Discovery R Script Output:
 </s:if>
 
 <br/>
+
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

@@ -27,32 +27,30 @@
  <!-- http://stackoverflow.com/questions/8906910/struts2-dynamically-add-remove-list-of-objects-from-page -->
 <s:actionerror />
 
-<hr/>
+<s:if test="includeNonDiscoveryOptions == null || includeNonDiscoveryOptions">
+    <hr/>
 
-<s:form id ="uploadGeneForm" theme="simple" action="PrioritizationAllGenesProcess"
+    <s:form id ="uploadGeneForm" theme="simple" action="PrioritizationAllGenesProcess"
+            method="post" enctype="multipart/form-data">
+
+        <p>
+	    <s:submit value="Use All Genes" name="allGenesButton" style="font-weight: bold;"/>
+        </p>
+    </s:form>
+
+    <hr />
+
+    <s:form id ="uploadGeneForm" theme="simple" action="PrioritizationGeneListUploadProcess"
         method="post" enctype="multipart/form-data">
 
-    <p>
-	<s:submit value="Use All Genes" name="allGenesButton" style="font-weight: bold;"/>
-    </p>
-    
+        <p>
+        <s:submit value="Upload Gene List File" name="geneListButton" style="font-weight: bold;"/>
+        <s:file style="margin-left: 1em;" name="upload" label="Gene List File" />
+        </p>
+    </s:form>
 
-</s:form>
-
-<hr />
-
-<s:form id ="uploadGeneForm" theme="simple" action="PrioritizationGeneListUploadProcess"
-        method="post" enctype="multipart/form-data">
-
-    <p>
-    <s:submit value="Upload Gene List File" name="geneListButton" style="font-weight: bold;"/>
-    <s:file style="margin-left: 1em;" name="upload" label="Gene List File" />
-    </p>
-    
-
-</s:form>
-
-<hr />
+    <hr />
+</s:if>
 
 <s:form id ="processDiscoveryGeneForm" theme="simple" action="PrioritizationDiscoveryGeneListProcess" method="post">    
     <p>

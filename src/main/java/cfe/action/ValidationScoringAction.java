@@ -99,8 +99,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	        result = LOGIN;
 	    } else {
 	        this.validationCohorts = CfeResultsService.getMetadata(CfeResultsType.VALIDATION_COHORT);
-	        //this.discoveryScores  = CfeResultsService.getMetadata(CfeResultsType.VALIDATION_COHORT);
-	        //this.prioritizationScores = CfeResultsService.getMetadata(CfeResultsType.PRIORITIZATION_SCORES);
 	    }
 	    
 	    return result;
@@ -153,7 +151,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 XSSFSheet sheet = workbook.getSheet( CfeResultsSheets.DISCOVERY_COHORT_INFO );
                 if (sheet == null) {
                     throw new Exception("Could not get \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO
-                            + "\" shee from validation data workbook.");
+                            + "\" sheet from validation data workbook.");
                 }
                 
                 DataTable discoveryCohortInfo = new DataTable("attribute");
@@ -413,7 +411,11 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 cfeResults.setDiscoveryRScriptLog(validationData.getDiscoveryRScriptLog());
                 log.info("Added discovery R script log text to cfeResults.");
                 
-                cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, validationData.getDiscoveryRScriptLog());
+                CfeResultsFile discoveryRScriptLogFile = validationData.getFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG);
+                if (discoveryRScriptLogFile != null) {
+                    String discoveryRScriptLog = validationData.getFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG).getContentAsString();
+                    cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, discoveryRScriptLog);
+                }
                 cfeResults.addTextFile(CfeResultsFileType.VALIDATION_R_SCRIPT_LOG, this.scriptOutput);
                 
                 CfeResultsService.save(cfeResults);

@@ -141,9 +141,9 @@
 <br/>
 
 <p>
-<s:a action="TestingCohortsSpecification" title="Testing Cohorts Creation" class="linkButton">
-    <s:param name="validationId" value="cfeResultsId" />
-    Testing Cohorts Creation
+<s:a action="ValidationDataSelection" title="Validation Scoring" class="linkButton">
+    <s:param name="validationDataId" value="cfeResultsId" />
+    Validation Scoring
 </s:a>
 </p>
 

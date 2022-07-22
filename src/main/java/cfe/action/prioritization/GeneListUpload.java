@@ -52,6 +52,8 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     private Long discoveryId;
     private Double discoveryScoreCutoff;
     
+    Boolean includeNonDiscoveryOptions;
+    
     public void setUpload(File file) {
        this.file = file;
     }
@@ -333,6 +335,14 @@ public class GeneListUpload extends BaseAction implements SessionAware {
 
     public void setGeneListFileName(String geneListFileName) {
         this.geneListFileName = geneListFileName;
+    }
+
+    public Boolean getIncludeNonDiscoveryOptions() {
+        return includeNonDiscoveryOptions;
+    }
+
+    public void setIncludeNonDiscoveryOptions(Boolean includeNonDiscoveryOptions) {
+        this.includeNonDiscoveryOptions = includeNonDiscoveryOptions;
     }
     
 }

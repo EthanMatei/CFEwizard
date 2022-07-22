@@ -99,8 +99,9 @@ public class CfeResultsXlsxDisplayAction extends BaseAction implements SessionAw
     		//	throw new ActionErrorException( exception.getMessage() );
     		//}
 
-   			String fileSuffix = ".xlsx";
-    		fileName = "cfe-results" + fileSuffix;
+   			if (fileName == null || fileName.isEmpty()) {
+    		    fileName = "cfe-results.xlsx";
+    		}
     		reportName = fileName;
     		fileContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     	}

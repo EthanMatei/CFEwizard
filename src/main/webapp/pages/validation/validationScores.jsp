@@ -38,11 +38,21 @@ Validation Scoring Results:
             validation-scores.xslx
         </div>
     </s:a>
+    
+    <!--  Next button  -->
+    <p>
+    <s:a action="TestingDataSelection" title="Testing Scoring" class="linkButton">
+        <s:param name="validationId" value="cfeResultsId" />
+    Testing Scoring
+    </s:a>
+    </p>
 </s:if>
 <s:else>
     <p>No results generated</p>
 </s:else>
 </p>
+
+<hr/>
 
 <p>
 Validation Scoring Command:

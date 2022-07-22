@@ -118,6 +118,15 @@ Gene List File Name: <s:property value="geneListFileName"/>
 New Results: <br />
 --%>
 
+
+<p>
+<s:a action="ValidationCohortSpecification" title="Validation Cohort Creation" class="linkButton" style="margin-left: 2em;">
+    <s:param name="discoveryId" value="cfeResultsId" />
+    Validation Cohort Creation
+</s:a>
+</p>
+
+
 <table class="dataTable">
 <tr>
     <th> Gene </th>

@@ -43,7 +43,7 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
 	 * @return
 	 * @throws Exception
 	 */
-	public String mergeScoresDataSelection() throws Exception {
+	public String mergeDataSelection() throws Exception {
 	    String result = SUCCESS;
 	    
 	    if (!Authorization.isAdmin(webSession)) {
@@ -56,18 +56,18 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
 	    return result;
 	}
 	
-	public String mergeScores() throws Exception {
+	public String mergeData() throws Exception {
 	    String result = SUCCESS;
 	    
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }
         else if (discoveryId == null) {
-            this.setErrorMessage("No validation data selected.");
+            this.setErrorMessage("No discovery scores selected.");
             result = INPUT;
         }
         else if (prioritizationId == null) {
-            this.setErrorMessage("No prioritization results selected.");
+            this.setErrorMessage("No prioritization scores selected.");
             result = INPUT;
         }
         else {
@@ -117,6 +117,7 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
                 CfeResultsService.save(cfeResults);
                 
                 this.cfeResultsId = cfeResults.getCfeResultsId();
+                log.info("CFE Results ID for merged data = " + cfeResultsId);
                 if (this.cfeResultsId < 1) {
                     throw new Exception("Merge results id is not >= 1: " + cfeResultsId);
                 }
@@ -132,6 +133,7 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
             }
         }
 
+        log.info("merge data status = \"" + result + "\"");
 	    return result;
 	}
 	

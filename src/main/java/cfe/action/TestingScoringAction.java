@@ -847,24 +847,41 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
             }
         }
         
+        //---------------------------------------------------
+        // Get diagnoses
+        //---------------------------------------------------
+        sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+        DataTable cohortData = new DataTable(null);
+        cohortData.initializeToWorkbookSheet(sheet);
+        Set<String> diagnoses = cohortData.getUniqueValues("DxCode");
+        
         //---------------------------------------------
         // Create predictor list data table
         //---------------------------------------------
         String key = "Predictor";
 
         DataTable predictorList = new DataTable(key);
+        
         predictorList.addColumn(key, "");
         predictorList.addColumn("Direction", "");
         predictorList.addColumn("Male", "");
         predictorList.addColumn("Female", "");
-        predictorList.addColumn("BP", "");
-        predictorList.addColumn("MDD", "");
-        predictorList.addColumn("SZ", "");
-        predictorList.addColumn("SZA", "");
-        predictorList.addColumn("PTSD", "");
-        predictorList.addColumn("MOOD", "");
-        predictorList.addColumn("PSYCH", "");
-        predictorList.addColumn("PSYCHOSIS", "");
+        
+        // OLD:
+        //predictorList.addColumn("BP", "");
+        //predictorList.addColumn("MDD", "");
+        //predictorList.addColumn("SZ", "");
+        //predictorList.addColumn("SZA", "");
+        //predictorList.addColumn("PTSD", "");
+        //predictorList.addColumn("MOOD", "");
+        //predictorList.addColumn("PSYCH", "");
+        //predictorList.addColumn("PSYCHOSIS", "");
+         
+        // NEW:
+        for (String dx: diagnoses) {
+            predictorList.addColumn(dx,  "");    
+        }
+        
         predictorList.addColumn("GENDER", "");
         predictorList.addColumn("All", "");
         
@@ -936,14 +953,22 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 row.add(direction);
                 row.add("0"); // Male
                 row.add("0"); // Female
-                row.add("0"); // BP
-                row.add("0"); // MDD
-                row.add("0"); // SZ
-                row.add("0"); // SZA
-                row.add("0"); // PTSD
-                row.add("0"); // MOOD
-                row.add("0"); // PSYCH
-                row.add("0"); // PSYCHOSIS
+                
+                // NEW:
+                for (String dx: diagnoses) {
+                    row.add("0");
+                }
+                
+                // OLD:
+                //row.add("0"); // BP
+                //row.add("0"); // MDD
+                //row.add("0"); // SZ
+                //row.add("0"); // SZA
+                //row.add("0"); // PTSD
+                //row.add("0"); // MOOD
+                //row.add("0"); // PSYCH
+                //row.add("0"); // PSYCHOSIS
+                
                 row.add("0"); // GENDER
                 row.add("1"); // All
 

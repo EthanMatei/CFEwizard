@@ -151,7 +151,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 if (discoveryCohortInfoSheet == null) {
                     result = INPUT;
-                    throw new Exception("The data spreadsheet is missing sheet\"" + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                    throw new Exception("The data spreadsheet is missing sheet \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
                 }
                 
                 DataTable cohortInfo = new DataTable("attribute");

@@ -158,7 +158,7 @@ Prediction Cohort:
 <!-- Next Button -->
 <p>
 <s:a action="TestingDataSelection" title="Testing Scoring" class="linkButton">
-    <s:param name="validationId" value="cfeResultsId" />
+    <s:param name="testingDataId" value="cfeResultsId" />
 Testing Scoring
 </s:a>
 </p>

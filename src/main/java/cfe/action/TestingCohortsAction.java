@@ -88,8 +88,8 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
 	
 	private String discoveryPhene;
 	private String discoveryPheneTable;
-	private Integer discoveryLowCutoff;
-	private Integer discoveryHighCutoff;
+	private Double discoveryLowCutoff;
+	private Double discoveryHighCutoff;
 	
 	private String percentInValidationCohort;
 	
@@ -435,7 +435,7 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
             }
             catch (Exception exception) {
                 result = ERROR;
-                String message = "Clinical and testing cohort creation error: " + exception.getLocalizedMessage();
+                String message = "Testing cohorts creation error: " + exception.getLocalizedMessage();
                 this.setErrorMessage(message);
                 log.severe(message);
                 
@@ -685,19 +685,19 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
         this.discoveryPheneTable = discoveryPheneTable;
     }
 
-    public Integer getDiscoveryLowCutoff() {
+    public Double getDiscoveryLowCutoff() {
         return discoveryLowCutoff;
     }
 
-    public void setDiscoveryLowCutoff(Integer discoveryLowCutoff) {
+    public void setDiscoveryLowCutoff(Double discoveryLowCutoff) {
         this.discoveryLowCutoff = discoveryLowCutoff;
     }
 
-    public Integer getDiscoveryHighCutoff() {
+    public Double getDiscoveryHighCutoff() {
         return discoveryHighCutoff;
     }
 
-    public void setDiscoveryHighCutoff(Integer discoveryHighCutoff) {
+    public void setDiscoveryHighCutoff(Double discoveryHighCutoff) {
         this.discoveryHighCutoff = discoveryHighCutoff;
     }
 

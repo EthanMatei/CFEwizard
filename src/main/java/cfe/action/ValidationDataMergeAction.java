@@ -95,8 +95,8 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
                 }
                 
                 String phene = discoveryData.getPhene();
-                Integer lowCutoff = discoveryData.getLowCutoff(); // NEEDS TO BE Double!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                Integer highCutoff = discoveryData.getHighCutoff();
+                Double lowCutoff = discoveryData.getLowCutoff();
+                Double highCutoff = discoveryData.getHighCutoff();
 
                 this.scoresGeneratedTime = new Date();
                 

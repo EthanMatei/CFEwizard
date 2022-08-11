@@ -12,7 +12,7 @@ import cfe.model.CfeResults;
  */
 public class Pipeline {
     
-    public CfeResults cacluateDiscoveryCohort(String pheneTable, String phene, int lowCutoff, int highCutoff) {
+    public CfeResults cacluateDiscoveryCohort(String pheneTable, String phene, double lowCutoff, double highCutoff) {
         CfeResults results = new CfeResults();
         return results;
     }

@@ -106,8 +106,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private String pheneSelection;
 	
-	private int lowCutoff;
-	private int highCutoff;
+	private double lowCutoff;
+	private double highCutoff;
 	
 	private String cohortDataCsv;
 	private String cohortDataCsvFile;
@@ -452,8 +452,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                                 + "\" sheet in discovery cohort data workbook.");
                     }
                     String lowCutoffString = row.get(1);
-                    Integer lowCutoff = 0;
-                    lowCutoff = Integer.parseInt(lowCutoffString);
+                    Double lowCutoff = 0.0;
+                    lowCutoff = Double.parseDouble(lowCutoffString);
 
                     // get low cutoff
                     row = discoveryCohortInfo.getRow("High Cutoff");
@@ -463,12 +463,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                                 + "\" sheet in discovery cohort data workbook.");
                     }
                     String highCutoffString = row.get(1);
-                    Integer highwCutoff = 0;
-                    highCutoff = Integer.parseInt(highCutoffString);
+                    Double highCutoff = 0.0;
+                    highCutoff = Double.parseDouble(highCutoffString);
                     
                     // generated time
                     Date uploadTime = new Date();
-                    Integer highCutoff = 0;
                     
                     discoveryCohortFileResults = new CfeResults(
                             discoveryCohortWorkbook,
@@ -1496,19 +1495,19 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		this.pheneSelection = pheneSelection;
 	}
 
-	public int getLowCutoff() {
+	public double getLowCutoff() {
 		return lowCutoff;
 	}
 
-	public void setLowCutoff(int lowCutoff) {
+	public void setLowCutoff(double lowCutoff) {
 		this.lowCutoff = lowCutoff;
 	}
 
-	public int getHighCutoff() {
+	public double getHighCutoff() {
 		return highCutoff;
 	}
 
-	public void setHighCutoff(int highCutoff) {
+	public void setHighCutoff(double highCutoff) {
 		this.highCutoff = highCutoff;
 	}
 

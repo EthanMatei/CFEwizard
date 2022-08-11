@@ -4,19 +4,19 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Validation Cohort - Discovery Cohort Selection</title>
+    <title>CFE Wizard - Testing Cohorts - Validation Data Selection</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h2>Testing Cohorts - Validation Cohort Selection</h2>
+<h2>Testing Cohorts - Validation Data Selection</h2>
 
 <s:actionerror />
 
 <p style="font-weight: bold;">
-Select a Validation Cohort:
+Select Validation Data:
 </p>
 
 <s:form action="TestingCohortsSpecification" theme="simple" style="margin-bottom: 24px;">

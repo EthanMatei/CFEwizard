@@ -322,8 +322,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 //--------------------------------------------
                 // Create results workbook
                 //--------------------------------------------
-                int lowCutoff  = validationData.getLowCutoff();
-                int highCutoff = validationData.getHighCutoff();
+                double lowCutoff  = validationData.getLowCutoff();
+                double highCutoff = validationData.getHighCutoff();
                 
                 //CfeResults prioritizationData = CfeResultsService.get(this.prioritizationId);
                 //if (prioritizationData == null) {

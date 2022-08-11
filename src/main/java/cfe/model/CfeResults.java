@@ -62,8 +62,8 @@ public class CfeResults implements Serializable {
 	private String discoveryRScriptLog;
     
 	private String phene;
-	private Integer lowCutoff;
-	private Integer highCutoff;
+	private Double lowCutoff;
+	private Double highCutoff;
 	
     @OneToMany(fetch=FetchType.EAGER, targetEntity=CfeResultsFile.class, mappedBy="cfeResults", cascade=CascadeType.ALL)
 	private Set<CfeResultsFile> cfeResultsFile;
@@ -84,7 +84,7 @@ public class CfeResults implements Serializable {
 	 * @param lowCutoff
 	 * @param highCutoff
 	 */
-    public CfeResults(Long cfeResultsId, String resultsType,Date generatedTime, String phene, Integer lowCutoff, Integer highCutoff) {
+    public CfeResults(Long cfeResultsId, String resultsType,Date generatedTime, String phene, Double lowCutoff, Double highCutoff) {
 
         this.cfeResultsId = cfeResultsId;
         
@@ -105,8 +105,8 @@ public class CfeResults implements Serializable {
             String resultsType, 
             Date generatedTime,
             String phene,
-            Integer lowCutoff,
-            Integer highCutoff
+            Double lowCutoff,
+            Double highCutoff
         ) throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -129,8 +129,8 @@ public class CfeResults implements Serializable {
             String resultsType, 
             Date generatedTime,
             String phene,
-            Integer lowCutoff,
-            Integer highCutoff
+            Double lowCutoff,
+            Double highCutoff
         ) throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -336,19 +336,19 @@ public class CfeResults implements Serializable {
         this.phene = phene;
     }
 
-    public Integer getLowCutoff() {
+    public Double getLowCutoff() {
         return lowCutoff;
     }
 
-    public void setLowCutoff(Integer lowCutoff) {
+    public void setLowCutoff(Double lowCutoff) {
         this.lowCutoff = lowCutoff;
     }
 
-    public Integer getHighCutoff() {
+    public Double getHighCutoff() {
         return highCutoff;
     }
 
-    public void setHighCutoff(Integer highCutoff) {
+    public void setHighCutoff(Double highCutoff) {
         this.highCutoff = highCutoff;
     }
 

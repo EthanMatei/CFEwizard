@@ -41,9 +41,9 @@ Validation Scoring Results:
     
     <!--  Next button  -->
     <p>
-    <s:a action="TestingDataSelection" title="Testing Scoring" class="linkButton">
+    <s:a action="TestingCohortsSpecification" title="Testing Cohorts Creation" class="linkButton">
         <s:param name="validationId" value="cfeResultsId" />
-    Testing Scoring
+    Testing Cohorts Creation
     </s:a>
     </p>
 </s:if>

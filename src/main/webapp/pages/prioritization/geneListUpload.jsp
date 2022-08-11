@@ -36,6 +36,7 @@
         <p>
 	    <s:submit value="Use All Genes" name="allGenesButton" style="font-weight: bold;"/>
         </p>
+        <s:token/>
     </s:form>
 
     <hr />
@@ -47,6 +48,7 @@
         <s:submit value="Upload Gene List File" name="geneListButton" style="font-weight: bold;"/>
         <s:file style="margin-left: 1em;" name="upload" label="Gene List File" />
         </p>
+        <s:token/>
     </s:form>
 
     <hr />

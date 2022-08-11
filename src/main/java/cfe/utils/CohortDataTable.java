@@ -227,7 +227,7 @@ public class CohortDataTable extends DataTable {
 		return merge;
 	}
 
-	public TreeSet<String> getDiscoveryCohortSubjects(String phene, int lowCutoff, int highCutoff) throws Exception {
+	public TreeSet<String> getDiscoveryCohortSubjects(String phene, double lowCutoff, double highCutoff) throws Exception {
 	    
 	    int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         int pheneIndex   = this.getColumnIndex(phene.trim());
@@ -518,7 +518,7 @@ public class CohortDataTable extends DataTable {
 	 * @param high
 	 * @param phene
 	 */
-	public CohortTable getDiscoveryCohort(String phene, int lowCutoff, int highCutoff) throws Exception {
+	public CohortTable getDiscoveryCohort(String phene, double lowCutoff, double highCutoff) throws Exception {
 		// Get the subject column index
 	   	int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
 	    if (subjectIndex == -1) {
@@ -647,7 +647,7 @@ public class CohortDataTable extends DataTable {
 	}
 	*/
 	
-    public void enhance(String phene, int lowCutoff, int highCutoff) throws Exception {
+    public void enhance(String phene, double lowCutoff, double highCutoff) throws Exception {
         log.info("Enhancement of cohort data table started for phene \"" + phene 
                 + "\" with low cutoff = " + lowCutoff + " and high cutoff = " + highCutoff + ".");
         

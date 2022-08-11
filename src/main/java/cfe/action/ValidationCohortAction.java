@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -82,8 +83,8 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 	
 	private String discoveryPhene;
 	private String discoveryPheneTable;
-	private Integer discoveryLowCutoff;
-	private Integer discoveryHighCutoff;
+	private Double discoveryLowCutoff;
+	private Double discoveryHighCutoff;
 	
 	private String percentInValidationCohort;
 	
@@ -113,7 +114,6 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 			result = LOGIN;
 		} else {
             this.discoveryResultsList = CfeResultsService.getMetadata(
-                    CfeResultsType.DISCOVERY_COHORT,
                     CfeResultsType.PRIORITIZATION_SCORES
             );
 		}
@@ -125,41 +125,69 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
         
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
-        } else {
-            ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-            this.discoveryResults = CfeResultsService.get(discoveryId);
+        }
+        else {
+            try {
+                if (discoveryId == null) {
+                    result = INPUT;
+                    throw new Exception("No data ID specified for validation cohort specification.");
+                }
+                
+                ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+                this.discoveryResults = CfeResultsService.get(discoveryId);
             
-            this.discoveryPhene      = discoveryResults.getPhene();
-            this.discoveryLowCutoff  = discoveryResults.getLowCutoff();
-            this.discoveryHighCutoff = discoveryResults.getHighCutoff();
+                this.discoveryPhene      = discoveryResults.getPhene();
+                this.discoveryLowCutoff  = discoveryResults.getLowCutoff();
+                this.discoveryHighCutoff = discoveryResults.getHighCutoff();
             
-            XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
+                XSSFWorkbook workbook = discoveryResults.getResultsSpreadsheet();
             
-            // Get the discovery database phene table name
-            XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
-            DataTable cohortInfo = new DataTable("attribute");
-            cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
-            ArrayList<String> row = cohortInfo.getRow("Phene Table");
-            if (row == null) {
-                throw new Exception("Unable to find Phene Table row in sheet \""
-                        + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                if (workbook == null) {
+                    result = INPUT;
+                    throw new Exception("Could not get results workbook for ID \"" + discoveryId + "\"'");
+                }
+                
+                // Get the discovery database phene table name
+                XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
+                if (discoveryCohortInfoSheet == null) {
+                    result = INPUT;
+                    throw new Exception("The data spreadsheet is missing sheet\"" + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                }
+                
+                DataTable cohortInfo = new DataTable("attribute");
+                cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
+                ArrayList<String> row = cohortInfo.getRow("Phene Table");
+                if (row == null) {
+                    throw new Exception("Unable to find Phene Table row in sheet \""
+                            + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                }
+                this.discoveryPheneTable = row.get(1);
+                if (this.discoveryPheneTable == null || this.discoveryPheneTable.isEmpty()) {
+                    throw new Exception("Could not get phene table information from workbook sheet \""
+                            + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
+                }       
+
+                XSSFSheet cohortDataSheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                CohortDataTable cohortData = new CohortDataTable(this.discoveryPheneTable);
+                cohortData.initializeToWorkbookSheet(cohortDataSheet);
+                cohortData.setKey("Subject Identifiers.PheneVisit");
+
+                phenes = new ArrayList<String>();
+                phenes.add("");
+                phenes.addAll(cohortData.getPheneList());
+
+                pheneMap = cohortData.getPheneMap();
             }
-            this.discoveryPheneTable = row.get(1);
-            if (this.discoveryPheneTable == null || this.discoveryPheneTable.isEmpty()) {
-                throw new Exception("Could not get phene table information from workbook sheet \""
-                        + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
-            }       
-            
-            XSSFSheet cohortDataSheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
-            CohortDataTable cohortData = new CohortDataTable(this.discoveryPheneTable);
-            cohortData.initializeToWorkbookSheet(cohortDataSheet);
-            cohortData.setKey("Subject Identifiers.PheneVisit");
-            
-            phenes = new ArrayList<String>();
-            phenes.add("");
-            phenes.addAll(cohortData.getPheneList());
-            
-            pheneMap = cohortData.getPheneMap();
+            catch (Exception exception) {
+                if (result == SUCCESS) {
+                    result = ERROR;
+                }
+                String message = "Validation cohort creation error: " + exception.getLocalizedMessage();
+                this.setErrorMessage(message);
+                log.severe(message);
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
+            }  
         }
         return result;
     }
@@ -392,7 +420,10 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 }
                 else if (discoveryResults.getResultsType().equals(CfeResultsType.PRIORITIZATION_SCORES)) {
                     cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT);
-                    cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, discoveryResults.getDiscoveryRScriptLog());
+                    String logContent = discoveryResults.getDiscoveryRScriptLog();
+                    if (logContent != null) {
+                        cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, discoveryResults.getDiscoveryRScriptLog());
+                    }
                 }
 
                 cfeResults.setResultsSpreadsheet(resultsWorkbook);
@@ -431,9 +462,11 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
             }
             catch (Exception exception) {
                 result = ERROR;
-                String message = "Clinical and testing cohort creation error: " + exception.getLocalizedMessage();
+                String message = "Validation cohort creation error: " + exception.getLocalizedMessage();
                 this.setErrorMessage(message);
                 log.severe(message);
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
             }  
         }
         
@@ -632,19 +665,19 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
         this.discoveryPheneTable = discoveryPheneTable;
     }
 
-    public Integer getDiscoveryLowCutoff() {
+    public Double getDiscoveryLowCutoff() {
         return discoveryLowCutoff;
     }
 
-    public void setDiscoveryLowCutoff(Integer discoveryLowCutoff) {
+    public void setDiscoveryLowCutoff(Double discoveryLowCutoff) {
         this.discoveryLowCutoff = discoveryLowCutoff;
     }
 
-    public Integer getDiscoveryHighCutoff() {
+    public Double getDiscoveryHighCutoff() {
         return discoveryHighCutoff;
     }
 
-    public void setDiscoveryHighCutoff(Integer discoveryHighCutoff) {
+    public void setDiscoveryHighCutoff(Double discoveryHighCutoff) {
         this.discoveryHighCutoff = discoveryHighCutoff;
     }
     

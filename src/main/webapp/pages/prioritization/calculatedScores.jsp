@@ -119,13 +119,14 @@ New Results: <br />
 --%>
 
 
-<p>
-<s:a action="ValidationCohortSpecification" title="Validation Cohort Creation" class="linkButton" style="margin-left: 2em;">
-    <s:param name="discoveryId" value="cfeResultsId" />
-    Validation Cohort Creation
-</s:a>
-</p>
-
+<s:if test="discoveryId != null">
+    <p>
+    <s:a action="ValidationCohortSpecification" title="Validation Cohort Creation" class="linkButton" style="margin-left: 2em;">
+        <s:param name="discoveryId" value="cfeResultsId" />
+        Validation Cohort Creation
+    </s:a>
+    </p>
+</s:if>
 
 <table class="dataTable">
 <tr>

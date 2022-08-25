@@ -411,14 +411,19 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }
-        else if (discoveryId == null && discoveryCohortFile != null) {
-            this.setErrorMessage("No discovery cohort selected.");
+        else if (discoveryId == null && discoveryCohortFile == null) {
+            this.setErrorMessage("No discovery cohort specified.");
             result = ERROR;
         }
         else {
             try {
                 CfeResults discoveryCohortFileResults = null;
+                
+                //--------------------------------------------------------------------------------------
+                // If a discovery cohort file was uploaded (as opposed to selecting saved results)
+                //--------------------------------------------------------------------------------------
                 if (this.discoveryCohortFile != null) {
+                    log.info("DISCOVERY COHORT FILE UPLOADED.");
                     FileInputStream input = new FileInputStream(discoveryCohortFile);
                     XSSFWorkbook discoveryCohortWorkbook = new XSSFWorkbook(input);
                     
@@ -477,6 +482,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                             lowCutoff,
                             highCutoff
                     );
+                    discoveryCohortFileResults.setUploaded(true); // Set uploaded flag
                     CfeResultsService.save(discoveryCohortFileResults);
                     this.discoveryId = discoveryCohortFileResults.getCfeResultsId();
                 }
@@ -486,12 +492,20 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 CfeResults results = null;
                 if (discoveryCohortFileResults != null) {
                     results = discoveryCohortFileResults;
+                    log.info("Using an uploaded discovery cohort file.");
                 }
                 else {
+                    log.info("Getting discovery cohort results from the database with ID: " + this.discoveryId + ".");
                     results = CfeResultsService.get(this.discoveryId);
                 }
                 
                 XSSFWorkbook workbook = results.getResultsSpreadsheet();
+            
+                if (workbook == null) {
+                    String message = "The selected discovery cohort does not contain a spreadsheet.";
+                    log.severe(message);
+                    throw new Exception(message);
+                }
                 
                 // Use these to get files
                 // results.getFileAsDataTable(CfeResultsFileType.DISCOVERY_COHORT_INFO);
@@ -514,7 +528,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
                 
                 if (discoveryCohortInfoSheet == null) {
-                    String message = "Could not find sheet \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".";
+                    String message = "The discovery cohort workbook is missing sheet \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".";
                     log.severe(message);
                     throw new Exception(message);    
                 }
@@ -584,6 +598,11 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 // Get diagnosis codes
                 // OLD CODE:
                 XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                if (sheet == null) {
+                    String message = "Could not find sheet \"" + CfeResultsSheets.COHORT_DATA + "\" in spreadsheet.";
+                    log.severe(message);
+                    throw new Exception(message);
+                }
                 DataTable diagnosisData = new DataTable("DxCode");
                 diagnosisData.initializeToWorkbookSheet(sheet);
                 

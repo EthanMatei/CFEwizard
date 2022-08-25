@@ -34,7 +34,7 @@ public class CfeResultsAction extends BaseAction implements SessionAware {
 
 	private File[] files;
 
-    private List<CfeResults> discoveryResults;
+    private List<CfeResults> cfeResults;
     
 	public String execute() throws Exception {
 		String result = SUCCESS;
@@ -44,7 +44,7 @@ public class CfeResultsAction extends BaseAction implements SessionAware {
 		}
 		else {
 		    try {
-		        this.discoveryResults = CfeResultsService.getAllMetadata();
+		        this.cfeResults = CfeResultsService.getAllMetadata();
 		        
 		        this.tempDir = System.getProperty("java.io.tmpdir");
 		        
@@ -109,12 +109,12 @@ public class CfeResultsAction extends BaseAction implements SessionAware {
         this.files = files;
     }
 
-    public List<CfeResults> getDiscoveryResults() {
-        return discoveryResults;
+    public List<CfeResults> getCfeResults() {
+        return cfeResults;
     }
 
-    public void setDiscoveryResults(List<CfeResults> discoveryResults) {
-        this.discoveryResults = discoveryResults;
+    public void setCfeResults(List<CfeResults> cfeResults) {
+        this.cfeResults = cfeResults;
     }
 
 }

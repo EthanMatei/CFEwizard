@@ -501,6 +501,273 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
 		return result;
 	}
+
+	/**
+     * Calculates the testing results using uploaded data (predictor list and master sheet).
+     * This allows manually created or modified master sheets and predictor lsits to be used.
+     * 
+     * @return the status of this action.
+     * 
+     * @throws Exception
+     */
+    public String calculateTestingScoresWithUploadedData() throws Exception {
+        String result = SUCCESS;
+        
+        log.info("Testing scoring phase started");
+        
+        if (!Authorization.isAdmin(webSession)) {
+            result = LOGIN;
+        }
+        else if (testingDataId == null) {
+            this.setErrorMessage("No testing data selected.");
+            result = INPUT;
+        }
+        else if (testingMasterSheetFile == null || testingMasterSheetFile.trim().isEmpty()) {
+            this.setErrorMessage("No master sheet found.");
+            result = INPUT;
+        }
+        else {
+
+            try {                
+                log.info("Starting testing scoring");
+
+                // Process special predictor list, if any
+                this.specialPredictorListTempFile = "";
+                if (this.specialPredictorListCsvFileName != null && this.specialPredictorListCsvFileName != "") {
+                    File tempFile = FileUtil.createTempFile("testing-special-predictor-list-", ".csv");
+                    FileUtils.copyFile(this.getSpecialPredictorListCsv(), tempFile);
+                    this.specialPredictorListTempFile = tempFile.getAbsolutePath();
+                }
+                
+                DataTable masterSheet = new DataTable("Subject Identifiers.PheneVisit");
+                masterSheet.initializeToCsv(testingMasterSheetFile);
+                
+                int startIndex = masterSheet.getColumnIndex(START_OF_PHENES_MARKER);
+                int endIndex   = masterSheet.getColumnIndex(END_OF_PHENES_MARKER);
+                
+                // Delete unneeded phene columns
+                for (int i = endIndex; i >= startIndex; i--) {
+                    if (predictionPhene != null && !predictionPhene.isEmpty()
+                            && predictionPhene.equals(masterSheet.getColumnName(i))) {
+                        ; // keep this column
+                    }
+                    else {
+                        masterSheet.deleteColumn(i);
+                    }
+                }
+                log.info("Uneeded phene columns deleted.");
+                
+                boolean convertDatesToTimestamps = false;
+                String csv = masterSheet.toCsv(convertDatesToTimestamps);
+                File tempFile = FileUtil.createTempFile("final-master-sheet-", ".csv");
+                FileUtils.write(tempFile,  csv, "UTF-8");
+                this.finalMasterSheetFile = tempFile.getAbsolutePath();
+                log.info("Final master sheet file created: " + this.finalMasterSheetFile);
+                
+                testingData = CfeResultsService.get(testingDataId);
+                if (testingData == null) {
+                    throw new Exception("Unable to retrieve testing data for ID " + testingDataId + ".");
+                }
+     
+                DataTable cohortData = testingData.getSheetAsDataTable(CfeResultsSheets.COHORT_DATA, null);
+                if (cohortData == null) {
+                    throw new Exception("Unable to retrieve sheet \"" + CfeResultsSheets.COHORT_DATA + "\" from testing data.");
+                }
+                Set<String> diagnoses = cohortData.getUniqueValues("DxCode");
+                Set<String> genderDiagnoses = cohortData.getUniqueCombinedValues("Gender(M/F)", "DxCode", "-");
+                
+                // Map from sheet name to data table
+                LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
+                resultsTables = testingData.getDataTables();
+                
+
+                
+                String testType  = null;
+                String studyType = null;
+                
+                if (this.predictionPhene == null) {
+                    this.predictionPhene = "";
+                }
+                
+                if (this.predictionPheneHighCutoff == null) {
+                    this.predictionPheneHighCutoff = 0.0;
+                }
+                
+                //-------------------------------------------------------
+                // Make specified calculations
+                //-------------------------------------------------------
+                if (this.stateCrossSectional) {
+                    log.info("Testing state cross-sectional");
+                    testType  = STATE;
+                    studyType = CROSS_SECTIONAL;
+
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
+                            this.predictionPhene,
+                            (this.predictionPheneHighCutoff - this.comparisonThreshold),
+                            diagnoses,
+                            genderDiagnoses,
+                            this.finalMasterSheetFile,
+                            this.predictorListFile,
+                            this.specialPredictorListTempFile
+                    );
+
+                    tempFile = FileUtil.createTempFile("state-cross-sectional-r-log-",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileStateCrossSectional = tempFile.getAbsolutePath();
+                    
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_STATE_CROSS_SECTIONAL, dataTable);
+                }
+                
+                if (this.stateLongitudinal) {
+                    log.info("Testing state longitudinal");
+                    testType  = STATE;
+                    studyType = LONGITUDINAL;
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("state-longitduinal-r-log-",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileStateLongitudinal = tempFile.getAbsolutePath();
+                    
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_STATE_LONGITUDINAL, dataTable);
+                }
+                
+                if (this.firstYearCrossSectional) {
+                    log.info("Testing first year cross-sectional");
+                    testType  = FIRST_YEAR;
+                    studyType = CROSS_SECTIONAL;
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("first-year-cross-sectional-r-log-",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileFirstYearCrossSectional = tempFile.getAbsolutePath();
+                                        
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_FIRST_YEAR_CROSS_SECTIONAL, dataTable);
+                }
+                
+                if (this.firstYearLongitudinal) {
+                    log.info("Testing first year longitudinal");
+                    testType  = FIRST_YEAR;
+                    studyType = LONGITUDINAL;
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("first-year-longitudinal-r-log-",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileFirstYearLongitudinal = tempFile.getAbsolutePath();                    
+                    
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_FIRST_YEAR_LONGITUDINAL, dataTable);
+                }
+                
+                if (this.futureCrossSectional) {
+                    log.info("Testing future cross-sectional");
+                    testType  = FUTURE;
+                    studyType = CROSS_SECTIONAL;
+
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("future-cross-sectional-r-log-",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileFutureCrossSectional = tempFile.getAbsolutePath();
+                                        
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_FUTURE_CROSS_SECTIONAL, dataTable);
+                }
+                
+                if (this.futuretLongitudinal) {
+                    log.info("Testing future longitudinal");
+                    testType  = FUTURE;
+                    studyType = LONGITUDINAL;
+                    String rScriptOutput = this.runScript(
+                            testType, studyType,
+                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            diagnoses, genderDiagnoses,
+                            this.finalMasterSheetFile,
+                            this.predictorListFile, this.specialPredictorListTempFile
+                    );
+                    
+                    tempFile = FileUtil.createTempFile("future-longitudinal-r-log-",  ".txt");
+                    FileUtils.write(tempFile, rScriptOutput, "UTF-8");
+                    this.rScriptOutputFileFutureLongitudinal = tempFile.getAbsolutePath();                    
+                    
+                    DataTable dataTable = this.getRScriptOutputFile(rScriptOutput);
+                    resultsTables.put(CfeResultsSheets.TESTING_FUTURE_LONGITUDINAL, dataTable);
+                }
+                
+                // Set generate time
+                this.scoresGeneratedTime = new Date();
+                
+                // Add testing scores info table
+                DataTable testingScoresInfo = this.createTestingScoresInfoTable();
+                resultsTables.put(CfeResultsSheets.TESTING_SCORES_INFO, testingScoresInfo);
+                
+                XSSFWorkbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
+                log.info("Testing results workbook created.");
+                
+                // Save the results in the database
+                CfeResults cfeResults = new CfeResults(
+                        resultsWorkbook,
+                        CfeResultsType.TESTING_SCORES,
+                        this.scoresGeneratedTime, testingData.getPhene(),
+                        testingData.getLowCutoff(), testingData.getHighCutoff()
+                );
+                log.info("cfeResults object created.");
+                log.info("CFE RESULTS: \n" + cfeResults.asString());
+                
+                cfeResults.setDiscoveryRScriptLog(testingData.getDiscoveryRScriptLog());
+                log.info("Added discovery R script log text to cfeResults.");
+                
+                CfeResultsService.save(cfeResults);
+                log.info("cfeResults object saved.");
+                
+                this.cfeResultsId = cfeResults.getCfeResultsId();
+                if (this.cfeResultsId < 1) {
+                    throw new Exception("Testing scoring results id is not >= 1: " + cfeResultsId);
+                }
+
+            }
+            catch (Exception exception) {
+                result = ERROR;
+                if (exception != null) {
+                    this.setErrorMessage("Testing scoring failed: " + exception.getLocalizedMessage());
+                    String stackTrace = ExceptionUtils.getStackTrace(exception);
+                    log.severe("Testing error: " + exception.getLocalizedMessage());
+                    log.severe(stackTrace);
+                    this.setExceptionStack(stackTrace);
+                }
+            }
+        }
+
+        return result;
+    }
+    
 	
     public String createTestingMasterSheet(Long testingDataId, DataTable predictorList, File geneExpressionCsvFile)
             throws Exception

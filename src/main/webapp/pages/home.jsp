@@ -78,6 +78,7 @@
     <ul>
         <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>
         <li> <s:a action="SystemStatusAction">System Status</s:a></li>
+        <li> <s:a action="TestAction">Test Page</s:a></li>
     </ul>
 </s:if>
 

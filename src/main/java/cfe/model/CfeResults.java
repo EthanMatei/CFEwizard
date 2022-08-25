@@ -34,6 +34,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.annotations.Type;
 
 import cfe.action.DiscoveryAction;
 import cfe.utils.DataTable;
@@ -65,6 +66,9 @@ public class CfeResults implements Serializable {
 	private Double lowCutoff;
 	private Double highCutoff;
 	
+	private boolean uploaded; // Indicates if the results have been uploaded (vs. generated), which means they may
+	                          // have been manually modified.
+	
     @OneToMany(fetch=FetchType.EAGER, targetEntity=CfeResultsFile.class, mappedBy="cfeResults", cascade=CascadeType.ALL)
 	private Set<CfeResultsFile> cfeResultsFile;
 	
@@ -72,6 +76,7 @@ public class CfeResults implements Serializable {
 		this.cfeResultsId = null;
 		
 		this.cfeResultsFile = new HashSet<CfeResultsFile>(0);
+		this.uploaded = false;
 	}
 
 	/**
@@ -97,6 +102,8 @@ public class CfeResults implements Serializable {
         
         this.results = null;
         
+        this.uploaded = false;
+        
         this.cfeResultsFile = new HashSet<CfeResultsFile>(0);
     }
 
@@ -116,10 +123,11 @@ public class CfeResults implements Serializable {
         
         this.resultsType = resultsType;
         
-        this.generatedTime      = generatedTime;
-        this.phene              = phene;
-        this.lowCutoff          = lowCutoff;
-        this.highCutoff         = highCutoff;
+        this.generatedTime = generatedTime;
+        this.phene         = phene;
+        this.lowCutoff     = lowCutoff;
+        this.highCutoff    = highCutoff;
+        this.uploaded      = false;
         
         this.cfeResultsFile = new HashSet<CfeResultsFile>(0);
     }
@@ -359,7 +367,17 @@ public class CfeResults implements Serializable {
     public void setCfeResultsFile(Set<CfeResultsFile> cfeResultsFile) {
         this.cfeResultsFile = cfeResultsFile;
     }
-    
+
+    //@Column(nullable=false)
+    //@Type(type = "org.hibernate.type.NumbericBooleanType")
+    public boolean isUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(boolean uploaded) {
+        this.uploaded = uploaded;
+    }
+
     @Transient Map<String, CfeResultsFile> getCfeResultsFileMap() {
         Map<String, CfeResultsFile> map = new HashMap<String, CfeResultsFile>();
         

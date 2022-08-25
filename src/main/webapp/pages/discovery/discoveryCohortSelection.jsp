@@ -26,20 +26,23 @@
     </div>
 </s:if>
 
+<%--
 <p style="font-weight: bold;">
-Select a Discovery Cohort:
+Specify a Discovery Cohort:
 </p>
 
-<s:form action="DiscoveryScoringSpecification" theme="simple">
+<hr/>
+--%>
 
-<p>
-WORK IN PROGRESS...
-</p>
-<s:file name="discoveryCohortFile"/>
-<s:submit value="Upload Discovery Cohort" style="margin-top: 17px; margin-bottom: 24px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
-
-<s:token/>
+<%-- THIS IS NOT WORKING - it works, but the flag to mark the results as "uploaded" is not working
+<s:form action="DiscoveryScoringSpecification" theme="simple" method="post" enctype="multipart/form-data">
+    <s:submit value="Upload Discovery Cohort" style="margin-top: 12px; margin-bottom: 12px; padding-left:2em; padding-right: 2em; font-weight: bold;"/>
+    <s:file name="discoveryCohortFile" style="margin-left: 1em;"/>
+    <s:token/>
 </s:form>
+
+<hr/>
+--%>
 
 <s:form action="DiscoveryScoringSpecification" theme="simple">
 
@@ -49,7 +52,7 @@ WORK IN PROGRESS...
 <s:hidden name="pheneTable" />
 <s:hidden name="genomicsTable" />
 
-<s:submit value="Select Discovery Cohort" style="margin-top: 17px; margin-bottom: 24px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+<s:submit value="Select Discovery Cohort" style="margin-top: 12px; margin-bottom: 12px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
     
 <table class="dataTable">
     <tr> 
@@ -82,6 +85,10 @@ WORK IN PROGRESS...
     </s:iterator>
 
 </table>
+
+<p>
+&nbsp;
+</p>
 
 <s:token/>
 </s:form>

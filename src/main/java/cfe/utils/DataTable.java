@@ -150,13 +150,14 @@ public class DataTable {
             
             for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
                 Cell cell = row.getCell(cellIndex);
-                CellType cellType = cell.getCellType();
+                //CellType cellType = cell.getCellType();
                 String value = "";
 
-                DataFormatter formatter = new DataFormatter();
-                String stringValue = formatter.formatCellValue(cell);
-                
-                value = stringValue;
+                if (cell != null) {
+                    DataFormatter formatter = new DataFormatter();
+                    String stringValue = formatter.formatCellValue(cell);
+                    value = stringValue;
+                }
                 
                 /*
                 if (cellType == CellType.BOOLEAN) {
@@ -193,13 +194,14 @@ public class DataTable {
             
             for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
                 Cell cell = row.getCell(cellIndex);
-                CellType cellType = cell.getCellType();
+                //CellType cellType = cell.getCellType();
                 String value = "";
 
-                DataFormatter formatter = new DataFormatter();
-                String stringValue = formatter.formatCellValue(cell);
-                
-                value = stringValue;
+                if (cell != null) {
+                    DataFormatter formatter = new DataFormatter();
+                    String stringValue = formatter.formatCellValue(cell);
+                    value = stringValue;
+                }
                 
                 dataRow.add(value);
             }    

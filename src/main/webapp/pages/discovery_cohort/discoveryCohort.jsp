@@ -28,7 +28,6 @@
   <tr>
     <td>
     
-      <%-- OLD APPROACH:
       <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
         <s:param name="cfeResultsId" value="cfeResultsId" />
           <div>
@@ -39,8 +38,9 @@
             discovery-cohort.xlsx
           </div>
       </s:a>
-      --%>
-      
+
+
+        <%-- NEW APPROACH:      
 		<s:a action="CfeResultsFilesXlsxDisplay" title="CFE Results">
 		  <s:param name="cfeResultsId" value="cfeResultsId" />
 		    <div>
@@ -50,7 +50,9 @@
 		           alt="Report" /> <br />
 		      discovery-cohort.xlsx
 		    </div>
-		</s:a>      
+		</s:a>
+		--%>
+		
     </td>
     
     <td>

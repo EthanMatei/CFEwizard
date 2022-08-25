@@ -140,7 +140,8 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-		
+
+       <!-- ======================================== -->		
 
 		<action name="DiscoveryCohortSelection" class="cfe.action.DiscoveryAction" method="cohortSelection">
 		    <interceptor-ref name="basicStack"/>
@@ -153,7 +154,7 @@
 		</action>
 
 		<action name="DiscoveryScoringSpecification" class="cfe.action.DiscoveryAction" method="discoveryScoringSpecification">
-		    <interceptor-ref name="basicStack"/>
+		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/discovery/discoveryScoringSpecification.jsp</result>
 			<result name="error" type="redirectAction">
 			    <param name="actionName">DiscoveryCohortSelection</param>	
@@ -796,7 +797,27 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
+
+		<!-- Admin Test Page -->
+		<action name="TestAction" class="cfe.action.TestAction" method="initialize">
+			<interceptor-ref name="basicStack"/>
+            <result name="success">pages/test.jsp</result>
+            <result name="error">pages/error.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
 		
+		<!-- Admin Test Page -->
+		<action name="TestProcessAction" class="cfe.action.TestAction" method="process">
+			<interceptor-ref name="basicStack"/>
+            <result name="success">pages/testResults.jsp</result>
+            <result name="error">pages/error.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+						
 	    <!-- Error Action -->
 		<action name="ErrorAction" class="cfe.action.ErrorAction">
 			<interceptor-ref name="basicStack"/>

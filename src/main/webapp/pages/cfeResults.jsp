@@ -18,12 +18,13 @@
         <th>ID</th>
         <th>Results</th> <th>Results Type</th> <th>Details</th>
         <th>Time Generated</th>
+        <%--<th>Uploaded</th>--%>
         <th>Discovery Phene</th> <th>Discovery Phene<br/>Low Cutoff</th> <th>Discovery Phene<br/>High Cutoff</th>
         <s:if test="#session.username==adminUser">
             <th>Delete</th>
         </s:if>
     </tr>
-    <s:iterator value="discoveryResults" var="result">
+    <s:iterator value="cfeResults" var="result">
         <tr>
             <td> <s:property value="cfeResultsId"/> </td>
             <td>
@@ -40,6 +41,16 @@
                  </s:a>
             </td>
             <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
+            <%--
+            <td>
+                <s:if test="uploaded == true">
+                    yes
+                </s:if>
+                <s:else>
+                    &nbsp;
+                </s:else>
+            </td>
+            --%>
             <td> <s:property value="phene"/> </td>
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
             <td style="text-align: right;"> <s:property value="highCutoff"/> </td>

@@ -66,6 +66,10 @@
     <li> <s:a action="TestingDataSelection">Testing Scoring</s:a></li>
 </ol>
 
+<h2>Automatic Processing</h2>
+<ul>
+    <li><s:a action="BatchInitialization">Automatic CFE Calculation</s:a></li>
+</ul>
 
 <h2>Results</h2>
 <ul>

@@ -18,16 +18,19 @@ public class PercentileScore {
         percentileScore.score      = 1.0;
         percentileScores.add(percentileScore);
         
+        percentileScore = new PercentileScore();
         percentileScore.lowerBound = 0.333333;
         percentileScore.upperBound = 0.50;
         percentileScore.score      = 2.0;
         percentileScores.add(percentileScore);  
         
+        percentileScore = new PercentileScore();
         percentileScore.lowerBound = 0.50;
         percentileScore.upperBound = 0.80;
         percentileScore.score      = 3.0;
         percentileScores.add(percentileScore);  
         
+        percentileScore = new PercentileScore();
         percentileScore.lowerBound = 0.80;
         percentileScore.upperBound = 1.00;
         percentileScore.score      = 4.0;

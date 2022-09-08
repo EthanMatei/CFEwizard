@@ -12,7 +12,7 @@
 
 <h2>Test Results</h2>
 
-<s:form action="TestProcess" theme="simple" method="post">
+<%--
 <table class="dataTable">
     <s:iterator value="data" var="datum" status="status">
         <tr>
@@ -26,7 +26,36 @@
     </s:iterator>
 </table>
 
-</s:form>
+<hr/>
+--%>
+
+<p>Table:</p>
+<table class="dataTable">
+    <tr>
+        <th>Lower Bound</th>
+        <th>Upper Bound</th>
+        <th>Score</th>
+    </tr>
+    <s:iterator value="percentileScores.lowerBounds" var="lowerBound" status="status">
+        <s:if test="#status.last == true">
+        </s:if>
+        <tr>
+            <%--
+            <td> <s:property value="#status.index"/> </td>
+            <td> <s:property value="%{#status.index}"/>
+            --%>
+            <td>
+                <s:property value="lowerBound"/>
+            </td>
+            <td>
+                <s:property value="percentileScores.upperBounds[#status.index]"/>
+            </td>
+            <td>
+                <s:property value="percentileScores.scores[#status.index]"/>
+            </td>
+        </tr>
+    </s:iterator>
+</table>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

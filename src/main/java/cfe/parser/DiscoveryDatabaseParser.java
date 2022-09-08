@@ -194,6 +194,57 @@ public class DiscoveryDatabaseParser extends AccessDatabaseParser {
 		return phenes;
 	}
 	
+	   
+    public String getCommaSeparatedPheneList() throws Exception {
+        Set<String> pheneTables = new TreeSet<String>();
+        String pheneList = "";
+        
+        pheneTables = this.database.getTableNames();
+        boolean isFirst = true;
+        for (String pheneTable: pheneTables) {
+            if (isFirst) {
+                isFirst = false;    
+            }
+            else {
+                pheneList += ", ";
+            }
+            
+            Table table = this.database.getTable(pheneTable);
+            ArrayList<String> pheneNames = new ArrayList<String>();
+            for (Column col: table.getColumns()) {
+                String colName = col.getName().trim();
+                DataType colDataType = col.getType();
+                if (!colName.isEmpty() && !colName.equalsIgnoreCase("PheneVisit")) {
+                    pheneList += "\"" + pheneTable + " " + colName + "\"";
+                }
+            };
+        }
+        
+        return pheneList;
+    }
+    
+    public List<String> getPheneList() throws Exception {
+        Set<String> pheneTables = new TreeSet<String>();
+        List<String> pheneList = new ArrayList<String>();
+        
+        pheneTables = this.database.getTableNames();
+        for (String pheneTable: pheneTables) {
+
+            Table table = this.database.getTable(pheneTable);
+            ArrayList<String> pheneNames = new ArrayList<String>();
+            for (Column col: table.getColumns()) {
+                String colName = col.getName().trim();
+                DataType colDataType = col.getType();
+                if (!colName.isEmpty() && !colName.equalsIgnoreCase("PheneVisit")) {
+                    pheneList.add("[" + pheneTable + "] " + colName);
+                }
+            };
+        }
+        
+        return pheneList;
+    }
+    
+    
 	public Map<String,ArrayList<ColumnInfo>> getTableColumnMap() throws Exception {
 	    
 		Set<String> tableNames = new TreeSet<String>();

@@ -8,6 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
+import cfe.model.PercentileScore;
+import cfe.model.PercentileScores;
 import cfe.utils.Authorization;
 
 /**
@@ -25,6 +27,10 @@ public class TestAction extends BaseAction implements SessionAware {
 	
 	private List<Double> data;
 	
+	private PercentileScores percentileScores;
+	
+	private List<PercentileScore> perScores;
+	
 	@Override
 	public void setSession(Map<String, Object> session) {
 		this.session = session;
@@ -39,6 +45,9 @@ public class TestAction extends BaseAction implements SessionAware {
             data = new ArrayList<Double>();
             data.add(0.33);
             data.add(0.50);
+            
+            this.percentileScores = new PercentileScores();
+            this.perScores = PercentileScore.getDefaultPercentileScores();
         }
         return result;
     }
@@ -58,7 +67,21 @@ public class TestAction extends BaseAction implements SessionAware {
     public void setData(List<Double> data) {
         this.data = data;
     }
-	
-	
+
+    public PercentileScores getPercentileScores() {
+        return percentileScores;
+    }
+
+    public void setPercentileScores(PercentileScores percentileScores) {
+        this.percentileScores = percentileScores;
+    }
+
+    public List<PercentileScore> getPerScores() {
+        return perScores;
+    }
+
+    public void setPerScores(List<PercentileScore> perScores) {
+        this.perScores = perScores;
+    }
 
 }

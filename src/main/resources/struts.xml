@@ -651,8 +651,50 @@
             </result>
 		</action>
 
-						        
         <!-- ==================================================================================== -->
+         
+        <!-- =================== -->
+        <!-- Batch Processing    -->
+        <!-- =================== -->
+		
+		<action name="BatchInitialization" class="cfe.action.BatchAction" method="initialize">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/batch/dataUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/batch/dataUpload.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<!--  Upload data and process it -->
+		<action name="BatchDataUpload" class="cfe.action.BatchAction" method="uploadData">
+		    <interceptor-ref name="fileUploadStack"/>
+	        <result name="success">pages/batch/dataInput.jsp</result>
+			<result name="error">pages/batch/dataInput.jsp</result>
+			<result name="input">pages/batch/dataInput.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>  
+		
+				
+		<!--  Calculate -->
+		<action name="BatchCalculate" class="cfe.action.BatchAction" method="calculate">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/batch/batchResult.jsp</result>
+			<result name="error">pages/batch/batchResult.jsp</result>
+			<result name="input">pages/batch/batchResult.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>  
+		                        						        
+        <!-- ==================================================================================== -->
+        
+        <!-- =================== -->
+        <!-- CFE Results Display -->
+        <!-- =================== -->
                         
         <!-- CFE Results -->
 		<action name="CfeResults" class="cfe.action.CfeResultsAction">

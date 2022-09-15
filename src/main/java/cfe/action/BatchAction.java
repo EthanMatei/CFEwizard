@@ -8,10 +8,18 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.interceptor.SessionAware;
 
+import com.healthmarketscience.jackcess.Table;
+
+import cfe.calc.DiscoveryCalc;
+import cfe.model.CfeResults;
+import cfe.model.PercentileScores;
 import cfe.parser.DiscoveryDatabaseParser;
+import cfe.parser.ProbesetMappingParser;
 import cfe.utils.Authorization;
+import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
 
 public class BatchAction extends BaseAction implements SessionAware {
@@ -31,17 +39,34 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String probesetToGeneMappingDbContentType;
     private String probesetToGeneMappingDbFileName;
     private String probesetToGeneMappingDbTempFileName;
+    private DataTable probesetToGeneMapTable;
+    private Map<String,String> probesetToGeneMap;
+    
+    private File discoveryGeneExpressionCsv;
+    private String discoveryGeneExpressionCsvContentType;
+    private String discoveryGeneExpressionCsvFileName;
     
     private String discoveryPhene;
+    private String discoveryPheneInfo;
+    private String discoveryPheneTable;
     private double discoveryPheneLowCutoff;
     private double discoveryPheneHighCutoff;
     List<String> discoveryPheneList;
     
     private Set<String> genomicsTables;
-    private String geneomicsTable;
+    private String genomicsTable;
+    
+    Long discoveryCohortResultsId;
+    Long discoveryScoresResultsId;
 
+    private String diagnosisCode;
     private Map<String,String> diagnosisCodes;
     private List<String> diagnosisCodesList;
+    
+    private PercentileScores discoveryPercentileScores;
+    
+    private boolean debugDiscoveryScoring = false;
+
     
     public void setSession(Map<String, Object> session) {
 	    this.webSession = session;    
@@ -71,18 +96,11 @@ public class BatchAction extends BaseAction implements SessionAware {
 		            + "\" does not have MS Access database file extension \".accdb\".");
 		    result = ERROR;
 		}
-	    else if (this.probesetToGeneMappingDb == null || this.probesetToGeneMappingDbFileName == null) {
-	        this.setErrorMessage("No probeset to gene mapping database was specified.");
-	        result = ERROR;
-	    }
-	    else if (!this.probesetToGeneMappingDbFileName.endsWith(".accdb")) {
-	        this.setErrorMessage("Probeset to gene mapping database file \"" + probesetToGeneMappingDbFileName
-	                + "\" does not have MS Access database file extension \".accdb\".");
-	        result = ERROR;
-	    }
 		else {
 		    try {
 		        log.info("Testing database \"" + this.testingDbFileName + "\" uploaded.");
+		        
+	            this.discoveryPercentileScores = new PercentileScores();
 		        
 			    // Copy the upload files to temporary files, because the upload files get deleted
 			    // and they are needed beyond this method
@@ -93,12 +111,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 			    this.testingDbTempFileName = testingDbTmp.getAbsolutePath();
 			    this.testingDbFileName = testingDb.getAbsolutePath();
 
-	            // Probeset to gene database mapping
-                File probesetToGeneMappingDbTmp = FileUtil.createTempFile("probest-to-gene-mapping-db-", ".accdb");
-                FileUtils.copyFile(this.probesetToGeneMappingDb, probesetToGeneMappingDbTmp);
-                this.probesetToGeneMappingDbTempFileName = probesetToGeneMappingDbTmp.getAbsolutePath();
-                this.probesetToGeneMappingDbFileName = probesetToGeneMappingDb.getAbsolutePath();
-                
+
                 // Process testing database
 			    DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDbTempFileName);
 			    dbParser.checkCoreTables();
@@ -111,7 +124,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 			    this.diagnosisCodesList.addAll(diagnosisCodes.keySet());
 			    
 		    } catch (Exception exception) {
-		        this.setErrorMessage("The Discovery database could not be processed. " + exception.getLocalizedMessage());
+		        this.setErrorMessage("The database could not be processed. " + exception.getLocalizedMessage());
 		        result = ERROR;
 		    }
 		}
@@ -120,6 +133,84 @@ public class BatchAction extends BaseAction implements SessionAware {
 	
     public String calculate() throws Exception {
         String result = SUCCESS;
+        
+        if (!Authorization.isAdmin(webSession)) {
+            result = LOGIN;
+        }
+        else if (this.probesetToGeneMappingDb == null || this.probesetToGeneMappingDbFileName == null) {
+            this.setErrorMessage("No probeset to gene mapping database was specified.");
+            result = ERROR;
+        }
+        else if (!this.probesetToGeneMappingDbFileName.endsWith(".accdb")) {
+            this.setErrorMessage("Probeset to gene mapping database file \"" + probesetToGeneMappingDbFileName
+                    + "\" does not have MS Access database file extension \".accdb\".");
+            result = ERROR;
+        }
+        else {
+            try { 
+                // Probeset to gene database mapping
+                File probesetToGeneMappingDbTmp = FileUtil.createTempFile("probest-to-gene-mapping-db-", ".accdb");
+                FileUtils.copyFile(this.probesetToGeneMappingDb, probesetToGeneMappingDbTmp);
+                this.probesetToGeneMappingDbTempFileName = probesetToGeneMappingDbTmp.getAbsolutePath();
+                this.probesetToGeneMappingDbFileName = probesetToGeneMappingDb.getAbsolutePath();
+
+                //------------------------------------------------------------
+                // Get the probeset to mapping information
+                //------------------------------------------------------------
+                String key = ProbesetMappingParser.PROBE_SET_ID_COLUMN;
+                DataTable probesetMapping = new DataTable(key);
+
+                ProbesetMappingParser probesetDbParser = new ProbesetMappingParser(this.probesetToGeneMappingDb.getAbsolutePath());
+                Table table = probesetDbParser.getMappingTable();
+                probesetMapping.initializeToAccessTable(table);
+                this.probesetToGeneMap = probesetMapping.getMap(key, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
+                
+                String[] pheneInfo = this.discoveryPheneInfo.split("]", 2);
+                this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
+                this.discoveryPhene = pheneInfo[1].trim();
+                
+                //-------------------------------------------
+                // Create Discovery Cohort
+                //-------------------------------------------
+                CfeResults discoveryCohort = DiscoveryCalc.createDiscoveryCohort(
+                        this.testingDbTempFileName,
+                        this.discoveryPheneTable,
+                        this.discoveryPhene,
+                        this.discoveryPheneLowCutoff,
+                        this.discoveryPheneHighCutoff,
+                        this.genomicsTable
+                );
+                this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
+                
+
+                String scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
+                String scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
+                
+                //--------------------------------------------
+                // Calculate Discovery Scores
+                //--------------------------------------------
+                CfeResults discoveryScores = DiscoveryCalc.calculateScores(
+                    discoveryCohortResultsId,
+                    discoveryGeneExpressionCsv,
+                    probesetToGeneMappingDbFileName,
+                    discoveryPheneTable,
+                    discoveryPhene,
+                    discoveryPheneLowCutoff,
+                    discoveryPheneHighCutoff,
+                    diagnosisCode,
+                    discoveryPercentileScores,
+                    scriptDir,
+                    scriptFile,
+                    debugDiscoveryScoring
+                );
+            }
+            catch (Exception exception) {
+                this.setErrorMessage("The input data could not be processed. " + exception.getLocalizedMessage());
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
+                result = ERROR;
+            }
+        }
         return result;
     }
 
@@ -187,12 +278,52 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.probesetToGeneMappingDbTempFileName = probesetToGeneMappingDbTempFileName;
     }
 
+    public File getDiscoveryGeneExpressionCsv() {
+        return discoveryGeneExpressionCsv;
+    }
+
+    public void setDiscoveryGeneExpressionCsv(File discoveryGeneExpressionCsv) {
+        this.discoveryGeneExpressionCsv = discoveryGeneExpressionCsv;
+    }
+
+    public String getDiscoveryGeneExpressionCsvContentType() {
+        return discoveryGeneExpressionCsvContentType;
+    }
+
+    public void setDiscoveryGeneExpressionCsvContentType(String discoveryGeneExpressionCsvContentType) {
+        this.discoveryGeneExpressionCsvContentType = discoveryGeneExpressionCsvContentType;
+    }
+
+    public String getDiscoveryGeneExpressionCsvFileName() {
+        return discoveryGeneExpressionCsvFileName;
+    }
+
+    public void setDiscoveryGeneExpressionCsvFileName(String discoveryGeneExpressionCsvFileName) {
+        this.discoveryGeneExpressionCsvFileName = discoveryGeneExpressionCsvFileName;
+    }
+
     public String getDiscoveryPhene() {
         return discoveryPhene;
     }
 
     public void setDiscoveryPhene(String discoveryPhene) {
         this.discoveryPhene = discoveryPhene;
+    }
+
+    public String getDiscoveryPheneInfo() {
+        return discoveryPheneInfo;
+    }
+
+    public void setDiscoveryPheneInfo(String discoveryPheneInfo) {
+        this.discoveryPheneInfo = discoveryPheneInfo;
+    }
+
+    public String getDiscoveryPheneTable() {
+        return discoveryPheneTable;
+    }
+
+    public void setDiscoveryPheneTable(String discoveryPheneTable) {
+        this.discoveryPheneTable = discoveryPheneTable;
     }
 
     public double getDiscoveryPheneLowCutoff() {
@@ -219,12 +350,12 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.discoveryPheneList = discoveryPheneList;
     }
 
-    public String getGeneomicsTable() {
-        return geneomicsTable;
+    public String getGenomicsTable() {
+        return genomicsTable;
     }
 
-    public void setGeneomicsTable(String geneomicsTable) {
-        this.geneomicsTable = geneomicsTable;
+    public void setGenomicsTable(String genomicsTable) {
+        this.genomicsTable = genomicsTable;
     }
 
     public Set<String> getGenomicsTables() {
@@ -233,6 +364,30 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setGenomicsTables(Set<String> genomicsTables) {
         this.genomicsTables = genomicsTables;
+    }
+
+    public Long getDiscoveryCohortResultsId() {
+        return discoveryCohortResultsId;
+    }
+
+    public void setDiscoveryCohortResultsId(Long discoveryCohortResultsId) {
+        this.discoveryCohortResultsId = discoveryCohortResultsId;
+    }
+
+    public Long getDiscoveryScoresResultsId() {
+        return discoveryScoresResultsId;
+    }
+
+    public void setDiscoveryScoresResultsId(Long discoveryScoresResultsId) {
+        this.discoveryScoresResultsId = discoveryScoresResultsId;
+    }
+
+    public String getDiagnosisCode() {
+        return diagnosisCode;
+    }
+
+    public void setDiagnosisCode(String diagnosisCode) {
+        this.diagnosisCode = diagnosisCode;
     }
 
     public Map<String, String> getDiagnosisCodes() {
@@ -249,6 +404,30 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setDiagnosisCodesList(List<String> diagnosisCodesList) {
         this.diagnosisCodesList = diagnosisCodesList;
+    }
+
+    public PercentileScores getDiscoveryPercentileScores() {
+        return discoveryPercentileScores;
+    }
+
+    public void setDiscoveryPercentileScores(PercentileScores discoveryPercentileScores) {
+        this.discoveryPercentileScores = discoveryPercentileScores;
+    }
+
+    public Map<String, String> getProbesetToGeneMap() {
+        return probesetToGeneMap;
+    }
+
+    public void setProbesetToGeneMap(Map<String, String> probesetToGeneMap) {
+        this.probesetToGeneMap = probesetToGeneMap;
+    }
+
+    public boolean isDebugDiscoveryScoring() {
+        return debugDiscoveryScoring;
+    }
+
+    public void setDebugDiscoveryScoring(boolean debugDiscoveryScoring) {
+        this.debugDiscoveryScoring = debugDiscoveryScoring;
     }
 
 }

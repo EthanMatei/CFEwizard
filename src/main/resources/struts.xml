@@ -681,7 +681,7 @@
 				
 		<!--  Calculate -->
 		<action name="BatchCalculate" class="cfe.action.BatchAction" method="calculate">
-		    <interceptor-ref name="basicStack"/>
+		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/batch/batchResult.jsp</result>
 			<result name="error">pages/batch/batchResult.jsp</result>
 			<result name="input">pages/batch/batchResult.jsp</result>

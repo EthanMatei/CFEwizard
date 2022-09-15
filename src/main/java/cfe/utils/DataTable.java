@@ -1173,6 +1173,33 @@ public class DataTable {
 	}
 	
 	/**
+	 * Gets a map from the specified key column to the specified value column.
+	 */
+	public Map<String,String> getMap(String keyColumnName, String valueColumnName) throws Exception {
+	    Map<String,String> map = new HashMap<String,String>();
+	    
+	    int keyColumnIndex = this.getColumnIndex(keyColumnName);
+	    if (keyColumnIndex < 0) {
+	        String message = "Key column \"" + keyColumnName + "\" for map could not be found in data table.";
+	        log.severe(message);
+	        throw new Exception(message);
+	    }
+	    
+	    int valueColumnIndex = this.getColumnIndex(valueColumnName);
+	    if (valueColumnIndex < 0) {
+	        String message = "Value column \"" + valueColumnName + "\" for map could not be found in data table.";
+	        log.severe(message);
+	        throw new Exception(message);
+	    }
+	    
+	    for (ArrayList<String> row: this.data) {
+	        map.put(row.get(keyColumnIndex), row.get(valueColumnIndex));
+	    }
+	    
+	    return map;
+	}
+	
+	/**
 	 * Gets the value for the specified key value (row) and column name. Returns null
 	 * if no row with the specified key exists.
 	 * 

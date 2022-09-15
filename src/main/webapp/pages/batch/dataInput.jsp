@@ -52,13 +52,34 @@
 <s:actionerror />
 
 <s:form id ="dataInputForm" theme="simple" name="dataInputForm"
-        action="BatchCalculate" method="post">
+        action="BatchCalculate"
+        method="post" enctype="multipart/form-data">
+        
+    <s:hidden name="testingDbTempFileName"/>
 
-    <fieldset>
+    <fieldset class=dataInput>
+        <legend>Data Files</legend>
+        
+        <table class="dataTable">
+            <tr> <th>Data</th> <th>File</th> </tr>
+            <tr>
+                <td> Probeset to Gene Mapping Database </td>
+                <td> <s:file name="probesetToGeneMappingDb" label="Probeset to Gene Mapping Database" /> </td>
+            </tr>
+            <tr>
+                <td> Discovery Gene Expression CSV File </td>
+                <td> <s:file name="discoveryGeneExpressionCsv" label="Discovery Gene Expression CSV" /> </td>
+            </tr>            
+        </table>
+    </fieldset>
+    
+    <div>&nbsp;</div>
+    
+    <fieldset class="dataInput">
         <legend>Discovery</legend>
 
         <p>
-            Phene: <s:select name="discoveryPhene" list="discoveryPheneList"/>
+            Phene: <s:select name="discoveryPheneInfo" list="discoveryPheneList"/>
         </p>
         
         <p>
@@ -98,12 +119,58 @@
         --%>
         
         <table class="dataTable">
-            <tr>
-                <th>Percentile Range</th><th>Score</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Percentile Range</th><th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <s:iterator value="discoveryPercentileScores.lowerBounds" var="lowerBound" status="status">
+                    <tr>
+                        <td>
+                            <span style="text-align: right;margin-left: 1em; width: 10em; display: inline-block;">
+                                <s:property value="lowerBound"/>
+                            </span>
+                            &le; x &lt;
+                            <span style="text-align: right;margin-left: 1em; width: 10em; display: inline-block;">
+                                <s:property value="discoveryPercentileScores.upperBounds[#status.index]"/>
+                            </span>
+                        </td>
+                        <td>
+                            <s:textfield size="7" cssStyle="text-align: right;margin-left: 1em"
+                                name="discoveryPercentileScores.scores[%{#status.index}]"
+                            />
+                        </td>
+                    </tr>
+                </s:iterator>            
+            </tbody>
         </table>
-     </fieldset>
+    </fieldset>
     
+    <div>&nbsp;</div>
+    
+    <fieldset class="dataInput">
+        <legend>Prioritization</legend>
+        
+        <s:a action="PrioritizationReport">
+            <s:param name="reportName" value="'diseases'" />
+            <s:param name="reportFormat" value="'xlsx'" />
+            diseases.xlsx
+        </s:a>
+    </fieldset>
+ 
+    <div>&nbsp;</div>
+        
+    <fieldset class="dataInput">
+        <legend>Validation</legend>
+    </fieldset> 
+ 
+    <div>&nbsp;</div>
+        
+    <fieldset class="dataInput">
+        <legend>Testing</legend>
+    </fieldset>
+        
     <!-- <s:submit value="Calculate" id="calculateButton" onclick="submitForm();" /> -->
     <p>
     <s:submit value="Calculate" id="calculateButton" />

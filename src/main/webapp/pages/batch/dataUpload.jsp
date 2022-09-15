@@ -38,10 +38,6 @@
             <td> Testing Database </td>
             <td> <s:file name="testingDb" label="Testing Database" /> </td>
         </tr>
-        <tr>
-            <td> Probeset to Gene Mapping Database </td>
-            <td> <s:file name="probesetToGeneMappingDb" label="Probeset to Gene Mapping Database" /> </td>
-        </tr>
     </table>
 
     <s:hidden name="testingDbTempFileName" /> 

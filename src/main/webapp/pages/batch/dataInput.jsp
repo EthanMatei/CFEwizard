@@ -67,9 +67,17 @@
                 <td> <s:file name="probesetToGeneMappingDb" label="Probeset to Gene Mapping Database" /> </td>
             </tr>
             <tr>
-                <td> Discovery Gene Expression CSV File </td>
+                <td> Follow-Up Database </td>
+                <td> <s:file name="followUpDb" label="Follow-Up Database" /> </td>
+            </tr>
+            <tr>
+                <td> Discovery Gene Expression CSV File</td>
                 <td> <s:file name="discoveryGeneExpressionCsv" label="Discovery Gene Expression CSV" /> </td>
-            </tr>            
+            </tr>   
+            <tr>
+                <td> Gene Expression CSV File</td>
+                <td> <s:file name="geneExpressionCsv" label="Gene Expression CSV" /> </td>
+            </tr>           
         </table>
     </fieldset>
     
@@ -152,28 +160,192 @@
     <fieldset class="dataInput">
         <legend>Prioritization</legend>
         
-        <s:a action="PrioritizationReport">
-            <s:param name="reportName" value="'diseases'" />
-            <s:param name="reportFormat" value="'xlsx'" />
-            diseases.xlsx
-        </s:a>
+        <fieldset class="dataInputLevel2">
+            <legend>Gene List Specification</legend>
+                <p>
+                <s:radio name="geneListSpecification" list="{'All'}"/>
+                </p>
+                
+                <p>
+                <s:radio name="geneListSpecification" list="{'Upload File:'}"/>
+                <s:file name="geneListUpload" style="margin-left: 1em;"/>
+                </p>
+                
+                <p>
+                <s:radio name="geneListSpecification" list="{'Generate from Discovery:'}"/>
+                <span style="margin-left: 2em;">Discovery score cutoff</span>
+                <s:textfield style="text-align: right;" name="discoveryScoreCutoff" size="4"/>
+                <span style="margin-left: 1em;">Comparison threshold</span>
+                <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="comparisonThreshold"/>
+                </p>
+        </fieldset>
+        
+        <fieldset class="dataInputLevel2">
+            <legend>Global Scoring Weights</legend>
+            <table>
+                <s:iterator value="@cfe.enums.prioritization.ScoringWeights@values()" var="scoringWeight">
+                    <tr>
+                        <td>
+                            <s:property value="%{#scoringWeight.label}"/> &nbsp;
+                        </td>
+                        <td>
+	                        <s:textfield name="%{#scoringWeight.name}" value="%{#scoringWeight.score}"
+	                                     cssStyle="text-align:right;"/>
+                        </td>
+                    </tr>
+                </s:iterator>
+            </table>
+        </fieldset>
+        
+        <fieldset class="dataInputLevel2">
+            <legend>Diseases</legend>
+            Diseases CSV File: <s:file style="margin-left: 1em;" name="diseasesCsvFile"/>
+                    
+            <s:a action="PrioritizationReport" style="margin-left: 4em;">
+                <s:param name="reportName" value="'diseases-with-coefficients'" />
+                <s:param name="reportFormat" value="'csv'" />
+                diseases.csv
+            </s:a>
+        </fieldset>
+        
     </fieldset>
  
     <div>&nbsp;</div>
-        
+    
+    
+    <%-- VALIDATION ===================================================================================== --%>
     <fieldset class="dataInput">
         <legend>Validation</legend>
+        
+        <table class="dataTable">
+            <tr> <th>Phene</th> <th>Relation</th> <th>Value</th> </tr>
+            <tr>
+                <td> <s:select name="phene1" list="phenes" /> </td>
+                <td style="text-align: center"> <s:select name="operator1" list="operators" /> </td>
+                <td> <s:textfield name="value1" value="" size="4"  style="text-align: right;"/> </td>
+            </tr>
+            <tr>
+                <td> <s:select name="phene2" list="phenes" /> </td>
+                <td style="text-align: center"> <s:select name="operator2" list="operators" /> </td>
+                <td> <s:textfield name="value2" value="" size="4" style="text-align: right;"/> </td>
+            </tr>
+            <tr>
+                <td> <s:select name="phene3" list="phenes" /> </td>
+                <td style="text-align: center"> <s:select name="operator3" list="operators" /> </td>
+                <td> <s:textfield name="value3" value="" size="4" style="text-align: right;"/> </td>
+            </tr>
+        </table>
+        
+        <div style="margin-top: 14px; margin-bottom: 14px;">
+            % Subjects in Validation Cohort:
+            <s:textfield name="percentInValidationCohort" value="50" size="4" style="text-align: right;"/>
+        </div>
+        
+                
+        <p>
+        Score cutoff (&ge;): <s:textfield style="text-align: right;" name="validationScoreCutoff" />
+        </p>
+        
+        <table class="dataTable" style="margin-top: 17px;">
+            <tr>
+                <td>Bonferroni Score</td>
+                <td> <s:textfield style="text-align: right;" name="bonferroniScore" /> </td> 
+            </tr>
+            <tr>
+                <td>Nominal Score</td>
+                <td> <s:textfield  style="text-align: right;" name="nominalScore" /></td>
+            </tr>
+            <tr>
+                <td>Stepwise Score</td>
+                <td> <s:textfield  style="text-align: right;" name="stepwiseScore" /></td>
+            </tr>
+            <tr>
+                <td>Non-Stepwise Score</td>
+                <td> <s:textfield  style="text-align: right;" name="nonStepwiseScore" /></td>
+            </tr>
+        </table>        
+          
     </fieldset> 
  
     <div>&nbsp;</div>
         
     <fieldset class="dataInput">
         <legend>Testing</legend>
+  
+        <p>
+        Admission phene: <s:select name="admissionPhene" list="admissionReasons"/>
+        </p>
+        
+                        
+        <p>
+        Score cutoff (&ge;): <s:textfield style="text-align: right;" name="testingScoreCutoff" />
+        </p>
+        
+    <p>
+    Updated predictor list CSV file (optional):
+    <s:file name="specialPredictorListCsv" style="margin-left: 1em;"/>
+    </p>
+    
+    <table class="dataTable">
+        <tr>
+            <td>
+                <span style="font-weight: bold;">State</span>
+            </td>
+            <td>
+                <p>
+                <s:checkbox name="stateCrossSectional"/>Cross-Sectional
+                </p>
+                
+                <p>
+                <s:checkbox name="stateLongitudinal"/>Longitudinal
+                </p>
+                
+                <p>
+                Phene: <s:select name="predictionPhene" list="phenes" />
+                </p>
+                
+                <p>
+                High Cutoff (&ge;):
+                <s:textfield size="5" style="text-align: right;" name="predictionPheneHighCutoff"/>
+                
+                <span style="margin-left: 2em;">Comparison Threshold:</span>
+                <s:textfield size="10" style="text-align: right;" name="comparisonThreshold"/>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span style="font-weight: bold;">First Year Hospitalization</span>
+            </td>
+            <td>
+                <p>
+                <s:checkbox name="firstYearCrossSectional"/>Cross-Sectional
+                </p>
+                <p>
+                <s:checkbox name="firstYearLongitudinal"/>Longitudinal
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span style="font-weight: bold;">Future Hospitalization</span>
+            </td>
+            <td>
+                <p>
+                <s:checkbox name="futureCrossSectional"/>Cross-Sectional
+                </p>
+                <p>
+                <s:checkbox name="futuretLongitudinal"/>Longitudinal
+                </p>
+            </td>
+        </tr>
+    </table>
+        
     </fieldset>
         
     <!-- <s:submit value="Calculate" id="calculateButton" onclick="submitForm();" /> -->
     <p>
-    <s:submit value="Calculate" id="calculateButton" />
+    <s:submit value="Calculate" id="calculateButton" style="font-size: 125%; font-weight: bold;"/>
     </p>
     
     <s:token />

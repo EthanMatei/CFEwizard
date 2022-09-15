@@ -42,7 +42,7 @@ public class ReportSheet {
 	private String title;
 	private String subTitle;
 	private String[] columnNames;
-	private String[] columnTypes;
+	private String[] columnTypes; // "string", "float", "int"
 	private int[] columnWidths;  // Column widths in characters, <= 0 implies set automatically
 	private String[] columnAlignment;
 	private List<List<String>> data;
@@ -403,6 +403,46 @@ public class ReportSheet {
 	    sheet.protectSheet("cfg"); // protect the sheet so it cannot be modified
 	}
 
+	/**
+	 * Converts the report sheet to CSV format.
+	 * 
+	 * @return
+	 */
+	public String toCsv() {
+	    String csv = "";
+	    StringBuffer csvBuffer = new StringBuffer("");
+	    
+	    boolean isFirst = true;
+	    for (String columnName: this.columnNames) {
+	        if (isFirst) {
+	            isFirst = false;
+	        }
+	        else {
+	            csvBuffer.append(",");
+	        }
+	        csvBuffer.append("\"" + columnName + "\"");
+	    }
+	    csvBuffer.append("\n");
+	    
+	    for (List<String> row: data) {
+	        for (int i = 0; i < columnNames.length; i++) {
+	            if (i > 0) {
+	                csvBuffer.append(",");
+	            }
+	            
+	            if (columnTypes[i].contentEquals("string")) {
+	                csvBuffer.append("\"" + row.get(i) + "\"");
+	            }
+	            else {
+	                csvBuffer.append(row.get(i));
+	            }
+	        }
+	        csvBuffer.append("\n");
+	    }
+	    
+	    csv = csvBuffer.toString();
+	    return csv;
+	}
 	
 	public void addData(List<String> row) {
 	    this.data.add( row );	

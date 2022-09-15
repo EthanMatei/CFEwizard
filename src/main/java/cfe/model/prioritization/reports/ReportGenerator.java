@@ -1,5 +1,6 @@
 package cfe.model.prioritization.reports;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -77,7 +78,10 @@ public class ReportGenerator {
 		else if (reportName.equals("diseases")) {
 			fileStream =  generateDiseasesReport( reportFormat );
 		}
-
+        else if (reportName.equals("diseases-with-coefficients")) {
+            fileStream =  generateDiseasesReportCsv();
+        }
+		
 		return fileStream;
 	}
 
@@ -91,6 +95,10 @@ public class ReportGenerator {
 	 * @return an InputStream for the generated spreadsheet.
 	 */
 	private static InputStream generateDiseasesReport(String reportFormat) {
+	    return ReportGenerator.generateDiseasesReport(reportFormat, false);     
+	}
+	
+    private static InputStream generateDiseasesReport(String reportFormat, boolean addCoefficients) {
 
 		Report report = new Report();
 		
@@ -101,7 +109,7 @@ public class ReportGenerator {
 	    //----------------------------------------------------------------------------------------
 	    // Disease Selectors Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getDisordersSheet(reportFormat);
+	    sheet = getDisordersSheet(reportFormat, addCoefficients);
 	    if (sheet != null) sheets.add(sheet);
 	    
 		report.setReportSheets( sheets );
@@ -113,7 +121,26 @@ public class ReportGenerator {
 		return fileStream;
 	}
 
-	
+    private static InputStream generateDiseasesReportCsv() {
+
+        Report report = new Report();
+        
+        InputStream fileStream = null;
+        List<ReportSheet> sheets = new ArrayList<ReportSheet>();
+        ReportSheet sheet = new ReportSheet();
+
+        
+        //----------------------------------------------------------------------------------------
+        // Disease Selectors Sheet
+        //----------------------------------------------------------------------------------------
+        sheet = getDisordersSheet("csv", true);
+        
+        String csv = sheet.toCsv();
+        
+        fileStream = new ByteArrayInputStream(csv.getBytes());
+        
+        return fileStream;
+    }	
 	
 	/**
 	 * Generates an Excel spreadsheet with scoring information based on user selected inputs.
@@ -231,7 +258,11 @@ public class ReportGenerator {
 	}
 	
 	
-	private static ReportSheet getDisordersSheet(String reportFormat) {
+    private static ReportSheet getDisordersSheet(String reportFormat) {
+        return ReportGenerator.getDisordersSheet(reportFormat, false);
+    }
+    
+	private static ReportSheet getDisordersSheet(String reportFormat, boolean addCoefficients) {
 		
 		ReportSheet sheet = null;
 
@@ -239,15 +270,23 @@ public class ReportGenerator {
 
 			sheet.setTitle( "Diseases" );
 
-			String[] columnNames = {"Domain", "SubDomain", "Relevant Disorder"};
-			sheet.setColumnNames( columnNames );
 
-			int[] columnWidths = {0, 0, 0};
-			sheet.setColumnWidths(columnWidths);
-
-			String[] columnTypes = {"string", "string", "string"};
-			sheet.setColumnTypes(columnTypes);
-
+			if (addCoefficients) {
+	            String[] columnNames = {"Domain", "SubDomain", "Relevant Disorder", "Coefficient"};
+	            sheet.setColumnNames( columnNames );
+	            int[] columnWidths = {0, 0, 0, 0};
+	            sheet.setColumnWidths(columnWidths);
+	            String[] columnTypes = {"string", "string", "string", "float"};
+	            sheet.setColumnTypes(columnTypes);
+			}
+			else {
+			    String[] columnNames = {"Domain", "SubDomain", "Relevant Disorder"};
+			    sheet.setColumnNames( columnNames );
+		        int[] columnWidths = {0, 0, 0};
+		        sheet.setColumnWidths(columnWidths);
+		        String[] columnTypes = {"string", "string", "string"};
+		        sheet.setColumnTypes(columnTypes);
+	        }
 
 			List<Disorder> disorders = DisorderService.getAll();
 			
@@ -257,6 +296,9 @@ public class ReportGenerator {
 				row.add( disorder.getDomain() );
 				row.add( disorder.getSubdomain() );
 				row.add( disorder.getRelevantDisorder() );
+				if (addCoefficients) {
+				    row.add("");     // coefficient
+				}
 				sheet.addData( row );				
 			}
 

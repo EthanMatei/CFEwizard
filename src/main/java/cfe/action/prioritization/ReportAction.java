@@ -158,8 +158,15 @@ public class ReportAction extends BaseAction implements SessionAware {
     			fileSuffix = ".xlsx";
     			fileContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     		}
-    		fileName = firstLetter.toUpperCase() + remainder + fileSuffix;
 
+    		fileName = firstLetter.toUpperCase() + remainder + fileSuffix;
+            
+            if (reportName.contentEquals("diseases-with-coefficients")) {
+                fileSuffix = ".csv";
+                fileContentType = "text/csv";
+                fileName = "diseases" + fileSuffix; 
+            }
+            
     		log.info("Generating report " + fileName + " in " + reportFormat + " format.");
     		//fileName        = "report.xls";
     		//}

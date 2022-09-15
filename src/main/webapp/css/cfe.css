@@ -158,6 +158,7 @@ table.dataTable th {
 }
 
 table.dataTable td {
+	background-color: #ffffff;
 	padding: 4px;
     border-color: #000000;
     border-width: 1px 1px 0 0;
@@ -168,8 +169,25 @@ table.dataTable td {
 /* fieldset                                          */
 /*****************************************************/
 
+fieldset.dataInput {
+    border: 2px solid #000063;
+    /* background-color: #f0f8ff; */
+    /* background-color: #f6fbff; */
+}
+
 fieldset.dataInput legend {
 	font-weight: bold;
-	font-size: 110%;
+	font-size: 125%;
+	color: #000063;
+}
+
+
+fieldset.dataInputLevel2 {
+    margin-top: 14px;	
+}
+
+fieldset.dataInputLevel2 legend {
+	font-size: 105%;
+	font-weight: normal;
 	color: #000063;
 }

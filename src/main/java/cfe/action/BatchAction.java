@@ -2,6 +2,7 @@ package cfe.action;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,9 +16,11 @@ import com.healthmarketscience.jackcess.Table;
 
 import cfe.calc.DiscoveryCalc;
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsFileType;
 import cfe.model.PercentileScores;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.ProbesetMappingParser;
+import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
@@ -46,6 +49,10 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String discoveryGeneExpressionCsvContentType;
     private String discoveryGeneExpressionCsvFileName;
     
+    private File geneExpressionCsv;
+    private String geneExpressionCsvContentType;
+    private String geneExpressionCsvFileName;
+    
     private String discoveryPhene;
     private String discoveryPheneInfo;
     private String discoveryPheneTable;
@@ -66,7 +73,35 @@ public class BatchAction extends BaseAction implements SessionAware {
     private PercentileScores discoveryPercentileScores;
     
     private boolean debugDiscoveryScoring = false;
+    
+    private List<String> phenes;
+    
+    /* Validation ------------------------------------------------------------ */
+    private String[] operators = {">=", ">", "<=", "<"};
 
+    /* Testing --------------------------------------------------------------- */
+    private File followUpDb;
+    private String followUpDbContentType;
+    private String followUpDbFileName;
+    
+    private List<String> admissionReasons;
+    
+    public BatchAction() {
+        admissionReasons = new ArrayList<String>();
+        admissionReasons.add("Suicide");
+        admissionReasons.add("Violence");
+        admissionReasons.add("Depression");
+        admissionReasons.add("Mania");
+        admissionReasons.add("Hallucinations");
+        admissionReasons.add("Delusion");
+        admissionReasons.add("Other Psychosis"); 
+        admissionReasons.add("Anxiety"); 
+        admissionReasons.add("Stress");
+        admissionReasons.add("Alcohol");
+        admissionReasons.add("Drugs");
+        admissionReasons.add("Pain");
+        Collections.sort(admissionReasons);
+    }
     
     public void setSession(Map<String, Object> session) {
 	    this.webSession = session;    
@@ -122,6 +157,10 @@ public class BatchAction extends BaseAction implements SessionAware {
 			    this.diagnosisCodesList = new ArrayList<String>();
 			    this.diagnosisCodesList.add("All");
 			    this.diagnosisCodesList.addAll(diagnosisCodes.keySet());
+			    
+			    this.phenes = new ArrayList<String>();
+			    this.phenes.add("");
+			    this.phenes.addAll(this.discoveryPheneList);
 			    
 		    } catch (Exception exception) {
 		        this.setErrorMessage("The database could not be processed. " + exception.getLocalizedMessage());
@@ -189,7 +228,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //--------------------------------------------
                 // Calculate Discovery Scores
                 //--------------------------------------------
-                CfeResults discoveryScores = DiscoveryCalc.calculateScores(
+                CfeResults cfeResults = DiscoveryCalc.calculateScores(
                     discoveryCohortResultsId,
                     discoveryGeneExpressionCsv,
                     probesetToGeneMappingDbFileName,
@@ -203,6 +242,11 @@ public class BatchAction extends BaseAction implements SessionAware {
                     scriptFile,
                     debugDiscoveryScoring
                 );
+
+                if (cfeResults == null) {
+                    throw new Exception("Discovery scores could not be calculated.");
+                }
+                this.discoveryScoresResultsId = cfeResults.getCfeResultsId();
             }
             catch (Exception exception) {
                 this.setErrorMessage("The input data could not be processed. " + exception.getLocalizedMessage());
@@ -430,4 +474,76 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.debugDiscoveryScoring = debugDiscoveryScoring;
     }
 
+    public String[] getOperators() {
+        return operators;
+    }
+
+    public void setOperators(String[] operators) {
+        this.operators = operators;
+    }
+
+    public List<String> getPhenes() {
+        return phenes;
+    }
+
+    public void setPhenes(List<String> phenes) {
+        this.phenes = phenes;
+    }
+
+    public File getGeneExpressionCsv() {
+        return geneExpressionCsv;
+    }
+
+    public void setGeneExpressionCsv(File geneExpressionCsv) {
+        this.geneExpressionCsv = geneExpressionCsv;
+    }
+
+    public String getGeneExpressionCsvContentType() {
+        return geneExpressionCsvContentType;
+    }
+
+    public void setGeneExpressionCsvContentType(String geneExpressionCsvContentType) {
+        this.geneExpressionCsvContentType = geneExpressionCsvContentType;
+    }
+
+    public String getGeneExpressionCsvFileName() {
+        return geneExpressionCsvFileName;
+    }
+
+    public void setGeneExpressionCsvFileName(String geneExpressionCsvFileName) {
+        this.geneExpressionCsvFileName = geneExpressionCsvFileName;
+    }
+
+    public File getFollowUpDb() {
+        return followUpDb;
+    }
+
+    public void setFollowUpDb(File followUpDb) {
+        this.followUpDb = followUpDb;
+    }
+
+    public String getFollowUpDbContentType() {
+        return followUpDbContentType;
+    }
+
+    public void setFollowUpDbContentType(String followUpDbContentType) {
+        this.followUpDbContentType = followUpDbContentType;
+    }
+
+    public String getFollowUpDbFileName() {
+        return followUpDbFileName;
+    }
+
+    public void setFollowUpDbFileName(String followUpDbFileName) {
+        this.followUpDbFileName = followUpDbFileName;
+    }
+
+    public List<String> getAdmissionReasons() {
+        return admissionReasons;
+    }
+
+    public void setAdmissionReasons(List<String> admissionReasons) {
+        this.admissionReasons = admissionReasons;
+    }
+   
 }

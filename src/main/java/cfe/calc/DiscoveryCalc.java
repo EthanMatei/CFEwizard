@@ -325,14 +325,11 @@ public class DiscoveryCalc {
             boolean debug
         ) throws Exception {
         log.info("Discovery calculation phase started");
-
-
-        DiscoveryResults discoveryResults = new DiscoveryResults();
         
         CfeResults cfeResults = null;
         
         if (geneExpressionCsvFile == null) {
-            String message = "No gene expression CSV file was specified for Dsicovery scores calculation.";
+            String message = "No gene expression CSV file was specified for Discovery scores calculation.";
             throw new Exception(message);
         }
         else if (probesetMappingDbFileName == null || probesetMappingDbFileName.trim().isEmpty()) {
@@ -436,17 +433,13 @@ public class DiscoveryCalc {
             //        + " " + "\"" + this.cohortCsvFile + "\"" + " " + "\"" + this.diagnosisCode + "\"" 
             //        + " \"" + discoveryDbFileName + "\" \"" + discoveryCsvFileName + "\"" + this.pheneSelection;
             //log.info("LOG RSCRIPT COMMAND: " + logRScriptCommand);
-
-            log.info("RSCRIPT COMMAND: " + String.join(" ", rScriptCommand));
-
+            
             String discoveryScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
-
+            log.info("RSCRIPT COMMAND: " + discoveryScoringCommand);
+            
             String scriptOutput = CalcUtil.runCommand(rScriptCommand);
 
             log.info("Returned from DEdiscovery.R script");
-            
-            discoveryResults.setScriptCommand(discoveryScoringCommand);
-            discoveryResults.setScriptOutput(scriptOutput);
 
             Date scoresGeneratedTime = new Date();
 
@@ -625,7 +618,9 @@ public class DiscoveryCalc {
             cfeResults.setDiscoveryRScriptLog(scriptOutput);
             log.info("Discovery scoring results object created.");
 
-            // Add a file for the R script log
+
+            // Add files for the R script command and log
+            cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_COMMAND, discoveryScoringCommand);
             cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, scriptOutput);
 
             CfeResultsService.save(cfeResults);
@@ -667,8 +662,6 @@ public class DiscoveryCalc {
                 file.delete();
             }
         }
-
-        discoveryResults.setCfeResults(cfeResults);
 
         return cfeResults;
     }

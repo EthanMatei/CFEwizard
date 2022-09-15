@@ -62,8 +62,15 @@
 </table>
 
 <table class="dataTable" style="margin-top: 27px;">
-    <tr><th>Result</th></tr>
     <tr>
+        <th>Name</th>
+        <th>ID</th>
+        <th>Results</th>
+        <th>Script Command File</th>
+        <th>Script Log File</th></tr>
+    <tr>
+        <td> Discovery Cohort </td>
+        <td> <s:property value="discoveryCohortResultsId"/> </td>
         <td>
             <s:a action="CfeResultsXlsxDisplay" title="Discovery Cohort Results">
                 <s:param name="cfeResultsId" value="discoveryCohortResultsId" />
@@ -71,9 +78,40 @@
                 discovery-cohort-results.xlsx
             </s:a>
         </td>
+        <td> N/A </td>
+        <td> N/A </td>
+    </tr>
+    <tr>
+        <td> Discovery Scores </td>
+        <td> <s:property value="discoveryScoresResultsId"/> </td>
+        <td>
+            <s:a action="CfeResultsXlsxDisplay" title="Discovery Scores Results">
+                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
+                <s:param name="fileName" value="'discovery-scores-results.xlsx'" />
+                discovery-scores-results.xlsx
+            </s:a>
+        </td>
+        <td>
+            <s:a action="CfeResultsFileDisplay" title="Discovery R Script Command">
+                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
+                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIPT_COMMAND" />
+                <s:property value="'discovery-r-script-command'" />
+            </s:a>  
+        </td>
+        <td>
+            <s:a action="CfeResultsFileDisplay" title="Discovery R Script Log">
+                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
+                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIPT_LOG" />
+                <s:property value="'discovery-r-script-log'" />
+            </s:a> 
+        </td>
     </tr>
 </table>
-                 
+
+<p>
+R Script LOG: <s:property value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIPT_LOG" />
+</p>
+             
 <%-- FOR DEBUGGING:
 <table class="dataTable">
     <tr>

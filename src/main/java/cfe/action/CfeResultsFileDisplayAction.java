@@ -55,6 +55,8 @@ public class CfeResultsFileDisplayAction extends BaseAction implements SessionAw
      */
     public String view() throws Exception {
         String result = SUCCESS;
+        
+        log.info("****** FILE TYPE: " + this.fileType);
 
         if (!Authorization.isLoggedIn(session)) {
             result = LOGIN;
@@ -85,6 +87,8 @@ public class CfeResultsFileDisplayAction extends BaseAction implements SessionAw
             String fileSuffix = file.getFileSuffix();
             fileName = file.getFileType() + fileSuffix;
             fileContentType = file.getMimeType();
+            
+            log.info("Trying to display file \"" + fileName + "\" with content type \"" + fileContentType + "\".");
         }
 
         return result;

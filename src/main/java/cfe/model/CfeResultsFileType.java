@@ -15,7 +15,8 @@ public class CfeResultsFileType {
     public final static String DISCOVERY_COHORT_DATA = "discovery_cohort_data";
     public final static String DISCOVERY_COHORT_INFO = "discovery_cohort_info";
     
-    public final static String DISCOVERY_R_SCRIPT_LOG = "discovery_r_script_log";
+    public final static String DISCOVERY_R_SCRIPT_COMMAND = "discovery_r_script_command";
+    public final static String DISCOVERY_R_SCRIPT_LOG     = "discovery_r_script_log";
     
     public final static String PREDICTION_STATE_CROSS_SECTIONAL              = "prediction_state_cross_sectional";
     public final static String PREDICTION_STATE_LONGITUDINAL                 = "prediction_state_longitudinal";

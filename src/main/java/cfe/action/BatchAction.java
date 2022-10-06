@@ -3,6 +3,7 @@ package cfe.action;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,9 +63,6 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     private Set<String> genomicsTables;
     private String genomicsTable;
-    
-    Long discoveryCohortResultsId;
-    Long discoveryScoresResultsId;
 
     private String diagnosisCode;
     private Map<String,String> diagnosisCodes;
@@ -83,6 +81,9 @@ public class BatchAction extends BaseAction implements SessionAware {
     private double discoveryPheneLowCutoff;
     private double discoveryPheneHighCutoff;
     List<String> discoveryPheneList;
+    
+    Long discoveryCohortResultsId;
+    Long discoveryScoresResultsId;
     
     /* Prioritization -------------------------------------------------------- */
     private String geneListSpecification;
@@ -111,8 +112,32 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
     
+    Long prioritizationScoresResultsId;
+    
     /* Validation ------------------------------------------------------------ */
     private String[] operators = {">=", ">", "<=", "<"};
+    	
+	private String phene1;
+	private String phene2;
+	private String phene3;
+	
+	private String operator1;
+	private String operator2;
+	private String operator3;
+	
+	private String value1;
+	private String value2;
+	private String value3;
+
+	private String percentInValidationCohort;
+	
+    private double validationScoreCutoff = 6.0;
+    
+    private double bonferroniScore  = 6;
+    private double nominalScore     = 4;
+    private double stepwiseScore    = 2;
+    private double nonStepwiseScore = 0;
+
 
     /* Testing --------------------------------------------------------------- */
     private File followUpDb;
@@ -315,8 +340,21 @@ public class BatchAction extends BaseAction implements SessionAware {
                         this.discoveryScoresResultsId, discoveryScoreCutoff, this.geneListUploadFileName 
                         );
                 
+                // Create the prioritization CFE results
                 CfeResults prioritizationCfeResults = new CfeResults();
                 prioritizationCfeResults.setResultsSpreadsheet(workbook);
+
+                LinkedHashMap<String,DataTable> dataTables = discoveryCfeResults.getDataTables();
+                dataTables.putAll(prioritizationCfeResults.getDataTables());
+                
+                workbook = DataTable.createWorkbook(dataTables);
+                prioritizationCfeResults.setResultsSpreadsheet(workbook);
+                prioritizationCfeResults.addTextFiles(discoveryCfeResults);   // Add log file(s) from Discovery to Prioritization
+                
+                //-------------------------------------------
+                // Create Validation Cohort
+                //-------------------------------------------
+                
             }
             catch (Exception exception) {
                 this.setErrorMessage("The input data could not be processed. " + exception.getLocalizedMessage());
@@ -659,6 +697,9 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.admissionReasons = admissionReasons;
     }
 
+
+    // PRIORITIZATION -------------------------------------------------------------------
+    
     public String getGeneListSpecification() {
         return geneListSpecification;
     }
@@ -827,5 +868,89 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setDiseaseSelectors(List<DiseaseSelector> diseaseSelectors) {
         this.diseaseSelectors = diseaseSelectors;
     }
+
+    public Long getPrioritizationScoresResultsId() {
+        return prioritizationScoresResultsId;
+    }
+
+    public void setPrioritizationScoresResultsId(Long prioritizationScoresResultsId) {
+        this.prioritizationScoresResultsId = prioritizationScoresResultsId;
+    }
+    
+    /* VALIDATION ---------------------------------------------------------------------------- */
+    
+    public String getPhene1() {
+		return this.phene1;
+	}
+	
+	public void setPhene1(String phene1) {
+		this.phene1 = phene1;
+	}
+	
+    public String getPhene2() {
+		return this.phene2;
+	}
+	
+	public void setPhene2(String phene2) {
+		this.phene2 = phene2;
+	}
+	
+	public String getPhene3() {
+		return this.phene3;
+	}
+	
+	public void setPhene3(String phene3) {
+		this.phene3 = phene3;
+	}
+
+  
+    public String getOperator1() {
+		return this.operator1;
+	}
+	
+	public void setOperator1(String operator1) {
+		this.operator1 = operator1;
+	}
+	
+    public String getOperator2() {
+		return this.operator2;
+	}
+	
+	public void setOperator2(String operator2) {
+		this.operator2 = operator2;
+	}
+	
+	public String getOperator3() {
+		return this.operator3;
+	}
+	
+	public void setOperator3(String operator3) {
+		this.operator3 = operator3;
+	}
+
+    
+    public String getValue1() {
+		return this.value1;
+	}
+	
+	public void setValue1(String value1) {
+		this.value1 = value1;
+	}
+	
+    public String getValue2() {
+		return this.value2;
+	}
+	
+	public void setValue2(String value2) {
+		this.value2 = value2;
+	}
+	
+	public String getValue3() {
+		return this.value3;
+	}
+	
+	public void setValue3(String value3) {
+		this.value3 = value3;
+	}
    
 }

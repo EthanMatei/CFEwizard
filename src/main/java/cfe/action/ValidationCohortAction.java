@@ -199,8 +199,6 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
             result = LOGIN;
         } else {
             try {
-                this.discoveryResults = CfeResultsService.get(discoveryId);
-
                 ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
                 this.discoveryResults = CfeResultsService.get(discoveryId);
 

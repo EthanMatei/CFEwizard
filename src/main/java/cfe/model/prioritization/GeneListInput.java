@@ -36,33 +36,25 @@ public class GeneListInput {
 	}
 
 	/**
-	 * Constructs a GeneListInput object from the file with the specified file name.
-	 *
+	 * Constructs a GeneListInput object from a gene list text file, with one gene per line.
+	 * 
 	 * @param filename
 	 * @throws Exception
 	 */
 	public GeneListInput(String filename) throws Exception {
-
 	    if (filename == null || filename.trim().isEmpty()) {
-	        throw new Exception("No gene list file specified.");    
+	        throw new Exception("No gene list file specified.");
 	    }
-
-	    genes = new TreeMap<String,TreeSet<String>>(String.CASE_INSENSITIVE_ORDER);
-
-	    BufferedReader br = null;
-	    try {
-	        br = new BufferedReader(new FileReader(filename));
-	    }
-	    catch (Exception exception) {
-	        throw new Exception("Unable to access gene list file \"" + filename + "\": " + exception.getLocalizedMessage());    
-	    }
-
-	    String line;
-	    String geneCardSymbol;
+	    
+        genes = new TreeMap<String,TreeSet<String>>(String.CASE_INSENSITIVE_ORDER);
+	        
+	    BufferedReader br = new BufferedReader(new FileReader(filename));
+	    
+	    String line, geneCardSymbol;
 
 	    while ((line = br.readLine()) != null) {
 	        geneCardSymbol = line.trim();
-
+	             
 	        if (geneCardSymbol.equals("")) {
 	            ; // skip blank lines
 	        }
@@ -76,11 +68,10 @@ public class GeneListInput {
 	            throw new Exception( message );
 	        }
 	    }
-
+	        
 	    br.close();     
 	}
-
-	
+	   
 	/**
 	 * Constructs a GeneListInput object from discovery results.
 	 * 

@@ -398,11 +398,9 @@ public class CfeResults implements Serializable {
      * @return
      */
     public CfeResultsFile getFile(String fileType) {
-        log.info("******* SEARCH FILE FILE TYPE: \"" + fileType + "\"");
         CfeResultsFile file = null;
         for (CfeResultsFile searchFile: this.getCfeResultsFile()) {
             if (searchFile.getFileType().contentEquals(fileType)) {
-                log.info("******* SEARCH FILE \"" + searchFile.getFileType() + "\"    \"" + fileType + "\"");
                 file = searchFile;
                 break;
             }
@@ -435,6 +433,17 @@ public class CfeResults implements Serializable {
             set.add(file.getFileType());
         }
         return set;
+    }
+    
+    public void addTextFiles(CfeResults addResults) {
+        for (CfeResultsFile cfeResultsFile: addResults.cfeResultsFile) {
+            
+            if (cfeResultsFile.getMimeType().contentEquals("text/plain")) {
+                String fileType = cfeResultsFile.getFileType();
+                String content = cfeResultsFile.getContentAsString();
+                this.addTextFile(fileType, content);
+            }
+        }
     }
 	
 }

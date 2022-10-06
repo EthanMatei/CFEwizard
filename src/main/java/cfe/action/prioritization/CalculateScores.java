@@ -63,7 +63,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 
 	public String execute() {
 	    log.info("Starting prioritization scoring.");
-	    log.info("************** prioritization socring Discovery ID: " + this.discoveryId);
+	    log.info("Prioritization scoring Discovery ID: " + this.discoveryId);
 	    String status = SUCCESS;
 
 	    if (!Authorization.isLoggedIn(session)) {
@@ -103,7 +103,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	                
 	                // Generate a workbook with the prioritization scores
 	                XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(
-	                        results, scores, weights, diseaseSelectors, geneListInput,
+	                        results, /* scores, */ weights, diseaseSelectors, geneListInput,
 	                        discoveryId, discoveryScoreCutoff, geneListFileName 
 	                        );
 

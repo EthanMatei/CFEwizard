@@ -155,7 +155,7 @@ public class ReportGenerator {
 	 */
 	public static Report generateScoresReportObject(
 	        Results results,
-	        Map<String, ScoreResults> scores,
+	        //Map<String, ScoreResults> scores,
 	        List<cfe.enums.prioritization.ScoringWeights> weights,
 	        List<DiseaseSelector> diseaseSelectors,
 	        GeneListInput geneListInput,
@@ -192,7 +192,7 @@ public class ReportGenerator {
 	    //----------------------------------------------------------------------------------------
 	    // Disease Selectors Sheet
 	    //----------------------------------------------------------------------------------------
-	    sheet = getDiseaseSelectorsSheet(scores, diseaseSelectors);
+	    sheet = getDiseaseSelectorsSheet(diseaseSelectors);
 	    if (sheet != null) sheets.add(sheet);
 
 	    //----------------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ public class ReportGenerator {
 	
 	public static XSSFWorkbook generateScoresWorkbook(
 	        Results results,
-	        Map<String, ScoreResults> scores,
+	        // Map<String, ScoreResults> scores,
 	        List<cfe.enums.prioritization.ScoringWeights> weights,
 	        List<DiseaseSelector> diseaseSelectors,
 	        GeneListInput geneListInput,
@@ -223,7 +223,7 @@ public class ReportGenerator {
 	        String geneListFileName
 	    ) {
 	    Report report = ReportGenerator.generateScoresReportObject(
-	            results, scores, weights, diseaseSelectors, geneListInput,
+	            results, /* scores, */ weights, diseaseSelectors, geneListInput,
 	            discoveryId, discoveryScoreCutoff, geneListFileName
 	    );
         boolean isLandscape = false;
@@ -245,7 +245,7 @@ public class ReportGenerator {
         InputStream fileStream = null;
         
         Report report = ReportGenerator.generateScoresReportObject(
-                results, scores, weights, diseaseSelectors, geneListInput,
+                results, /* scores, */ weights, diseaseSelectors, geneListInput,
                 discoveryId, discoveryScoreCutoff, geneListFileName
                 );
 		
@@ -546,11 +546,10 @@ public class ReportGenerator {
 	 * Generates an Excel sheet with the selected diseases for the scoring.
 	 * 
 	 * @param reportFormat
-	 * @param scores
 	 * @param diseaseSelectors
 	 * @return
 	 */
-	private static ReportSheet getDiseaseSelectorsSheet(Map<String, ScoreResults> scores, List<DiseaseSelector> diseaseSelectors) {
+	private static ReportSheet getDiseaseSelectorsSheet(List<DiseaseSelector> diseaseSelectors) {
 		
 		ReportSheet sheet = null;
 

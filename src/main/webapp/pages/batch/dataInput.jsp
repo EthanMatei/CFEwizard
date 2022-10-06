@@ -156,7 +156,8 @@
     </fieldset>
     
     <div>&nbsp;</div>
-    
+
+    <%-- PRIORITIZATION ===================================================================================== --%>    
     <fieldset class="dataInput">
         <legend>Prioritization</legend>
         
@@ -176,7 +177,7 @@
                 <span style="margin-left: 2em;">Discovery score cutoff</span>
                 <s:textfield style="text-align: right;" name="discoveryScoreCutoff" size="4"/>
                 <span style="margin-left: 1em;">Comparison threshold</span>
-                <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="comparisonThreshold"/>
+                <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="prioritizationComparisonThreshold"/>
                 </p>
         </fieldset>
         
@@ -199,7 +200,7 @@
         
         <fieldset class="dataInputLevel2">
             <legend>Diseases</legend>
-            Diseases CSV File: <s:file style="margin-left: 1em;" name="diseasesCsvFile"/>
+            Diseases CSV File: <s:file style="margin-left: 1em;" name="diseasesCsv"/>
                     
             <s:a action="PrioritizationReport" style="margin-left: 4em;">
                 <s:param name="reportName" value="'diseases-with-coefficients'" />

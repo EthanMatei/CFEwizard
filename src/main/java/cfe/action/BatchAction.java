@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.healthmarketscience.jackcess.Table;
@@ -18,6 +19,12 @@ import cfe.calc.DiscoveryCalc;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
 import cfe.model.PercentileScores;
+import cfe.model.prioritization.GeneListInput;
+import cfe.model.prioritization.Score;
+import cfe.model.prioritization.disease.DiseaseSelection;
+import cfe.model.prioritization.disease.DiseaseSelector;
+import cfe.model.prioritization.reports.ReportGenerator;
+import cfe.model.prioritization.results.Results;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.ProbesetMappingParser;
 import cfe.services.CfeResultsService;
@@ -53,13 +60,6 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String geneExpressionCsvContentType;
     private String geneExpressionCsvFileName;
     
-    private String discoveryPhene;
-    private String discoveryPheneInfo;
-    private String discoveryPheneTable;
-    private double discoveryPheneLowCutoff;
-    private double discoveryPheneHighCutoff;
-    List<String> discoveryPheneList;
-    
     private Set<String> genomicsTables;
     private String genomicsTable;
     
@@ -75,6 +75,41 @@ public class BatchAction extends BaseAction implements SessionAware {
     private boolean debugDiscoveryScoring = false;
     
     private List<String> phenes;
+    
+    /* Discovery ------------------------------------------------------------- */
+    private String discoveryPhene;
+    private String discoveryPheneInfo;
+    private String discoveryPheneTable;
+    private double discoveryPheneLowCutoff;
+    private double discoveryPheneHighCutoff;
+    List<String> discoveryPheneList;
+    
+    /* Prioritization -------------------------------------------------------- */
+    private String geneListSpecification;
+    private GeneListInput geneListInput;
+    private File geneListUpload;
+    private String geneListUploadContentType;
+    private String geneListUploadFileName;
+    private Double discoveryScoreCutoff;
+    private Double prioritizationComparisonThreshold;
+    
+    private double huBrainScore;
+    private double huPerScore;
+    private double huGeneCnvScore;
+    private double huGeneAssocScore;
+    private double huGeneLinkageScore;
+    
+    private double nhBrainScore;
+    private double nhPerScore;
+    private double nhGeneCnvScore;
+    private double nhGeneAssocScore;
+    private double nhGeneLinkageScore;
+    
+    private File diseasesCsv;
+    private String diseasesCsvContentType;
+    private String diseasesCsvFileName;
+    
+    private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
     
     /* Validation ------------------------------------------------------------ */
     private String[] operators = {">=", ">", "<=", "<"};
@@ -228,7 +263,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //--------------------------------------------
                 // Calculate Discovery Scores
                 //--------------------------------------------
-                CfeResults cfeResults = DiscoveryCalc.calculateScores(
+                CfeResults discoveryCfeResults = DiscoveryCalc.calculateScores(
                     discoveryCohortResultsId,
                     discoveryGeneExpressionCsv,
                     probesetToGeneMappingDbFileName,
@@ -243,21 +278,99 @@ public class BatchAction extends BaseAction implements SessionAware {
                     debugDiscoveryScoring
                 );
 
-                if (cfeResults == null) {
+                if (discoveryCfeResults == null) {
                     throw new Exception("Discovery scores could not be calculated.");
                 }
-                this.discoveryScoresResultsId = cfeResults.getCfeResultsId();
+                this.discoveryScoresResultsId = discoveryCfeResults.getCfeResultsId();
+                
+                //---------------------------------------------------------------
+                // Calculate Prioritization Scores
+                //---------------------------------------------------------------
+                
+                if (this.geneListSpecification.contentEquals("All")) {
+                    this.geneListUploadFileName = "";
+                    this.geneListInput = new GeneListInput();
+                }
+                else if (this.geneListSpecification.contentEquals("Upload File:")) {
+                    this.geneListInput = new GeneListInput(this.geneListUploadFileName);
+                }
+                else if (this.geneListSpecification.contentEquals("Generate from Discovery:")) {
+                    this.geneListUploadFileName = "";
+                    this.geneListInput = new GeneListInput(discoveryCfeResults, this.discoveryScoreCutoff, this.prioritizationComparisonThreshold);
+                }
+                else {
+                    result = INPUT;
+                    throw new Exception("Gene list specification\"" + this.geneListSpecification + "\" is invalid.");
+                }
+                
+                this.diseaseSelectors = DiseaseSelector.importCsvFile(diseasesCsvFileName, diseasesCsv);
+                List<cfe.enums.prioritization.ScoringWeights> weights = this.getPrioritizationWeights();
+                
+                DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
+                Results results = Score.calculate(geneListInput, diseaseSelection, weights);
+                
+                // Generate a workbook with the prioritization scores
+                XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(
+                        results, /* scores, */ weights, diseaseSelectors, geneListInput,
+                        this.discoveryScoresResultsId, discoveryScoreCutoff, this.geneListUploadFileName 
+                        );
+                
+                CfeResults prioritizationCfeResults = new CfeResults();
+                prioritizationCfeResults.setResultsSpreadsheet(workbook);
             }
             catch (Exception exception) {
                 this.setErrorMessage("The input data could not be processed. " + exception.getLocalizedMessage());
                 String stackTrace = ExceptionUtils.getStackTrace(exception);
                 this.setExceptionStack(stackTrace);
-                result = ERROR;
+                if (result == SUCCESS) {
+                    result = ERROR;
+                }
             }
         }
         return result;
     }
 
+    public List<cfe.enums.prioritization.ScoringWeights> getPrioritizationWeights() {
+        List<cfe.enums.prioritization.ScoringWeights> weights = new ArrayList<cfe.enums.prioritization.ScoringWeights>();
+        cfe.enums.prioritization.ScoringWeights weight;
+
+        weight = cfe.enums.prioritization.ScoringWeights.HUBRAIN;
+        weight.setScore( huBrainScore );
+        weights.add(weight);
+
+        weight = cfe.enums.prioritization.ScoringWeights.HUPER;
+        weight.setScore( huPerScore );
+        weights.add(weight);
+
+        weight = cfe.enums.prioritization.ScoringWeights.HUGENEASSOC;
+        weight.setScore( huGeneAssocScore );
+        weights.add(weight);
+
+        weight = cfe.enums.prioritization.ScoringWeights.HUGCNV;
+        weight.setScore( huGeneCnvScore );
+        weights.add(weight);
+
+
+        weight = cfe.enums.prioritization.ScoringWeights.NHBRAIN;
+        weight.setScore( nhBrainScore );
+        weights.add(weight);
+
+        weight = cfe.enums.prioritization.ScoringWeights.NHPER;
+        weight.setScore( nhPerScore );
+        weights.add(weight);
+
+        weight = cfe.enums.prioritization.ScoringWeights.NHGENEASSOC;
+        weight.setScore( nhGeneAssocScore );
+        weights.add(weight);
+
+        weight = cfe.enums.prioritization.ScoringWeights.NHGCNV;
+        weight.setScore( nhGeneCnvScore );
+        weights.add(weight);
+        
+        return weights;
+    }
+    
+    
     public File getTestingDb() {
         return testingDb;
     }
@@ -544,6 +657,175 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setAdmissionReasons(List<String> admissionReasons) {
         this.admissionReasons = admissionReasons;
+    }
+
+    public String getGeneListSpecification() {
+        return geneListSpecification;
+    }
+
+    public void setGeneListSpecification(String geneListSpecification) {
+        this.geneListSpecification = geneListSpecification;
+    }
+
+    public GeneListInput getGeneListInput() {
+        return geneListInput;
+    }
+
+    public void setGeneListInput(GeneListInput geneListInput) {
+        this.geneListInput = geneListInput;
+    }
+
+    public File getGeneListUpload() {
+        return geneListUpload;
+    }
+
+    public void setGeneListUpload(File geneListUpload) {
+        this.geneListUpload = geneListUpload;
+    }
+
+    public String getGeneListUploadContentType() {
+        return geneListUploadContentType;
+    }
+
+    public void setGeneListUploadContentType(String geneListUploadContentType) {
+        this.geneListUploadContentType = geneListUploadContentType;
+    }
+
+    public String getGeneListUploadFileName() {
+        return geneListUploadFileName;
+    }
+
+    public void setGeneListUploadFileName(String geneListUploadFileName) {
+        this.geneListUploadFileName = geneListUploadFileName;
+    }
+
+    public Double getDiscoveryScoreCutoff() {
+        return discoveryScoreCutoff;
+    }
+
+    public void setDiscoveryScoreCutoff(Double discoveryScoreCutoff) {
+        this.discoveryScoreCutoff = discoveryScoreCutoff;
+    }
+    
+    public Double getPrioritizationComparisonThreshold() {
+        return prioritizationComparisonThreshold;
+    }
+
+    public void setPrioritizationComparisonThreshold(Double prioritizationComparisonThreshold) {
+        this.prioritizationComparisonThreshold = prioritizationComparisonThreshold;
+    }
+
+    
+    public double getHuBrainScore() {
+        return huBrainScore;
+    }
+
+    public void setHuBrainScore(double huBrainScore) {
+        this.huBrainScore = huBrainScore;
+    }
+
+    public double getHuPerScore() {
+        return huPerScore;
+    }
+
+    public void setHuPerScore(double huPerScore) {
+        this.huPerScore = huPerScore;
+    }
+
+    public double getHuGeneCnvScore() {
+        return huGeneCnvScore;
+    }
+
+    public void setHuGeneCnvScore(double huGeneCnvScore) {
+        this.huGeneCnvScore = huGeneCnvScore;
+    }
+
+    public double getHuGeneAssocScore() {
+        return huGeneAssocScore;
+    }
+
+    public void setHuGeneAssocScore(double huGeneAssocScore) {
+        this.huGeneAssocScore = huGeneAssocScore;
+    }
+
+    public double getHuGeneLinkageScore() {
+        return huGeneLinkageScore;
+    }
+
+    public void setHuGeneLinkageScore(double huGeneLinkageScore) {
+        this.huGeneLinkageScore = huGeneLinkageScore;
+    }
+
+    public double getNhBrainScore() {
+        return nhBrainScore;
+    }
+
+    public void setNhBrainScore(double nhBrainScore) {
+        this.nhBrainScore = nhBrainScore;
+    }
+
+    public double getNhPerScore() {
+        return nhPerScore;
+    }
+
+    public void setNhPerScore(double nhPerScore) {
+        this.nhPerScore = nhPerScore;
+    }
+
+    public double getNhGeneCnvScore() {
+        return nhGeneCnvScore;
+    }
+
+    public void setNhGeneCnvScore(double nhGeneCnvScore) {
+        this.nhGeneCnvScore = nhGeneCnvScore;
+    }
+
+    public double getNhGeneAssocScore() {
+        return nhGeneAssocScore;
+    }
+
+    public void setNhGeneAssocScore(double nhGeneAssocScore) {
+        this.nhGeneAssocScore = nhGeneAssocScore;
+    }
+
+    public double getNhGeneLinkageScore() {
+        return nhGeneLinkageScore;
+    }
+
+    public void setNhGeneLinkageScore(double nhGeneLinkageScore) {
+        this.nhGeneLinkageScore = nhGeneLinkageScore;
+    }
+
+    public File getDiseasesCsv() {
+        return diseasesCsv;
+    }
+
+    public void setDiseasesCsv(File diseasesCsv) {
+        this.diseasesCsv = diseasesCsv;
+    }
+
+    public String getDiseasesCsvContentType() {
+        return diseasesCsvContentType;
+    }
+
+    public void setDiseasesCsvContentType(String diseasesCsvContentType) {
+        this.diseasesCsvContentType = diseasesCsvContentType;
+    }
+
+    public String getDiseasesCsvFileName() {
+        return diseasesCsvFileName;
+    }
+
+    public void setDiseasesCsvFileName(String diseasesCsvFileName) {
+        this.diseasesCsvFileName = diseasesCsvFileName;
+    }
+
+    public List<DiseaseSelector> getDiseaseSelectors() {
+        return diseaseSelectors;
+    }
+
+    public void setDiseaseSelectors(List<DiseaseSelector> diseaseSelectors) {
+        this.diseaseSelectors = diseaseSelectors;
     }
    
 }

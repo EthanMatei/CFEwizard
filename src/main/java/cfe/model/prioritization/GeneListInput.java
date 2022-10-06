@@ -1,8 +1,18 @@
 package cfe.model.prioritization;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
+import java.util.logging.Logger;
+
+import cfe.action.BatchAction;
+import cfe.model.CfeResults;
+import cfe.model.CfeResultsType;
+import cfe.utils.DataTable;
+
 import java.util.TreeMap;
 
 /**
@@ -15,14 +25,128 @@ import java.util.TreeMap;
  *
  */
 public class GeneListInput {
-	
+    
+    private static Logger log = Logger.getLogger(GeneListInput.class.getName());
+    
 	private TreeMap<String, TreeSet<String>> genes;    // maps gene name (used for comparison) -> all input gene names
 	public static final int MAX_GENES = 40000;
 	
 	public GeneListInput() {
 		genes = new TreeMap<String,TreeSet<String>>(String.CASE_INSENSITIVE_ORDER);
 	}
+
+	/**
+	 * Constructs a GeneListInput object from the file with the specified file name.
+	 *
+	 * @param filename
+	 * @throws Exception
+	 */
+	public GeneListInput(String filename) throws Exception {
+
+	    if (filename == null || filename.trim().isEmpty()) {
+	        throw new Exception("No gene list file specified.");    
+	    }
+
+	    genes = new TreeMap<String,TreeSet<String>>(String.CASE_INSENSITIVE_ORDER);
+
+	    BufferedReader br = null;
+	    try {
+	        br = new BufferedReader(new FileReader(filename));
+	    }
+	    catch (Exception exception) {
+	        throw new Exception("Unable to access gene list file \"" + filename + "\": " + exception.getLocalizedMessage());    
+	    }
+
+	    String line;
+	    String geneCardSymbol;
+
+	    while ((line = br.readLine()) != null) {
+	        geneCardSymbol = line.trim();
+
+	        if (geneCardSymbol.equals("")) {
+	            ; // skip blank lines
+	        }
+	        else if (cfe.secure.Security.passesGeneWhiteList(geneCardSymbol))  {
+	            this.add(geneCardSymbol);
+	        } 
+	        else {
+	            String message = "Invalid gene name \"" + geneCardSymbol + "\" in gene list.";
+	            log.warning( message  + " File: " + filename);
+	            br.close();
+	            throw new Exception( message );
+	        }
+	    }
+
+	    br.close();     
+	}
+
 	
+	/**
+	 * Constructs a GeneListInput object from discovery results.
+	 * 
+	 * @param discoveryResults the discovery results from which to create the GeneListInput.
+	 * @param discoveryScoreCutoff the discovery score cutoff to use for selecting genes (genes with a score >= to the
+	 *     cutoff are selected).
+	 * @param comparisonThreshold the comparison threshold to use for discovery score comparisons, since checking for equality
+	 *     for floating point numbers.
+	 *
+	 * @throws Exception
+	 */
+    public GeneListInput(CfeResults discoveryResults, Double discoveryScoreCutoff, Double comparisonThreshold) throws Exception {
+        genes = new TreeMap<String,TreeSet<String>>(String.CASE_INSENSITIVE_ORDER);
+	
+        if (discoveryResults == null) {
+            throw new Exception("No discovery results specified for gene list creation.");
+        }
+        
+        if (discoveryScoreCutoff == null || discoveryScoreCutoff <= 0.0) {
+            String message = "Discovery score cutoff unset for gene list creation.";
+            throw new Exception(message);
+        }
+        
+        if (comparisonThreshold == null) {
+            comparisonThreshold = 0.0;
+        }
+        
+	    String key = "Probe Set ID";
+	    DataTable discoveryScores = discoveryResults.getSheetAsDataTable(CfeResultsType.DISCOVERY_SCORES, key);
+	    if (discoveryScores == null) {
+	        throw new Exception("Discovery scores were not found in discovery results specified for gene list creation.");
+	    }
+	        
+	    Map<String,String> row = null;
+	        
+	    for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
+	        row = discoveryScores.getRowMap(i);
+	            
+	        String deScore = "DE Score";
+	            
+	        if (!row.containsKey(deScore)) {
+	            String message = "Row for discovery scores does not contain the \"" + deScore + "\" column.";
+	            log.severe(message);
+	            throw new Exception(message);
+	        }
+	            
+	        String scoreString = row.get(deScore);
+	            
+	        double score = 0.0;
+	            
+	        if (scoreString != null) {
+	            try {
+	                score = Double.parseDouble(scoreString);
+	            }
+	            catch (NumberFormatException exception) {
+	                score = 0.0;    
+	            }
+	        }
+	            
+	        if (score >= discoveryScoreCutoff - comparisonThreshold) {
+	            String genecardsSymbol = row.get("Genecards Symbol");
+	            this.add(genecardsSymbol);
+	        }
+	    }
+	}
+	    
 	/**
 	 * Resets the list of genes (in effect deleting any existing genes).
 	 */

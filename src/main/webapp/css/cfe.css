@@ -171,6 +171,7 @@ table.dataTable td {
 
 fieldset.dataInput {
     border: 2px solid #000063;
+    border-radius: 10px;
     /* background-color: #f0f8ff; */
     /* background-color: #f6fbff; */
 }

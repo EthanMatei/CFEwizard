@@ -26,6 +26,7 @@ import com.healthmarketscience.jackcess.Table;
 
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
+import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
@@ -116,6 +117,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
             this.discoveryResultsList = CfeResultsService.getMetadata(
                     CfeResultsType.PRIORITIZATION_SCORES
             );
+            Collections.sort(this.discoveryResultsList, new CfeResultsNewestFirstComparator());
 		}
 	    return result;
 	}

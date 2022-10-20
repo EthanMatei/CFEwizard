@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import com.opencsv.CSVReader;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFile;
 import cfe.model.CfeResultsFileType;
+import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
@@ -100,6 +102,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	        result = LOGIN;
 	    } else {
 	        this.validationCohorts = CfeResultsService.getMetadata(CfeResultsType.VALIDATION_COHORT);
+	        Collections.sort(this.validationCohorts, new CfeResultsNewestFirstComparator());
 	    }
 	    
 	    return result;

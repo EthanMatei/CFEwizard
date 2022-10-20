@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,6 +40,7 @@ import com.opencsv.CSVReader;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFile;
 import cfe.model.CfeResultsFileType;
+import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
@@ -400,6 +402,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	        result = LOGIN;
 	    } else {
 	        this.discoveryCohortResultsList = CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_COHORT);
+	        Collections.sort(this.discoveryCohortResultsList, new CfeResultsNewestFirstComparator());
 	    }
 	    
 	    return result;

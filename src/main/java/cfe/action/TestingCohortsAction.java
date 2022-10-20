@@ -25,6 +25,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.healthmarketscience.jackcess.Table;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
@@ -149,6 +150,7 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                         CfeResultsType.VALIDATION_COHORT_ONLY,
                         CfeResultsType.VALIDATION_SCORES
                 );
+                Collections.sort(this.validationResultsList, new CfeResultsNewestFirstComparator());
 		    }
 		    catch (Exception exception) {
                 result = ERROR;

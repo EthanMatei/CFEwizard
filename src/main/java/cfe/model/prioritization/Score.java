@@ -242,7 +242,7 @@ public class Score {
 		    //---------------------------------------------------------------
 		    // Skip if gene is null or blank
 		    //---------------------------------------------------------------
-		    if (gene == null || gene.isBlank()) continue;
+		    if (gene == null || gene.trim().isEmpty()) continue;
 
 			CategoryResult cResult = null;
 			Result result = new Result();

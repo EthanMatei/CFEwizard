@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -28,6 +29,7 @@ import com.opencsv.CSVReader;
 
 import cfe.enums.StudyType;
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
@@ -137,6 +139,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	        result = LOGIN;
 	    } else {
 	        this.cfeResults = CfeResultsService.getMetadata( CfeResultsType.TESTING_COHORTS );
+	        Collections.sort(this.cfeResults, new CfeResultsNewestFirstComparator());
 	    }
 	    
 	    return result;

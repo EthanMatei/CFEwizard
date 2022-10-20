@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -16,6 +17,7 @@ import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.action.BaseAction;
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsType;
 import cfe.model.prioritization.GeneList;
 import cfe.model.prioritization.GeneListInput;
@@ -72,6 +74,7 @@ public class GeneListUpload extends BaseAction implements SessionAware {
         
         this.discoveryScoringResultsList =
                 CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_SCORES);
+        Collections.sort(this.discoveryScoringResultsList, new CfeResultsNewestFirstComparator());
         
         return result;
     }

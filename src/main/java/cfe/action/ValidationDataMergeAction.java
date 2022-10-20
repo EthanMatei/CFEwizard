@@ -1,5 +1,6 @@
 package cfe.action;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
+import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsType;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
@@ -50,7 +52,10 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
 	        result = LOGIN;
 	    } else {
 	        this.discoveryScores  = CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_SCORES);
+	        Collections.sort(this.discoveryScores, new CfeResultsNewestFirstComparator());
+	           
 	        this.prioritizationScores = CfeResultsService.getMetadata(CfeResultsType.PRIORITIZATION_SCORES_ONLY);
+	        Collections.sort(this.prioritizationScores, new CfeResultsNewestFirstComparator());
 	    }
 	    
 	    return result;

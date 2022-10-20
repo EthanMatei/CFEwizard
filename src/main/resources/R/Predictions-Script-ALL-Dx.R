@@ -33,6 +33,7 @@ predictorListCsvFile        <- args[9]
 specialPredictorListCsvFile <- args[10]
 outputDir                   <- args[11]
 
+pheneHighCutoff <- as.numeric(pheneHighCutoff)     # Make sure that the phene high cutoff is numeric
 diagnoses <- unlist(strsplit(diagnoses, ","))
 genderDiagnoses <- unlist(strsplit(genderDiagnoses, ","))
 
@@ -231,11 +232,13 @@ if ( (FIRSTYEARtest | FUTUREtest) & STATEtest ){
 
 
 
-if (FIRSTYEARtest | FUTUREtest | stateFirstYearHosp | stateFutureHosp){
+
+if (FIRSTYEARtest | FUTUREtest | stateFirstYearHosp | stateFutureHosp){ 
   
   # if user asks for state first year hosp, use
   # the variable "FirstYearScore" as the outcome 
   if (stateFirstYearHosp){
+ 
     #calculate ROC grouping variable#
     data$ROC <- as.numeric(data["FirstYearScore"] > 0)
     
@@ -245,6 +248,7 @@ if (FIRSTYEARtest | FUTUREtest | stateFirstYearHosp | stateFutureHosp){
   # if the user asks for state future hosp use "HospFreq"
   # as the outcome variable
   if (stateFutureHosp){
+    
     data$ROC <- as.numeric(data["HospFreq"] > 0)
     testName <- "futureHosp"
   }
@@ -263,6 +267,8 @@ if (FIRSTYEARtest | FUTUREtest | stateFirstYearHosp | stateFutureHosp){
 }
 
 if ( STATEtest ){
+  # Make sure that columns used for numeric comparisons are numeric
+  # data <- transform(data, PHENE = as.numeric(PHENE), check.names = false)
   
   #calculate ROC grouping variable
   #specify the PHENE variable above
@@ -274,6 +280,9 @@ if ( STATEtest ){
 }
 
 if ( DEATHtest ){
+  # Make sure that columns used for numeric comparisons are numeric
+  data <- transform(data, DeathCohort = as.numeric(DeathCohort), check.names = FALSE)
+  
   #calculate ROC grouping variable#
   data$ROC <- as.numeric(data$Deathcohort > 0)
   #Split dataset by cohort##

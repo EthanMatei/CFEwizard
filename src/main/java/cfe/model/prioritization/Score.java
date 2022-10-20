@@ -238,6 +238,11 @@ public class Score {
 		// calculate the scoring result
 		//---------------------------------------------------------------
 		for (String gene: researchData.getGenes()) {
+		    
+		    //---------------------------------------------------------------
+		    // Skip if gene is null or blank
+		    //---------------------------------------------------------------
+		    if (gene == null || gene.isBlank()) continue;
 
 			CategoryResult cResult = null;
 			Result result = new Result();

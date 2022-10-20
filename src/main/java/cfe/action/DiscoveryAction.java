@@ -143,10 +143,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private String discoveryScoringCommand;
 	
-	private int dePercentileScore1 = 0;
-	private int dePercentileScore2 = 1;
-	private int dePercentileScore3 = 2;
-	private int dePercentileScore4 = 4;
+	private double dePercentileScore1 = 0;
+	private double dePercentileScore2 = 1;
+	private double dePercentileScore3 = 2;
+	private double dePercentileScore4 = 4;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	private String scriptOutputTextFileName;
@@ -1080,7 +1080,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	                }
 	                scoring.setValue(rowNum, "DE Percentile", dePercentile + "");
 
-	                int deScore = 0;
+	                double deScore = 0.0;
 
 	                if (dePercentile < 0.333333333333) {
 	                    deScore = this.dePercentileScore1;
@@ -1722,35 +1722,35 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         this.discoveryScoringCommand = discoveryScoringCommand;
     }
 
-    public int getDePercentileScore1() {
+    public double getDePercentileScore1() {
         return dePercentileScore1;
     }
 
-    public void setDePercentileScore1(int dePercentileScore1) {
+    public void setDePercentileScore1(double dePercentileScore1) {
         this.dePercentileScore1 = dePercentileScore1;
     }
 
-    public int getDePercentileScore2() {
+    public double getDePercentileScore2() {
         return dePercentileScore2;
     }
 
-    public void setDePercentileScore2(int dePercentileScore2) {
+    public void setDePercentileScore2(double dePercentileScore2) {
         this.dePercentileScore2 = dePercentileScore2;
     }
 
-    public int getDePercentileScore3() {
+    public double getDePercentileScore3() {
         return dePercentileScore3;
     }
 
-    public void setDePercentileScore3(int dePercentileScore3) {
+    public void setDePercentileScore3(double dePercentileScore3) {
         this.dePercentileScore3 = dePercentileScore3;
     }
 
-    public int getDePercentileScore4() {
+    public double getDePercentileScore4() {
         return dePercentileScore4;
     }
 
-    public void setDePercentileScore4(int dePercentileScore4) {
+    public void setDePercentileScore4(double dePercentileScore4) {
         this.dePercentileScore4 = dePercentileScore4;
     }
 

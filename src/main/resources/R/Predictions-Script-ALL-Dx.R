@@ -281,7 +281,7 @@ if ( STATEtest ){
 
 if ( DEATHtest ){
   # Make sure that columns used for numeric comparisons are numeric
-  data <- transform(data, DeathCohort = as.numeric(DeathCohort), check.names = FALSE)
+  # data <- transform(data, DeathCohort = as.numeric(DeathCohort), check.names = FALSE)
   
   #calculate ROC grouping variable#
   data$ROC <- as.numeric(data$Deathcohort > 0)

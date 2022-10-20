@@ -12,6 +12,16 @@
 
 <h2>CFE Saved Results</h2>
 
+<s:if test="errorMessage != null && errorMessage != ''">
+    <div class="cfeError">
+        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+        <s:if test="exceptionStack != null && exceptionStack != ''">
+            <p>
+                <s:property value="exceptionStack" />
+            </p>
+        </s:if>
+    </div>
+</s:if>
 
 <table class="dataTable">
     <tr>

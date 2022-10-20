@@ -61,7 +61,7 @@ public class CfeResultsDeleteAction extends BaseAction implements SessionAware {
 
 	private Long cfeResultsId;
 
-    private List<CfeResults> discoveryResults;
+    private List<CfeResults> cfeResults;
     
 	public String execute() throws Exception {
 		String result = SUCCESS;
@@ -72,7 +72,7 @@ public class CfeResultsDeleteAction extends BaseAction implements SessionAware {
 		else {
 		    try {
 		        CfeResultsService.deleteById(cfeResultsId);
-		        this.discoveryResults = CfeResultsService.getAllMetadata();
+		        this.cfeResults = CfeResultsService.getAllMetadata();
 		    } catch (Exception exception) {
 		        this.errorMessage = "The Discovery database could not be processed. " + exception.getLocalizedMessage();
 		        result = ERROR;
@@ -101,12 +101,12 @@ public class CfeResultsDeleteAction extends BaseAction implements SessionAware {
 		this.errorMessage = errorMessage;
 	}
 
-    public List<CfeResults> getDiscoveryResults() {
-        return discoveryResults;
+    public List<CfeResults> getCfeResults() {
+        return cfeResults;
     }
 
-    public void setDiscoveryResults(List<CfeResults> discoveryResults) {
-        this.discoveryResults = discoveryResults;
+    public void setCfeResults(List<CfeResults> cfeResults) {
+        this.cfeResults = cfeResults;
     }
 
     public Long getCfeResultsId() {

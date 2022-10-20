@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,7 @@ import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
+import cfe.model.prioritization.results.Result;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.DataTable;
@@ -590,7 +592,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	{
 	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
-	    Map<String,Double> prioritizationScores = this.getPrioritizationScores(validationDataId /* prioritizationId */);
+	    TreeMap<String,Double> prioritizationScores = this.getPrioritizationScores(validationDataId /* prioritizationId */);
+
 	    
 	    //----------------------------------------
 	    // Get the discovery scores
@@ -673,8 +676,8 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 this.genesNotFoundInPrioritization.add(gene);
             }
 
-            double score = deScore + prioritizationScore;
-            if (dePercentile >= 0.3333333333 && score > (this.scoreCutoff - this.comparisonThreshold)) {
+            double cfe2Score = deScore + prioritizationScore;
+            if (dePercentile >= 0.3333333333 && cfe2Score >= (this.scoreCutoff - this.comparisonThreshold)) {
                 String direction = "I";
                 if (rawDeScore < 0.0) {
                     direction = "D";
@@ -713,9 +716,9 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         return predictorList;
 	}
 	
-    public Map<String,Double> getPrioritizationScores(Long prioritizationId) throws Exception
+    public TreeMap<String,Double> getPrioritizationScores(Long prioritizationId) throws Exception
     {
-        Map<String,Double> scores = new HashMap<String,Double>();
+        TreeMap<String,Double> scores = new TreeMap<String, Double>(String.CASE_INSENSITIVE_ORDER);
         
         CfeResults cfeResults = CfeResultsService.get(prioritizationId);
         XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();

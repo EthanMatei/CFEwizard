@@ -91,8 +91,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     private File geneListUpload;
     private String geneListUploadContentType;
     private String geneListUploadFileName;
-    private Double discoveryScoreCutoff;
-    private Double prioritizationComparisonThreshold;
+    private Double prioritizationScoreCutoff;
+    private Double prioritizationComparisonThreshold = 0.0001;
     
     private double huBrainScore;
     private double huPerScore;
@@ -132,6 +132,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 	private String percentInValidationCohort;
 	
     private double validationScoreCutoff = 6.0;
+    private Double validationComparisonThreshold = 0.0001; 
     
     private double bonferroniScore  = 6;
     private double nominalScore     = 4;
@@ -143,6 +144,9 @@ public class BatchAction extends BaseAction implements SessionAware {
     private File followUpDb;
     private String followUpDbContentType;
     private String followUpDbFileName;
+    
+    private double testingScoreCutoff;
+    private Double testingComparisonThreshold = 0.0001;
     
     private List<String> admissionReasons;
     
@@ -321,7 +325,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 }
                 else if (this.geneListSpecification.contentEquals("Generate from Discovery:")) {
                     this.geneListUploadFileName = "";
-                    this.geneListInput = new GeneListInput(discoveryCfeResults, this.discoveryScoreCutoff, this.prioritizationComparisonThreshold);
+                    this.geneListInput = new GeneListInput(discoveryCfeResults, this.prioritizationScoreCutoff, this.prioritizationComparisonThreshold);
                 }
                 else {
                     result = INPUT;
@@ -337,7 +341,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 // Generate a workbook with the prioritization scores
                 XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(
                         results, /* scores, */ weights, diseaseSelectors, geneListInput,
-                        this.discoveryScoresResultsId, discoveryScoreCutoff, this.geneListUploadFileName 
+                        this.discoveryScoresResultsId, prioritizationScoreCutoff, this.geneListUploadFileName 
                         );
                 
                 // Create the prioritization CFE results
@@ -740,12 +744,12 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.geneListUploadFileName = geneListUploadFileName;
     }
 
-    public Double getDiscoveryScoreCutoff() {
-        return discoveryScoreCutoff;
+    public Double getPrioritizationScoreCutoff() {
+        return prioritizationScoreCutoff;
     }
 
-    public void setDiscoveryScoreCutoff(Double discoveryScoreCutoff) {
-        this.discoveryScoreCutoff = discoveryScoreCutoff;
+    public void setPrioritizationScoreCutoff(Double prioritizationScoreCutoff) {
+        this.prioritizationScoreCutoff = prioritizationScoreCutoff;
     }
     
     public Double getPrioritizationComparisonThreshold() {

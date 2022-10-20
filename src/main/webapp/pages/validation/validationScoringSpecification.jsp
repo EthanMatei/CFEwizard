@@ -34,6 +34,8 @@
 
 <p>
 Score cutoff (&ge;): <s:property value="scoreCutoff" />
+
+<span style="margin-left: 1em;">Comparison Threshold:</span> <s:property value="comparisonThreshold"/>
 </p>
 
 <p>
@@ -65,6 +67,7 @@ Phene: <s:property value="phene" />
     <s:hidden name="prioritizationId" />
     
     <s:hidden name="scoreCutoff" />
+    <s:hidden name="comparisonThreshold" />
     
     <s:hidden name="bonferroniScore" />
     <s:hidden name="nominalScore" />

@@ -31,6 +31,9 @@ Gene Expression CSV File
         
 <p>
 Score cutoff (&ge;): <s:textfield style="text-align: right;" name="scoreCutoff" />
+
+<span style="margin-left: 1em;">Comparison Threshold:</span>
+<s:textfield size="8" style="text-align: right;" name="comparisonThreshold"/>
 </p>
 
 

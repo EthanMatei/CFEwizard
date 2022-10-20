@@ -82,6 +82,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     private String testingScoringCommand;
     
     private double scoreCutoff = 8.0;
+    private double comparisonThreshold = 0.0001;
     
     private ArrayList<String> phenes;
 
@@ -123,8 +124,6 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     private String rCommandFutureLongitudinal;
     
     private Long cfeResultsId;
-    
-    private double comparisonThreshold = 0.0001;
 
 	/**
 	 * Select testing data
@@ -1208,7 +1207,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
             double score = deScore + prioritizationScore + validationScore;
 
-            if (dePercentile >= 0.3333333333 && score > this.scoreCutoff) {
+            if (dePercentile >= 0.3333333333 && score > (this.scoreCutoff - this.comparisonThreshold)) {
                 String direction = "I";
                 if (rawDeScore < 0.0) {
                     direction = "D";
@@ -1308,6 +1307,11 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         row.add("Score Cutoff");
         row.add(this.scoreCutoff + "");
         infoTable.addRow(row);
+
+        row = new ArrayList<String>();
+        row.add("Comparison Threshold");
+        row.add(this.comparisonThreshold + "");
+        infoTable.addRow(row);        
         
         row = new ArrayList<String>();
         row.add("Prediction Phene");

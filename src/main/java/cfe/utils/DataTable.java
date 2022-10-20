@@ -69,7 +69,7 @@ public class DataTable {
 	protected List<ArrayList<String>> data;
 	
 	public static final Pattern INT_PATTERN       = Pattern.compile("^-?\\d+$");
-    public static final Pattern FLOAT_PATTERN     = Pattern.compile("^-?\\d+\\.\\d*$");
+    public static final Pattern FLOAT_PATTERN     = Pattern.compile("^-?[0-9]+[.][0-9]*([eE][-]?[0-9]+)?$");
     public static final Pattern DATE_MDY_PATTERN  = Pattern.compile("\\d{1,2}/\\d{1,2}/\\d{2}(\\d{2})?$");
     public static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$");
     public static final Pattern TIMESTAMP_WITH_SECONDS_PATTERN

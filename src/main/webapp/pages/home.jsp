@@ -68,7 +68,7 @@
 
 <h2>Automatic Processing</h2>
 <ul>
-    <li><s:a action="BatchInitialization">Automatic CFE Calculation</s:a></li>
+    <li><s:a action="BatchInitialization">Automatic CFE Calculation</s:a> (WORK IN PROGRESS)</li>
 </ul>
 
 <h2>Results</h2>

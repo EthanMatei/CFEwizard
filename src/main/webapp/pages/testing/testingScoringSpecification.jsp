@@ -41,6 +41,7 @@ Testing Data:
 <p>
 Gene expression CSV file: <s:property value="geneExpressionCsvFileName" /> <br/>
 Score cutoff: <s:property value="scoreCutoff"/> <br/>
+Comparison threshold: <s:property value="comparisonThreshold"/> <br/>
 </p>
     
 <p>

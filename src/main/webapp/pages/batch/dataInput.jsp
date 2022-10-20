@@ -174,9 +174,9 @@
                 
                 <p>
                 <s:radio name="geneListSpecification" list="{'Generate from Discovery:'}"/>
-                <span style="margin-left: 2em;">Discovery score cutoff</span>
-                <s:textfield style="text-align: right;" name="discoveryScoreCutoff" size="4"/>
-                <span style="margin-left: 1em;">Comparison threshold</span>
+                <span style="margin-left: 2em;">Score cutoff</span>
+                <s:textfield style="text-align: right;" name="prioritizationScoreCutoff" size="4"/>
+                <span style="margin-left: 1em;">Comparison threshold:</span>
                 <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="prioritizationComparisonThreshold"/>
                 </p>
         </fieldset>
@@ -245,6 +245,8 @@
                 
         <p>
         Score cutoff (&ge;): <s:textfield style="text-align: right;" name="validationScoreCutoff" />
+        <span style="margin-left: 1em;">Comparison threshold:</span>
+        <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="validationComparisonThreshold"/>
         </p>
         
         <table class="dataTable" style="margin-top: 17px;">
@@ -281,6 +283,8 @@
                         
         <p>
         Score cutoff (&ge;): <s:textfield style="text-align: right;" name="testingScoreCutoff" />
+        <span style="margin-left: 1em;">Comparison threshold:</span>
+        <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="testingComparisonThreshold"/>
         </p>
         
     <p>

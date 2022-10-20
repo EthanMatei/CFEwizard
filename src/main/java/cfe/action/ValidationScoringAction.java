@@ -66,6 +66,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	private Date scoresGeneratedTime;
 	
 	private double scoreCutoff = 6.0;
+    private double comparisonThreshold = 0.0001;
 	
 	private List<String> genesNotFoundInPrioritization = new ArrayList<String>();
     private String validationScoringCommand;
@@ -670,7 +671,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
             }
 
             double score = deScore + prioritizationScore;
-            if (dePercentile >= 0.3333333333 && score > this.scoreCutoff) {
+            if (dePercentile >= 0.3333333333 && score > (this.scoreCutoff - this.comparisonThreshold)) {
                 String direction = "I";
                 if (rawDeScore < 0.0) {
                     direction = "D";
@@ -761,6 +762,11 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         row = new ArrayList<String>();
         row.add("Score Cutoff");
         row.add(this.scoreCutoff + "");
+        infoTable.addRow(row);
+
+        row = new ArrayList<String>();
+        row.add("Comparison Threshold");
+        row.add(this.comparisonThreshold + "");
         infoTable.addRow(row);
         
         row = new ArrayList<String>();
@@ -949,6 +955,14 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
     public void setScoreCutoff(double scoreCutoff) {
         this.scoreCutoff = scoreCutoff;
+    }
+
+    public double getComparisonThreshold() {
+        return comparisonThreshold;
+    }
+
+    public void setComparisonThreshold(double comparisonThreshold) {
+        this.comparisonThreshold = comparisonThreshold;
     }
 
     public List<String> getGenesNotFoundInPrioritization() {

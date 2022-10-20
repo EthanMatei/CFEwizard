@@ -57,7 +57,7 @@
 	<dependency>
 		<groupId>com.healthmarketscience.jackcess</groupId>
 		<artifactId>jackcess</artifactId>
-		<version>4.0.1</version>
+		<version>4.0.2</version>
 	</dependency>
             
 	<!-- Hibernate -->
@@ -80,14 +80,14 @@
     <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
-        <version>7.3.0</version>
+        <version>9.5.1</version>
     </dependency>
 
     <!-- MySQL -->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.27</version>
+      <version>8.0.31</version>
       <!-- <version>8.0.16</version> -->
     </dependency>
 	
@@ -95,14 +95,14 @@
     <dependency>
       <groupId>org.apache.struts</groupId>
 	  <artifactId>struts2-core</artifactId>
-      <version>2.5.30</version>
+      <version>6.0.3</version>
     </dependency>
     
     <!-- Maven war plugin -->
     <dependency>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-war-plugin</artifactId>
-      <version>3.3.1</version>
+      <version>3.3.2</version>
     </dependency>
 
     <!-- SQL Plug in -->
@@ -116,7 +116,7 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
-      <version>4.1.2</version>
+      <version>5.2.3</version>
     </dependency>
     
     <!-- 
@@ -130,26 +130,26 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
-      <version>4.1.2</version>
+      <version>5.2.3</version>
     </dependency>
         
     <!-- Tiles -->
     <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts2-tiles-plugin</artifactId>
-      <version>2.5.30</version>
+      <version>6.0.3</version>
     </dependency>
 
     <dependency>
       <groupId>com.opencsv</groupId>
       <artifactId>opencsv</artifactId>
-      <version>4.0</version>
+      <version>5.7.0</version>
     </dependency>
 
 <dependency>
     <groupId>org.webjars</groupId>
     <artifactId>jquery</artifactId>
-    <version>3.6.0</version>
+    <version>3.6.1</version>
 </dependency>
       		
   </dependencies>

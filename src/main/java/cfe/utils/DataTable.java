@@ -50,6 +50,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Table;
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 /**
  * Class for representing a table of data with named columns.
@@ -90,7 +91,7 @@ public class DataTable {
 	    this.index = new TreeMap<String, ArrayList<String>>();
 	}
     
-    public void initializeToCsv(String csvFile) throws IOException {
+    public void initializeToCsv(String csvFile) throws IOException, CsvValidationException {
         Reader reader = Files.newBufferedReader(Paths.get(csvFile));
 		CSVReader csvReader = new CSVReader(reader);  
 		
@@ -116,7 +117,7 @@ public class DataTable {
      * @param csvString
      * @throws IOException
      */
-    public void initializeToCsvString(String csvString) throws IOException {
+    public void initializeToCsvString(String csvString) throws IOException, CsvValidationException {
         Reader reader = new StringReader(csvString);
         CSVReader csvReader = new CSVReader(reader);  
         

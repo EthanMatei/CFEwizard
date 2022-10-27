@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -200,7 +201,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 }
 
                 String predictorListCsv = predictorList.toCsv();
-                File predictorListCsvTmp = FileUtil.createTempFile("predictor-list-",  ".csv");
+                File predictorListCsvTmp = FileUtil.createTempFile("predictor-list-testing-",  ".csv");
                 if (predictorListCsv != null) {
                     FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
                 }
@@ -362,7 +363,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     studyType = LONGITUDINAL;
                     String rScriptOutput = this.runScript(
                             testType, studyType,
-                            this.predictionPhene, this.predictionPheneHighCutoff,
+                            this.predictionPhene, this.predictionPheneHighCutoff - this.comparisonThreshold,
                             diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
                             this.predictorListFile, this.specialPredictorListTempFile
@@ -1072,7 +1073,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
             throw new Exception(message);
         }
         
-        Map<String,Double> prioritizationScores = this.getPrioritizationScores(workbook);
+        TreeMap<String,Double> prioritizationScores = this.getPrioritizationScores(workbook);
         
         //----------------------------------------
         // Get the discovery scores
@@ -1208,9 +1209,9 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 validationScore = 0.0;
             }
 
-            double score = deScore + prioritizationScore + validationScore;
+            double cfe3Score = deScore + prioritizationScore + validationScore;
 
-            if (dePercentile >= 0.3333333333 && score > (this.scoreCutoff - this.comparisonThreshold)) {
+            if (dePercentile >= 0.3333333333 && cfe3Score > (this.scoreCutoff - this.comparisonThreshold)) {
                 String direction = "I";
                 if (rawDeScore < 0.0) {
                     direction = "D";
@@ -1248,9 +1249,9 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         return predictorList;
     }
     
-    public Map<String,Double> getPrioritizationScores(XSSFWorkbook workbook) throws Exception
+    public TreeMap<String,Double> getPrioritizationScores(XSSFWorkbook workbook) throws Exception
     {
-        Map<String,Double> scores = new HashMap<String,Double>();
+        TreeMap<String,Double> scores = new TreeMap<String, Double>(String.CASE_INSENSITIVE_ORDER);
         
         String key = "Gene";
         

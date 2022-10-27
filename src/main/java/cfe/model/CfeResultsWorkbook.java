@@ -2,6 +2,7 @@ package cfe.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -69,6 +70,31 @@ public class CfeResultsWorkbook {
         return diagnosisCodes;
     }
     
-    
+    /**
+     * Gets the Discovery Cohort Info sheet from a workbook as a map from attribute to value.
+     * 
+     * @return
+     * @throws Exception
+     */
+    public Map<String,String> getDiscoveryCohortInfoMap() throws Exception {
+        Map<String,String> map = new HashMap<String,String>();
+        
+        XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
+        if (sheet == null) {
+            String message = "Could not find sheet \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\" in spreadsheet.";
+            log.severe(message);
+            throw new Exception(message);
+        }
+        
+        DataTable discoveryCohortInfo = new DataTable("attribute");
+        discoveryCohortInfo.initializeToWorkbookSheet(sheet);
+
+        Set<String> keys = discoveryCohortInfo.getKeys();
+        for (String key: keys) {
+            String value = discoveryCohortInfo.getValue(key, "value");
+            map.put(key, value);
+        }
+        return(map);
+    }
 
 }

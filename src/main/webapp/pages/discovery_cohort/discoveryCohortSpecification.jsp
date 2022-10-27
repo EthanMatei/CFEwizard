@@ -35,13 +35,16 @@
     <s:hidden name="discoveryDbTempFileName"/>
 
     <p>
-    Low cutoff (&le;): <s:textfield name="lowCutoff"/>
+    Low cutoff (&le;): <s:textfield size="6" style="text-align: right;" name="lowCutoff"/>
+    <span style="margin-left: 1em;">Comparison threshold:</span>
+    <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="discoveryCohortComparisonThreshold"/>
     </p>
 
     <p>
-    High cutoff (&ge;): <s:textfield name="highCutoff"/>
+    High cutoff (&ge;): <s:textfield size="6" style="text-align: right;" name="highCutoff"/>
     </p>
 
+             
     <p>
     Genomics table <s:select name="genomicsTable" list="genomicsTables"/>
     </p>

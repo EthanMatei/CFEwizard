@@ -110,7 +110,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private double lowCutoff;
 	private double highCutoff;
-	
+    private double discoveryCohortComparisonThreshold = 0.0001;  
+    
 	private String cohortDataCsv;
 	private String cohortDataCsvFile;
 	private String cohortDataXlsxFile;
@@ -219,6 +220,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			result = LOGIN;
 		} else {
 			try {
+			    //-----------------------------------------------------------------------------------------------
+			    
+			    //-----------------------------------------------------------------------------------------------
 		        DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.discoveryDbTempFileName);
 		         
 				// Split phene selection into table and phene
@@ -306,7 +310,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				
 				log.info("chip data merged.");
 				
-				cohortData.enhance(pheneSelection, lowCutoff, highCutoff);
+				cohortData.enhance(pheneSelection, lowCutoff, highCutoff, this.discoveryCohortComparisonThreshold);
 
                 // DEBUG
                 // String csv2 = cohortData.toCsv();
@@ -327,7 +331,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				// Create cohort and cohort CSV file
 				//-------------------------------------------
 				log.info("Discovery cohort phene selection: \"" + pheneSelection + "\".");
-				CohortTable cohort = cohortData.getDiscoveryCohort(pheneSelection, lowCutoff, highCutoff);
+				CohortTable cohort = cohortData.getDiscoveryCohort(pheneSelection, lowCutoff, highCutoff, this.discoveryCohortComparisonThreshold);
 				cohort.sort("Subject", "PheneVisit"); 
                 this.cohortGeneratedTime = new Date();
 				
@@ -1779,6 +1783,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
     public void setDiscoveryCohortFileName(String discoveryCohortFileName) {
         this.discoveryCohortFileName = discoveryCohortFileName;
+    }
+
+    public double getDiscoveryCohortComparisonThreshold() {
+        return discoveryCohortComparisonThreshold;
+    }
+
+    public void setDiscoveryCohortComparisonThreshold(double discoveryCohortComparisonThreshold) {
+        this.discoveryCohortComparisonThreshold = discoveryCohortComparisonThreshold;
     }
 
 }

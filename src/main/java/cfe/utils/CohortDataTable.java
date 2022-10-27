@@ -227,7 +227,8 @@ public class CohortDataTable extends DataTable {
 		return merge;
 	}
 
-	public TreeSet<String> getDiscoveryCohortSubjects(String phene, double lowCutoff, double highCutoff) throws Exception {
+	public TreeSet<String> getDiscoveryCohortSubjects(String phene, double lowCutoff, double highCutoff, double comparisonThreshold)
+	        throws Exception {
 	    
 	    int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         int pheneIndex   = this.getColumnIndex(phene.trim());
@@ -254,11 +255,11 @@ public class CohortDataTable extends DataTable {
                 if (pheneValueString.matches("\\d+") || pheneValueString.matches("\\d+\\.\\d*")) {
 	                double pheneValue = Double.parseDouble(pheneValueString);
 
-	                if (pheneValue <= lowCutoff) {
+	                if (pheneValue <= lowCutoff + comparisonThreshold) {
 	                    lowScoreSubjects.add(subject);
 	                }
 
-	                if (pheneValue >= highCutoff) {
+	                if (pheneValue >= highCutoff - comparisonThreshold) {
 	                    highScoreSubjects.add(subject);
 	                }
 	            }
@@ -286,6 +287,7 @@ public class CohortDataTable extends DataTable {
      */
     public List<TreeSet<String>> setValidationAndTestingCohorts(
             String phene, double lowCutoff, double highCutoff,
+            double comparisonThreshold,
             // String clinicalPhene, double clinicalHighCutoff,
             List<PheneCondition> pheneConditions, double percentInValidation
             ) throws Exception {
@@ -352,11 +354,11 @@ public class CohortDataTable extends DataTable {
                 if (StringUtil.isFloat(pheneValueString)) {
                     double pheneValue = Double.parseDouble(pheneValueString);
 
-                    if (pheneValue <= lowCutoff) {
+                    if (pheneValue <= lowCutoff + comparisonThreshold) {
                         lowScoreSubjects.add(subject);
                     }
 
-                    if (pheneValue >= highCutoff) {
+                    if (pheneValue >= highCutoff - comparisonThreshold) {
                         highScoreSubjects.add(subject);
                     }
                 }
@@ -417,13 +419,13 @@ public class CohortDataTable extends DataTable {
             }
             
             if (discoverySubjects.contains(subject)) {
-                if (pheneValue != null && pheneValue <= lowCutoff) {
+                if (pheneValue != null && pheneValue <= lowCutoff + comparisonThreshold) {
                     row.set(validationIndex, "Low Validation");  
                     row.set(valCategoryIndex, "Low");
                     row.set(validationCohortIndex, "0");
                     row.set(testingCohortIndex, "1");
                 }
-                else if (pheneValue != null && pheneValue >= highCutoff && !clinicalConditionSubjects.contains(subject)) {
+                else if (pheneValue != null && pheneValue >= highCutoff - comparisonThreshold && !clinicalConditionSubjects.contains(subject)) {
                     row.set(validationIndex, "High Validation");
                     row.set(valCategoryIndex, "High");
                     row.set(validationCohortIndex, "0");
@@ -518,7 +520,7 @@ public class CohortDataTable extends DataTable {
 	 * @param high
 	 * @param phene
 	 */
-	public CohortTable getDiscoveryCohort(String phene, double lowCutoff, double highCutoff) throws Exception {
+	public CohortTable getDiscoveryCohort(String phene, double lowCutoff, double highCutoff, double comparisonThreshold) throws Exception {
 		// Get the subject column index
 	   	int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
 	    if (subjectIndex == -1) {
@@ -544,7 +546,7 @@ public class CohortDataTable extends DataTable {
 
 
 		
-		TreeSet<String> cohortSubjects = this.getDiscoveryCohortSubjects(phene, lowCutoff, highCutoff);
+		TreeSet<String> cohortSubjects = this.getDiscoveryCohortSubjects(phene, lowCutoff, highCutoff, comparisonThreshold);
 	    
 	    //---------------------------------------------------------------------------
 	    // Calculate the number of low and high visits for subjects in the cohort
@@ -561,11 +563,11 @@ public class CohortDataTable extends DataTable {
                 if (pheneValueString.matches("\\d+") || pheneValueString.matches("\\d+\\.\\d*")) {
 					double pheneValue = Double.parseDouble(pheneValueString);
 					
-					if (pheneValue <= lowCutoff) {
+					if (pheneValue <= lowCutoff + comparisonThreshold) {
 						lowVisits++;
 					}
 					
-					if (pheneValue >= highCutoff) {
+					if (pheneValue >= highCutoff - comparisonThreshold) {
 						highVisits++;
 					}
 				}
@@ -606,10 +608,10 @@ public class CohortDataTable extends DataTable {
                 if (pheneValueString.matches("\\d+") || pheneValueString.matches("\\d+\\.\\d*")) {
 		            double pheneValue = Double.parseDouble(pheneValueString);
 		        
-	        	    if (pheneValue <= lowCutoff) {
+	        	    if (pheneValue <= lowCutoff + comparisonThreshold) {
 	        	        cohortRow.add("1");
 	        	    }
-	        	    else if (pheneValue >= highCutoff) {
+	        	    else if (pheneValue >= highCutoff - comparisonThreshold) {
 	        	        cohortRow.add("1");
 	        	    }
 	        	    else {
@@ -647,7 +649,7 @@ public class CohortDataTable extends DataTable {
 	}
 	*/
 	
-    public void enhance(String phene, double lowCutoff, double highCutoff) throws Exception {
+    public void enhance(String phene, double lowCutoff, double highCutoff, double comparisonThreshold) throws Exception {
         log.info("Enhancement of cohort data table started for phene \"" + phene 
                 + "\" with low cutoff = " + lowCutoff + " and high cutoff = " + highCutoff + ".");
         
@@ -665,7 +667,7 @@ public class CohortDataTable extends DataTable {
         
         log.info("Cohort index: " + cohortIndex);
         
-        TreeSet<String> cohortSubjects = this.getDiscoveryCohortSubjects(phene, lowCutoff, highCutoff);
+        TreeSet<String> cohortSubjects = this.getDiscoveryCohortSubjects(phene, lowCutoff, highCutoff, comparisonThreshold);
 
         log.info("Cohort subjects retrieved.");
         
@@ -703,100 +705,6 @@ public class CohortDataTable extends DataTable {
         this.sortWithBlanksLast(sortColumns);
     }
     
-    public void enhanceCohortDataSheet(XSSFWorkbook workbook, String sheetName, String phene, int lowCutoff, int highCutoff) {
-    
-        /*
-        XSSFSheet sheet = workbook.getSheet(sheetName);
-        
-        CellStyle lowCellStyle = workbook.createCellStyle();
-        lowCellStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-        lowCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        
-        CellStyle neutralCellStyle = workbook.createCellStyle();
-        neutralCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-        neutralCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        
-        CellStyle highCellStyle = workbook.createCellStyle();
-        highCellStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-        highCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-        CellStyle intraCellStyle = workbook.createCellStyle();
-        intraCellStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
-        intraCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        
-        int pheneIndex = this.getColumnIndex(phene);
-        int subjectIndex = this.getColumnIndex("Subject");
-        
-        int intraIndex = pheneIndex -1;
-        int lowIndex   = pheneIndex -2;
-        int highIndex  = pheneIndex -3;
-        
-        XSSFRow header = sheet.getRow(0);
-        header.getCell(lowIndex).setCellStyle(lowCellStyle);
-        header.getCell(highIndex).setCellStyle(highCellStyle);
-        header.getCell(intraIndex).setCellStyle(intraCellStyle);
-        
-        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-            XSSFRow row = sheet.getRow(i);
-            XSSFCell cell = row.getCell(pheneIndex);
-
-            try {
-                double dvalue = cell.getNumericCellValue();
-                int value = (int) (dvalue + 0.5); // round to the nearest int
-                
-                if (value <= lowCutoff) {
-                    cell.setCellStyle(lowCellStyle);
-                }
-                else if (value < highCutoff) {
-                    cell.setCellStyle(neutralCellStyle);
-                } 
-                else {
-                    // high value
-                    cell.setCellStyle(highCellStyle);
-                }       
-            } catch (Exception exception) {
-                ; // Ignore; this is a non-numeric value (perhaps blank or "NA")
-            }
-            
-            cell = row.getCell(highIndex);
-            int rowNumber = i + 1;
-            int lastRow = sheet.getLastRowNum() + 1;
-            String subjectCol = DataTable.columnLetter(subjectIndex);
-            String pheneCol   = DataTable.columnLetter(pheneIndex);
-            String highFormula = "COUNTIFS("
-                    + "$" + subjectCol + "$2" + ":" + "$" + subjectCol + "$" + lastRow 
-                    + "," + subjectCol + rowNumber 
-                    + "," 
-                    + "$" + pheneCol + "$2" + ":" + "$" + pheneCol + "$" + lastRow
-                    + "," + "\">="+ highCutoff + "\""
-                    + ")";
-            cell.setCellFormula(highFormula);
-            
-            cell = row.getCell(lowIndex);
-            String lowFormula = "IF(" + pheneCol + rowNumber + "=\"\"," + "0" + ","
-                    + "COUNTIFS("
-                    + "$" + subjectCol + "$2" + ":" + "$" + subjectCol + "$" + lastRow 
-                    + "," + subjectCol + rowNumber 
-                    + "," 
-                    + "$" + pheneCol + "$2" + ":" + "$" + pheneCol + "$" + lastRow
-                    + "," + "\"<="+ lowCutoff + "\""
-                    + ")"
-                    + ")";
-            cell.setCellFormula(lowFormula);
-            
-            String lowCol = DataTable.columnLetter(lowIndex);
-            String highCol = DataTable.columnLetter(highIndex);
-            String intraFormula = "IF("
-                    + "AND(" + lowCol + rowNumber + ">0" + "," + highCol + rowNumber + ">0)"
-                    + "," + "\"INTRA\""
-                    + "," + "\"no\""
-                    + ")"
-                    ;
-             cell = row.getCell(intraIndex);
-             cell.setCellFormula(intraFormula); 
-        }
-        */
-    }
     
     
     public void addCohort(String cohortName, Set<String> subjects) throws Exception {
@@ -821,98 +729,7 @@ public class CohortDataTable extends DataTable {
     }
 
 	
-	public void enhanceCohortDataSheetOriginal(XSSFWorkbook workbook, String sheetName, String phene, int lowCutoff, int highCutoff) {
-        XSSFSheet sheet = workbook.getSheet(sheetName);
-        
-		CellStyle lowCellStyle = workbook.createCellStyle();
-		lowCellStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-		lowCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		
-		CellStyle neutralCellStyle = workbook.createCellStyle();
-		neutralCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-		neutralCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		
-		CellStyle highCellStyle = workbook.createCellStyle();
-		highCellStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-		highCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-		CellStyle intraCellStyle = workbook.createCellStyle();
-		intraCellStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
-		intraCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		
-		int pheneIndex = this.getColumnIndex(phene);
-		int subjectIndex = this.getColumnIndex("Subject");
-		
-		int intraIndex = pheneIndex -1;
-		int lowIndex   = pheneIndex -2;
-		int highIndex  = pheneIndex -3;
-		
-        XSSFRow header = sheet.getRow(0);
-        header.getCell(lowIndex).setCellStyle(lowCellStyle);
-        header.getCell(highIndex).setCellStyle(highCellStyle);
-        header.getCell(intraIndex).setCellStyle(intraCellStyle);
-        
-		for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-			XSSFRow row = sheet.getRow(i);
-			XSSFCell cell = row.getCell(pheneIndex);
-
-			try {
-			    double dvalue = cell.getNumericCellValue();
-                int value = (int) (dvalue + 0.5); // round to the nearest int
-                
-				if (value <= lowCutoff) {
-                    cell.setCellStyle(lowCellStyle);
-				}
-				else if (value < highCutoff) {
-                    cell.setCellStyle(neutralCellStyle);
-				} 
-				else {
-					// high value
-	                cell.setCellStyle(highCellStyle);
-				}		
-			} catch (Exception exception) {
-				; // Ignore; this is a non-numeric value (perhaps blank or "NA")
-			}
-			
-			cell = row.getCell(highIndex);
-			int rowNumber = i + 1;
-			int lastRow = sheet.getLastRowNum();
-			String subjectCol = DataTable.columnLetter(subjectIndex);
-			String pheneCol   = DataTable.columnLetter(pheneIndex);
-			String highFormula = "COUNTIFS("
-			        + "$" + subjectCol + "$2" + ":" + "$" + subjectCol + "$" + lastRow 
-			        + "," + subjectCol + rowNumber 
-			        + "," 
-			        + "$" + pheneCol + "$2" + ":" + "$" + pheneCol + "$" + lastRow
-			        + "," + "\">="+ highCutoff + "\""
-			        + ")";
-			cell.setCellFormula(highFormula);
-			
-			cell = row.getCell(lowIndex);
-			String lowFormula = "IF(" + pheneCol + rowNumber + "=\"\"," + "0" + ","
-			        + "COUNTIFS("
-                    + "$" + subjectCol + "$2" + ":" + "$" + subjectCol + "$" + lastRow 
-                    + "," + subjectCol + rowNumber 
-                    + "," 
-                    + "$" + pheneCol + "$2" + ":" + "$" + pheneCol + "$" + lastRow
-                    + "," + "\"<="+ lowCutoff + "\""
-                    + ")"
-                    + ")";
-			cell.setCellFormula(lowFormula);
-			
-			String lowCol = DataTable.columnLetter(lowIndex);
-			String highCol = DataTable.columnLetter(highIndex);
-			String intraFormula = "IF("
-			        + "AND(" + lowCol + rowNumber + ">0" + "," + highCol + rowNumber + ">0)"
-			        + "," + "\"INTRA\""
-			        + "," + "\"no\""
-			        + ")"
-			        ;
-	         cell = row.getCell(intraIndex);
-	         cell.setCellFormula(intraFormula);	
-		}
-	}
-	
 	public ArrayList<String> getPhenes() throws Exception {
 	    ArrayList<String> phenes = new ArrayList<String>();
 	    String pheneTablePheneVisitColumn = this.pheneTable + ".PheneVisit";

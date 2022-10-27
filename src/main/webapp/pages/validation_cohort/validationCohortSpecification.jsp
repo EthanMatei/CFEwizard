@@ -44,6 +44,8 @@
         <td style="text-align: right;"> <s:property value="discoveryHighCutoff"/> </td>
 </table>
 
+<s:textfield size="8" style="text-align: right; margin-left: 1em;" name="validationCohortComparisonThreshold"/>
+                
 <div style="border: 1px solid #222222; border-radius: 10px; maring-top: 20px; padding: 10px;">
 
     <p style="font-weight: bold; margin-top: 12px;">Validation Cohort Constraint</p>

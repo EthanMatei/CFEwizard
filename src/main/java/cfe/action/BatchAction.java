@@ -78,8 +78,11 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String discoveryPhene;
     private String discoveryPheneInfo;
     private String discoveryPheneTable;
+    
     private double discoveryPheneLowCutoff;
     private double discoveryPheneHighCutoff;
+    private Double discoveryCohortComparisonThreshold = 0.0001; 
+   
     List<String> discoveryPheneList;
     
     Long discoveryCohortResultsId;
@@ -281,6 +284,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                         this.discoveryPhene,
                         this.discoveryPheneLowCutoff,
                         this.discoveryPheneHighCutoff,
+                        this.discoveryCohortComparisonThreshold,
                         this.genomicsTable
                 );
                 this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
@@ -956,5 +960,93 @@ public class BatchAction extends BaseAction implements SessionAware {
 	public void setValue3(String value3) {
 		this.value3 = value3;
 	}
+
+    public DataTable getProbesetToGeneMapTable() {
+        return probesetToGeneMapTable;
+    }
+
+    public void setProbesetToGeneMapTable(DataTable probesetToGeneMapTable) {
+        this.probesetToGeneMapTable = probesetToGeneMapTable;
+    }
+
+    public Double getDiscoveryCohortComparisonThreshold() {
+        return discoveryCohortComparisonThreshold;
+    }
+
+    public void setDiscoveryCohortComparisonThreshold(Double discoveryCohortComparisonThreshold) {
+        this.discoveryCohortComparisonThreshold = discoveryCohortComparisonThreshold;
+    }
+
+    public String getPercentInValidationCohort() {
+        return percentInValidationCohort;
+    }
+
+    public void setPercentInValidationCohort(String percentInValidationCohort) {
+        this.percentInValidationCohort = percentInValidationCohort;
+    }
+
+    public double getValidationScoreCutoff() {
+        return validationScoreCutoff;
+    }
+
+    public void setValidationScoreCutoff(double validationScoreCutoff) {
+        this.validationScoreCutoff = validationScoreCutoff;
+    }
+
+    public Double getValidationComparisonThreshold() {
+        return validationComparisonThreshold;
+    }
+
+    public void setValidationComparisonThreshold(Double validationComparisonThreshold) {
+        this.validationComparisonThreshold = validationComparisonThreshold;
+    }
+
+    public double getBonferroniScore() {
+        return bonferroniScore;
+    }
+
+    public void setBonferroniScore(double bonferroniScore) {
+        this.bonferroniScore = bonferroniScore;
+    }
+
+    public double getNominalScore() {
+        return nominalScore;
+    }
+
+    public void setNominalScore(double nominalScore) {
+        this.nominalScore = nominalScore;
+    }
+
+    public double getStepwiseScore() {
+        return stepwiseScore;
+    }
+
+    public void setStepwiseScore(double stepwiseScore) {
+        this.stepwiseScore = stepwiseScore;
+    }
+
+    public double getNonStepwiseScore() {
+        return nonStepwiseScore;
+    }
+
+    public void setNonStepwiseScore(double nonStepwiseScore) {
+        this.nonStepwiseScore = nonStepwiseScore;
+    }
+
+    public double getTestingScoreCutoff() {
+        return testingScoreCutoff;
+    }
+
+    public void setTestingScoreCutoff(double testingScoreCutoff) {
+        this.testingScoreCutoff = testingScoreCutoff;
+    }
+
+    public Double getTestingComparisonThreshold() {
+        return testingComparisonThreshold;
+    }
+
+    public void setTestingComparisonThreshold(Double testingComparisonThreshold) {
+        this.testingComparisonThreshold = testingComparisonThreshold;
+    }
    
 }

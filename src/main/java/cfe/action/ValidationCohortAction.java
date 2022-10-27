@@ -77,6 +77,8 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 	private String value2;
 	private String value3;
 	
+	private double validationCohortComparisonThreshold = 0.0001;
+	
 	/*
 	private String clinicalPhene;
 	private Integer clinicalHighCutoff;
@@ -239,7 +241,8 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
 
                 List<TreeSet<String>> results = cohortData.setValidationAndTestingCohorts(
-                        discoveryPhene, discoveryLowCutoff, discoveryHighCutoff, 
+                        discoveryPhene, discoveryLowCutoff, discoveryHighCutoff,
+                        this.validationCohortComparisonThreshold,
                         // clinicalPhene, clinicalHighCutoff,
                         pheneConditions, percentInValidation
                         );
@@ -648,6 +651,14 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
     }
     
     
+    public double getValidationCohortComparisonThreshold() {
+        return validationCohortComparisonThreshold;
+    }
+
+    
+    public void setValidationCohortComparisonThreshold(double validationCohortComparisonThreshold) {
+        this.validationCohortComparisonThreshold = validationCohortComparisonThreshold;
+    }
 
     public String getDiscoveryPhene() {
         return discoveryPhene;

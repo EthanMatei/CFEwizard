@@ -49,6 +49,7 @@ public class DiscoveryCalc {
             String phene,
             double pheneLowCutoff,
             double pheneHighCutoff,
+            double comparisonThreshold,
             String genomicsTable) throws Exception {
         
         if (genomicsTable == null || genomicsTable.trim().isEmpty()) {
@@ -146,7 +147,7 @@ public class DiscoveryCalc {
         
         log.info("chip data merged.");
         
-        cohortData.enhance(pheneSelection, pheneLowCutoff, pheneHighCutoff);
+        cohortData.enhance(pheneSelection, pheneLowCutoff, pheneHighCutoff, comparisonThreshold);
 
         // DEBUG
         // String csv2 = cohortData.toCsv();
@@ -167,7 +168,7 @@ public class DiscoveryCalc {
         // Create cohort and cohort CSV file
         //-------------------------------------------
         log.info("Discovery cohort phene selection: \"" + pheneSelection + "\".");
-        CohortTable cohort = cohortData.getDiscoveryCohort(pheneSelection, pheneLowCutoff, pheneHighCutoff);
+        CohortTable cohort = cohortData.getDiscoveryCohort(pheneSelection, pheneLowCutoff, pheneHighCutoff, comparisonThreshold);
         cohort.sort("Subject", "PheneVisit"); 
         Date cohortGeneratedTime = new Date();
         

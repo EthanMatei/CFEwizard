@@ -12,7 +12,7 @@ library(coin)
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 11) {
+if (length(args) != 9) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to Prediction script")
 }
@@ -25,17 +25,19 @@ studyType                   <- args[3]    # "cross-sectional" or "longitudinal"
 phene                       <- args[4]
 pheneHighCutoff             <- args[5]    # Ignored for "FirstYearScore" and "HospFreq" and 
 
-diagnoses                   <- args[6]    # Comma-separated string of diagnoses
-genderDiagnoses             <- args[7]    # Comma-separated string of gender diagnoses, for example: "F-BP,F-SZ,M-BP,M-MDD"  
+# diagnoses                   <- args[6]    # Comma-separated string of diagnoses
+# genderDiagnoses             <- args[7]    # Comma-separated string of gender diagnoses, for example: "F-BP,F-SZ,M-BP,M-MDD"  
 
-masterSheetCsvFile          <- args[8]
-predictorListCsvFile        <- args[9]
-specialPredictorListCsvFile <- args[10]
-outputDir                   <- args[11]
+masterSheetCsvFile          <- args[6]
+predictorListCsvFile        <- args[7]
+specialPredictorListCsvFile <- args[8]
+outputDir                   <- args[9]
 
 pheneHighCutoff <- as.numeric(pheneHighCutoff)     # Make sure that the phene high cutoff is numeric
-diagnoses <- unlist(strsplit(diagnoses, ","))
-genderDiagnoses <- unlist(strsplit(genderDiagnoses, ","))
+
+# diagnoses <- unlist(strsplit(diagnoses, ","))
+# genderDiagnoses <- unlist(strsplit(genderDiagnoses, ","))
+
 
 # d <- read.csv("Z:\\Delusions+Hallucinations Folder\\Delusions2021\\Mariah Project Folder\\Mastersheets\\All Future\\Mastersheet for All Future Predictions Delusions (MDH 4-16-2021).csv")
 d <- read.csv(masterSheetCsvFile, check.names=FALSE)
@@ -47,7 +49,8 @@ d <- as.data.frame((d))
 # Set VisitNumber column on master sheet based on the test type
 if (testType == "state") {
   names(d)[names(d) == "Test.VisitNumber"] <- "VisitNumber"
-  # doesn't need time
+  # doesn't need time, but rename this column so there is a "time" column:
+  # names(d)[names(d) == "Time to 1st Hosp"] <- "time"
 } else if (testType == "first-year") {
   names(d)[names(d) == "FirstYear.VisitNumber"] <- "VisitNumber"
   
@@ -81,6 +84,17 @@ if (!is.null(specialPredictorListCsvFile) && specialPredictorListCsvFile != "") 
   predictorFilePath <- specialPredictorListCsvFile
   predictors <-read.csv(specialPredictorListCsvFile)
 }
+
+predictorColumnNames <- colnames(predictors)
+diagnoses <- predictorColumnNames[predictorColumnNames %in% c("Predictor", "Direction", "Male", "Female", "All") == FALSE]
+diagnoses <- unlist(diagnoses)    # convert to vector
+genderDiagnoses <- c(paste("F", diagnoses, sep="-"), paste("M", diagnoses, sep="-"))
+genderDiagnoses <- unlist(genderDiagnoses)
+
+cat("\nDIAGNOSES: ")
+print(diagnoses)
+cat("\nGENDER DIAGNOSES: ")
+print(genderDiagnoses)
 
 
 predictors_increase <- predictorz[predictorz$Direction == "I",]

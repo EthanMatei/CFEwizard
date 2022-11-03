@@ -18,7 +18,11 @@
 <s:if test="errorMessage != null && errorMessage != ''">
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+        <div style="margin-top: 14px;">
+            <span style="font-weight: bold;">STACK TRACE:</span> <s:property value="exceptionStack" />
+        </div>
     </div>
+    
 </s:if>
 
 

@@ -31,7 +31,16 @@ public class CfeResultsFileType {
     public final static String PREDICTION_FUTURE_CROSS_SECTIONAL_R_SCRIPT_LOG = "prediction_future_cross_sectional_r_script_log";
     public final static String PREDICTION_FUTURE_LONGITUDINAL_R_SCRIPT_LOG    = "prediction_future_longitudinal_r_script_log";
     
-    public final static String VALIDATION_R_SCRIPT_LOG   = "validation_r_script_log";
+    public final static String VALIDATION_R_SCRIPT_COMMAND = "validation_r_script_command";
+    public final static String VALIDATION_R_SCRIPT_LOG     = "validation_r_script_log";
+    
+    public final static String VALIDATION_PREDICTOR_LIST         = "validation_predictor_list";
+    public final static String VALIDATION_MASTER_SHEET           = "validation_master_sheet";
+    public final static String VALIDATION_UPDATED_PREDICTOR_LIST = "validation_updated_predictor_list";
+    public final static String VALIDATION_UPDATED_MASTER_SHEET   = "validation_udapted_master_sheet";
+    
+    public final static String TESTING_R_SCRIPT_LOG   = "testing_r_script_log";
+    public final static String TESTING_PREDICTOR_LIST = "testing_predictor_list";
     
     public List<String> getTypes() {
         List<String> types = new ArrayList<String>();

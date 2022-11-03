@@ -1,6 +1,7 @@
 package cfe.utils;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -137,6 +138,20 @@ public class DataTable {
         csvReader.close();
     }
     
+    /**
+     * Initialized using the specified Excel workbook file's first sheet.
+     *  
+     * @param fileName
+     */
+    public void initializeToWorkbookFile(String fileName) throws Exception {
+        FileInputStream input = new FileInputStream(fileName);
+        XSSFWorkbook workbook = new XSSFWorkbook(input);
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        this.initializeToWorkbookSheet(sheet);
+        workbook.close();
+        input.close();
+    }
+    
     public void initializeToWorkbookSheet(XSSFSheet sheet) {
         XSSFRow header = sheet.getRow(0);
         for (int cellIndex = 0; cellIndex < header.getLastCellNum(); cellIndex++) {
@@ -180,6 +195,7 @@ public class DataTable {
             this.addRow(dataRow);
         }
     }
+
 	
     public void initializeToWorkbookStreamingSheet(Sheet sheet) {
         Row header = sheet.getRow(0);

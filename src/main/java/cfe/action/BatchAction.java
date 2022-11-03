@@ -3,6 +3,7 @@ package cfe.action;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     private boolean debugDiscoveryScoring = false;
     
     private List<String> phenes;
+    
+    private Map<Long, String> pastCfeResultsMap;
     
     /* Discovery ------------------------------------------------------------- */
     private String discoveryPhene;
@@ -201,6 +204,15 @@ public class BatchAction extends BaseAction implements SessionAware {
 		else {
 		    try {
 		        log.info("Testing database \"" + this.testingDbFileName + "\" uploaded.");
+	
+		        pastCfeResultsMap = new HashMap<Long, String>();
+		        List<CfeResults> pastCfeResults = CfeResultsService.getAllMetadata();
+		        for (CfeResults cfeResults: pastCfeResults) {
+		            Long key = cfeResults.getCfeResultsId();
+		            String value = "["  + cfeResults.getCfeResultsId() + "]";
+		            value += " " + cfeResults.getResultsType();
+		            pastCfeResultsMap.put(key, value);
+		        }
 		        
 	            this.discoveryPercentileScores = new PercentileScores();
 		        
@@ -417,6 +429,16 @@ public class BatchAction extends BaseAction implements SessionAware {
     }
     
     
+
+
+    public Map<Long, String> getPastCfeResultsMap() {
+        return pastCfeResultsMap;
+    }
+
+    public void setPastCfeResultsMap(Map<Long, String> pastCfeResultsMap) {
+        this.pastCfeResultsMap = pastCfeResultsMap;
+    }
+
     public File getTestingDb() {
         return testingDb;
     }

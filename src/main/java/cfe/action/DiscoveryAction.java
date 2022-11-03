@@ -954,7 +954,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 log.info("resultsTables created - size: " + resultsTables.size());
                 
                 int rowAccessWindowSize = 100;
-                Workbook resultsWorkbook = DataTable.createStreamingWorkbook(resultsTables, rowAccessWindowSize);
+                Workbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
                 log.info("resultsWorkbook created.");
 
                 //log.info("pheneSelection = \"" + pheneSelection + "\" - low cutoff: " + lowCutoff + " - high cutoff: " + highCutoff);

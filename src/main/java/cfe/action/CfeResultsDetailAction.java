@@ -13,6 +13,7 @@ import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFile;
+import cfe.model.CfeResultsFileComparator;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 
@@ -39,7 +40,7 @@ public class CfeResultsDetailAction extends BaseAction implements SessionAware {
 	
 	private CfeResults cfeResults;
 	
-	private Set<CfeResultsFile> cfeResultsFiles = new TreeSet<CfeResultsFile>();
+	private TreeSet<CfeResultsFile> cfeResultsFiles = new TreeSet<CfeResultsFile>(new CfeResultsFileComparator());
     
 	public String execute() throws Exception {
 		String result = SUCCESS;
@@ -51,7 +52,7 @@ public class CfeResultsDetailAction extends BaseAction implements SessionAware {
 		    try {
 		        this.cfeResults = CfeResultsService.get(this.cfeResultsId);
 		        
-		        this.cfeResultsFiles = cfeResults.getCfeResultsFile();
+		        this.cfeResultsFiles.addAll( cfeResults.getCfeResultsFile() );
 		        
 		        this.tempDir = System.getProperty("java.io.tmpdir");
 		        
@@ -116,11 +117,11 @@ public class CfeResultsDetailAction extends BaseAction implements SessionAware {
         this.cfeResults = cfeResults;
     }
 
-    public Set<CfeResultsFile> getCfeResultsFiles() {
+    public TreeSet<CfeResultsFile> getCfeResultsFiles() {
         return cfeResultsFiles;
     }
 
-    public void setCfeResultsFiles(Set<CfeResultsFile> cfeResultsFiles) {
+    public void setCfeResultsFiles(TreeSet<CfeResultsFile> cfeResultsFiles) {
         this.cfeResultsFiles = cfeResultsFiles;
     }
 

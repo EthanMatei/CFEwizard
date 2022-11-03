@@ -36,6 +36,15 @@
     <tr>
         <td>Discovery Phene High Cutoff</td> <td style="text-align: right;"><s:property value="cfeResults.highCutoff"/></td>
     </tr>
+    <tr>
+        <td>Results</td>
+        <td>
+            <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
+                <s:param name="cfeResultsId" value="cfeResultsId" />
+                    results.xlsx
+            </s:a>
+        </td>
+    </tr>
 </table>
 
 

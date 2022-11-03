@@ -2,8 +2,10 @@ package cfe.action;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -92,6 +94,15 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
     double stepwiseScore    = 2;
     double nonStepwiseScore = 0;
 
+    private File updatedMasterSheet;
+    private String updatedMasterSheetContentType;
+    private String updatedMasterSheetFileName;
+    
+    private File updatedPredictorList;
+    private String updatedPredictorListContentType;
+    private String updatedPredictorListFileName;
+
+
 	/**
 	 * Select validation data (cohorts + discovery and prioritization scores)
 	 * @return
@@ -176,7 +187,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 }
                 
                 String predictorListCsv = predictorList.toCsv();
-                File predictorListCsvTmp = FileUtil.createTempFile("predictor-list-",  ".csv");
+                File predictorListCsvTmp = FileUtil.createTempFile("validation-predictor-list-",  ".csv");
                 if (predictorListCsv != null) {
                     FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
                 }
@@ -250,6 +261,22 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 	    else {
             try {
                 log.info("Starting validation scoring");
+                
+                String masterSheetArg   = this.validationMasterSheetFile;
+                String predictorListArg = this.predictorListFile;
+                
+                //-------------------------------------------------------
+                // Check for updated master sheet and predictor list
+                //-------------------------------------------------------
+                if (this.updatedMasterSheetFileName != null && !this.updatedMasterSheetFileName.isEmpty()) {
+                    // Updated master sheet provided
+                    masterSheetArg = updatedMasterSheetFileName; 
+                }
+                
+                if (this.updatedPredictorListFileName != null && !this.updatedPredictorListFileName.isEmpty()) {
+                    // Updated predictor list provided
+                    predictorListArg = updatedPredictorListFileName; 
+                }
                 
                 String scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
                 String scriptFile = new File(getClass().getResource("/R/Validation.R").toURI()).getAbsolutePath();
@@ -414,15 +441,41 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 log.info("cfeResults object created.");
                 log.info("CFE RESULTS: \n" + cfeResults.asString());
                 
-                cfeResults.setDiscoveryRScriptLog(validationData.getDiscoveryRScriptLog());
-                log.info("Added discovery R script log text to cfeResults.");
-                
-                CfeResultsFile discoveryRScriptLogFile = validationData.getFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG);
-                if (discoveryRScriptLogFile != null) {
-                    String discoveryRScriptLog = validationData.getFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG).getContentAsString();
-                    cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, discoveryRScriptLog);
-                }
+                // Add files from input results
+                cfeResults.addCsvAndTextFiles(validationData);
+
+                // Add the validation R script log file
                 cfeResults.addTextFile(CfeResultsFileType.VALIDATION_R_SCRIPT_LOG, this.scriptOutput);
+                
+                //----------------------------------------------------------
+                // Add the master sheet file
+                //----------------------------------------------------------
+                File file = new File(this.validationMasterSheetFile);
+                String masterSheetContents = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+                cfeResults.addCsvFile(CfeResultsFileType.VALIDATION_MASTER_SHEET, masterSheetContents);
+ 
+                //----------------------------------------------------------
+                // Add the predictor list file
+                //----------------------------------------------------------
+                File predictorFile = new File(this.predictorListFile);
+                String predictorListContents = FileUtils.readFileToString(predictorFile, StandardCharsets.UTF_8);
+                cfeResults.addCsvFile(CfeResultsFileType.VALIDATION_PREDICTOR_LIST, predictorListContents);
+                
+                //--------------------------------------------------------
+                // Add the updated master sheet, if any
+                //--------------------------------------------------------
+                if (this.updatedMasterSheet != null) {
+                    String updatedMasterSheetContents = FileUtils.readFileToString(this.updatedMasterSheet, StandardCharsets.UTF_8);
+                    cfeResults.addCsvFile(CfeResultsFileType.VALIDATION_UPDATED_MASTER_SHEET, updatedMasterSheetContents);
+                }
+                
+                //--------------------------------------------------------
+                // Add the updated predictor list, if any
+                //--------------------------------------------------------
+                if (this.updatedPredictorList != null) {
+                    String updatedPredictorListContents = FileUtils.readFileToString(this.updatedPredictorList, StandardCharsets.UTF_8);
+                    cfeResults.addCsvFile(CfeResultsFileType.VALIDATION_UPDATED_PREDICTOR_LIST, updatedPredictorListContents);
+                }
                 
                 CfeResultsService.save(cfeResults);
                 log.info("cfeResults object saved.");
@@ -1073,6 +1126,54 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 
     public void setValidationCohorts(List<CfeResults> validationCohorts) {
         this.validationCohorts = validationCohorts;
+    }
+
+    public File getUpdatedMasterSheet() {
+        return updatedMasterSheet;
+    }
+
+    public void setUpdatedMasterSheet(File updatedMasterSheet) {
+        this.updatedMasterSheet = updatedMasterSheet;
+    }
+
+    public String getUpdatedMasterSheetContentType() {
+        return updatedMasterSheetContentType;
+    }
+
+    public void setUpdatedMasterSheetContentType(String updatedMasterSheetContentType) {
+        this.updatedMasterSheetContentType = updatedMasterSheetContentType;
+    }
+
+    public String getUpdatedMasterSheetFileName() {
+        return updatedMasterSheetFileName;
+    }
+
+    public void setUpdatedMasterSheetFileName(String updatedMasterSheetFileName) {
+        this.updatedMasterSheetFileName = updatedMasterSheetFileName;
+    }
+
+    public File getUpdatedPredictorList() {
+        return updatedPredictorList;
+    }
+
+    public void setUpdatedPredictorList(File updatedPredictorList) {
+        this.updatedPredictorList = updatedPredictorList;
+    }
+
+    public String getUpdatedPredictorListContentType() {
+        return updatedPredictorListContentType;
+    }
+
+    public void setUpdatedPredictorListContentType(String updatedPredictorListContentType) {
+        this.updatedPredictorListContentType = updatedPredictorListContentType;
+    }
+
+    public String getUpdatedPredictorListFileName() {
+        return updatedPredictorListFileName;
+    }
+
+    public void setUpdatedPredictorListFileName(String updatedPredictorListFileName) {
+        this.updatedPredictorListFileName = updatedPredictorListFileName;
     }
 
 }

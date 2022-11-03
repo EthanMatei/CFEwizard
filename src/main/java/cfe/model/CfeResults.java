@@ -445,5 +445,20 @@ public class CfeResults implements Serializable {
             }
         }
     }
-	
+    
+    public void addCsvAndTextFiles(CfeResults addResults) {
+        for (CfeResultsFile cfeResultsFile: addResults.cfeResultsFile) {
+            
+            if (cfeResultsFile.getMimeType().contentEquals("text/plain")) {
+                String fileType = cfeResultsFile.getFileType();
+                String content = cfeResultsFile.getContentAsString();
+                this.addTextFile(fileType, content);
+            }
+            else if (cfeResultsFile.getMimeType().contentEquals("text/csv")) {
+                String fileType = cfeResultsFile.getFileType();
+                String content = cfeResultsFile.getContentAsString();
+                this.addCsvFile(fileType, content);
+            }
+        }
+    }	
 }

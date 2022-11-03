@@ -24,40 +24,6 @@
     </div>
 </s:if>
 
-<p>
-    Validation Data ID: <s:property value="validationDataId" />
-</p>
-
-<p>
-    Prioritization ID: <s:property value="prioritizationId" />
-</p>
-
-<p>
-Score cutoff (&ge;): <s:property value="scoreCutoff" />
-
-<span style="margin-left: 1em;">Comparison Threshold:</span> <s:property value="comparisonThreshold"/>
-</p>
-
-<p>
-Phene: <s:property value="phene" />
-</p>
-
-<p>
-    Validation Master Sheet:
-    <s:a action="CsvTextFileDisplay" title="Validation Mastersheet">
-        <s:param name="textFilePath" value="validationMasterSheetFile" />
-        <s:property value="validationMasterSheetFile" />
-    </s:a>
-</p>
-
-<p>
-    Predictor List:
-    <s:a action="CsvDisplay">
-        <s:param name="csvFilePath" value="predictorListFile" />
-        <s:property value="predictorListFile" />
-    </s:a>
-</p>
-
 <s:form action="ValidationScoresCalculation" theme="simple" method="post" enctype="multipart/form-data">
     <s:hidden name="phene" />
     <s:hidden name="validationMasterSheetFile" />
@@ -75,9 +41,54 @@ Phene: <s:property value="phene" />
     <s:hidden name="nonStepwiseScore"/>
     
     <s:hidden name="geneExpressionCsvFileName"/>
+
+    <fieldset class="dataInput">
+        <legend>Inputs</legend>
+        <p>
+        Validation Data ID: <s:property value="validationDataId" />
+        </p>
+
+        <p>
+        Score cutoff (&ge;): <s:property value="scoreCutoff" />
+        <span style="margin-left: 1em;">Comparison Threshold:</span> <s:property value="comparisonThreshold"/>
+        </p>
+
+        <p>
+        Phene: <s:property value="phene" />
+        </p>
+
+        <p>
+            Master Sheet:
+            <s:a action="CsvTextFileDisplay" title="Validation Mastersheet">
+                <s:param name="textFilePath" value="validationMasterSheetFile" />
+                <s:property value="validationMasterSheetFile" />
+            </s:a>
+        </p>
+
+        <p>
+            Predictor List:
+            <s:a action="CsvDisplay">
+                <s:param name="csvFilePath" value="predictorListFile" />
+                <s:property value="predictorListFile" />
+            </s:a>
+        </p>
+    </fieldset>
+
+    <fieldset class="dataInput" style="margin-top: 12px;">
+        <legend>Updates</legend>
+        <p>
+        Updated Master Sheet: <s:file name="updatedMasterSheet"/>
+        </p>
+
+        <p>
+        Updated Predictor List: <s:file name="updatedPredictorList"/>
+        </p>
+    </fieldset>
+
     
-    <s:submit value="Calculate" style="margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
+    <s:submit value="Calculate" style="color: navy; font-size: 125%; margin-top: 17px; padding-left: 2em; padding-right: 2em; font-weight: bold;"/>
     <s:token/>
+    
 </s:form>
 
 </tiles:putAttribute>

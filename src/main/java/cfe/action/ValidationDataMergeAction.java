@@ -117,7 +117,7 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
                 cfeResults.setDiscoveryRScriptLog(discoveryData.getDiscoveryRScriptLog());
                 log.info("Added discovery R script log text to cfeResults.");
                 
-                cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, discoveryData.getDiscoveryRScriptLog());
+                cfeResults.addCsvAndTextFiles(discoveryData);
                 
                 CfeResultsService.save(cfeResults);
                 

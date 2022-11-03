@@ -77,6 +77,12 @@
             <tr>
                 <td> Gene Expression CSV File</td>
                 <td> <s:file name="geneExpressionCsv" label="Gene Expression CSV" /> </td>
+            </tr>
+            <tr>
+                <td> Starting Results (optional):</td>
+                <td>
+                    <s:select list="pastCfeResultsMap" />
+                </td>
             </tr>           
         </table>
     </fieldset>
@@ -92,6 +98,8 @@
         
         <p>
         Low Cutoff (&le;): <s:textfield name="discoveryPheneLowCutoff"/>
+        <span style="margin-left: 1em;">Comparison threshold:</span>
+        <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="discoveryCohortComparisonThreshold"/>
         </p>
         <p>
         High Cutoff (&ge;): <s:textfield name="discoveryPheneHighCutoff"/>

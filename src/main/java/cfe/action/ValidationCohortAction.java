@@ -423,10 +423,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 }
                 else if (discoveryResults.getResultsType().equals(CfeResultsType.PRIORITIZATION_SCORES)) {
                     cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT);
-                    String logContent = discoveryResults.getDiscoveryRScriptLog();
-                    if (logContent != null) {
-                        cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, discoveryResults.getDiscoveryRScriptLog());
-                    }
+                    cfeResults.addCsvAndTextFiles(discoveryResults);
                 }
 
                 cfeResults.setResultsSpreadsheet(resultsWorkbook);

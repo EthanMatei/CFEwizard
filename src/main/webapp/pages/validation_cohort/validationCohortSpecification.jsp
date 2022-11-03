@@ -44,7 +44,6 @@
         <td style="text-align: right;"> <s:property value="discoveryHighCutoff"/> </td>
 </table>
 
-<s:textfield size="8" style="text-align: right; margin-left: 1em;" name="validationCohortComparisonThreshold"/>
                 
 <div style="border: 1px solid #222222; border-radius: 10px; maring-top: 20px; padding: 10px;">
 
@@ -91,6 +90,11 @@
                 <td> <s:textfield name="value3" value="" size="4" style="text-align: right;"/> </td>
             </tr>
         </table>
+        
+        <p>
+        Comparison Threshold:
+        <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="validationCohortComparisonThreshold"/>
+        </p>
         
         <div style="margin-top: 14px; margin-bottom: 14px;">
             % Subjects in Validation Cohort:

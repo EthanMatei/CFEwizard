@@ -42,9 +42,6 @@ public class CfeResultsFileType {
     public final static String TESTING_COHORTS_PYTHON_SCRIPT_COMMAND = "testing_cohorts_python_script_command";
     public final static String TESTING_COHORTS_PYTHON_SCRIPT_LOG     = "testing_cohorts_python_script_log";
     
-    public final static String TESTING_R_SCRIPT_COMMAND = "testing_r_script_command";
-    public final static String TESTING_R_SCRIPT_LOG     = "testing_r_script_log";
-    
     public final static String TESTING_PREDICTOR_LIST         = "testing_predictor_list";
     public final static String TESTING_MASTER_SHEET           = "testing_master_sheet";
     public final static String TESTING_UPDATED_PREDICTOR_LIST = "testing_updated_predictor_list";

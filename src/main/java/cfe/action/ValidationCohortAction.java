@@ -431,7 +431,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 cfeResults.setLowCutoff(discoveryLowCutoff);
                 cfeResults.setHighCutoff(discoveryHighCutoff);
                 cfeResults.setGeneratedTime(new Date());
-
+                
                 CfeResultsService.save(cfeResults);
                 this.cfeResultsId = cfeResults.getCfeResultsId();
 

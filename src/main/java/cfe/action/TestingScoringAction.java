@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -30,6 +31,7 @@ import com.opencsv.CSVReader;
 
 import cfe.enums.StudyType;
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
@@ -63,11 +65,15 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     private String geneExpressionCsvContentType;
     private String geneExpressionCsvFileName;
 
-    private File specialPredictorListCsv;
-    private String specialPredictorListCsvContentType;
-    private String specialPredictorListCsvFileName;
-    
-    private String specialPredictorListTempFile;
+    private File updatedPredictorListCsv;
+    private String updatedPredictorListCsvContentType;
+    private String updatedPredictorListCsvFileName;
+    private String updatedPredictorListTempFile;
+
+    private File updatedMasterSheetCsv;
+    private String updatedMasterSheetCsvContentType;
+    private String updatedMasterSheetCsvFileName;
+    private String updatedMasterSheetTempFile;
     
 	private Long testingDataId;
 	private List<CfeResults> cfeResults;
@@ -270,18 +276,32 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 
 
                 //-----------------------------------------------------------------------------------
-                // Process special predictor list, if any.
+                // Process updated predictor list, if any.
                 //------------------------------------------------------------------------------------
-                this.specialPredictorListTempFile = "";
-                if (this.specialPredictorListCsvFileName != null && this.specialPredictorListCsvFileName != "") {
-                    File tempFile = FileUtil.createTempFile("testing-special-predictor-list-", ".csv");
-                    FileUtils.copyFile(this.getSpecialPredictorListCsv(), tempFile);
-                    this.specialPredictorListTempFile = tempFile.getAbsolutePath();
+                this.updatedPredictorListTempFile = "";
+                if (this.updatedPredictorListCsvFileName != null && this.updatedPredictorListCsvFileName != "") {
+                    File tempFile = FileUtil.createTempFile("testing-updated-predictor-list-", ".csv");
+                    FileUtils.copyFile(this.getUpdatedPredictorListCsv(), tempFile);
+                    this.updatedPredictorListTempFile = tempFile.getAbsolutePath();
+                }
+                
+                //------------------------------------------------------------------------
+                // Process updated master sheet, if any
+                //------------------------------------------------------------------------
+                this.updatedMasterSheetTempFile = null;
+                if (this.updatedMasterSheetCsvFileName != null && !this.updatedMasterSheetCsvFileName.isEmpty()) {
+                    File tempFile = FileUtil.createTempFile("testing-updated-master-sheet-", ".csv");
+                    FileUtils.copyFile(this.updatedMasterSheetCsv, tempFile);
+                    this.updatedMasterSheetTempFile = tempFile.getAbsolutePath();
                 }
                 
                 DataTable masterSheet = new DataTable("Subject Identifiers.PheneVisit");
-                masterSheet.initializeToCsv(testingMasterSheetFile);
-                
+                if (updatedMasterSheetTempFile != null) {
+                    masterSheet.initializeToCsv(updatedMasterSheetTempFile);
+                }
+                else {
+                    masterSheet.initializeToCsv(testingMasterSheetFile);
+                }
                 int startIndex = masterSheet.getColumnIndex(START_OF_PHENES_MARKER);
                 int endIndex   = masterSheet.getColumnIndex(END_OF_PHENES_MARKER);
                 
@@ -349,7 +369,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             genderDiagnoses,
                             this.finalMasterSheetFile,
                             this.predictorListFile,
-                            this.specialPredictorListTempFile
+                            this.updatedPredictorListTempFile
                     );
 
                     tempFile = FileUtil.createTempFile("state-cross-sectional-r-log-",  ".txt");
@@ -369,7 +389,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictionPhene, this.predictionPheneHighCutoff - this.comparisonThreshold,
                             diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile
+                            this.predictorListFile, this.updatedPredictorListTempFile
                     );
                     
                     tempFile = FileUtil.createTempFile("state-longitduinal-r-log-",  ".txt");
@@ -389,7 +409,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictionPhene, this.predictionPheneHighCutoff,
                             diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile
+                            this.predictorListFile, this.updatedPredictorListTempFile
                     );
                     
                     tempFile = FileUtil.createTempFile("first-year-cross-sectional-r-log-",  ".txt");
@@ -409,7 +429,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictionPhene, this.predictionPheneHighCutoff,
                             diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile
+                            this.predictorListFile, this.updatedPredictorListTempFile
                     );
                     
                     tempFile = FileUtil.createTempFile("first-year-longitudinal-r-log-",  ".txt");
@@ -430,7 +450,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictionPhene, this.predictionPheneHighCutoff,
                             diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile
+                            this.predictorListFile, this.updatedPredictorListTempFile
                     );
                     
                     tempFile = FileUtil.createTempFile("future-cross-sectional-r-log-",  ".txt");
@@ -450,7 +470,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.predictionPhene, this.predictionPheneHighCutoff,
                             diagnoses, genderDiagnoses,
                             this.finalMasterSheetFile,
-                            this.predictorListFile, this.specialPredictorListTempFile
+                            this.predictorListFile, this.updatedPredictorListTempFile
                     );
                     
                     tempFile = FileUtil.createTempFile("future-longitudinal-r-log-",  ".txt");
@@ -481,8 +501,43 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 log.info("cfeResults object created.");
                 log.info("CFE RESULTS: \n" + cfeResults.asString());
                 
-                cfeResults.setDiscoveryRScriptLog(testingData.getDiscoveryRScriptLog());
-                log.info("Added discovery R script log text to cfeResults.");
+                //cfeResults.setDiscoveryRScriptLog(testingData.getDiscoveryRScriptLog());
+                //log.info("Added discovery R script log text to cfeResults.");
+                
+                //------------------------------------------------------
+                // Add files
+                //------------------------------------------------------
+                
+                // Add files from input results
+                cfeResults.addCsvAndTextFiles(testingData);
+                
+                // Add the testing R script command
+                cfeResults.addTextFile(CfeResultsFileType.TESTING_R_SCRIPT_COMMAND, this.testingScoringCommand);
+                
+                // Add the testing R script log file
+                cfeResults.addTextFile(CfeResultsFileType.TESTING_R_SCRIPT_LOG, this.scriptOutput);
+                
+                // Add the master sheet file
+                File masterSheetFile = new File(this.testingMasterSheetFile);
+                String masterSheetContents = FileUtils.readFileToString(masterSheetFile, StandardCharsets.UTF_8);
+                cfeResults.addCsvFile(CfeResultsFileType.TESTING_MASTER_SHEET, masterSheetContents);
+ 
+                // Add the predictor list file
+                File predictorFile = new File(this.predictorListFile);
+                String predictorListContents = FileUtils.readFileToString(predictorFile, StandardCharsets.UTF_8);
+                cfeResults.addCsvFile(CfeResultsFileType.TESTING_PREDICTOR_LIST, predictorListContents);
+                
+                // Add the updated master sheet, if any
+                if (this.updatedMasterSheetCsv != null) {
+                    String updatedMasterSheetContents = FileUtils.readFileToString(this.updatedMasterSheetCsv, StandardCharsets.UTF_8);
+                    cfeResults.addCsvFile(CfeResultsFileType.TESTING_UPDATED_MASTER_SHEET, updatedMasterSheetContents);
+                }
+                
+                // Add the updated predictor list, if any
+                if (this.updatedPredictorListCsv != null) {
+                    String updatedPredictorListContents = FileUtils.readFileToString(this.updatedPredictorListCsv, StandardCharsets.UTF_8);
+                    cfeResults.addCsvFile(CfeResultsFileType.TESTING_UPDATED_PREDICTOR_LIST, updatedPredictorListContents);
+                }                
                 
                 CfeResultsService.save(cfeResults);
                 log.info("cfeResults object saved.");
@@ -1073,6 +1128,16 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         row.add(this.predictionPheneHighCutoff + "");
         infoTable.addRow(row);
         
+        row = new ArrayList<String>();
+        row.add("Updated Master Sheet File");
+        row.add(this.updatedMasterSheetCsvFileName);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Updated Predictor List File");
+        row.add(this.updatedPredictorListCsvFileName);
+        infoTable.addRow(row);
+        
 	    return infoTable;
 	}
 	
@@ -1085,7 +1150,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
 	 * @param pheneHighCutoff prediction phene high cutoff (only for state)
 	 * @param masterSheetFile
 	 * @param predictorListFile
-	 * @param specialPredictorListFile
+	 * @param updatedPredictorListFile
 	 * @param outputDir
 	 * @return
 	 * @throws Exception
@@ -1093,7 +1158,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
     public String runScript(String testType, String studyType,
             String phene, double pheneHighCutoff,
             Set<String> diagnoses, Set<String> genderDiagnoses,
-            String masterSheetFile, String predictorListFile, String specialPredictorListFile) throws Exception {
+            String masterSheetFile, String predictorListFile, String updatedPredictorListFile) throws Exception {
         log.info("runScript start.");
         log.info("Starting runScript for test type \"" + testType + "\" and study type \"" + studyType + "\".");
         String result = "";
@@ -1119,7 +1184,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         //rScriptCommand[8] = genderDiagnosesString;
         rScriptCommand[7] = masterSheetFile;
         rScriptCommand[8] = predictorListFile;
-        rScriptCommand[9] = specialPredictorListFile;
+        rScriptCommand[9] = updatedPredictorListFile;
         rScriptCommand[10] = tempDir;
         
         this.testingScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
@@ -1438,28 +1503,28 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         this.futuretLongitudinal = futuretLongitudinal;
     }
 
-    public File getSpecialPredictorListCsv() {
-        return specialPredictorListCsv;
+    public File getUpdatedPredictorListCsv() {
+        return updatedPredictorListCsv;
     }
 
-    public void setSpecialPredictorListCsv(File specialPredictorListCsv) {
-        this.specialPredictorListCsv = specialPredictorListCsv;
+    public void setUpdatedPredictorListCsv(File updatedPredictorListCsv) {
+        this.updatedPredictorListCsv = updatedPredictorListCsv;
     }
 
-    public String getSpecialPredictorListCsvContentType() {
-        return specialPredictorListCsvContentType;
+    public String getUpdatedPredictorListCsvContentType() {
+        return updatedPredictorListCsvContentType;
     }
 
-    public void setSpecialPredictorListCsvContentType(String specialPredictorListCsvContentType) {
-        this.specialPredictorListCsvContentType = specialPredictorListCsvContentType;
+    public void setUpdatedPredictorListCsvContentType(String updatedPredictorListCsvContentType) {
+        this.updatedPredictorListCsvContentType = updatedPredictorListCsvContentType;
     }
 
-    public String getSpecialPredictorListCsvFileName() {
-        return specialPredictorListCsvFileName;
+    public String getUpdatedPredictorListCsvFileName() {
+        return updatedPredictorListCsvFileName;
     }
 
-    public void setSpecialPredictorListCsvFileName(String specialPredictorListCsvFileName) {
-        this.specialPredictorListCsvFileName = specialPredictorListCsvFileName;
+    public void setUpdatedPredictorListCsvFileName(String updatedPredictorListCsvFileName) {
+        this.updatedPredictorListCsvFileName = updatedPredictorListCsvFileName;
     }
 
     public String getPredictorListFile() {
@@ -1478,12 +1543,12 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         this.testingMasterSheetFile = testingMasterSheetFile;
     }
 
-    public String getSpecialPredictorListTempFile() {
-        return specialPredictorListTempFile;
+    public String getUpdatedPredictorListTempFile() {
+        return updatedPredictorListTempFile;
     }
 
-    public void setSpecialPredictorListTempFile(String specialPredictorListTempFile) {
-        this.specialPredictorListTempFile = specialPredictorListTempFile;
+    public void setUpdatedPredictorListTempFile(String updatedPredictorListTempFile) {
+        this.updatedPredictorListTempFile = updatedPredictorListTempFile;
     }
 
     public String getFinalMasterSheetFile() {
@@ -1494,6 +1559,44 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
         this.finalMasterSheetFile = finalMasterSheetFile;
     }
 
+    
+    //------------------------------------------------
+    // Updated master sheet getters and setters
+    //------------------------------------------------
+    public File getUpdatedMasterSheetCsv() {
+        return updatedMasterSheetCsv;
+    }
+
+    public void setUpdatedMasterSheetCsv(File updatedMasterSheetCsv) {
+        this.updatedMasterSheetCsv = updatedMasterSheetCsv;
+    }
+
+    public String getUpdatedMasterSheetCsvContentType() {
+        return updatedMasterSheetCsvContentType;
+    }
+
+    public void setUpdatedMasterSheetCsvContentType(String updatedMasterSheetCsvContentType) {
+        this.updatedMasterSheetCsvContentType = updatedMasterSheetCsvContentType;
+    }
+
+    public String getUpdatedMasterSheetCsvFileName() {
+        return updatedMasterSheetCsvFileName;
+    }
+
+    public void setUpdatedMasterSheetCsvFileName(String updatedMasterSheetCsvFileName) {
+        this.updatedMasterSheetCsvFileName = updatedMasterSheetCsvFileName;
+    }
+
+    public String getUpdatedMasterSheetTempFile() {
+        return updatedMasterSheetTempFile;
+    }
+
+    public void setUpdatedMasterSheetTempFile(String updatedMasterSheetTempFile) {
+        this.updatedMasterSheetTempFile = updatedMasterSheetTempFile;
+    }
+
+
+    
     public String getPredictionOutputFile() {
         return predictionOutputFile;
     }

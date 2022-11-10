@@ -72,14 +72,13 @@
 </table>
 
 
-<br/>
 
-<s:a action="DiscoveryScoringSpecification" title="Discovery Scoring" class="linkButton" style="margin-left: 2em;">
+<p>
+<s:a action="DiscoveryScoringSpecification" title="Discovery Scoring" class="linkButton">
     <s:param name="discoveryId" value="cfeResultsId" />
     Discovery Scoring
 </s:a>
-
-<br/>
+</p>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

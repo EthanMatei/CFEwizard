@@ -6,23 +6,23 @@
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 7) {
+if (length(args) != 5) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to Validation script")
 }
 
 scriptDir            <- args[1]
 phene                <- args[2]
-diagnoses            <- args[3]
-genderDiagnoses      <- args[4]
-masterSheetCsvFile   <- args[5]
-predictorListCsvFile <- args[6]
-outputDir            <- args[7]
+# diagnoses            <- args[3]
+# genderDiagnoses      <- args[4]
+masterSheetCsvFile   <- args[3]
+predictorListCsvFile <- args[4]
+outputDir            <- args[5]
 
 predictorFilePath <- predictorListCsvFile
 
-diagnoses <- unlist(strsplit(diagnoses, ","))
-genderDiagnoses <- unlist(strsplit(genderDiagnoses, ","))
+# diagnoses <- unlist(strsplit(diagnoses, ","))
+# genderDiagnoses <- unlist(strsplit(genderDiagnoses, ","))
 
 
 ########################################################
@@ -131,6 +131,12 @@ if ( nrow(incompletes) > 0 ) {
 # load list of predictors with the silos you want to test
 predictors <- read.csv(predictorFilePath) 
 
+# Extract diagnoses and gender-diagnoses
+predictorColumnNames <- colnames(predictors)
+diagnoses <- predictorColumnNames[predictorColumnNames %in% c("Predictor", "Direction", "Male", "Female", "All") == FALSE]
+diagnoses <- unlist(diagnoses)    # convert to vector
+genderDiagnoses <- c(paste("F", diagnoses, sep="-"), paste("M", diagnoses, sep="-"))
+genderDiagnoses <- unlist(genderDiagnoses)
 
 # throw an error if the user asks for a state and a hospitalization test
 # as they're incompatible

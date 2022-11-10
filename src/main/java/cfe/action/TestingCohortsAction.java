@@ -25,6 +25,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.healthmarketscience.jackcess.Table;
 
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
@@ -399,6 +400,7 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                 }
                 else if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_SCORES)) {
                     cfeResults.setResultsType(CfeResultsType.TESTING_COHORTS);
+                    cfeResults.addCsvAndTextFiles(validationResults);   // Add files from input results
                 }
 
                 cfeResults.setResultsSpreadsheet(resultsWorkbook);
@@ -407,6 +409,12 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                 cfeResults.setHighCutoff(discoveryHighCutoff);
                 cfeResults.setGeneratedTime(new Date());
 
+                // Add the Python script command
+                cfeResults.addTextFile(CfeResultsFileType.TESTING_COHORTS_PYTHON_SCRIPT_COMMAND, this.predictionCohortCreationCommand);
+                
+                // Add the validation R script log file
+                cfeResults.addTextFile(CfeResultsFileType.TESTING_COHORTS_PYTHON_SCRIPT_LOG, this.scriptOutput);
+                
                 CfeResultsService.save(cfeResults);
                 this.cfeResultsId = cfeResults.getCfeResultsId();
 

@@ -97,10 +97,12 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
     private File updatedMasterSheet;
     private String updatedMasterSheetContentType;
     private String updatedMasterSheetFileName;
+    private String updatedMasterSheetTempFileName;  // Need to create temp file for R-script to use
     
     private File updatedPredictorList;
     private String updatedPredictorListContentType;
     private String updatedPredictorListFileName;
+    private String updatedPredictorListTempFileName;
 
 
 	/**
@@ -270,12 +272,20 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 //-------------------------------------------------------
                 if (this.updatedMasterSheetFileName != null && !this.updatedMasterSheetFileName.isEmpty()) {
                     // Updated master sheet provided
-                    masterSheetArg = updatedMasterSheetFileName; 
+                    File updatedMasterSheetTempFile = FileUtil.createTempFile("validation-updated-master-sheet-", ".csv");
+                    FileUtils.copyFile(this.updatedMasterSheet, updatedMasterSheetTempFile);
+                    this.updatedMasterSheetTempFileName = updatedMasterSheetTempFile.getAbsolutePath();
+                    
+                    masterSheetArg = this.updatedMasterSheetTempFileName; 
                 }
                 
                 if (this.updatedPredictorListFileName != null && !this.updatedPredictorListFileName.isEmpty()) {
                     // Updated predictor list provided
-                    predictorListArg = updatedPredictorListFileName; 
+                    File updatedPredictorListTempFile = FileUtil.createTempFile("validation-updated-predictor-list-", ".csv");
+                    FileUtils.copyFile(this.updatedPredictorList, updatedPredictorListTempFile);
+                    this.updatedPredictorListTempFileName = updatedPredictorListTempFile.getAbsolutePath();
+                    
+                    predictorListArg = this.updatedPredictorListTempFileName; 
                 }
                 
                 String scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
@@ -306,16 +316,16 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 log.info("Gender Diagnoses: " + genderDiagnoses);
 
                 // Create the R script command
-                String[] rScriptCommand = new String[9];
+                String[] rScriptCommand = new String[7];
                 rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
                 rScriptCommand[1] = scriptFile;     // The R script to run
                 rScriptCommand[2] = scriptDir;   // The directory that contains R scripts
                 rScriptCommand[3] = this.phene;
-                rScriptCommand[4] = diagnoses;
-                rScriptCommand[5] = genderDiagnoses;
-                rScriptCommand[6] = this.validationMasterSheetFile;
-                rScriptCommand[7] = this.predictorListFile;
-                rScriptCommand[8] = this.tempDir;
+                //rScriptCommand[4] = diagnoses;
+                //rScriptCommand[5] = genderDiagnoses;
+                rScriptCommand[4] = masterSheetArg;
+                rScriptCommand[5] = predictorListArg;
+                rScriptCommand[6] = this.tempDir;
                 
                 this.validationScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
                 log.info("Validation Scoring Command: " + this.validationScoringCommand);
@@ -444,6 +454,9 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 // Add files from input results
                 cfeResults.addCsvAndTextFiles(validationData);
 
+                // Add the validation R script command
+                cfeResults.addTextFile(CfeResultsFileType.VALIDATION_R_SCRIPT_COMMAND, this.validationScoringCommand);
+                
                 // Add the validation R script log file
                 cfeResults.addTextFile(CfeResultsFileType.VALIDATION_R_SCRIPT_LOG, this.scriptOutput);
                 
@@ -861,6 +874,16 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         row = new ArrayList<String>();
         row.add("Gene Expression CSV File");
         row.add(this.geneExpressionCsvFileName);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Updated Master Sheet File");
+        row.add(this.updatedMasterSheetFileName);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
+        row.add("Updated Predictor List File");
+        row.add(this.updatedPredictorListFileName);
         infoTable.addRow(row);
         
 	    return infoTable;

@@ -415,6 +415,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	public String discoveryScoringSpecification() throws Exception {
 	    String result = SUCCESS;
 	    
+	    log.info("************************** DISCOVERY SCORING SPECIFICATION");
+	    
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }

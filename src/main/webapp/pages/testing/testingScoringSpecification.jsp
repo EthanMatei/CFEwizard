@@ -69,8 +69,13 @@ Testing Master Sheet:
     <s:hidden name="testingMasterSheetFile"/>
    
     <p>
-    Updated predictor list CSV file (optional)
-    <s:file name="specialPredictorListCsv" />
+    Updated Predictor List CSV File (optional)
+    <s:file name="updatedPredictorListCsv" />
+    </p>
+
+    <p>
+    Updated Master Sheet CSV File (optional)
+    <s:file name="updatedMasterSheetCsv" />
     </p>
     
     <table class="dataTable">

@@ -297,7 +297,7 @@
         
     <p>
     Updated predictor list CSV file (optional):
-    <s:file name="specialPredictorListCsv" style="margin-left: 1em;"/>
+    <s:file name="updatedPredictorListCsv" style="margin-left: 1em;"/>
     </p>
     
     <table class="dataTable">

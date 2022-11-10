@@ -27,7 +27,7 @@
 <p>
 Testing Data ID: <s:property value="testingDataId"/> <br/>
 Predictor list CSV file: <s:property value="predictorListFile" /> <br/>
-Updated predictor list CSV file: <s:property value="specialPredictorListTempFile" /> <br/>
+Updated predictor list CSV file: <s:property value="updatedPredictorListTempFile" /> <br/>
 Testing Master Sheet: <s:property value="testingMasterSheetFile"/> <br/>
 Prediction Phene: <s:property value="predictionPhene"/> <br/>
 Prediction Phene High Cutoff: <s:property value="predictionPheneHighCutoff"/>
@@ -127,10 +127,10 @@ Predictor List:
 
 <p>
 Updated Predictor List:
-<s:if test="specialPredictorListTempFile != null && specialPredictorListTempFile != ''">
+<s:if test="updatedPredictorListTempFile != null && updatedPredictorListTempFile != ''">
     <s:a action="CsvDisplay">
-        <s:param name="csvFilePath" value="specialPredictorListTempFile" />
-        <s:property value="specialPredictorListCsvFileName" />
+        <s:param name="csvFilePath" value="updatedPredictorListTempFile" />
+        <s:property value="updatedPredictorListCsvFileName" />
     </s:a>
 </s:if>
 </p>

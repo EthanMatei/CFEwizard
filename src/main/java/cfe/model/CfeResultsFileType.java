@@ -18,18 +18,23 @@ public class CfeResultsFileType {
     public final static String DISCOVERY_R_SCRIPT_COMMAND = "discovery_r_script_command";
     public final static String DISCOVERY_R_SCRIPT_LOG     = "discovery_r_script_log";
     
-    public final static String PREDICTION_STATE_CROSS_SECTIONAL              = "prediction_state_cross_sectional";
-    public final static String PREDICTION_STATE_LONGITUDINAL                 = "prediction_state_longitudinal";
-    public final static String PREDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_LOG = "prediction_state_cross_sectional_r_script_log";
-    public final static String PREDICTION_STATE_LONGITUDINAL_R_SCRIPT_LOG    = "prediction_state_longitudinal_r_script_log";
+    public final static String PREDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_COMMAND = "prediction_state_cross_sectional_r_script_command";
+    public final static String PREDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_LOG     = "prediction_state_cross_sectional_r_script_log";
+  
+    public final static String PREDICTION_STATE_LONGITUDINAL_R_SCRIPT_COMMAND = "prediction_state_longitudinal_r_script_command";
+    public final static String PREDICTION_STATE_LONGITUDINAL_R_SCRIPT_LOG     = "prediction_state_longitudinal_r_script_log";
 
-    public final static String PREDICTION_FIRST_YEAR_CROSS_SECTIONAL              = "prediction_first_year_cross_sectional";
-    public final static String PREDICTION_FIRST_YEAR_LONGITUDINAL                 = "prediction_first_year_longitudinal";
-    public final static String PREDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_LOG = "prediction_first_year_cross_sectional_r_script_log";
-    public final static String PREDICTION_FIRST_YEAR_LONGITUDINAL_R_SCRIPT_LOG    = "prediction_first_year_longitudinal_r_script_log";
+    public final static String PREDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_COMMAND = "prediction_first_year_cross_sectional_r_script_command";
+    public final static String PREDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_LOG     = "prediction_first_year_cross_sectional_r_script_log";
+ 
+    public final static String PREDICTION_FIRST_YEAR_LONGITUDINAL_R_SCRIPT_COMMAND = "prediction_first_year_longitudinal_r_script_command";
+    public final static String PREDICTION_FIRST_YEAR_LONGITUDINAL_R_SCRIPT_LOG     = "prediction_first_year_longitudinal_r_script_log";
 
-    public final static String PREDICTION_FUTURE_CROSS_SECTIONAL_R_SCRIPT_LOG = "prediction_future_cross_sectional_r_script_log";
-    public final static String PREDICTION_FUTURE_LONGITUDINAL_R_SCRIPT_LOG    = "prediction_future_longitudinal_r_script_log";
+    public final static String PREDICTION_FUTURE_CROSS_SECTIONAL_R_SCRIPT_COMMAND = "prediction_future_cross_sectional_r_script_command";
+    public final static String PREDICTION_FUTURE_CROSS_SECTIONAL_R_SCRIPT_LOG     = "prediction_future_cross_sectional_r_script_log";
+
+    public final static String PREDICTION_FUTURE_LONGITUDINAL_R_SCRIPT_COMMAND = "prediction_future_longitudinal_r_script_command";
+    public final static String PREDICTION_FUTURE_LONGITUDINAL_R_SCRIPT_LOG     = "prediction_future_longitudinal_r_script_log";
     
     public final static String VALIDATION_R_SCRIPT_COMMAND = "validation_r_script_command";
     public final static String VALIDATION_R_SCRIPT_LOG     = "validation_r_script_log";

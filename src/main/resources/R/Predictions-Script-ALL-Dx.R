@@ -33,9 +33,9 @@ predictorListCsvFile        <- args[7]
 specialPredictorListCsvFile <- args[8]
 outputDir                   <- args[9]
 
-cat("Test:", testType, studyType, "\n")
+cat("\nTest:", testType, studyType, "\n")
 cat("Phene:", phene, "\n")
-cat("Phene High Cutoff:", pheneHighCutoff, "\n")
+cat("Phene High Cutoff:", pheneHighCutoff, "\n\n")
 
 pheneHighCutoff <- as.numeric(pheneHighCutoff)     # Make sure that the phene high cutoff is numeric
 

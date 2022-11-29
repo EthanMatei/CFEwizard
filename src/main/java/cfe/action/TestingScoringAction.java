@@ -35,6 +35,7 @@ import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
+import cfe.model.ScriptRunInfo;
 import cfe.model.VersionNumber;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
@@ -526,11 +527,26 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                 // Add the testing R script command
                 //cfeResults.addTextFile(CfeResultsFileType.TESTING_R_SCRIPT_COMMAND, this.testingScoringCommand);
                 
-                // Add the testing R script log files
+                // Add the testing R script command and log files
+                if (this.rCommandStateCrossSectional != null) {
+                    cfeResults.addTextFile(
+                            CfeResultsFileType.PREDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_COMMAND,
+                            this.rCommandStateCrossSectional
+                    );
+                }
+                
                 if (this.rScriptOutputStateCrossSectional != null) {
                     cfeResults.addTextFile(
                             CfeResultsFileType.PREDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_LOG,
                             this.rScriptOutputStateCrossSectional
+                    );
+                }
+                
+                
+                if (this.rCommandStateLongitudinal != null) {
+                    cfeResults.addTextFile(
+                            CfeResultsFileType.PREDICTION_STATE_LONGITUDINAL_R_SCRIPT_COMMAND,
+                            this.rCommandStateLongitudinal
                     );
                 }
                 
@@ -541,10 +557,26 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     );
                 }
                 
+                
+                if (this.rCommandFirstYearCrossSectional != null) {
+                    cfeResults.addTextFile(
+                            CfeResultsFileType.PREDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_COMMAND,
+                            this.rCommandFirstYearCrossSectional
+                    );
+                }
+                
                 if (this.rScriptOutputFirstYearCrossSectional != null) {
                     cfeResults.addTextFile(
                             CfeResultsFileType.PREDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_LOG,
                             this.rScriptOutputFirstYearCrossSectional
+                    );
+                }
+                
+                
+                if (this.rCommandFirstYearLongitudinal != null) {
+                    cfeResults.addTextFile(
+                            CfeResultsFileType.PREDICTION_FIRST_YEAR_LONGITUDINAL_R_SCRIPT_COMMAND,
+                            this.rCommandFirstYearLongitudinal
                     );
                 }
                 
@@ -555,10 +587,25 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                     );
                 }
                 
+                if (this.rCommandFutureCrossSectional != null) {
+                    cfeResults.addTextFile(
+                            CfeResultsFileType.PREDICTION_FUTURE_CROSS_SECTIONAL_R_SCRIPT_COMMAND,
+                            this.rCommandFutureCrossSectional
+                    );
+                }
+                
                 if (this.rScriptOutputFutureCrossSectional != null) {
                     cfeResults.addTextFile(
                             CfeResultsFileType.PREDICTION_FUTURE_CROSS_SECTIONAL_R_SCRIPT_LOG,
                             this.rScriptOutputFutureCrossSectional
+                    );
+                }
+                
+                
+                if (this.rCommandFutureLongitudinal != null) {
+                    cfeResults.addTextFile(
+                            CfeResultsFileType.PREDICTION_FUTURE_LONGITUDINAL_R_SCRIPT_COMMAND,
+                            this.rCommandFutureLongitudinal
                     );
                 }
                 
@@ -568,6 +615,7 @@ public class TestingScoringAction extends BaseAction implements SessionAware {
                             this.rScriptOutputFutureLongitudinal
                     );
                 }
+                
                 
                 // Add the master sheet file
                 File masterSheetFile = new File(this.testingMasterSheetFile);

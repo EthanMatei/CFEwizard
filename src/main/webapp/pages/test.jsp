@@ -141,20 +141,24 @@
     <s:iterator value="percentileScores.lowerBounds" var="lowerBound" status="status">
         <tr>
             <td>
-                <span style="text-align: right;margin-left: 1em; width: 10em; display: inline-block;">
-                    <s:property value="lowerBound"/>
+                <span id="lower<s:property value='#status.index'/>" style="text-align: right;margin-left: 1em; width: 10em; display: inline-block;">
+                    <s:property value="lowerBound" />
                 </span>
                 
                 &le; x &lt;
                 
-                <s:if test="#status.last == true">
+                <s:set value="%{'upper' + #status.index}" var="upperId" />
+                
+                <s:if test="#status.last">
                     <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em" readonly="true"
                         name="percentileScores.upperBounds[%{#status.index}]"
+                        id="%{upperId}"
                     />
                 </s:if>
                 <s:else>
                     <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em"
                         name="percentileScores.upperBounds[%{#status.index}]"
+                        id="%{upperId}"
                     />
                 </s:else>
             </td>

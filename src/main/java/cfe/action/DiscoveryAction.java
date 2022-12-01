@@ -43,6 +43,7 @@ import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
+import cfe.model.PercentileScores;
 import cfe.model.VersionNumber;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.ProbesetMappingParser;
@@ -146,10 +147,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	
 	private String discoveryScoringCommand;
 	
+	/*
 	private double dePercentileScore1 = 0;
 	private double dePercentileScore2 = 1;
 	private double dePercentileScore3 = 2;
 	private double dePercentileScore4 = 4;
+	*/
+	
+    private PercentileScores discoveryPercentileScores;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	private String scriptOutputTextFileName;
@@ -175,7 +180,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 		}
 		else if (!this.discoveryDbFileName.endsWith(".accdb")) {
 		    this.setErrorMessage("Discovery database file \"" + discoveryDbFileName
-		            + "\" does not have MS Access database file extension \".accdb\".");
+		            + "\" does not have expected MS Access database file extension \".accdb\".");
 		    result = ERROR;
 		}
 		else {
@@ -200,7 +205,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			
 			    this.genomicsTables = dbParser.getGenomicsTables();
 		    } catch (Exception exception) {
-		        this.setErrorMessage("The Discovery database could not be processed. " + exception.getLocalizedMessage());
+		        String message = "The Discovery database \"" + this.discoveryDbFileName + "\" could not be processed: " + exception.getLocalizedMessage();
+		        log.severe(message);
+		        this.setErrorMessage(message);
 		        result = ERROR;
 		    }
 		}
@@ -415,7 +422,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	public String discoveryScoringSpecification() throws Exception {
 	    String result = SUCCESS;
 	    
-	    log.info("************************** DISCOVERY SCORING SPECIFICATION");
+	    log.info("Discovery scoring specification started.");
 	    
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
@@ -426,6 +433,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         }
         else {
             try {
+                this.discoveryPercentileScores = new PercentileScores();
+                
                 CfeResults discoveryCohortFileResults = null;
                 
                 //--------------------------------------------------------------------------------------
@@ -955,7 +964,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 resultsTables.put(CfeResultsSheets.COHORT_DATA, cohortDataDataTable);
                 log.info("resultsTables created - size: " + resultsTables.size());
                 
-                int rowAccessWindowSize = 100;
                 Workbook resultsWorkbook = DataTable.createWorkbook(resultsTables);
                 log.info("resultsWorkbook created.");
 
@@ -1091,6 +1099,9 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
 	                double deScore = 0.0;
 
+	                deScore = this.discoveryPercentileScores.getScore(dePercentile);
+	                
+	                /*
 	                if (dePercentile < 0.333333333333) {
 	                    deScore = this.dePercentileScore1;
 	                }
@@ -1103,6 +1114,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	                else {
 	                    deScore = this.dePercentileScore4;
 	                }
+	                */
 
 	                scoring.setValue(rowNum, "DE Score", deScore + "");
 	            }
@@ -1156,6 +1168,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         row.add("");
         infoTable.addRow(row);
         
+        /*
         row = new ArrayList<String>();
         row.add("DE Percentile Score (0.00 <= x < 0.33)");
         row.add("" + this.dePercentileScore1);
@@ -1175,6 +1188,17 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         row.add("DE Percentile Score (0.80 <= x < 1.00)");
         row.add("" + this.dePercentileScore4);
         infoTable.addRow(row);
+        */
+        
+        List<Double> lowerBounds = this.discoveryPercentileScores.getLowerBounds();
+        List<Double> upperBounds = this.discoveryPercentileScores.getUpperBounds();
+        List<Double> scores      = this.discoveryPercentileScores.getScores();
+        for (int i = 0; i < lowerBounds.size(); i++) {
+            row = new ArrayList<String>();
+            row.add("DE Percentile Score (" + lowerBounds.get(i) + " <= x <= " + upperBounds.get(i) + ")");
+            row.add("" + scores.get(i));
+            infoTable.addRow(row);
+        }
         
         row = new ArrayList<String>();
         row.add("");
@@ -1731,6 +1755,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         this.discoveryScoringCommand = discoveryScoringCommand;
     }
 
+    /*
     public double getDePercentileScore1() {
         return dePercentileScore1;
     }
@@ -1762,6 +1787,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
     public void setDePercentileScore4(double dePercentileScore4) {
         this.dePercentileScore4 = dePercentileScore4;
     }
+    */
 
     public File getDiscoveryCohortFile() {
         return discoveryCohortFile;
@@ -1793,6 +1819,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
     public void setDiscoveryCohortComparisonThreshold(double discoveryCohortComparisonThreshold) {
         this.discoveryCohortComparisonThreshold = discoveryCohortComparisonThreshold;
+    }
+
+    public PercentileScores getDiscoveryPercentileScores() {
+        return discoveryPercentileScores;
+    }
+
+    public void setDiscoveryPercentileScores(PercentileScores discoveryPercentileScores) {
+        this.discoveryPercentileScores = discoveryPercentileScores;
     }
 
 }

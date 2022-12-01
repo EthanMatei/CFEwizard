@@ -32,7 +32,7 @@
         action="DiscoveryCohortSpecification"
         method="post" enctype="multipart/form-data">
 
-    Database: <s:file name="discoveryDb" label="Discovery Database" />
+    Testing Database: <s:file name="discoveryDb" label="Discovery Database" />
     <s:hidden name="discoveryDbTempFileName" /> 
     
     <br />

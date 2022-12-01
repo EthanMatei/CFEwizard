@@ -114,8 +114,11 @@
 
         </div> <%-- input-file --%>
         
+
         <div style="margin-left: 1em; float: left;">
             <p> Discovery Percentile Scores</p>
+            
+            <%--
             <table class="dataTable">
                 <tr>
                     <th> Percentile Range </th> <th> Score </th>
@@ -145,6 +148,50 @@
                     </td>
                 </tr>
             </table>
+            --%>
+            
+            <table class="dataTable" id="scoreTable">
+                <thead>
+                    <tr>
+                        <th>Percentile Range</th> <th>Score</th>
+                    </tr>
+                </thead>
+    
+                <tbody>
+                    <s:iterator value="discoveryPercentileScores.lowerBounds" var="lowerBound" status="status">
+                        <tr>
+                            <td>
+                                <span id="lower<s:property value='#status.index'/>" style="text-align: right;margin-left: 1em; width: 10em; display: inline-block;">
+                                    <s:property value="lowerBound" />
+                               </span>
+                
+                               &le; x &lt;
+                
+                               <s:set value="%{'upper' + #status.index}" var="upperId" />
+                
+                               <s:if test="#status.last">
+                                   <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em" readonly="true"
+                                       name="discoveryPercentileScores.upperBounds[%{#status.index}]"
+                                       id="%{upperId}"
+                                   />
+                               </s:if>
+                               <s:else>
+                                   <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em"
+                                                name="discoveryPercentileScores.upperBounds[%{#status.index}]"
+                                                id="%{upperId}"
+                                   />
+                               </s:else>
+                           </td>
+                           <td>
+                               <s:textfield size="7" cssStyle="text-align: right;margin-left: 1em"
+                                            name="discoveryPercentileScores.scores[%{#status.index}]"
+                               />
+                           </td>
+                       </tr>
+                   </s:iterator>
+               </tbody>
+           </table>
+
         </div>
                    
         <div style="margin-left: 4em; font-weight: bold; float: left;">

@@ -51,30 +51,14 @@ public class CfeResultsFile implements Serializable, Comparable<CfeResultsFile> 
     private Date creationTime;
 
     @Lob
-    @Column(name="content", nullable=true, columnDefinition="mediumblob")
+    @Column(name="content", nullable=true, columnDefinition="longblob")
     private byte[] content;
     
     @ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name="cfeResultsId", unique=true)
     private CfeResults cfeResults;  // CfeResults that this file belongs to
 
-    // Import file version (want to be able to store generated and imported file so they could be compared for differences)
-    // NOTE: Don't want to allow import of info files, since these are metadata files, which are not used in calculations, and might
-    // have info on what files were imported and generated ???
-    // Note: Also don't want to allow import of script files ??? - might if script is run externally
-    /*
-    private String importFileName;
-    private Date importTime;
-    
-    @Lob
-    @Column(name="content", nullable=true, columnDefinition="mediumblob")
-    private byte[] importContent;
-    
-    @Lob
-    @Column(nullable=true, columnDefinition="text")
-    String importComment;
-    */
-    
+   
     @Override
     public int compareTo(CfeResultsFile file) {
       return this.fileType.compareTo(file.fileType);

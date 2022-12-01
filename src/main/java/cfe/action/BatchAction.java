@@ -69,7 +69,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     private Map<String,String> diagnosisCodes;
     private List<String> diagnosisCodesList;
     
-    private PercentileScores discoveryPercentileScores;
+
     
     private boolean debugDiscoveryScoring = false;
     
@@ -90,6 +90,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     Long discoveryCohortResultsId;
     Long discoveryScoresResultsId;
+    
+    private PercentileScores discoveryPercentileScores;
     
     /* Prioritization -------------------------------------------------------- */
     private String geneListSpecification;

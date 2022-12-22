@@ -2,6 +2,9 @@ package cfe.utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -13,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 public class CsvUtil {
 
@@ -60,5 +64,16 @@ public class CsvUtil {
         csvReader.close();
         
         return workbook;
+    }
+    
+    public static String[] getHeader(String csvString) throws IOException, CsvValidationException {
+        Reader reader = new StringReader(csvString);
+        CSVReader csvReader = new CSVReader(reader);  
+        
+        String[] header = csvReader.readNext();
+        
+        csvReader.close();
+        
+        return header;
     }
 }

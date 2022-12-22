@@ -531,7 +531,7 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
         this.scoringDataFileName = scoringDataCsvFile.getAbsolutePath();
     }
 
-    public DataTable createTestingCohortsInfo() {
+    public DataTable createTestingCohortsInfo() throws Exception {
         DataTable testingCohortsInfo = new DataTable("attribute");
         testingCohortsInfo.addColumn("attribute", "");
         testingCohortsInfo.addColumn("value", "");

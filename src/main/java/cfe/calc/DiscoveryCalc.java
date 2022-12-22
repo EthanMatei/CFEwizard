@@ -246,7 +246,7 @@ public class DiscoveryCalc {
             int lowVisits,
             int highVisits,
             Date cohortGeneratedTime
-    ) {
+    ) throws Exception {
         DataTable infoTable = new DataTable("attribute");
         infoTable.insertColumn("attribute", 0, "");
         infoTable.insertColumn("value",  1,  "");

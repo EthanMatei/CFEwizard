@@ -1237,8 +1237,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 	    return infoTable;
 	}
 	
-    public DataTable createCohortInfoTable()
-    {
+    public DataTable createCohortInfoTable() throws Exception {
 		DataTable infoTable = new DataTable("attribute");
 		infoTable.insertColumn("attribute", 0, "");
 		infoTable.insertColumn("value",  1,  "");

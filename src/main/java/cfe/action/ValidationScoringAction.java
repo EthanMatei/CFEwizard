@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import cfe.model.VersionNumber;
 import cfe.model.prioritization.results.Result;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
+import cfe.utils.CsvUtil;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
 import cfe.utils.WebAppProperties;
@@ -276,7 +278,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                     FileUtils.copyFile(this.updatedMasterSheet, updatedMasterSheetTempFile);
                     this.updatedMasterSheetTempFileName = updatedMasterSheetTempFile.getAbsolutePath();
                     
-                    masterSheetArg = this.updatedMasterSheetTempFileName; 
+                    masterSheetArg = this.updatedMasterSheetTempFileName;
                 }
                 
                 if (this.updatedPredictorListFileName != null && !this.updatedPredictorListFileName.isEmpty()) {
@@ -474,12 +476,34 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                 String predictorListContents = FileUtils.readFileToString(predictorFile, StandardCharsets.UTF_8);
                 cfeResults.addCsvFile(CfeResultsFileType.VALIDATION_PREDICTOR_LIST, predictorListContents);
                 
-                //--------------------------------------------------------
-                // Add the updated master sheet, if any
-                //--------------------------------------------------------
+                //---------------------------------------------------------------------
+                // Add the updated master sheet, if any.
+                // Also modify the results sheet for changes in the updated
+                // master sheet's ValCategory column.
+                //---------------------------------------------------------------------
                 if (this.updatedMasterSheet != null) {
                     String updatedMasterSheetContents = FileUtils.readFileToString(this.updatedMasterSheet, StandardCharsets.UTF_8);
                     cfeResults.addCsvFile(CfeResultsFileType.VALIDATION_UPDATED_MASTER_SHEET, updatedMasterSheetContents);
+                    
+                    //-----------------------------------------------------------------------------------------------------------
+                    // Update cohort data and validation cohort info based on ValCategory column of the master sheet
+                    // Only include ValCategory of "Clinical" in the validation cohort, and the "Low" and "High" values
+                    // may change, and the values for these should be placed in the Validation Cohort Info sheet (whether
+                    // there is an updated master sheet or not - for no update case, can use the Discovery Cohort Info values
+                    // (or calculate from generated master sheet?)
+                    //-----------------------------------------------------------------------------------------------------------
+                    String key = "Subject Idenitifers.PheneVisit";
+                    DataTable updatedMasterSheetValues = new DataTable(key);
+                    // Want all columns up to "Biomarkers"
+                    List<String> header = Arrays.asList( CsvUtil.getHeader(updatedMasterSheetContents) );
+                    int biomarkersIndex = header.indexOf("Biomarkers");
+                    if (biomarkersIndex < 0) {
+                        throw new Exception("Updated validation master sheet does not contain required column \"Biomarkers\".");
+                    }
+                    String[] columns = header.subList(0, biomarkersIndex).toArray(new String[0]);
+                    updatedMasterSheetValues.initializeToCsvString(updatedMasterSheetContents, columns);
+                    
+                    this.updateCohortData(cfeResults, updatedMasterSheetValues);
                 }
                 
                 //--------------------------------------------------------
@@ -514,6 +538,34 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
 		return result;
 	}
 	
+	public void updateCohortData(CfeResults cfeResults, DataTable updatedMasterSheet) throws Exception {
+	    String dataTableKey = "Subject Identifiers.PheneVisit";
+	    
+	    XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
+	    
+	    Map<String, DataTable> dataTables = DataTable.createDataTables(workbook);
+	    
+	    DataTable cohortData = dataTables.get(CfeResultsSheets.COHORT_DATA);
+	    cohortData.setKey(dataTableKey);
+	    
+	    // Delete phene visits in cohort data that are not in the updated master sheet
+	    // (unless they are in the discpvery cohort????)
+	    for (String key: cohortData.getKeys()) {
+	        if (!updatedMasterSheet.containsKey()) {
+	            // cohortData.dele
+	        }
+	    }
+	       
+        // Make changes here ...
+	    // Delete entries not in mastersheet
+	    // Modify entries in mastersheet
+	    
+	    dataTables.put(CfeResultsSheets.COHORT_DATA, cohortData);
+	    
+	    workbook = DataTable.createWorkbook(dataTables);
+	    
+	    cfeResults.setResultsSpreadsheet(workbook);
+	}
 	
 	public String createValidationMasterSheet(Long validationDataId, DataTable predictorList, File geneExpressionCsvFile)
 	        throws Exception

@@ -138,6 +138,70 @@ public class DataTable {
         csvReader.close();
     }
     
+
+    /**
+     * Initializes to the specified CSV string, but only adds the specified columns.
+     * 
+     * @param csvString
+     * @param columns
+     * @throws IOException
+     * @throws CsvValidationException
+     */
+    public void initializeToCsvString(String csvString, String[] columns) throws Exception {
+        Reader reader = new StringReader(csvString);
+        CSVReader csvReader = new CSVReader(reader);
+
+        String[] header = csvReader.readNext();
+
+
+        //-----------------------------------------------------------------------
+        // Create a map from header column name, to column number (zero-indexed)
+        //-----------------------------------------------------------------------
+        Map<String, Integer> headerMap = new HashMap<String, Integer>();
+        int headerIndex = 0;
+        for (String headerColumn: header) {
+            headerMap.put(headerColumn, headerIndex);
+            headerIndex++;
+        }
+
+        //-----------------------------------------------------------------------
+        // Make sure all the specified columns actually exist in the CSV data
+        //-----------------------------------------------------------------------
+        for (String column: columns) {
+            if (!headerMap.containsKey(column)) {
+                throw new IOException("Specified CSV column \"" + column + "\" does not exist in the specified CSV data.");
+            }
+        }
+
+        //-----------------------------------------------------------
+        // Initialize this DataTable using only the specified columns
+        // for each row in the CSV data.
+        //-----------------------------------------------------------
+        if (columns != null && columns.length > 0) {
+            for (String columnName: columns) {
+                this.columns.add(columnName);
+            }
+
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+                String[] filteredLine = new String[columns.length];
+
+                int columnIndex = 0;
+                for (String columnName: columns) {
+                    headerIndex = headerMap.get(columnName);
+                    filteredLine[columnIndex] = line[headerIndex];
+                    columnIndex++;
+                }
+
+                this.addRow(filteredLine);
+            }
+        }
+
+        csvReader.close();
+    }
+
+
+
     /**
      * Initialized using the specified Excel workbook file's first sheet.
      *  
@@ -286,7 +350,12 @@ public class DataTable {
 		
 		log.info(this.getNumberOfRows() + " rows added for Access table \"" + table.getName() + "\".");
     }
-	
+
+
+    public boolean containsKey() {
+        return this.index.containsKey(key);
+    }
+
 	/**
 	 * Inserts the column at the specified position.
 	 * 
@@ -695,6 +764,24 @@ public class DataTable {
         String csv = this.toCsv(convertDatesToTimestamps);
         return csv;
 	}
+	
+    public static Map<String, DataTable> createDataTables(XSSFWorkbook workbook) throws Exception {
+        Map<String, DataTable> dataTables = new TreeMap<String, DataTable>();
+
+        int numberOfSheets = workbook.getNumberOfSheets();
+        for (int i = 0; i < numberOfSheets; i++) {
+            String sheetName = workbook.getSheetName(i);
+            XSSFSheet sheet = workbook.getSheetAt(i);
+
+            DataTable dataTable = new DataTable(null);
+            dataTable.initializeToWorkbookSheet(sheet);
+
+            dataTables.put(sheetName, dataTable);
+        }
+
+        return dataTables;
+    }
+
 	
 	/**
 	 * Creates a workbook from multiple DataTable objects, where each DataTable

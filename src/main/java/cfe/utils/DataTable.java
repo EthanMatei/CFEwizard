@@ -92,6 +92,33 @@ public class DataTable {
 	    this.index = new TreeMap<String, ArrayList<String>>();
 	}
     
+    /**
+     * Indicates if the data table has a key defined.
+     * @return
+     */
+    public boolean hasKey() {
+        return (this.key != null && !this.key.trim().isEmpty());
+    }
+
+    /**
+     * Gets the index for the key column.
+     * 
+     * @return the index for the key, or -1 if there is no key. An exception is thrown
+     *     if a key was specified, but it does not exist in the data table.
+     */
+    public int getKeyIndex() throws Exception {
+        int keyIndex = -1;
+        if (this.hasKey()) {
+            // If there is a key, try to get the key index
+            keyIndex = this.getColumnIndex(this.key);
+            if (keyIndex < 0) {
+                throw new Exception("The specified key column \"" + key + "\" does not exist in the data table.");
+            }
+        }
+        return keyIndex;
+    }
+
+    
     public void initializeToCsv(String csvFile) throws IOException, CsvValidationException {
         Reader reader = Files.newBufferedReader(Paths.get(csvFile));
 		CSVReader csvReader = new CSVReader(reader);  

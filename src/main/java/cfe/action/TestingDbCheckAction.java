@@ -10,11 +10,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -111,13 +113,53 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 			    DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(testingDbFilePath);
 			
 	            //dbParser.checkCoreTables();
-	         
-			    Set<String> pheneTables = dbParser.getPheneTables();
-
-			    this.phenes = dbParser.getTableColumnMap();
+                
+                StringWriter sout = new StringWriter();
+                PrintWriter out = new PrintWriter(sout);
 			    
-			    StringWriter sout = new StringWriter();
-			    PrintWriter out = new PrintWriter(sout);
+		        // Get the names of tables in the database
+		        Set<String> tableNames = new TreeSet<String>();         
+		        tableNames = dbParser.getTableNames();
+			    
+			    Map<String, List<String>> coreTableMap = new LinkedHashMap<String, List<String>>();
+			    coreTableMap.put(
+			            DiscoveryDatabaseParser.DEMOGRAPHICS_TABLE,
+			            Arrays.asList(DiscoveryDatabaseParser.DEMOGRAPHICS_REQUIRED_COLUMNS)
+			    );
+                coreTableMap.put(
+                        DiscoveryDatabaseParser.DIAGNOSIS_TABLE,
+                        Arrays.asList(DiscoveryDatabaseParser.DIAGNOSIS_REQUIRED_COLUMNS)
+                );			    
+                coreTableMap.put(
+                        DiscoveryDatabaseParser.SUBJECT_IDENTIFIERS_TABLE,
+                        Arrays.asList(DiscoveryDatabaseParser.SUBJECT_IDENTIFIERS_REQUIRED_COLUMNS)
+                );  
+                
+                for (Map.Entry<String, List<String>> entry : coreTableMap.entrySet()) {
+                    String table = entry.getKey();
+			        out.println("TABLE: \"" + table + "\"");
+
+			        if (!tableNames.contains(table)) {
+			            out.println("    ERROR: this required table does not exist in the database.");
+			        }
+			        else {
+		                 Set<String> columns = dbParser.getTableColumnNames(table);
+		                 out.println("    COLUMNS: " + String.join(", ", columns));
+		                 List<String> requiredColumns = entry.getValue();
+		                 for (String requiredColumn: requiredColumns) {
+		                     if (!columns.contains(requiredColumn)) {
+		                         out.println("    ERROR: required column \"" + requiredColumn + "\" was not found in the table");
+		                     }
+		                 }
+			        }
+			        
+			        out.println();
+			    }
+		          
+                Set<String> pheneTables = dbParser.getPheneTables();
+                
+			    this.phenes = dbParser.getTableColumnMap();
+
 			    
 	            for (String pheneTable: pheneTables) {
 	                out.println("TABLE: \"" + pheneTable + "\"");

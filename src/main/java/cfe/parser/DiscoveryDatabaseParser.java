@@ -39,7 +39,20 @@ public class DiscoveryDatabaseParser extends AccessDatabaseParser {
 	public static final String DEMOGRAPHICS_TABLE = "Demographics";
 	public static final String SUBJECT_IDENTIFIERS_TABLE = "Subject Identifiers";
 
-	
+    public static final String[] DIAGNOSIS_REQUIRED_COLUMNS = {
+            "PheneVisit", "Primary DIGS DX", "Specifiers",
+            "DxCode", "Per Chip", "Confidence Rating", "DIGS Rater", "Other Dx"
+    };
+    
+    public static final String[] DEMOGRAPHICS_REQUIRED_COLUMNS = {
+            "PheneVisit", "Gender(M/F)", "Age at testing (Years)", "Age at Onset of Illness", "Race/Ethnicity"
+    };
+    
+    public static final String[] SUBJECT_IDENTIFIERS_REQUIRED_COLUMNS = {
+            "Subject", "Vet/Non-Vet?"  
+    };
+    
+    
 	public DiscoveryDatabaseParser(String msAccessFileName) throws IOException {
 	    super(msAccessFileName);
 	    this.database = DatabaseBuilder.open(new File(msAccessFileName));
@@ -54,38 +67,29 @@ public class DiscoveryDatabaseParser extends AccessDatabaseParser {
 	public void checkCoreTables() throws Exception {
         
 	    // Get the names of tables in the database
-        Set<String> pheneTables = new TreeSet<String>();	        
-	    pheneTables = this.database.getTableNames();
+        Set<String> tableNames = new TreeSet<String>();	        
+	    tableNames = this.database.getTableNames();
 	    
 	    Map<String, LinkedHashSet<String>> tableInfo = new LinkedHashMap<String, LinkedHashSet<String>>();
 
 	    
 	    // Diagnosis Table Info
-	    String[] diagnosisColumnArray = {
-	            "PheneVisit", "Primary DIGS DX", "Specifiers", "DxCode", "Per Chip", "Confidence Rating", "DIGS Rater", "Other Dx"
-	    };
-	    LinkedHashSet<String> diagnosisColumns = new LinkedHashSet<String>(Arrays.asList(diagnosisColumnArray));
+	    LinkedHashSet<String> diagnosisColumns = new LinkedHashSet<String>(Arrays.asList(DIAGNOSIS_REQUIRED_COLUMNS));
 	    tableInfo.put(DIAGNOSIS_TABLE, diagnosisColumns);
 	    
         // Demographics Table Info
-        String[] demographicsColumnArray = {
-                "PheneVisit", "Gender(M/F)", "Age at testing (Years)", "Age at Onset of Illness", "Race/Ethnicity"
-        };
-        LinkedHashSet<String> demographicsColumns = new LinkedHashSet<String>(Arrays.asList(demographicsColumnArray));
+        LinkedHashSet<String> demographicsColumns = new LinkedHashSet<String>(Arrays.asList(DEMOGRAPHICS_REQUIRED_COLUMNS));
         tableInfo.put(DEMOGRAPHICS_TABLE, demographicsColumns);	    
 
         // Subject Identifiers Table Info
-        String[] subjectIdentifiersColumnArray = {
-                "Subject", "Vet/Non-Vet?"
-        };
-        LinkedHashSet<String> subjectIdentifiersColumns = new LinkedHashSet<String>(Arrays.asList(subjectIdentifiersColumnArray));
+        LinkedHashSet<String> subjectIdentifiersColumns = new LinkedHashSet<String>(Arrays.asList(SUBJECT_IDENTIFIERS_REQUIRED_COLUMNS));
         tableInfo.put(SUBJECT_IDENTIFIERS_TABLE, subjectIdentifiersColumns);     
         
 	    for (Map.Entry<String, LinkedHashSet<String>> entry : tableInfo.entrySet()) {
 	        String tableName = entry.getKey();
 	        
 	        // Check that the table exists
-	        if (!pheneTables.contains(tableName)) {
+	        if (!tableNames.contains(tableName)) {
 	            throw new Exception("The following required table is missing from the database: \"" + tableName + "\"");           
 	        }
 	        

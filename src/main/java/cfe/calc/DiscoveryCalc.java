@@ -529,7 +529,7 @@ public class DiscoveryCalc {
                     outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
                 }
             }
-            outputDataTable.deleteRow("Probe Set ID", "VisitNumber");
+            outputDataTable.deleteRows("Probe Set ID", "VisitNumber");
 
             log.info("Calculation of outputDataTable complete.");
 

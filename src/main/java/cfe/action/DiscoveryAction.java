@@ -283,7 +283,15 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				    log.info("Starting to add phene table \"" + pheneTableName + "\" to the cohort data.");
 				    CohortDataTable pheneDataTable = new CohortDataTable();
 				    Table dbTable = dbParser.getTable(pheneTableName);
-				    pheneDataTable.initializeToAccessTable(dbTable);
+				    try {
+				        pheneDataTable.initializeToAccessTable(dbTable);
+				    } catch (Exception exception) {
+				        String message = "Error while processing MS Access database table \"" + pheneTableName
+				                + "\": " + exception.getLocalizedMessage();
+				        log.severe(message);
+				        throw new Exception(message);
+				        
+				    }
 				    
 				    if (pheneDataTable.hasColumn("ID")) {
 				        pheneDataTable.deleteColumn("ID");  // Delete an ID column if it exists
@@ -393,6 +401,8 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 				result = ERROR;
 				String message = exception.getMessage();
 				this.setErrorMessage(message);
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
 				log.warning("*** ERROR: " + message);
 				exception.printStackTrace();
 			}
@@ -621,7 +631,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                     log.severe(message);
                     throw new Exception(message);
                 }
-                DataTable diagnosisData = new DataTable("DxCode");
+                DataTable diagnosisData = new DataTable("diagnosisData", null);
                 diagnosisData.initializeToWorkbookSheet(sheet);
                 
                 // NEW CODE:
@@ -663,7 +673,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 }
                 this.setErrorMessage(message);
                 String stackTrace = ExceptionUtils.getStackTrace(exception);
-                log.severe("STACK TRACE: " + stackTrace);
+                log.severe("DISCOVERY SCORING SPECIFICATION STACK TRACE: " + stackTrace);
                 this.setExceptionStack(stackTrace);
                 result = ERROR;
             }
@@ -913,7 +923,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                         outputDataTable.setValue(rowIndex, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN, genecardsSymbol);
                     }
                 }
-                outputDataTable.deleteRow("Probe Set ID", "VisitNumber");
+                outputDataTable.deleteRows("Probe Set ID", "VisitNumber");
                 
                 log.info("Calculation of outputDataTable complete.");
 

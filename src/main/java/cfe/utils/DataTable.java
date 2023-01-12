@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +66,8 @@ public class DataTable {
     
 	protected String name; // name of the table
 	protected String key;  // primary key column name
-	protected int keyIndex; // primary key column number
+
+
 	protected Map<String, ArrayList<String>> index; // primary key index
 	protected List<String> columns;
 	protected List<ArrayList<String>> data;
@@ -78,6 +80,10 @@ public class DataTable {
         = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}$");    
 	
 	public enum JoinType {INNER, OUTER, LEFT_OUTER, RIGHT_OUTER};
+	
+    public DataTable() {
+        this("", null);
+    }
 	
 	public DataTable(String key) {
 	    this("", key);
@@ -101,6 +107,18 @@ public class DataTable {
     }
 
     /**
+     * Get the key index size.
+     * @return the size of the key index or zero if there is no key index
+     */
+    public int getIndexSize() {
+        int size = 0;
+        if (this.hasKey()) {
+            size = this.index.size();
+        }
+        return size;
+    }
+    
+    /**
      * Gets the index for the key column.
      * 
      * @return the index for the key, or -1 if there is no key. An exception is thrown
@@ -112,14 +130,17 @@ public class DataTable {
             // If there is a key, try to get the key index
             keyIndex = this.getColumnIndex(this.key);
             if (keyIndex < 0) {
-                throw new Exception("The specified key column \"" + key + "\" does not exist in the data table.");
+                String message =  "The specified key column \"" + key + "\" does not exist in the data table \"" + this.name + "\"."
+                        + " The columns in this table are: " + this.getColumnNamesAsString() + ".";
+                log.severe(message);
+                throw new Exception(message);
             }
         }
         return keyIndex;
     }
 
     
-    public void initializeToCsv(String csvFile) throws IOException, CsvValidationException {
+    public void initializeToCsv(String csvFile) throws Exception {
         Reader reader = Files.newBufferedReader(Paths.get(csvFile));
 		CSVReader csvReader = new CSVReader(reader);  
 		
@@ -145,7 +166,7 @@ public class DataTable {
      * @param csvString
      * @throws IOException
      */
-    public void initializeToCsvString(String csvString) throws IOException, CsvValidationException {
+    public void initializeToCsvString(String csvString) throws Exception {
         Reader reader = new StringReader(csvString);
         CSVReader csvReader = new CSVReader(reader);  
         
@@ -243,7 +264,7 @@ public class DataTable {
         input.close();
     }
     
-    public void initializeToWorkbookSheet(XSSFSheet sheet) {
+    public void initializeToWorkbookSheet(XSSFSheet sheet) throws Exception {
         XSSFRow header = sheet.getRow(0);
         for (int cellIndex = 0; cellIndex < header.getLastCellNum(); cellIndex++) {
             Cell cell = header.getCell(cellIndex);
@@ -288,7 +309,7 @@ public class DataTable {
     }
 
 	
-    public void initializeToWorkbookStreamingSheet(Sheet sheet) {
+    public void initializeToWorkbookStreamingSheet(Sheet sheet) throws Exception {
         Row header = sheet.getRow(0);
         for (int cellIndex = 0; cellIndex < header.getLastCellNum(); cellIndex++) {
             Cell cell = header.getCell(cellIndex);
@@ -323,16 +344,13 @@ public class DataTable {
 	 * @param table
 	 * @throws IOException
 	 */
-	public void initializeToAccessTable(Table table) throws IOException {
+	public void initializeToAccessTable(Table table) throws Exception {
 		this.name = table.getName();
 
 		int columnIndex = 0;
 		for (Column col: table.getColumns()) {
 			String columnName = col.getName();
 		    columns.add(columnName);
-		    if (columnName.equals(this.key)) {
-		    	this.keyIndex = columnIndex;
-		    }
 		    columnIndex++;
 	    }
 		
@@ -382,6 +400,7 @@ public class DataTable {
     public boolean containsKey() {
         return this.index.containsKey(key);
     }
+    
 
 	/**
 	 * Inserts the column at the specified position.
@@ -407,21 +426,28 @@ public class DataTable {
 	    this.insertColumn(name, this.columns.size(), initialValue);
 	}
 	
-	public void addRow(String[] row) {
+	public void addRow(String[] row) throws Exception {
 	    ArrayList<String> rowAsList = new ArrayList<String>(Arrays.asList(row));
 	    this.addRow(rowAsList);    
 	}
 	
-	public void addRow(ArrayList<String> row) {
-		data.add(row);
-		
+	public void addRow(ArrayList<String> row) throws Exception {
 		// Update index
-		if (this.key != null) {
-			String keyValue = row.get(this.keyIndex);
-		    if (keyValue != null) {
+		if (this.hasKey()) {
+			String keyValue = row.get(this.getKeyIndex());
+			if (keyValue == null) {
+			    throw new Exception("Attempt to add row to data table with a null key value.");
+			}
+			else if (this.index.containsKey(keyValue)) {
+			    // If the index already contains this key
+		        throw new Exception("Attempt to add row to data table with key \"" + keyValue + "\" that already exists.");
+			}
+			else {
 		        this.index.put(keyValue, row);
 		    }
 		}
+		
+	    data.add(row);
 	}
 	
 	/**
@@ -456,21 +482,71 @@ public class DataTable {
 	 * @param columnName
 	 * @param columnValue
 	 */
-	public void deleteRow(String columnName, String columnValue) throws Exception {
+	public void deleteRows(String columnName, String columnValue) throws Exception {
 	    int columnIndex = this.getColumnIndex(columnName);
 	    if (columnIndex < 0) {
 	        String errorMessage = "Column \"" + columnName + "\" not found in data table \"" + this.name + "\".";
 	        throw new Exception(errorMessage);
 	    }
-	    
+        
+        // Delete entries from index
+        if (this.hasKey()) {
+            Set<String> deleteKeys = new HashSet<String>();
+            for (String key: this.index.keySet()) {
+                ArrayList<String> row = this.index.get(key);
+                if (row.get(columnIndex).contentEquals(columnValue)) {
+                    deleteKeys.add(key);
+                }
+            }
+            
+            for (String key: deleteKeys) {
+                this.index.remove(key);
+            }
+        }
+        
+	    // Delete entries from data
 	    for (int rowIndex = this.getNumberOfRows() -1; rowIndex >= 0; rowIndex--) {
 	        ArrayList<String> row = data.get(rowIndex);
 	        if (row.get(columnIndex).contentEquals(columnValue)) {
 	            this.data.remove(rowIndex);
 	        }
 	    }
+
 	}
 	
+	public void deleteRow(String keyValue) throws Exception {
+	    if (!this.hasKey()) {
+	        throw new Exception("Attempt to use key value to delete row from data table without a key.");
+	    }
+	    
+	    if (keyValue == null || keyValue.trim().isEmpty()) {
+	        throw new Exception("Missing key value for deletion of data table row.");  
+	    }
+	    
+        keyValue = keyValue.trim();
+        
+        // Remove index entry
+        this.index.remove(keyValue);
+        
+        int keyIndex = this.getKeyIndex();
+        
+        // Delete entries from data
+        for (int rowIndex = this.getNumberOfRows() -1; rowIndex >= 0; rowIndex--) {
+            ArrayList<String> row = data.get(rowIndex);
+            if (row.get(keyIndex).contentEquals(keyValue)) {
+                this.data.remove(rowIndex);
+                break; // There should be only one value
+            }
+        }
+	}
+	
+	/**
+	 * Moves the specified column from its current position to the specified position.
+	 * 
+	 * @param name the name of the column to move
+	 * @param moveToIndex the index of the position where the column should be moved
+	 * @throws Exception
+	 */
 	public void moveColumn(String name, int moveToIndex) throws Exception {
 	    
 	    if (moveToIndex < 0 || moveToIndex > this.getNumberOfColumns()) {
@@ -510,6 +586,12 @@ public class DataTable {
 	            + (this.getNumberOfColumns() - 1) + "); value is " + columnIndex + ".");
 	    }
 	    
+	    // If the key column is being deleted, remove the key and key index
+	    if (this.hasKey() && columnIndex == this.getKeyIndex()) {
+	        this.key = null;
+	        this.index = new TreeMap<String, ArrayList<String>>();
+	    }
+	    
 	    this.columns.remove(columnIndex);
         
         for (ArrayList<String> dataRow : this.data) {
@@ -537,7 +619,8 @@ public class DataTable {
 	        }
 	    }
 	}
-	
+
+    
 	public void renameColumn(String originalColumnName, String newColumnName) throws Exception {
 	    int columnIndex = this.getColumnIndex(originalColumnName);
 	    if (columnIndex < 0) {
@@ -642,10 +725,16 @@ public class DataTable {
         });	    
 	}
 
-	public void sortWithBlanksLast(String[] sortColumns) {
+	public void sortWithBlanksLast(String[] sortColumns) throws Exception {
 	    Map<String, Integer> indexMap = new HashMap<String,Integer>();
 	    for (String sortColumn: sortColumns) {
 	        int index = this.getColumnIndex(sortColumn);
+	        if (index == -1) {
+	            String message = "Attempt to sort data for table \"" + this.name + "\" with non-existant column \"" + sortColumn + "\"."
+	                    + " The columns for this table are: " + this.getColumnNamesAsString() + ".";
+	            log.severe(message);
+	            throw new Exception(message);
+	        }
 	        indexMap.put(sortColumn, index);
 	    }
 
@@ -686,7 +775,6 @@ public class DataTable {
 		}
 		
 		DataTable merge = new DataTable(this.key);
-		merge.keyIndex = this.keyIndex;
 		
 		ArrayList<String> columns1 = new ArrayList<String>();
 		for (String columnName: this.columns) {
@@ -1116,17 +1204,18 @@ public class DataTable {
     
         return letters;	    
 	}
-	
-	   public static DataTable join(String keyColumn, String joinColumn, DataTable table1, DataTable table2) throws Exception {
-	       DataTable joinedTable = DataTable.join(keyColumn, joinColumn, joinColumn, table1, table2);
-	       return joinedTable;
-	   }
-	   
-	    public static DataTable join(String keyColumn, String joinColumn1, String joinColumn2, 
-	            DataTable table1, DataTable table2) throws Exception {
-	        DataTable joinedTable = DataTable.join(keyColumn, joinColumn1, joinColumn2, table1, table2, JoinType.INNER);
-	        return joinedTable;
-	    }
+
+
+	public static DataTable join(String keyColumn, String joinColumn, DataTable table1, DataTable table2) throws Exception {
+	    DataTable joinedTable = DataTable.join(keyColumn, joinColumn, joinColumn, table1, table2);
+	    return joinedTable;
+	}
+
+	public static DataTable join(String keyColumn, String joinColumn1, String joinColumn2, 
+	        DataTable table1, DataTable table2) throws Exception {
+	    DataTable joinedTable = DataTable.join(keyColumn, joinColumn1, joinColumn2, table1, table2, JoinType.INNER);
+	    return joinedTable;
+	}
 	    
     /**
      * 
@@ -1608,6 +1697,11 @@ public class DataTable {
         return this.columns;
     }
     
+    public String getColumnNamesAsString() {
+        String value = String.join(", ",  this.columns);
+        return value;
+    }
+    
     
     public String getValue(int rowNumber, int columnNumber) {
         String value = null;
@@ -1630,11 +1724,11 @@ public class DataTable {
             throw new Exception("Failed to set key for data table to non-existant field \"" + key + "\"");
         }
         this.key = key;
-        this.keyIndex = this.getColumnIndex(key);
+        int keyIndex = this.getKeyIndex();
         
         this.index = new TreeMap<String, ArrayList<String>>();
         for (ArrayList<String> row: this.data) {
-            String keyValue = row.get(this.keyIndex);
+            String keyValue = row.get(keyIndex);
             this.index.put(keyValue, row);
         }
     }

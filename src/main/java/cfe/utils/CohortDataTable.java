@@ -75,7 +75,7 @@ public class CohortDataTable extends DataTable {
     }
     
     
-	public void initializeToAccessTable(Table table) throws IOException {
+	public void initializeToAccessTable(Table table) throws Exception {
 
 		// Reset key, because sometimes PheneVisit is misspelled.
 		for (Column col: table.getColumns()) {
@@ -115,11 +115,9 @@ public class CohortDataTable extends DataTable {
         
         CohortDataTable merge = new CohortDataTable();
         
-        merge.keyIndex = this.keyIndex;
-        
         ArrayList<String> columns1 = new ArrayList<String>();
         for (String columnName: this.columns) {
-            if (columnName.equals(key)) {
+            if (columnName.equals(key) && this.name != null && !this.name.trim().isEmpty()) {
                 columnName = this.name + "." + columnName;
             }
             columns1.add(columnName);
@@ -127,11 +125,7 @@ public class CohortDataTable extends DataTable {
         
         ArrayList<String> columns2 = new ArrayList<String>();
         for (String columnName: mergeTable.columns) {
-            // ADD THIS LATER??? Add the table name to all phene table column names
-            // if (columnName.equals(key)) {
-                columnName = mergeTable.name + "." + columnName;
-            // }
-            
+            columnName = mergeTable.name + "." + columnName;
             columns2.add(columnName);
         }   
         
@@ -188,26 +182,37 @@ public class CohortDataTable extends DataTable {
 		
 		CohortDataTable merge = new CohortDataTable();
 		
-		merge.keyIndex = this.keyIndex;
+		String originalKey = this.key;
 		
 		ArrayList<String> columns1 = new ArrayList<String>();
 		for (String columnName: this.columns) {
-			if (columnName.equals(key)) {
+			if (columnName.equals(this.key) && this.name != null && !this.name.trim().isEmpty()) {
 				columnName = this.name + "." + columnName;
+				this.key = columnName;
 			}
 			columns1.add(columnName);
 		}
 		
 		ArrayList<String> columns2 = new ArrayList<String>();
 		for (String columnName: mergeTable.columns) {
-			if (columnName.equals(key)) {
+		    log.info("THIS TABLE NAME:" + this.name);
+		    log.info("MERGE TABLE NAME: " + mergeTable.name);
+		    log.info("COLUMN NAME: \"" + columnName + "\"");
+		    log.info("ORIGINAL KEY: \"" + originalKey + "\"");
+		    
+			if (columnName.equals(originalKey) && mergeTable.name != null && !mergeTable.name.trim().isEmpty()) {
 				columnName = mergeTable.name + "." + columnName;
+			    mergeTable.key = columnName;
 			}
+			log.info("COLUMN TO ADD: " + columnName);
 			columns2.add(columnName);
 		}	
 		
 		merge.columns.addAll(columns1);
 		merge.columns.addAll(columns2);
+		
+        // Set the key for the merge to the key for the "left" part of the merge
+        merge.setKey(this.getKey());  
 		
 		//String columnsString = String.join(", ", merge.columns);
 		
@@ -583,19 +588,20 @@ public class CohortDataTable extends DataTable {
 	    cohort.setLowVisits(lowVisits);
 	    cohort.setHighVisits(highVisits);
 	    
-	    cohort.key = "PheneVisit";
 	    cohort.columns.add("Subject");
 	    cohort.columns.add("PheneVisit");
 	    cohort.columns.add("DiscoveryCohort");
 	    cohort.columns.add("date");
-	    
+	       
+        cohort.setKey("PheneVisit");
+        
 	    log.info("Going to add data rows to cohort...");
 	    
 	    for (ArrayList<String> cohortDataRow: this.data) {
 	        ArrayList<String> cohortRow = new ArrayList<String>();
 	        
 	        String subject = cohortDataRow.get(subjectIndex);
-	        String keyValue = cohortDataRow.get(this.keyIndex);
+	        // String keyValue = cohortDataRow.get(this.keyIndex);
 	        String pheneVisit = cohortDataRow.get(pheneVisitIndex);
 	        
 	        cohortRow.add(subject);
@@ -773,9 +779,11 @@ public class CohortDataTable extends DataTable {
 	    int startIndex = this.getColumnIndex(tablePheneVisitColumn);
 	    
 	    if (startIndex == -1) {
-	        throw new Exception("Could not find table \"" + tableName + "\" PheneVisit column\""
-	                + tablePheneVisitColumn + "\" in the cohort data table."
-	                );
+	        String message = "Could not find table \"" + tableName + "\" PheneVisit column \""
+                    + tablePheneVisitColumn + "\" in the cohort data table."
+                    + " The columns in this table are: " + this.getColumnNamesAsString() + "."
+                    ;
+	        throw new Exception(message);
 	    }
 
 	    startIndex += 1;

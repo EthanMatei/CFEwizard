@@ -161,36 +161,40 @@
                     <s:iterator value="discoveryPercentileScores.lowerBounds" var="lowerBound" status="status">
                         <tr>
                             <td>
+                               <%--
                                 <span id="lower<s:property value='#status.index'/>" style="text-align: right;margin-left: 1em; width: 10em; display: inline-block;">
                                     <s:property value="lowerBound" />
-                               </span>
+                                </span>
                 
-                               &le; x &lt;
+                                &le; 
+                                
+                                --%>
+                                &nbsp; x &lt;
                 
-                               <s:set value="%{'upper' + #status.index}" var="upperId" />
+                                <s:set value="%{'upper' + #status.index}" var="upperId" />
                 
-                               <s:if test="#status.last">
-                                   <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em" readonly="true"
-                                       name="discoveryPercentileScores.upperBounds[%{#status.index}]"
-                                       id="%{upperId}"
-                                   />
-                               </s:if>
-                               <s:else>
-                                   <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em"
-                                                name="discoveryPercentileScores.upperBounds[%{#status.index}]"
-                                                id="%{upperId}"
-                                   />
-                               </s:else>
-                           </td>
-                           <td>
-                               <s:textfield size="7" cssStyle="text-align: right;margin-left: 1em"
-                                            name="discoveryPercentileScores.scores[%{#status.index}]"
-                               />
-                           </td>
-                       </tr>
-                   </s:iterator>
-               </tbody>
-           </table>
+                                <s:if test="#status.last">
+                                    <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em" readonly="true"
+                                        name="discoveryPercentileScores.upperBounds[%{#status.index}]"
+                                        id="%{upperId}"
+                                    />
+                                </s:if>
+                                <s:else>
+                                    <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em"
+                                                 name="discoveryPercentileScores.upperBounds[%{#status.index}]"
+                                                 id="%{upperId}"
+                                    />
+                                </s:else>
+                            </td>
+                            <td>
+                                <s:textfield size="7" cssStyle="text-align: right;margin-left: 1em"
+                                             name="discoveryPercentileScores.scores[%{#status.index}]"
+                                />
+                            </td>
+                        </tr>
+                    </s:iterator>
+                </tbody>
+            </table>
 
         </div>
                    

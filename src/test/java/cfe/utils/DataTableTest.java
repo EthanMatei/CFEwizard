@@ -48,23 +48,38 @@ public class DataTableTest {
 	    dataTable.addColumn("id", "");
 	    dataTable.addColumn("value", "");
 	    
-	    String[] row1 = {"1", "abc"};
+	    String[] row1 = {"k1", "abc"};
 	    dataTable.addRow(row1);
 	    
-	    String[] row2 = {"2", "def"};
+	    String[] row2 = {"k2", "def"};
 	    dataTable.addRow(row2);
 	    
-	    String[] row3 = {"3", "ghi"};
+	    String[] row3 = {"k3", "ghi"};
 	    dataTable.addRow(row3);
 	    
-	    Assert.assertEquals(2,  dataTable.getNumberOfColumns());
+	    Assert.assertEquals(2, dataTable.getNumberOfColumns());
 	    Assert.assertEquals(3, dataTable.getNumberOfRows());
 	    
-	    //dataTable.deleteRow("id", "2");
-	    //dataTable.deleteRow("2");
-	    //Assert.assertEquals(2, dataTable.getNumberOfRows());
+	    dataTable.deleteRows("id", "k2");
+	    Assert.assertEquals(2, dataTable.getNumberOfRows());
+	    Assert.assertEquals(2, dataTable.getIndexSize());
 	    
 	    dataTable.setValue(0, "value", "xyz");
+	    
+	    // Test get value methods
+	    Assert.assertEquals("ghi", dataTable.getValue(1, 1));
+	    Assert.assertEquals("xyz", dataTable.getValue(0, "value"));
+	    Assert.assertEquals("ghi", dataTable.getValue("k3", "value"));   // get using key
+	    
+	    String[] row4 = {"k4", "value4"};
+	    dataTable.addRow(row4);
+	    
+	    // Test deleting row by key
+	    dataTable.deleteRow("k3");
+	    Assert.assertEquals(2, dataTable.getNumberOfRows());
+	    Assert.assertEquals(2, dataTable.getIndexSize());
+	    Assert.assertEquals("value4", dataTable.getValue(1, 1));
+
 
 	    for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
 	        System.out.println(dataTable.getRow(i));

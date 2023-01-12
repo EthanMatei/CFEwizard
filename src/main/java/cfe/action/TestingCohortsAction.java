@@ -355,9 +355,9 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
 
                 DataTable cohortDataForTesting = cohortData;
 
-                cohortDataForTesting.deleteRow("Cohort", "discovery");
-                cohortDataForTesting.deleteRow("Cohort", "validation");   // "validation" deprecated; new name "clinical"
-                cohortDataForTesting.deleteRow("Cohort", "clinical");
+                cohortDataForTesting.deleteRows("Cohort", "discovery");
+                cohortDataForTesting.deleteRows("Cohort", "validation");   // "validation" deprecated; new name "clinical"
+                cohortDataForTesting.deleteRows("Cohort", "clinical");
 
 
                 DataTable testingCohortData = DataTable.join("TestingVisit", "TestingVisit", "Subject Identifiers.PheneVisit",

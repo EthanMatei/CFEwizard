@@ -158,7 +158,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                     throw new Exception("The data spreadsheet is missing sheet \"" + CfeResultsSheets.DISCOVERY_COHORT_INFO + "\".");
                 }
                 
-                DataTable cohortInfo = new DataTable();
+                DataTable cohortInfo = new DataTable("attribute");
                 cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
                 ArrayList<String> row = cohortInfo.getRow("Phene Table");
                 if (row == null) {
@@ -173,6 +173,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
 
                 XSSFSheet cohortDataSheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 CohortDataTable cohortData = new CohortDataTable(this.discoveryPheneTable);
+                cohortData.setKey(null);
                 cohortData.initializeToWorkbookSheet(cohortDataSheet);
                 cohortData.setKey("Subject Identifiers.PheneVisit");
 
@@ -211,6 +212,7 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 
                 XSSFSheet sheet = discoveryWorkbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 CohortDataTable cohortData = new CohortDataTable();
+                cohortData.setKey(null);
                 cohortData.initializeToWorkbookSheet(sheet);
                 cohortData.setKey("Subject Identifiers.PheneVisit");
 

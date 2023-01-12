@@ -175,7 +175,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                             + "\" sheet from validation data workbook.");
                 }
                 
-                DataTable discoveryCohortInfo = new DataTable();
+                DataTable discoveryCohortInfo = new DataTable("attribute");
                 discoveryCohortInfo.initializeToWorkbookSheet(sheet);
                 ArrayList<String> row = discoveryCohortInfo.getRow("Phene");
                 if (row == null || row.size() == 0) {

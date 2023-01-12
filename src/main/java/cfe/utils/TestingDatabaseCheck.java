@@ -15,6 +15,8 @@ public class TestingDatabaseCheck {
     public static final String TESTING_DB_DIR = "/home/lab/shared/";
     public static final String TESTING_DB_FILE = "Testing Database MDH 12-12-2022.accdb";
     
+    public static final String PHENE_VISIT_PATTERN = "^phchp\\d+v\\d+$|^CTBIN\\d+v\\d+$";
+    
     public static void main(String[] args) {
         
         String dbFile = TESTING_DB_DIR + TESTING_DB_FILE;
@@ -49,10 +51,8 @@ public class TestingDatabaseCheck {
                         if (pheneVisits.contains(pheneVisit)) {
                             out.println("    ERROR: duplicate phene visit \"" + pheneVisit + "\".");
                         }
-                        else if (pheneVisit.matches("^phchp\\d+v\\d+$")) {
-                            pheneVisits.add(pheneVisit);
-                        }
-                        else if (pheneVisit.matches("^CTBIN\\d+v\\d+$")) {
+                        //else if (pheneVisit.matches("^phchp\\d+v\\d+$|^CTBIN\\d+v\\d+$")) {
+                        else if (pheneVisit.matches(PHENE_VISIT_PATTERN)) {
                             pheneVisits.add(pheneVisit);
                         }
                         else {
@@ -64,6 +64,7 @@ public class TestingDatabaseCheck {
                 out.println();
             }
             out.close();
+            System.out.println("DONE.");
         }
         catch (IOException ioException) {
             System.out.println("I/O error: " + ioException.getLocalizedMessage());

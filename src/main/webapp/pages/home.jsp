@@ -11,10 +11,20 @@
 <%-- User: <s:property value="#session.username" /> --%>
 
 <h2>1. Discovery</h2>
-<ol type="A">
-    <li> <s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a> </li>
-    <li> <s:a action="DiscoveryCohortSelection">Discovery Scoring</s:a> </li>
-</ol>
+
+<div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
+    <ol type="A" style="margin-top: 0;">
+        <li> <s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a> </li>
+        <li> <s:a action="DiscoveryCohortSelection">Discovery Scoring</s:a> </li>
+    </ol>
+</div>
+
+<div style="display: inline-block; vertical-align: top;">
+    <ul style="margin-top: 0;">
+        <li> <s:a action="TestingDbUploadInit">Testing Database Check</s:a></li>
+    </ul>
+</div>
+
 
 <h2>2. Prioritization</h2>
 

@@ -19,9 +19,10 @@
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
         <s:if test="exceptionStack != null && exceptionStack != ''">
-            <p>
+            <br/>
+            <pre>
                 <s:property value="exceptionStack" />
-            </p>
+            </pre>
         </s:if>
     </div>
 </s:if>

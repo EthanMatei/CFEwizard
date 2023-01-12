@@ -17,7 +17,10 @@
         ERROR: <s:property value="errorMessage" />
         <p>
         <s:if test="exceptionStack != ''">
+            <br/>
+            <pre>
             <s:property value="exceptionStack" />
+            </pre>
         </s:if>
         </p>
     </div>

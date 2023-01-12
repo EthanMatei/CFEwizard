@@ -108,6 +108,30 @@
             </result>
 		</action>
 		
+		
+		<!-- TESTING DB CHECK ======================================================= -->
+		
+		<action name="TestingDbUploadInit" class="cfe.action.TestingDbCheckAction" method="initialize">
+		    <interceptor-ref name="basicStack"/>
+	        <result name="success">pages/testing_db/testingDbUpload.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="input">pages/testing_db/testingDbUpload.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<!--  Upload specified database, and parse it to get values for cohort specification -->
+		<action name="TestingDbUploadAndCheck" class="cfe.action.TestingDbCheckAction" method="uploadAndCheckDatabase">
+		    <interceptor-ref name="fileUploadStack"/>
+	        <result name="success">pages/testing_db/testingDbCheck.jsp</result>
+			<result name="error">pages/testing_db/testingDbUpload.jsp</result>
+			<result name="input">pages/testing_db/testingDbUpload.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
 		<!-- DISCOVERY ======================================================= -->
 		
 		<action name="DiscoveryDbUpload" class="cfe.action.DiscoveryAction" method="initialize">
@@ -156,10 +180,7 @@
 		<action name="DiscoveryScoringSpecification" class="cfe.action.DiscoveryAction" method="discoveryScoringSpecification">
 		    <interceptor-ref name="basicStack"/>
 	        <result name="success">pages/discovery/discoveryScoringSpecification.jsp</result>
-			<result name="error" type="redirectAction">
-			    <param name="actionName">DiscoveryCohortSelection</param>	
-			    <param name="errorMessage">${errorMessage}</param>
-			</result>
+			<result name="error">pages/discovery/discoveryCohortSelection.jsp</result>
 			<result name="input">pages/error.jsp</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
@@ -727,7 +748,11 @@
         </action>
         
         <!-- ==================================================================================== -->        		        
-        
+
+        <!-- ============ -->
+        <!-- File Display -->
+        <!-- ============ -->
+                      
         <!-- CSV file display -->
 		<action name="CsvDisplay" class="cfe.action.CsvDisplayAction" method="view">
 			<interceptor-ref name="basicStack"/>
@@ -840,6 +865,8 @@
             </result>
 		</action>
 
+        <!-- ==================================================================================== -->   
+        
 		<!-- Admin Test Page -->
 		<action name="TestAction" class="cfe.action.TestAction" method="initialize">
 			<interceptor-ref name="basicStack"/>
@@ -859,7 +886,9 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-						
+		
+		<!-- ==================================================================================== -->   
+		        				
 	    <!-- Error Action -->
 		<action name="ErrorAction" class="cfe.action.ErrorAction">
 			<interceptor-ref name="basicStack"/>

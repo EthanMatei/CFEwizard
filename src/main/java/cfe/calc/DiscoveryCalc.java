@@ -692,11 +692,6 @@ public class DiscoveryCalc {
         infoTable.addRow(row);
 
         row = new ArrayList<String>();
-        row.add("");
-        row.add("");
-        infoTable.addRow(row);
-
-        row = new ArrayList<String>();
         row.add("DE Percentile Score (0.00 <= x < 0.33)");
         row.add("" + dePercentileScore1);
         infoTable.addRow(row);
@@ -714,12 +709,7 @@ public class DiscoveryCalc {
         row = new ArrayList<String>();
         row.add("DE Percentile Score (0.80 <= x < 1.00)");
         row.add("" + dePercentileScore4);
-        infoTable.addRow(row);
-        
-        row = new ArrayList<String>();
-        row.add("");
-        row.add("");
-        infoTable.addRow(row);               
+        infoTable.addRow(row);              
         
         row = new ArrayList<String>();
         row.add("Diagnosis Code");
@@ -729,12 +719,6 @@ public class DiscoveryCalc {
         if (timingFileName != null && !timingFileName.isEmpty()) {
             DataTable timing = new DataTable(null);
             timing.initializeToCsv(timingFileName);
-            
-            // Add blank spacing row
-            row = new ArrayList<String>();
-            row.add("");
-            row.add("");
-            infoTable.addRow(row);
             
             for (int i = 1; i < timing.getNumberOfRows(); i++) {
                 ArrayList<String> time = timing.getRow(i);

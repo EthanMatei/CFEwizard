@@ -1,6 +1,5 @@
 package cfe.utils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,16 +11,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import javax.print.DocFlavor.STRING;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Table;
@@ -37,15 +27,17 @@ public class CohortDataTable extends DataTable {
 	private static final Logger log = Logger.getLogger(CohortDataTable.class.getName());
 	
 	public static final Long RANDOM_SEED = 10972359723095792L;
+	
+	public static final String KEY_COLUMN = "PheneVisit";
 	   
 	private String pheneTable; 
 	
 	public CohortDataTable() {
-		super("PheneVisit");
+		super(CohortDataTable.KEY_COLUMN);
 	}
     
     public CohortDataTable(String pheneTable) {
-        super("PheneVisit");
+        super(CohortDataTable.KEY_COLUMN);
         this.pheneTable = pheneTable;
     }
     
@@ -117,8 +109,9 @@ public class CohortDataTable extends DataTable {
         
         ArrayList<String> columns1 = new ArrayList<String>();
         for (String columnName: this.columns) {
-            if (columnName.equals(key) && this.name != null && !this.name.trim().isEmpty()) {
+            if (columnName.equals(CohortDataTable.KEY_COLUMN) && this.name != null && !this.name.trim().isEmpty()) {
                 columnName = this.name + "." + columnName;
+                this.key = columnName;
             }
             columns1.add(columnName);
         }
@@ -131,6 +124,9 @@ public class CohortDataTable extends DataTable {
         
         merge.columns.addAll(columns1);
         merge.columns.addAll(columns2);
+        
+        // Set the key for the merge to the key for the "left" part of the merge
+        merge.setKey(this.getKey());  
         
         // log.info("Columns for phene table merge have been merged.");
         
@@ -182,11 +178,10 @@ public class CohortDataTable extends DataTable {
 		
 		CohortDataTable merge = new CohortDataTable();
 		
-		String originalKey = this.key;
-		
 		ArrayList<String> columns1 = new ArrayList<String>();
 		for (String columnName: this.columns) {
-			if (columnName.equals(this.key) && this.name != null && !this.name.trim().isEmpty()) {
+		    // If this is the key column, prepend the table name to it to make it unique
+			if (columnName.equals(CohortDataTable.KEY_COLUMN) && this.name != null && !this.name.trim().isEmpty()) {
 				columnName = this.name + "." + columnName;
 				this.key = columnName;
 			}
@@ -198,9 +193,10 @@ public class CohortDataTable extends DataTable {
 		    log.info("THIS TABLE NAME:" + this.name);
 		    log.info("MERGE TABLE NAME: " + mergeTable.name);
 		    log.info("COLUMN NAME: \"" + columnName + "\"");
-		    log.info("ORIGINAL KEY: \"" + originalKey + "\"");
+		    log.info("KEY COLUMN: \"" + CohortDataTable.KEY_COLUMN + "\"");
 		    
-			if (columnName.equals(originalKey) && mergeTable.name != null && !mergeTable.name.trim().isEmpty()) {
+			if (columnName.equals(CohortDataTable.KEY_COLUMN) && mergeTable.name != null && !mergeTable.name.trim().isEmpty()) {
+		         // If this is the key column, prepend the table name to it to make it unique
 				columnName = mergeTable.name + "." + columnName;
 			    mergeTable.key = columnName;
 			}

@@ -1720,16 +1720,22 @@ public class DataTable {
      * @param key
      */
     public void setKey(String key) throws Exception {
-        if (!this.columns.contains(key)) {
-            throw new Exception("Failed to set key for data table to non-existant field \"" + key + "\"");
+        if (key == null || key.trim().isEmpty()) {
+            this.key = null;
+            this.index = new TreeMap<String, ArrayList<String>>();
         }
-        this.key = key;
-        int keyIndex = this.getKeyIndex();
+        else {
+            if (!this.columns.contains(key)) {
+                throw new Exception("Failed to set key for data table to non-existant field \"" + key + "\"");
+            }
+            this.key = key;
+            int keyIndex = this.getKeyIndex();
         
-        this.index = new TreeMap<String, ArrayList<String>>();
-        for (ArrayList<String> row: this.data) {
-            String keyValue = row.get(keyIndex);
-            this.index.put(keyValue, row);
+            this.index = new TreeMap<String, ArrayList<String>>();
+            for (ArrayList<String> row: this.data) {
+                String keyValue = row.get(keyIndex);
+                this.index.put(keyValue, row);
+            }
         }
     }
 

@@ -465,7 +465,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                                 + "\" sheet from discovery cohort data workbook.");
                     }
                     
-                    DataTable discoveryCohortInfo = new DataTable("attribute");
+                    DataTable discoveryCohortInfo = new DataTable();
                     discoveryCohortInfo.initializeToWorkbookSheet(sheet);
                     
                     // get phene
@@ -757,6 +757,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 //----------------------------------------------------
                 CohortDataTable cohortData = new CohortDataTable(this.pheneTable);
                 sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
+                cohortData.setKey(null);
                 cohortData.initializeToWorkbookSheet(sheet);
                 
                 DataTable bigData = cohortData.getBigData(this.pheneSelection);
@@ -946,6 +947,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 
                 // Create "Cohort Data" data table
                 CohortDataTable cohortDataDataTable = new CohortDataTable();
+                cohortDataDataTable.setKey(null);
                 streamingSheet = cohortWorkbook.getSheet(CfeResultsSheets.COHORT_DATA);
                 cohortDataDataTable.initializeToWorkbookStreamingSheet(streamingSheet);            
                 log.info("Cohort data data table created.");
@@ -1173,33 +1175,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         row.add(this.scoresGeneratedTime.toString());
         infoTable.addRow(row);
         
-        row = new ArrayList<String>();
-        row.add("");
-        row.add("");
-        infoTable.addRow(row);
-        
-        /*
-        row = new ArrayList<String>();
-        row.add("DE Percentile Score (0.00 <= x < 0.33)");
-        row.add("" + this.dePercentileScore1);
-        infoTable.addRow(row);
-        
-        row = new ArrayList<String>();
-        row.add("DE Percentile Score (0.33 <= x < 0.50)");
-        row.add("" + this.dePercentileScore2);
-        infoTable.addRow(row);
-        
-        row = new ArrayList<String>();
-        row.add("DE Percentile Score (0.50 <= x < 0.80)");
-        row.add("" + this.dePercentileScore3);
-        infoTable.addRow(row);
-        
-        row = new ArrayList<String>();
-        row.add("DE Percentile Score (0.80 <= x < 1.00)");
-        row.add("" + this.dePercentileScore4);
-        infoTable.addRow(row);
-        */
-        
         List<Double> lowerBounds = this.discoveryPercentileScores.getLowerBounds();
         List<Double> upperBounds = this.discoveryPercentileScores.getUpperBounds();
         List<Double> scores      = this.discoveryPercentileScores.getScores();
@@ -1208,12 +1183,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             row.add("DE Percentile Score (" + lowerBounds.get(i) + " <= x <= " + upperBounds.get(i) + ")");
             row.add("" + scores.get(i));
             infoTable.addRow(row);
-        }
-        
-        row = new ArrayList<String>();
-        row.add("");
-        row.add("");
-        infoTable.addRow(row);               
+        }             
         
         row = new ArrayList<String>();
         row.add("Diagnosis Code");
@@ -1223,12 +1193,6 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         if (this.timingFile != null && !this.timingFile.isEmpty()) {
             DataTable timing = new DataTable(null);
             timing.initializeToCsv(timingFile);
-            
-            // Add blank spacing row
-            row = new ArrayList<String>();
-            row.add("");
-            row.add("");
-            infoTable.addRow(row);
             
             for (int i = 1; i < timing.getNumberOfRows(); i++) {
                 ArrayList<String> time = timing.getRow(i);

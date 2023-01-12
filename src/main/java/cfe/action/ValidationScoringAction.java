@@ -175,7 +175,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                             + "\" sheet from validation data workbook.");
                 }
                 
-                DataTable discoveryCohortInfo = new DataTable("attribute");
+                DataTable discoveryCohortInfo = new DataTable();
                 discoveryCohortInfo.initializeToWorkbookSheet(sheet);
                 ArrayList<String> row = discoveryCohortInfo.getRow("Phene");
                 if (row == null || row.size() == 0) {
@@ -894,11 +894,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         infoTable.addRow(row);
         
         row = new ArrayList<String>();
-        row.add("");
-        row.add("");
-        infoTable.addRow(row);
-        
-        row = new ArrayList<String>();
         row.add("Bonferroni Score");
         row.add(this.bonferroniScore + "");
         infoTable.addRow(row);
@@ -916,11 +911,6 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
         row = new ArrayList<String>();
         row.add("Non-Stepwise Score");
         row.add(this.nonStepwiseScore + "");
-        infoTable.addRow(row);
-        
-        row = new ArrayList<String>();
-        row.add("");
-        row.add("");
         infoTable.addRow(row);
         
         row = new ArrayList<String>();

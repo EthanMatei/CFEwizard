@@ -19,7 +19,9 @@
 
 <s:if test="exceptionStack != ''">
     <h4>Exception Details</h4>
-    <s:property value="exceptionStack" /> 
+    <pre>
+    <s:property value="exceptionStack" />
+    </pre> 
 </s:if>
 
 </body>

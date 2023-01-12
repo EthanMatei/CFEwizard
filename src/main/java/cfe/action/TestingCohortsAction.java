@@ -193,7 +193,7 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                         throw new Exception("Could not find \"" + CfeResultsSheets.VALIDATION_COHORT_INFO + "\" sheet in results workbook.");
                     }
                 }
-                DataTable validationCohortInfo = new DataTable("attribute");
+                DataTable validationCohortInfo = new DataTable();
                 validationCohortInfo.initializeToWorkbookSheet(validationCohortInfoSheet);
                 
                 this.validationConstraint1 = validationCohortInfo.getValue("Constraint 1", "value");
@@ -207,7 +207,7 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                 }
                 
                 XSSFSheet discoveryCohortInfoSheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_COHORT_INFO);
-                DataTable cohortInfo = new DataTable("attribute");
+                DataTable cohortInfo = new DataTable();
                 cohortInfo.initializeToWorkbookSheet(discoveryCohortInfoSheet);
             }
             catch (Exception exception) {
@@ -532,7 +532,7 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
     }
 
     public DataTable createTestingCohortsInfo() throws Exception {
-        DataTable testingCohortsInfo = new DataTable("attribute");
+        DataTable testingCohortsInfo = new DataTable();
         testingCohortsInfo.addColumn("attribute", "");
         testingCohortsInfo.addColumn("value", "");
 

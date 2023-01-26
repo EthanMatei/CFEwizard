@@ -51,7 +51,7 @@ public class DiscoveryCohortCalc {
 	
 	private String pheneTable;
 	
-	private String pheneSelection;
+	private String phene;
 	
 	private double lowCutoff;
 	private double highCutoff;
@@ -85,7 +85,8 @@ public class DiscoveryCohortCalc {
 	public CfeResults calculate(
 	        String testingDatabaseFilePath,
 	        String testingDbLabel,
-	        String pheneSelectionParam,
+	        String phene,
+	        String pheneTable,
 	        double lowCutoffParam,
 	        double highCutoffParam,
 	        String genomicsTableParam,
@@ -96,13 +97,18 @@ public class DiscoveryCohortCalc {
 	        throw new Exception("No testing database specified for Discovery Cohort calculation.");
 	    }
 
-        if (pheneSelectionParam == null || pheneSelectionParam.trim().isEmpty()) {
+        if (phene == null || phene.trim().isEmpty()) {
             throw new Exception("No phene specified for Discovery Cohort calculation.");
+        }
+        
+        if (pheneTable == null || pheneTable.trim().isEmpty()) {
+            throw new Exception("No phene table specified for Discovery Cohort calculation.");
         }
         
 	    this.testingDatabaseFileName = testingDatabaseFilePath.trim();
 	    this.testingDatabseIdentifier          = testingDbLabel;
-	    this.pheneSelection          = pheneSelectionParam;
+	    this.phene                   = phene;
+	    this.pheneTable              = pheneTable;
 	    this.lowCutoff               = lowCutoffParam;
 	    this.highCutoff              = highCutoffParam;
 	    this.genomicsTable           = genomicsTableParam;
@@ -110,11 +116,7 @@ public class DiscoveryCohortCalc {
         
 	    DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDatabaseFileName);
 		         
-		// Split phene selection into table and phene
-	    String[] pheneInfo = pheneSelection.split("\\|", 2);
-		this.pheneTable = pheneInfo[0];
-		this.pheneSelection = pheneInfo[1];
-		log.info("Phene \"" + pheneSelection + "\" selected from table \"" + pheneTable + "\"");
+		log.info("Phene \"" + phene + "\" selected from table \"" + pheneTable + "\"");
 
 		dbParser.checkPheneTable(pheneTable);
 				
@@ -205,7 +207,7 @@ public class DiscoveryCohortCalc {
 		// File cfile1 = FileUtil.createTempFile("cohort-data-1-", ".csv");
 		// FileUtils.writeStringToFile(cfile1, csv1, "UTF-8");
 
-		cohortData.enhance(pheneSelection, lowCutoff, highCutoff, this.comparisonThreshold);
+		cohortData.enhance(phene, lowCutoff, highCutoff, this.comparisonThreshold);
         log.info("Cohort data enhanced.");
         
         // DEBUG
@@ -219,8 +221,8 @@ public class DiscoveryCohortCalc {
         //-------------------------------------------
 		// Create cohort and cohort CSV file
 		//-------------------------------------------
-				log.info("Discovery cohort phene selection: \"" + pheneSelection + "\".");
-				CohortTable cohort = cohortData.getDiscoveryCohort(pheneSelection, lowCutoff, highCutoff, this.comparisonThreshold);
+				log.info("Discovery cohort phene selection: \"" + phene + "\".");
+				CohortTable cohort = cohortData.getDiscoveryCohort(phene, lowCutoff, highCutoff, this.comparisonThreshold);
 				cohort.sort("Subject", "PheneVisit"); 
                 this.cohortGeneratedTime = new Date();
 				
@@ -261,7 +263,7 @@ public class DiscoveryCohortCalc {
 	                
 		        // Save the discovery cohort results in the CFE database
                 CfeResults cfeResults = new CfeResults(cohortWorkbook, CfeResultsType.DISCOVERY_COHORT,
-                        this.cohortGeneratedTime, this.pheneSelection,
+                        this.cohortGeneratedTime, this.phene,
                         lowCutoff, highCutoff);
                 
                 // Save all the discovery cohort data files
@@ -327,7 +329,7 @@ public class DiscoveryCohortCalc {
 		
 		row = new ArrayList<String>();
 		row.add("Phene");
-		row.add(this.pheneSelection);
+		row.add(this.phene);
 		infoTable.addRow(row);
 		
 		row = new ArrayList<String>();
@@ -427,12 +429,12 @@ public class DiscoveryCohortCalc {
 		this.phenes = phenes;
 	}
 
-	public String getPheneSelection() {
-		return pheneSelection;
+	public String getPhene() {
+		return this.phene;
 	}
 
-	public void setPheneSelection(String pheneSelection) {
-		this.pheneSelection = pheneSelection;
+	public void setPhene(String phene) {
+		this.phene = phene;
 	}
 
 	public double getLowCutoff() {

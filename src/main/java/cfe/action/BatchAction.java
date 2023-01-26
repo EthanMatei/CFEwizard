@@ -18,6 +18,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.healthmarketscience.jackcess.Table;
 
 import cfe.calc.DiscoveryCalc;
+import cfe.calc.DiscoveryCohortCalc;
 import cfe.calc.ValidationCalc;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
@@ -310,6 +311,19 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //-------------------------------------------
                 // Create Discovery Cohort
                 //-------------------------------------------
+                DiscoveryCohortCalc discoveryCohortCalc = new DiscoveryCohortCalc();
+                CfeResults discoveryCohort = discoveryCohortCalc.calculate(
+                        testingDbTempFileName,
+                        testingDbFileName,
+                        discoveryPhene,
+                        discoveryPheneTable,
+                        this.discoveryPheneLowCutoff,
+                        this.discoveryPheneHighCutoff,
+                        this.genomicsTable,
+                        this.discoveryCohortComparisonThreshold
+                );
+                
+                /*
                 CfeResults discoveryCohort = DiscoveryCalc.createDiscoveryCohort(
                         this.testingDbTempFileName,
                         this.discoveryPheneTable,
@@ -319,102 +333,104 @@ public class BatchAction extends BaseAction implements SessionAware {
                         this.discoveryCohortComparisonThreshold,
                         this.genomicsTable
                 );
+                */
+                
                 this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
                 
 
                 String scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
                 String scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
                 
-                //--------------------------------------------
-                // Calculate Discovery Scores
-                //--------------------------------------------
-                CfeResults discoveryCfeResults = DiscoveryCalc.calculateScores(
-                    discoveryCohortResultsId,
-                    discoveryGeneExpressionCsv,
-                    probesetToGeneMappingDbFileName,
-                    discoveryPheneTable,
-                    discoveryPhene,
-                    discoveryPheneLowCutoff,
-                    discoveryPheneHighCutoff,
-                    diagnosisCode,
-                    discoveryPercentileScores,
-                    scriptDir,
-                    scriptFile,
-                    debugDiscoveryScoring
-                );
-
-                if (discoveryCfeResults == null) {
-                    throw new Exception("Discovery scores could not be calculated.");
-                }
-                this.discoveryScoresResultsId = discoveryCfeResults.getCfeResultsId();
-                
-                //---------------------------------------------------------------
-                // Calculate Prioritization Scores
-                //---------------------------------------------------------------
-                
-                if (this.geneListSpecification.contentEquals("All")) {
-                    this.geneListUploadFileName = "";
-                    this.geneListInput = new GeneListInput();
-                }
-                else if (this.geneListSpecification.contentEquals("Upload File:")) {
-                    this.geneListInput = new GeneListInput(this.geneListUploadFileName);
-                }
-                else if (this.geneListSpecification.contentEquals("Generate from Discovery:")) {
-                    this.geneListUploadFileName = "";
-                    this.geneListInput = new GeneListInput(discoveryCfeResults, this.prioritizationScoreCutoff, this.prioritizationComparisonThreshold);
-                }
-                else {
-                    result = INPUT;
-                    throw new Exception("Gene list specification\"" + this.geneListSpecification + "\" is invalid.");
-                }
-                
-                this.diseaseSelectors = DiseaseSelector.importCsvFile(diseasesCsvFileName, diseasesCsv);
-                List<cfe.enums.prioritization.ScoringWeights> weights = this.getPrioritizationWeights();
-                
-                DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
-                Results results = Score.calculate(geneListInput, diseaseSelection, weights);
-                
-                // Generate a workbook with the prioritization scores
-                XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(
-                        results, /* scores, */ weights, diseaseSelectors, geneListInput,
-                        this.discoveryScoresResultsId, prioritizationScoreCutoff, this.geneListUploadFileName 
-                        );
-                
-                // Create the prioritization CFE results
-                CfeResults prioritizationCfeResults = new CfeResults();
-                prioritizationCfeResults.setResultsSpreadsheet(workbook);
-
-                LinkedHashMap<String,DataTable> dataTables = discoveryCfeResults.getDataTables();
-                dataTables.putAll(prioritizationCfeResults.getDataTables());
-                
-                workbook = DataTable.createWorkbook(dataTables);
-                prioritizationCfeResults.setResultsSpreadsheet(workbook);
-                prioritizationCfeResults.addTextFiles(discoveryCfeResults);   // Add log file(s) from Discovery to Prioritization
-                
-                //-------------------------------------------
-                // Create Validation Cohort
-                //-------------------------------------------
-                List<PheneCondition> pheneConditions = PheneCondition.createList(
-                        phene1, operator1, value1,
-                        phene2, operator2, value2,
-                        phene3, operator3, value3
-                );
-                
-                double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
-                
-                CfeResults ValidationCohortCfeResults = ValidationCalc.createValidationCohort(
-                        prioritizationCfeResults,
-                        this.discoveryPhene,
-                        this.discoveryPheneLowCutoff,
-                        this.discoveryPheneHighCutoff,
-                        pheneConditions,
-                        percentInValidation,
-                        validationComparisonThreshold
-                ); 
-                
-                //-------------------------------------------
-                // Calculate Validation Scores
-                //-------------------------------------------
+//                //--------------------------------------------
+//                // Calculate Discovery Scores
+//                //--------------------------------------------
+//                CfeResults discoveryCfeResults = DiscoveryCalc.calculateScores(
+//                    discoveryCohortResultsId,
+//                    discoveryGeneExpressionCsv,
+//                    probesetToGeneMappingDbFileName,
+//                    discoveryPheneTable,
+//                    discoveryPhene,
+//                    discoveryPheneLowCutoff,
+//                    discoveryPheneHighCutoff,
+//                    diagnosisCode,
+//                    discoveryPercentileScores,
+//                    scriptDir,
+//                    scriptFile,
+//                    debugDiscoveryScoring
+//                );
+//
+//                if (discoveryCfeResults == null) {
+//                    throw new Exception("Discovery scores could not be calculated.");
+//                }
+//                this.discoveryScoresResultsId = discoveryCfeResults.getCfeResultsId();
+//                
+//                //---------------------------------------------------------------
+//                // Calculate Prioritization Scores
+//                //---------------------------------------------------------------
+//                
+//                if (this.geneListSpecification.contentEquals("All")) {
+//                    this.geneListUploadFileName = "";
+//                    this.geneListInput = new GeneListInput();
+//                }
+//                else if (this.geneListSpecification.contentEquals("Upload File:")) {
+//                    this.geneListInput = new GeneListInput(this.geneListUploadFileName);
+//                }
+//                else if (this.geneListSpecification.contentEquals("Generate from Discovery:")) {
+//                    this.geneListUploadFileName = "";
+//                    this.geneListInput = new GeneListInput(discoveryCfeResults, this.prioritizationScoreCutoff, this.prioritizationComparisonThreshold);
+//                }
+//                else {
+//                    result = INPUT;
+//                    throw new Exception("Gene list specification\"" + this.geneListSpecification + "\" is invalid.");
+//                }
+//                
+//                this.diseaseSelectors = DiseaseSelector.importCsvFile(diseasesCsvFileName, diseasesCsv);
+//                List<cfe.enums.prioritization.ScoringWeights> weights = this.getPrioritizationWeights();
+//                
+//                DiseaseSelection diseaseSelection = new DiseaseSelection(diseaseSelectors);
+//                Results results = Score.calculate(geneListInput, diseaseSelection, weights);
+//                
+//                // Generate a workbook with the prioritization scores
+//                XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(
+//                        results, /* scores, */ weights, diseaseSelectors, geneListInput,
+//                        this.discoveryScoresResultsId, prioritizationScoreCutoff, this.geneListUploadFileName 
+//                        );
+//                
+//                // Create the prioritization CFE results
+//                CfeResults prioritizationCfeResults = new CfeResults();
+//                prioritizationCfeResults.setResultsSpreadsheet(workbook);
+//
+//                LinkedHashMap<String,DataTable> dataTables = discoveryCfeResults.getDataTables();
+//                dataTables.putAll(prioritizationCfeResults.getDataTables());
+//                
+//                workbook = DataTable.createWorkbook(dataTables);
+//                prioritizationCfeResults.setResultsSpreadsheet(workbook);
+//                prioritizationCfeResults.addTextFiles(discoveryCfeResults);   // Add log file(s) from Discovery to Prioritization
+//                
+//                //-------------------------------------------
+//                // Create Validation Cohort
+//                //-------------------------------------------
+//                List<PheneCondition> pheneConditions = PheneCondition.createList(
+//                        phene1, operator1, value1,
+//                        phene2, operator2, value2,
+//                        phene3, operator3, value3
+//                );
+//                
+//                double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
+//                
+//                CfeResults ValidationCohortCfeResults = ValidationCalc.createValidationCohort(
+//                        prioritizationCfeResults,
+//                        this.discoveryPhene,
+//                        this.discoveryPheneLowCutoff,
+//                        this.discoveryPheneHighCutoff,
+//                        pheneConditions,
+//                        percentInValidation,
+//                        validationComparisonThreshold
+//                ); 
+//                
+//                //-------------------------------------------
+//                // Calculate Validation Scores
+//                //-------------------------------------------
                 
             }
             

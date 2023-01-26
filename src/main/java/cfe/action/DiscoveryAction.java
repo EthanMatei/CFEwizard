@@ -37,6 +37,7 @@ import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 import com.opencsv.CSVReader;
 
+import cfe.calc.DiscoveryCohortCalc;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFile;
 import cfe.model.CfeResultsFileType;
@@ -227,176 +228,30 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
 			result = LOGIN;
 		} else {
 			try {
-			    //-----------------------------------------------------------------------------------------------
-			    
-			    //-----------------------------------------------------------------------------------------------
-		        DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.discoveryDbTempFileName);
-		         
-				// Split phene selection into table and phene
-				String[] pheneInfo = pheneSelection.split("\\|", 2);
-				this.pheneTable = pheneInfo[0];
-				this.pheneSelection = pheneInfo[1];
-				log.info("Phene \"" + pheneSelection + "\" selected from table \"" + pheneTable + "\"");
-
-				dbParser.checkPheneTable(pheneTable);
-				
-				//-------------------------------------------------
-				// Create the cohort data table
-				//-------------------------------------------------
-				Database db = dbParser.getDatabase();
-
-				Table subjectIdentifiers = db.getTable("Subject Identifiers");
-				Table demographics       = db.getTable("Demographics");
-				Table diagnosis          = db.getTable("Diagnosis");
-				//Table pheneData          = db.getTable(this.pheneTable);
-				Table chips              = db.getTable(this.genomicsTable);
-
-				CohortDataTable subjectIdentifiersData = new CohortDataTable();
-				subjectIdentifiersData.initializeToAccessTable(subjectIdentifiers);
-
-				CohortDataTable demographicsData = new CohortDataTable();
-				demographicsData.initializeToAccessTable(demographics);
-
-				CohortDataTable diagnosisData = new CohortDataTable();
-				diagnosisData.initializeToAccessTable(diagnosis);
-
-				//CohortDataTable pheneDataData = new CohortDataTable(this.pheneTable);
-				//pheneDataData.initializeToAccessTable(pheneData);
-
-				CohortDataTable chipsData = new CohortDataTable();
-				chipsData.initializeToAccessTable(chips);
-
-				CohortDataTable cohortData = subjectIdentifiersData.merge(demographicsData);
-				
-				log.info("Cohort data table has " + cohortData.getNumberOfRows() 
-				    + " rows after merge of demographics table.");
-				
-				cohortData = cohortData.merge(diagnosisData);
-	       
-                log.info("Cohort data table has " + cohortData.getNumberOfRows() 
-                    + " rows after merge of diagnosis table.");
+	             // Split phene selection into table and phene
+                String[] pheneInfo = pheneSelection.split("\\|", 2);
+                this.pheneTable = pheneInfo[0];
+                this.pheneSelection = pheneInfo[1];
+                log.info("Phene \"" + pheneSelection + "\" selected from table \"" + pheneTable + "\"");
                 
-				//log.info("Before phene tables merge");
-				
-				Set<String> pheneTableNames = dbParser.getPheneTables();
-				for (String pheneTableName: pheneTableNames) {
-				    log.info("Starting to add phene table \"" + pheneTableName + "\" to the cohort data.");
-				    CohortDataTable pheneDataTable = new CohortDataTable();
-				    Table dbTable = dbParser.getTable(pheneTableName);
-				    try {
-				        pheneDataTable.initializeToAccessTable(dbTable);
-				    } catch (Exception exception) {
-				        String message = "Error while processing MS Access database table \"" + pheneTableName
-				                + "\": " + exception.getLocalizedMessage();
-				        log.severe(message);
-				        throw new Exception(message);
-				        
-				    }
-				    
-				    if (pheneDataTable.hasColumn("ID")) {
-				        pheneDataTable.deleteColumn("ID");  // Delete an ID column if it exists
-				    }
-				    
-				    String firstColumn = pheneDataTable.getColumnName(0);
-				    if (!firstColumn.endsWith("PheneVisit")) {
-				        throw new Exception("Phene table \"" + pheneTableName 
-				                + "\" has first column \"" + firstColumn + "\", which is not "
-				                + "a PheneVisit column.");    
-				    }
-				    //log.info("Data table for phene table \"" + pheneTableName + "\" created.");
-				    cohortData = cohortData.mergePheneTable(pheneDataTable);
-				    
-	                log.info("Cohort data table has " + cohortData.getNumberOfRows() 
-                    + " rows after merge of phene table \"" + pheneTableName + "\".");
-                
-				}
-				//cohortData = cohortData.merge(pheneDataData);
-				
-				cohortData = cohortData.merge(chipsData);
-                log.info("Cohort data table has " + cohortData.getNumberOfRows() 
-                + " rows after merge of chips data table.");
-                
-				cohortData.deleteColumns("Field\\d+");
-				
-				// DEBUG
-				// String csv1 = cohortData.toCsv();
-				// File cfile1 = FileUtil.createTempFile("cohort-data-1-", ".csv");
-				// FileUtils.writeStringToFile(cfile1, csv1, "UTF-8");
-				
-				log.info("chip data merged.");
-				
-				cohortData.enhance(pheneSelection, lowCutoff, highCutoff, this.discoveryCohortComparisonThreshold);
-
-                // DEBUG
-                // String csv2 = cohortData.toCsv();
-                // File cfile2 = FileUtil.createTempFile("cohort-data-2-", ".csv");
-                // FileUtils.writeStringToFile(cfile2, csv2, "UTF-8");
-                
-				log.info("Cohort data enhanced.");
-
-				db.close();
-				
-				log.info("Database closed.");
-				
-				// Delete the temporary database file
-				File file = new File(this.discoveryDbTempFileName);
-				file.delete();
-
-				//-------------------------------------------
-				// Create cohort and cohort CSV file
-				//-------------------------------------------
-				log.info("Discovery cohort phene selection: \"" + pheneSelection + "\".");
-				CohortTable cohort = cohortData.getDiscoveryCohort(pheneSelection, lowCutoff, highCutoff, this.discoveryCohortComparisonThreshold);
-				cohort.sort("Subject", "PheneVisit"); 
-                this.cohortGeneratedTime = new Date();
-				
-                // DEBUG
-                // String csv3 = cohortData.toCsv();
-                // File cfile3 = FileUtil.createTempFile("cohort-data-3-", ".csv");
-                // FileUtils.writeStringToFile(cfile3, csv3, "UTF-8");
-                
-				this.numberOfSubjects = cohort.getNumberOfSubjects();
-				this.lowVisits = cohort.getLowVisits();
-				this.highVisits = cohort.getHighVisits();
-				
-				ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-                
-				DataTable infoTable = this.createCohortInfoTable();
-				
-                // DEBUG
-                // String csv4 = cohortData.toCsv();
-                // File cfile4 = FileUtil.createTempFile("cohort-data-4-", ".csv");
-                // FileUtils.writeStringToFile(cfile4, csv4, "UTF-8");
-                
-				LinkedHashMap<String, DataTable> cohortTables = new LinkedHashMap<String, DataTable>();
-				cohortTables.put(CfeResultsSheets.DISCOVERY_COHORT,  cohort);
-				cohortTables.put(CfeResultsSheets.COHORT_DATA, cohortData);
-				cohortTables.put(CfeResultsSheets.DISCOVERY_COHORT_INFO, infoTable);
-				
-				int rowAccessWindowSize = 100;
-				Workbook cohortWorkbook = DataTable.createStreamingWorkbook(cohortTables, rowAccessWindowSize);
-				//cohortData.enhanceCohortDataSheet(cohortWorkbook, "cohort data", pheneSelection, lowCutoff, highCutoff);
-                  
-				// NO LONGER NEEDED ???
-				//File cohortXlsxTempFile = File.createTempFile("cohort-", ".xlsx");
-				//out = new FileOutputStream(cohortXlsxTempFile);
-				//cohortWorkbook.write(out);
-				//out.close();
-				//this.cohortXlsxFile = cohortXlsxTempFile.getAbsolutePath();
-
-	                
-		        // Save the discovery cohort results in the CFE database
-                CfeResults cfeResults = new CfeResults(cohortWorkbook, CfeResultsType.DISCOVERY_COHORT,
-                        this.cohortGeneratedTime, this.pheneSelection,
-                        lowCutoff, highCutoff);
-                
-                // Save all the discovery cohort data files
-                cfeResults.addCsvFile(CfeResultsFileType.DISCOVERY_COHORT, cohort.toCsv());
-                cfeResults.addCsvFile(CfeResultsFileType.DISCOVERY_COHORT_DATA, cohortData.toCsv());
-                cfeResults.addCsvFile(CfeResultsFileType.DISCOVERY_COHORT_INFO, infoTable.toCsv());
-                
-                CfeResultsService.save(cfeResults);
+			    DiscoveryCohortCalc discoveryCohortCalc = new DiscoveryCohortCalc();
+			    CfeResults cfeResults = discoveryCohortCalc.calculate(
+			            /* String */ this.discoveryDbTempFileName,
+			            /* String */ this.discoveryDbFileName,
+			            /* String */ this.pheneSelection,
+			            /* String */ this.pheneTable,
+			            /* double */ this.lowCutoff,
+			            /* double */ this.highCutoff,
+			            /* String */ this.genomicsTable,
+			            /* double */ this.discoveryCohortComparisonThreshold
+			    );
+			        
                 this.cfeResultsId = cfeResults.getCfeResultsId();
+                
+                this.numberOfSubjects = discoveryCohortCalc.getNumberOfSubjects();
+                this.lowVisits        = discoveryCohortCalc.getLowVisits();
+                this.highVisits       = discoveryCohortCalc.getHighVisits();
+                
 			} catch (Exception exception) {
 				result = ERROR;
 				String message = exception.getMessage();

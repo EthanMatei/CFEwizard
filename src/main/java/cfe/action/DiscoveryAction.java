@@ -38,6 +38,7 @@ import com.healthmarketscience.jackcess.Table;
 import com.opencsv.CSVReader;
 
 import cfe.calc.DiscoveryCohortCalc;
+import cfe.calc.DiscoveryScoresCalc;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFile;
 import cfe.model.CfeResultsFileType;
@@ -236,14 +237,14 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
                 
 			    DiscoveryCohortCalc discoveryCohortCalc = new DiscoveryCohortCalc();
 			    CfeResults cfeResults = discoveryCohortCalc.calculate(
-			            /* String */ this.discoveryDbTempFileName,
-			            /* String */ this.discoveryDbFileName,
-			            /* String */ this.pheneSelection,
-			            /* String */ this.pheneTable,
-			            /* double */ this.lowCutoff,
-			            /* double */ this.highCutoff,
-			            /* String */ this.genomicsTable,
-			            /* double */ this.discoveryCohortComparisonThreshold
+			            this.discoveryDbTempFileName,
+			            this.discoveryDbFileName,       // original download file name
+			            this.pheneSelection,
+			            this.pheneTable,
+			            this.lowCutoff,
+			            this.highCutoff,
+			            this.genomicsTable,
+			            this.discoveryCohortComparisonThreshold
 			    );
 			        
                 this.cfeResultsId = cfeResults.getCfeResultsId();
@@ -560,7 +561,7 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
         //    this.er)rorMessage = "Phene Visit database file \"" + discoveryDbFileName
         //            + "\" is not a \".accdb\" (MS Access) file.";
         //    result = INPUT;
-        //}		
+        //}
 		else if (this.discoveryCsv == null || this.discoveryCsvFileName == null) {
 	        this.setErrorMessage("No gene expression CSV file was specified.");
 	        result = INPUT;
@@ -583,6 +584,10 @@ public class DiscoveryAction extends BaseAction implements SessionAware {
             try {
                 log.info("Starting Discovery calculation");
                 log.info("Diagnosis code: " + this.diagnosisCode);
+                
+                DiscoveryScoresCalc discoveryScoresCalc = new DiscoveryScoresCalc();
+                
+                
                 this.baseDir = WebAppProperties.getRootDir();
 
                 this.scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();

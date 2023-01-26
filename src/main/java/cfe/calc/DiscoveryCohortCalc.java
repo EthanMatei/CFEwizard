@@ -35,9 +35,9 @@ public class DiscoveryCohortCalc {
 	//private static final Log log = LogFactory.getLog(DiscoveryAction.class);
     private static Logger log = Logger.getLogger(DiscoveryCohortCalc.class.getName());
    
-    private String testingDatabseIdentifier;  // String used to identify testing database in output, possibly the
-                                              // original upload file name, since the file path used may be for
-                                              // a temporary file.
+    private String testingDatabaseIdentifier;  // String used to identify testing database in output, possibly the
+                                               // original upload file name, since the file path used may be for
+                                               // a temporary file.
     
 	private String testingDatabaseFileName;   // file path to testing database
 
@@ -79,6 +79,7 @@ public class DiscoveryCohortCalc {
 	/**
 	 * Processes cohort specification and generates the cohort from it.
 	 *
+	 * @param phene generally has form "phene-table.phene-name"
 	 * @return
 	 * @throws Exception
 	 */
@@ -105,14 +106,14 @@ public class DiscoveryCohortCalc {
             throw new Exception("No phene table specified for Discovery Cohort calculation.");
         }
         
-	    this.testingDatabaseFileName = testingDatabaseFilePath.trim();
-	    this.testingDatabseIdentifier          = testingDbLabel;
-	    this.phene                   = phene;
-	    this.pheneTable              = pheneTable;
-	    this.lowCutoff               = lowCutoffParam;
-	    this.highCutoff              = highCutoffParam;
-	    this.genomicsTable           = genomicsTableParam;
-        this.comparisonThreshold     = comparisonThresholdParam;
+	    this.testingDatabaseFileName  = testingDatabaseFilePath.trim();
+	    this.testingDatabaseIdentifier = testingDbLabel;
+	    this.phene                     = phene;
+	    this.pheneTable                = pheneTable;
+	    this.lowCutoff                 = lowCutoffParam;
+	    this.highCutoff                = highCutoffParam;
+	    this.genomicsTable             = genomicsTableParam;
+        this.comparisonThreshold       = comparisonThresholdParam;
         
 	    DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDatabaseFileName);
 		         
@@ -319,7 +320,7 @@ public class DiscoveryCohortCalc {
         
         row = new ArrayList<String>();
         row.add("Test Database");
-        row.add(this.testingDatabseIdentifier);
+        row.add(this.testingDatabaseIdentifier);
         infoTable.addRow(row);
         
 		row = new ArrayList<String>();

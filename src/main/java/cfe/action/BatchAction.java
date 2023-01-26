@@ -19,6 +19,7 @@ import com.healthmarketscience.jackcess.Table;
 
 import cfe.calc.DiscoveryCalc;
 import cfe.calc.DiscoveryCohortCalc;
+import cfe.calc.DiscoveryScoresCalc;
 import cfe.calc.ValidationCalc;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
@@ -35,7 +36,7 @@ import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
-import cfe.utils.PheneCondition;
+
 
 public class BatchAction extends BaseAction implements SessionAware {
 
@@ -102,6 +103,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     private File geneListUpload;
     private String geneListUploadContentType;
     private String geneListUploadFileName;
+    
     private Double prioritizationScoreCutoff;
     private Double prioritizationComparisonThreshold = 0.0001;
     
@@ -239,8 +241,6 @@ public class BatchAction extends BaseAction implements SessionAware {
 			    File testingDbTmp = FileUtil.createTempFile("testing-db-", ".accdb");
 			    FileUtils.copyFile(this.testingDb, testingDbTmp);
 			    this.testingDbTempFileName = testingDbTmp.getAbsolutePath();
-			    this.testingDbFileName = testingDb.getAbsolutePath();
-
 
                 // Process testing database
 			    DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDbTempFileName);
@@ -306,7 +306,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 String[] pheneInfo = this.discoveryPheneInfo.split("]", 2);
                 this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
-                this.discoveryPhene = pheneInfo[1].trim();
+                this.discoveryPhene = discoveryPheneTable + "." + pheneInfo[1].trim();
                 
                 //-------------------------------------------
                 // Create Discovery Cohort
@@ -324,6 +324,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 );
                 
                 /*
+                 * OLD CODE:
                 CfeResults discoveryCohort = DiscoveryCalc.createDiscoveryCohort(
                         this.testingDbTempFileName,
                         this.discoveryPheneTable,
@@ -338,12 +339,24 @@ public class BatchAction extends BaseAction implements SessionAware {
                 this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
                 
 
+                //--------------------------------------------
+                // Calculate Discovery Scores
+                //--------------------------------------------
+                
                 String scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
                 String scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
+               
+                DiscoveryScoresCalc discoveryScoresCalc = new DiscoveryScoresCalc();
                 
-//                //--------------------------------------------
-//                // Calculate Discovery Scores
-//                //--------------------------------------------
+                CfeResults discoveryCfeResults = discoveryScoresCalc.calculate(
+                        discoveryCohort,
+                        this.discoveryGeneExpressionCsv,
+                        this.probesetToGeneMappingDb,
+                        diagnosisCode,
+                        debugDiscoveryScoring
+                );
+                    
+
 //                CfeResults discoveryCfeResults = DiscoveryCalc.calculateScores(
 //                    discoveryCohortResultsId,
 //                    discoveryGeneExpressionCsv,
@@ -358,16 +371,17 @@ public class BatchAction extends BaseAction implements SessionAware {
 //                    scriptFile,
 //                    debugDiscoveryScoring
 //                );
-//
-//                if (discoveryCfeResults == null) {
-//                    throw new Exception("Discovery scores could not be calculated.");
-//                }
-//                this.discoveryScoresResultsId = discoveryCfeResults.getCfeResultsId();
-//                
-//                //---------------------------------------------------------------
-//                // Calculate Prioritization Scores
-//                //---------------------------------------------------------------
-//                
+
+                
+                if (discoveryCfeResults == null) {
+                    throw new Exception("Discovery scores could not be calculated.");
+                }
+                this.discoveryScoresResultsId = discoveryCfeResults.getCfeResultsId();
+                
+                //---------------------------------------------------------------
+                // Calculate Prioritization Scores
+                //---------------------------------------------------------------
+                
 //                if (this.geneListSpecification.contentEquals("All")) {
 //                    this.geneListUploadFileName = "";
 //                    this.geneListInput = new GeneListInput();

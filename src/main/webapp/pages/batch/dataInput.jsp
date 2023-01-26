@@ -56,6 +56,7 @@
         method="post" enctype="multipart/form-data">
         
     <s:hidden name="testingDbTempFileName"/>
+    <s:hidden name="testingDbFileName"/>
 
     <fieldset class=dataInput>
         <legend>Data Files</legend>

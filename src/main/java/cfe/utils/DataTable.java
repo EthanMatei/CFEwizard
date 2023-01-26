@@ -838,7 +838,12 @@ public class DataTable {
                     csv.append(",");
                 }
                 
-                value = value.trim();
+                if (value == null) {
+                    value = "";
+                }
+                else {
+                    value = value.trim();
+                }
                 
                 if (INT_PATTERN.matcher(value).matches()) {
                     csv.append(value);

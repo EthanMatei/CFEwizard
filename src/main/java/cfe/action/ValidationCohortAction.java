@@ -49,9 +49,6 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
     
 	public static final Long RANDOM_SEED = 10972359723095792L;
 	
-	public static final String ACTUARIAL_TABLE_NAME = "Actuarial and Subject Info";
-	public static final String HOSPITALIZATIONS_TABLE_NAME = "Hospitalizations Follow-up Database";
-	
 	private List<CfeResults> discoveryResultsList;
 	private CfeResults discoveryResults;
 	
@@ -215,30 +212,12 @@ public class ValidationCohortAction extends BaseAction implements SessionAware {
                 cohortData.setKey(null);
                 cohortData.initializeToWorkbookSheet(sheet);
                 cohortData.setKey("Subject Identifiers.PheneVisit");
-
-                double value;
-                PheneCondition pheneCondition;
-                List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
-
-
-                if (phene1 != null && !phene1.isEmpty() && value1 != null && !value1.isEmpty()) {
-                    value = Double.parseDouble(value1);
-                    pheneCondition = new PheneCondition(phene1, operator1, value);
-                    pheneConditions.add(pheneCondition);
-                }
-
-                if (phene2 != null && !phene2.isEmpty() && value2 != null && !value2.isEmpty()) {
-                    value = Double.parseDouble(value2);
-                    pheneCondition = new PheneCondition(phene2, operator2, value);
-                    pheneConditions.add(pheneCondition);
-                }
-
-                if (phene3 != null && !phene3.isEmpty() && value3 != null && !value3.isEmpty()) {
-                    value = Double.parseDouble(value3);
-                    pheneCondition = new PheneCondition(phene3, operator3, value);
-                    pheneConditions.add(pheneCondition);
-                }
-
+                
+                List<PheneCondition> pheneConditions = PheneCondition.createList(
+                        phene1, operator1, value1,
+                        phene2, operator2, value2,
+                        phene3, operator3, value3
+                );
 
                 double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
 

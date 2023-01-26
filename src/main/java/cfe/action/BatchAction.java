@@ -18,6 +18,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import com.healthmarketscience.jackcess.Table;
 
 import cfe.calc.DiscoveryCalc;
+import cfe.calc.ValidationCalc;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
 import cfe.model.PercentileScores;
@@ -33,6 +34,7 @@ import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
+import cfe.utils.PheneCondition;
 
 public class BatchAction extends BaseAction implements SessionAware {
 
@@ -178,7 +180,12 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setSession(Map<String, Object> session) {
 	    this.webSession = session;    
 	}
-	   
+	
+    /**
+     * Initializes the batch processing interface.
+     * @return
+     * @throws Exception
+     */
 	public String initialize() throws Exception {
 		String result = SUCCESS;
 		
@@ -188,6 +195,12 @@ public class BatchAction extends BaseAction implements SessionAware {
 	    return result;
 	}
 	
+	/**
+	 * Uploads the testing database that contains the phene and phene visits information.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	public String uploadData() throws Exception {
 		String result = SUCCESS;
 		
@@ -251,6 +264,11 @@ public class BatchAction extends BaseAction implements SessionAware {
 	    return result;
 	}
 	
+	/**
+	 * Processes all inputs and calculates all score results.
+	 * @return
+	 * @throws Exception
+	 */
     public String calculate() throws Exception {
         String result = SUCCESS;
         
@@ -376,8 +394,30 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //-------------------------------------------
                 // Create Validation Cohort
                 //-------------------------------------------
+                List<PheneCondition> pheneConditions = PheneCondition.createList(
+                        phene1, operator1, value1,
+                        phene2, operator2, value2,
+                        phene3, operator3, value3
+                );
+                
+                double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
+                
+                CfeResults ValidationCohortCfeResults = ValidationCalc.createValidationCohort(
+                        prioritizationCfeResults,
+                        this.discoveryPhene,
+                        this.discoveryPheneLowCutoff,
+                        this.discoveryPheneHighCutoff,
+                        pheneConditions,
+                        percentInValidation,
+                        validationComparisonThreshold
+                ); 
+                
+                //-------------------------------------------
+                // Calculate Validation Scores
+                //-------------------------------------------
                 
             }
+            
             catch (Exception exception) {
                 this.setErrorMessage("The input data could not be processed. " + exception.getLocalizedMessage());
                 String stackTrace = ExceptionUtils.getStackTrace(exception);

@@ -1,5 +1,6 @@
 package cfe.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -16,6 +17,38 @@ public class PheneCondition {
         this.operator = operator;
         this.value = value;
     }
+    
+    public static List<PheneCondition> createList(
+            String phene1, String operator1, String value1,
+            String phene2, String operator2, String value2,
+            String phene3, String operator3, String value3
+    ) {
+        double value;
+        PheneCondition pheneCondition;
+        List<PheneCondition> pheneConditions = new ArrayList<PheneCondition>();
+
+
+        if (phene1 != null && !phene1.isEmpty() && value1 != null && !value1.isEmpty()) {
+            value = Double.parseDouble(value1);
+            pheneCondition = new PheneCondition(phene1, operator1, value);
+            pheneConditions.add(pheneCondition);
+        }
+
+        if (phene2 != null && !phene2.isEmpty() && value2 != null && !value2.isEmpty()) {
+            value = Double.parseDouble(value2);
+            pheneCondition = new PheneCondition(phene2, operator2, value);
+            pheneConditions.add(pheneCondition);
+        }
+
+        if (phene3 != null && !phene3.isEmpty() && value3 != null && !value3.isEmpty()) {
+            value = Double.parseDouble(value3);
+            pheneCondition = new PheneCondition(phene3, operator3, value);
+            pheneConditions.add(pheneCondition);
+        }
+        
+        return pheneConditions;
+    }
+    
     
     public boolean isTrue(double pheneValue) {
         boolean isTrue = false;
@@ -79,5 +112,13 @@ public class PheneCondition {
     
     public String getPhene() {
         return this.phene;
+    }
+    
+    public String getOperator() {
+        return this.operator;
+    }
+    
+    public double getValue() {
+        return this.value;
     }
 }

@@ -23,7 +23,6 @@ import cfe.calc.ValidationScoresCalc;
 import cfe.model.CfeResults;
 import cfe.model.PercentileScores;
 import cfe.model.prioritization.GeneListInput;
-import cfe.model.prioritization.Score;
 import cfe.model.prioritization.disease.DiseaseSelection;
 import cfe.model.prioritization.disease.DiseaseSelector;
 import cfe.model.prioritization.results.Results;
@@ -496,7 +495,9 @@ public class BatchAction extends BaseAction implements SessionAware {
                         this.nominalScore,
                         this.stepwiseScore,
                         this.nonStepwiseScore,
+                        masterSheetFileName,
                         this.updatedValidationMasterSheetFileName,
+                        predictorListFileName,
                         this.updatedValidationPredictorListFileName
                 );
                 

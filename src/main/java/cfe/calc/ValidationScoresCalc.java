@@ -87,11 +87,11 @@ public class ValidationScoresCalc {
     double stepwiseScore    = 2;
     double nonStepwiseScore = 0;
 
-    private File updatedMasterSheet;
+    private File updatedMasterSheetFile;
     private String updatedMasterSheetFileName;
     private String updatedMasterSheetTempFileName;  // Need to create temp file for R-script to use
     
-    private File updatedPredictorList;
+    private File updatedPredictorListFile;
     private String updatedPredictorListFileName;
     private String updatedPredictorListTempFileName;
 
@@ -176,7 +176,7 @@ public class ValidationScoresCalc {
 	        if (this.updatedMasterSheetFileName != null && !this.updatedMasterSheetFileName.isEmpty()) {
 	            // Updated master sheet provided
 	            File updatedMasterSheetTempFile = FileUtil.createTempFile("validation-updated-master-sheet-", ".csv");
-	            FileUtils.copyFile(this.updatedMasterSheet, updatedMasterSheetTempFile);
+	            FileUtils.copyFile(this.updatedMasterSheetFile, updatedMasterSheetTempFile);
 	            this.updatedMasterSheetTempFileName = updatedMasterSheetTempFile.getAbsolutePath();
 	            masterSheetArg = this.updatedMasterSheetTempFileName;
 	        }
@@ -185,7 +185,7 @@ public class ValidationScoresCalc {
 	        if (this.updatedPredictorListFileName != null && !this.updatedPredictorListFileName.isEmpty()) {
 	            // Updated predictor list provided
 	            File updatedPredictorListTempFile = FileUtil.createTempFile("validation-updated-predictor-list-", ".csv");
-	            FileUtils.copyFile(this.updatedPredictorList, updatedPredictorListTempFile);
+	            FileUtils.copyFile(this.updatedPredictorListFile, updatedPredictorListTempFile);
 	            this.updatedPredictorListTempFileName = updatedPredictorListTempFile.getAbsolutePath();
 	            predictorListArg = this.updatedPredictorListTempFileName; 
 	        }
@@ -382,8 +382,8 @@ public class ValidationScoresCalc {
 	        // Also modify the results sheet for changes in the updated
 	        // master sheet's ValCategory column.
 	        //---------------------------------------------------------------------
-	        if (this.updatedMasterSheet != null) {
-	            String updatedMasterSheetContents = FileUtils.readFileToString(this.updatedMasterSheet, StandardCharsets.UTF_8);
+	        if (this.updatedMasterSheetFile != null) {
+	            String updatedMasterSheetContents = FileUtils.readFileToString(this.updatedMasterSheetFile, StandardCharsets.UTF_8);
 	            cfeResults.addCsvFile(CfeResultsFileType.VALIDATION_UPDATED_MASTER_SHEET, updatedMasterSheetContents);
 
 	            //-----------------------------------------------------------------------------------------------------------
@@ -410,8 +410,11 @@ public class ValidationScoresCalc {
 	        //--------------------------------------------------------
 	        // Add the updated predictor list, if any
 	        //--------------------------------------------------------
-	        if (this.updatedPredictorList != null) {
-	            String updatedPredictorListContents = FileUtils.readFileToString(this.updatedPredictorList, StandardCharsets.UTF_8);
+	        if (this.updatedPredictorListFile != null) {
+	            String updatedPredictorListContents = FileUtils.readFileToString(
+	                    this.updatedPredictorListFile,
+	                    StandardCharsets.UTF_8
+	            );
 	            cfeResults.addCsvFile(CfeResultsFileType.VALIDATION_UPDATED_PREDICTOR_LIST, updatedPredictorListContents);
 	        }
 
@@ -1130,12 +1133,12 @@ public class ValidationScoresCalc {
         this.validationCohorts = validationCohorts;
     }
 
-    public File getUpdatedMasterSheet() {
-        return updatedMasterSheet;
+    public File getUpdatedMasterSheetFile() {
+        return updatedMasterSheetFile;
     }
 
-    public void setUpdatedMasterSheet(File updatedMasterSheet) {
-        this.updatedMasterSheet = updatedMasterSheet;
+    public void setUpdatedMasterSheet(File updatedMasterSheetFile) {
+        this.updatedMasterSheetFile = updatedMasterSheetFile;
     }
 
     public String getUpdatedMasterSheetFileName() {
@@ -1146,12 +1149,12 @@ public class ValidationScoresCalc {
         this.updatedMasterSheetFileName = updatedMasterSheetFileName;
     }
 
-    public File getUpdatedPredictorList() {
-        return updatedPredictorList;
+    public File getUpdatedPredictorListFile() {
+        return updatedPredictorListFile;
     }
 
-    public void setUpdatedPredictorList(File updatedPredictorList) {
-        this.updatedPredictorList = updatedPredictorList;
+    public void setUpdatedPredictorList(File updatedPredictorListFile) {
+        this.updatedPredictorListFile = updatedPredictorListFile;
     }
 
     public String getUpdatedPredictorListFileName() {

@@ -44,7 +44,6 @@ import cfe.utils.WebAppProperties;
  */
 public class ValidationScoresCalc {
 
-	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(ValidationScoresCalc.class.getName());
 
     private String errorMessage;
@@ -97,63 +96,6 @@ public class ValidationScoresCalc {
     private String updatedPredictorListTempFileName;
 
 
-    public List<String> createValidationPredictorListAndMasterSheetFiles(
-            Long validationCohortId,
-            File geneExpressionCsvFile
-    ) throws Exception {
-
-        this.geneExpressionCsv = geneExpressionCsvFile;
-        
-        List<String> fileNames = new ArrayList<String>(2);
-        
-        log.info("Starting to create predictor list and master sheet for validation scoring.");
-
-        if (validationCohortId == null) {
-            throw new Exception("No validation cohort ID speified for validation predictor list creation.");
-        }
-        
-        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-
-        DataTable predictorList = this.createPredictorList(validationCohortId);
-        if (predictorList == null) {
-            throw new Exception("Could not create validation predictor list.");
-        }
-
-        String predictorListCsv = predictorList.toCsv();
-        File predictorListCsvTmp = FileUtil.createTempFile("validation-predictor-list-",  ".csv");
-        if (predictorListCsv != null) {
-            FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
-        }
-        String predictorListFileName = predictorListCsvTmp.getAbsolutePath();
-
-        if (predictorListFileName == null || predictorListFileName.isEmpty()) {
-            throw new Exception("Could not create validation predictor list file.");
-        }
-        log.info("Predictor List file in validation scoring specification: \"" + predictorListFileName + "\" created.");               
-
-        fileNames.set(0,predictorListFileName);
-
-        log.info("Starting to create master sheet for validation scoring.");
-
-        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
-
-        String validationMasterSheetFileName = this.createValidationMasterSheet(
-                validationCohortId,
-                predictorList,
-                this.geneExpressionCsv
-        );
-
-        log.info("Master Sheet file name: " + validationMasterSheetFileName);
-
-        if (validationMasterSheetFileName == null || validationMasterSheetFileName.isEmpty()) {
-            throw new Exception("Could not create validation master sheet.");
-        }
-        
-        fileNames.set(1, validationMasterSheetFileName);
-        
-        return fileNames; // [0] => predictorListFileName, [1] => masterSheetFileName
-    }
-
 
      /**
 	 * Calculates the validation results.
@@ -162,7 +104,7 @@ public class ValidationScoresCalc {
 	 * 
 	 * @throws Exception
 	 */
-	public CfeResults calculateValidationScores(
+	public CfeResults calculate(
 	        CfeResults validationCohort,
 	        double scoreCutoff,
 	        double comparisonThreshold,
@@ -492,6 +434,64 @@ public class ValidationScoresCalc {
 	    return cfeResults;
 	}
 
+
+    public List<String> createValidationPredictorListAndMasterSheetFiles(
+            Long validationCohortId,
+            File geneExpressionCsvFile
+    ) throws Exception {
+
+        this.geneExpressionCsv = geneExpressionCsvFile;
+        
+        List<String> fileNames = new ArrayList<String>(2);
+        
+        log.info("Starting to create predictor list and master sheet for validation scoring.");
+
+        if (validationCohortId == null) {
+            throw new Exception("No validation cohort ID speified for validation predictor list creation.");
+        }
+        
+        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+
+        DataTable predictorList = this.createPredictorList(validationCohortId);
+        if (predictorList == null) {
+            throw new Exception("Could not create validation predictor list.");
+        }
+
+        String predictorListCsv = predictorList.toCsv();
+        File predictorListCsvTmp = FileUtil.createTempFile("validation-predictor-list-",  ".csv");
+        if (predictorListCsv != null) {
+            FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
+        }
+        String predictorListFileName = predictorListCsvTmp.getAbsolutePath();
+
+        if (predictorListFileName == null || predictorListFileName.isEmpty()) {
+            throw new Exception("Could not create validation predictor list file.");
+        }
+        log.info("Predictor List file in validation scoring specification: \"" + predictorListFileName + "\" created.");               
+
+        fileNames.set(0,predictorListFileName);
+
+        log.info("Starting to create master sheet for validation scoring.");
+
+        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+
+        String validationMasterSheetFileName = this.createValidationMasterSheet(
+                validationCohortId,
+                predictorList,
+                this.geneExpressionCsv
+        );
+
+        log.info("Master Sheet file name: " + validationMasterSheetFileName);
+
+        if (validationMasterSheetFileName == null || validationMasterSheetFileName.isEmpty()) {
+            throw new Exception("Could not create validation master sheet.");
+        }
+        
+        fileNames.set(1, validationMasterSheetFileName);
+        
+        return fileNames; // [0] => predictorListFileName, [1] => masterSheetFileName
+    }
+	
 	
 	
 	public void updateCohortData(CfeResults cfeResults, DataTable updatedMasterSheet) throws Exception {

@@ -89,9 +89,15 @@ public class PheneCondition {
             double value;
             
             log.info("Phene condition - \"" + phene + "\" " + pheneCondition.operator
-                    + " " + pheneCondition.value + " | \"" + valueString);
+                    + " " + pheneCondition.value + " | \"" + valueString + "\"");
             
             try {
+                if (valueString == null || valueString.isEmpty()) {
+                    // No value for this phene
+                    isTrue = false;
+                    break;
+                }
+                
                 value = Double.parseDouble(valueString);
                 if (!pheneCondition.isTrue(value)) {
                     isTrue = false;

@@ -70,48 +70,221 @@
         <th>Script Log File</th></tr>
     <tr>
         <td> Discovery Cohort </td>
-        <td> <s:property value="discoveryCohortResultsId"/> </td>
-        <td>
-            <s:a action="CfeResultsXlsxDisplay" title="Discovery Cohort Results">
-                <s:param name="cfeResultsId" value="discoveryCohortResultsId" />
-                <s:param name="fileName" value="'discovery-cohort-results.xlsx'" />
-                discovery-cohort-results.xlsx
-            </s:a>
-        </td>
-        <td> N/A </td>
-        <td> N/A </td>
+        <s:if test="discoveryResultsCohortId == null">
+            <td> <s:property value="discoveryCohortResultsId"/> </td>
+            <td>
+                <s:a action="CfeResultsXlsxDisplay" title="Discovery Cohort Results">
+                    <s:param name="cfeResultsId" value="discoveryCohortResultsId" />
+                    <s:param name="fileName" value="'discovery-cohort-results.xlsx'" />
+                    discovery-cohort-results.xlsx
+                </s:a>
+            </td>
+            <td> N/A </td>
+            <td> N/A </td>
+        </s:if>
+        <s:else>
+            <td> &nbsp; </td>
+            <td> No Results </td>
+            <td> N/A </td>
+            <td> N/A </td>        
+        </s:else>
     </tr>
+    
     <tr>
         <td> Discovery Scores </td>
-        <td> <s:property value="discoveryScoresResultsId"/> </td>
-        <td>
-            <s:a action="CfeResultsXlsxDisplay" title="Discovery Scores Results">
-                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
-                <s:param name="fileName" value="'discovery-scores-results.xlsx'" />
-                discovery-scores-results.xlsx
-            </s:a>
-        </td>
-        <td>
-            <s:a action="CfeResultsFileDisplay" title="Discovery R Script Command">
-                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
-                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIPT_COMMAND" />
-                <s:property value="'discovery-r-script-command'" />
-            </s:a>  
-        </td>
-        <td>
-            <s:a action="CfeResultsFileDisplay" title="Discovery R Script Log">
-                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
-                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIPT_LOG" />
-                <s:property value="'discovery-r-script-log'" />
-            </s:a> 
-        </td>
+	        <s:if test="discoveryScoresResultsId != null">
+	        <td> <s:property value="discoveryScoresResultsId"/> </td>
+	        <td>
+	            <s:a action="CfeResultsXlsxDisplay" title="Discovery Scores Results">
+	                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
+	                <s:param name="fileName" value="'discovery-scores-results.xlsx'" />
+	                discovery-scores-results.xlsx
+	            </s:a>
+	        </td>
+	        <td>
+	            <s:a action="CfeResultsFileDisplay" title="Discovery R Script Command">
+	                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIPT_COMMAND" />
+	                <s:property value="'discovery-r-script-command'" />
+	            </s:a>  
+	        </td>
+	        <td>
+	            <s:a action="CfeResultsFileDisplay" title="Discovery R Script Log">
+	                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIPT_LOG" />
+	                <s:property value="'discovery-r-script-log'" />
+	            </s:a> 
+	        </td>
+        </s:if>
+        <s:else>
+            <td> &nbsp; </td>
+            <td> No Results </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+        </s:else>
     </tr>
+    
+    <tr>
+        <td> Prioritization Scores </td>
+        
+        <s:if test="prioritizationScoresResultsId != null">
+            <td>
+                <s:property value="prioritizationScoresResultsId"/>
+            </td>
+            <td>
+                <s:a action="CfeResultsXlsxDisplay" title="Prioritization Scores Results">
+                    <s:param name="cfeResultsId" value="prioritizationScoresResultsId" />
+                    <s:param name="fileName" value="'prioritization-scores-results.xlsx'" />
+                    prioritization-scores-results.xlsx
+                </s:a>
+            </td>
+            <td> N/A </td>
+            <td> N/A </td>            
+        </s:if>
+        <s:else>
+            <td> &nbsp; </td>
+            <td> No Results </td>
+            <td> N/A </td>
+            <td> N/A </td>
+        </s:else>
+    </tr>  
+    
+    
+    <tr>
+        <td> Validation Cohort </td>
+        
+        <s:if test="validationCohortResultsId != null">
+            <td>
+                <s:property value="validationCohortResultsId"/>
+            </td>
+            <td>
+                <s:a action="CfeResultsXlsxDisplay" title="Validation Cohort Results">
+                    <s:param name="cfeResultsId" value="validationCohortResultsId" />
+                    <s:param name="fileName" value="'validation-cohort-results.xlsx'" />
+                    validation-cohort-results.xlsx
+                </s:a>
+            </td>
+            <td> N/A </td>
+            <td> N/A </td>
+        </s:if>
+        <s:else>
+            <td> &nbsp; </td>
+            <td> No Results </td>
+            <td> N/A </td>
+            <td> N/A </td>
+        </s:else>
+
+    </tr>
+    
+    <tr>
+        <td> Validation Scores </td>
+        
+        <s:if test="validationScoresResultsId != null">
+            <td>
+                <s:property value="validationScoresResultsId"/>
+            </td>
+            <td>
+                <s:a action="CfeResultsXlsxDisplay" title="Validation Scores Results">
+                    <s:param name="cfeResultsId" value="validationScoresResultsId" />
+                    <s:param name="fileName" value="'validarion-scores-results.xlsx'" />
+                    validation-scores-results.xlsx
+                </s:a>
+            </td>
+	        <td>
+	            <s:a action="CfeResultsFileDisplay" title="Validation R Script Command">
+	                <s:param name="cfeResultsId" value="validationScoresResultsId" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@VALIDATION_R_SCRIPT_COMMAND" />
+	                <s:property value="'validation-r-script-command'" />
+	            </s:a>  
+	        </td>
+	        <td>
+	            <s:a action="CfeResultsFileDisplay" title="Validation R Script Log">
+	                <s:param name="cfeResultsId" value="validationScoresResultsId" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@VALIDATION_R_SCRIPT_LOG" />
+	                <s:property value="'validation-r-script-log'" />
+	            </s:a> 
+	        </td>          
+        </s:if>
+        <s:else>
+            <td> &nbsp; </td>
+            <td> No Results </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+        </s:else>
+    </tr>
+    
+    <tr>
+        <td> Testing Cohorts </td>
+        
+        <s:if test="testingCohortsResultsId != null">
+            <td>
+                <s:property value="testingCohortsResultsId"/>
+            </td>
+            <td>
+                <s:a action="CfeResultsXlsxDisplay" title="Testing Cohorts Results">
+                    <s:param name="cfeResultsId" value="testingCohortsResultsId" />
+                    <s:param name="fileName" value="'testing-cohorts-results.xlsx'" />
+                    testing-cohorts-results.xlsx
+                </s:a>
+            </td>
+            <%-- NEED TO ADD PYTHON SCRIPTS HERE --%>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+        </s:if>
+        <s:else>
+            <td> &nbsp; </td>
+            <td> No Results </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+        </s:else>
+    </tr>
+
+    
+    <tr>
+        <td> Testing Scores </td>
+        
+        <s:if test="testingScoresResultsId != null">
+            <td>
+                <s:property value="testingScoresResultsId"/>
+            </td>
+            <td>
+                <s:a action="CfeResultsXlsxDisplay" title="Testing Scores Results">
+                    <s:param name="cfeResultsId" value="testingScoresResultsId" />
+                    <s:param name="fileName" value="'testing-scores-results.xlsx'" />
+                    testing-scores-results.xlsx
+                </s:a>
+            </td>
+	        <td>
+	            <s:a action="CfeResultsFileDisplay" title="Testing R Script Command">
+	                <s:param name="cfeResultsId" value="testingScoresResultsId" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@TESTING_R_SCRIPT_COMMAND" />
+	                <s:property value="'testing-r-script-command'" />
+	            </s:a>  
+	        </td>
+	        <td>
+	            <s:a action="CfeResultsFileDisplay" title="Testing R Script Log">
+	                <s:param name="cfeResultsId" value="testingScoresResultsId" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@TESTING_R_SCRIPT_LOG" />
+	                <s:property value="'testing-r-script-log'" />
+	            </s:a> 
+	        </td>          
+        </s:if>
+        <s:else>
+            <td> &nbsp; </td>
+            <td> No Results </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+        </s:else>
+    </tr>
+        
 </table>
 
+<%--
 <p>
 R Script LOG: <s:property value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIPT_LOG" />
 </p>
-             
+--%>
+         
 <%-- FOR DEBUGGING:
 <table class="dataTable">
     <tr>

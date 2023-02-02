@@ -48,13 +48,13 @@ public class PrioritizationScoresCalc {
 
     private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
 
-    public CfeResults execute(
+    public CfeResults calculate(
             CfeResults discoveryResults,
             List<DiseaseSelector> diseaseSelectorsParam,
             List<cfe.enums.prioritization.ScoringWeights> weights,
             GeneListInput geneListInput,
             String geneListFileName,
-            double discoveryScoreCutoff
+            Double discoveryScoreCutoff  // Could be null, if gene list not calculated from discovery results
     ) throws Exception {
 
         log.info("Starting prioritization scoring.");
@@ -125,10 +125,8 @@ public class PrioritizationScoresCalc {
                 cfeResults.setPhene(discoveryResults.getPhene());
                 cfeResults.setLowCutoff(discoveryResults.getLowCutoff());
                 cfeResults.setHighCutoff(discoveryResults.getHighCutoff());
-                CfeResultsFile cfeFile = discoveryResults.getFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG);
-                if (cfeFile != null) {
-                    cfeResults.addTextFile(CfeResultsFileType.DISCOVERY_R_SCRIPT_LOG, cfeFile.getContentAsString());
-                }
+                
+                cfeResults.addCsvAndTextFiles(discoveryResults);
             }
             else {
                 cfeResults.setResultsType(CfeResultsType.PRIORITIZATION_SCORES_ONLY);

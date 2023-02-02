@@ -149,6 +149,16 @@ public class BatchAction extends BaseAction implements SessionAware {
     private double nominalScore     = 4;
     private double stepwiseScore    = 2;
     private double nonStepwiseScore = 0;
+
+    private File updatedValidationMasterSheet;
+    private String updatedValidationMasterSheetContentType;
+    private String updatedValidationMasterSheetFileName;
+    private String updatedValidationMasterSheetTempFileName;  // Need to create temp file for R-script to use
+    
+    private File updatedValidationPredictorList;
+    private String updatedValidationPredictorListContentType;
+    private String updatedValidationPredictorListFileName;
+    private String updatedValidationPredictorListTempFileName;
     
     Long validationCohortResultsId;
     Long validationScoresResultsId;
@@ -163,6 +173,19 @@ public class BatchAction extends BaseAction implements SessionAware {
     private Double testingComparisonThreshold = 0.0001;
     
     private List<String> admissionReasons;
+    
+    private File updatedTestingMasterSheet;
+    private String updatedTestingMasterSheetContentType;
+    private String updatedTestingMasterSheetFileName;
+    private String updatedTestingMasterSheetTempFileName;  // Need to create temp file for R-script to use
+    
+    private File updatedTestingPredictorList;
+    private String updatedTestingPredictorListContentType;
+    private String updatedTestingPredictorListFileName;
+    private String updatedTestingPredictorListTempFileName;
+    
+    
+    
     
     public BatchAction() {
         admissionReasons = new ArrayList<String>();
@@ -342,11 +365,6 @@ public class BatchAction extends BaseAction implements SessionAware {
                 // Calculate Discovery Scores
                 //=========================================================================
                 
-                String scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
-                String scriptFile = new File(getClass().getResource("/R/DEdiscovery.R").toURI()).getAbsolutePath();
-                
-                // this.discoveryPercentileScores = new PercentileScores();
-                
                 DiscoveryScoresCalc discoveryScoresCalc = new DiscoveryScoresCalc();
                 
                 CfeResults discoveryScores = discoveryScoresCalc.calculate(
@@ -460,25 +478,30 @@ public class BatchAction extends BaseAction implements SessionAware {
                 ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
                 
                 
+                List<String> fileNames = validationScoresCalc.createValidationPredictorListAndMasterSheetFiles(
+                        validationCohortResultsId,
+                        this.geneExpressionCsv
+                );
+                
+                String predictorListFileName = fileNames.get(0);
+                String masterSheetFileName = fileNames.get(1);
+                
                 // FIX PARAMETERS!!!!!!!!!!!!!!!!!!!!!!!!!
-                /*
+
                 CfeResults validationScores = validationScoresCalc.calculate(
                         validationCohort,
-                        percentInValidation,
-                        percentInValidation,
-                        percentInValidation,
-                        percentInValidation,
-                        percentInValidation,
-                        percentInValidation,
-                        result,
-                        key,
-                        scriptDir,
-                        scriptFile
+                        this.validationScoreCutoff,
+                        this.validationComparisonThreshold,
+                        this.bonferroniScore,
+                        this.nominalScore,
+                        this.stepwiseScore,
+                        this.nonStepwiseScore,
+                        this.updatedValidationMasterSheetFileName,
+                        this.updatedValidationPredictorListFileName
                 );
                 
                 this.validationScoresResultsId = validationScores.getCfeResultsId();
-                */
-                
+
             }
             
             catch (Exception exception) {
@@ -1160,6 +1183,70 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.nonStepwiseScore = nonStepwiseScore;
     }
     
+    public File getUpdatedValidationMasterSheet() {
+        return updatedValidationMasterSheet;
+    }
+
+    public void setUpdatedValidationMasterSheet(File updatedValidationMasterSheet) {
+        this.updatedValidationMasterSheet = updatedValidationMasterSheet;
+    }
+
+    public String getUpdatedValidationMasterSheetContentType() {
+        return updatedValidationMasterSheetContentType;
+    }
+
+    public void setUpdatedValidationMasterSheetContentType(String updatedValidationMasterSheetContentType) {
+        this.updatedValidationMasterSheetContentType = updatedValidationMasterSheetContentType;
+    }
+
+    public String getUpdatedValidationMasterSheetFileName() {
+        return updatedValidationMasterSheetFileName;
+    }
+
+    public void setUpdatedValidationMasterSheetFileName(String updatedValidationMasterSheetFileName) {
+        this.updatedValidationMasterSheetFileName = updatedValidationMasterSheetFileName;
+    }
+
+    public String getUpdatedValidationMasterSheetTempFileName() {
+        return updatedValidationMasterSheetTempFileName;
+    }
+
+    public void setUpdatedValidationMasterSheetTempFileName(String updatedValidationMasterSheetTempFileName) {
+        this.updatedValidationMasterSheetTempFileName = updatedValidationMasterSheetTempFileName;
+    }
+
+    public File getUpdatedValidationPredictorList() {
+        return updatedValidationPredictorList;
+    }
+
+    public void setUpdatedValidationPredictorList(File updatedValidationPredictorList) {
+        this.updatedValidationPredictorList = updatedValidationPredictorList;
+    }
+
+    public String getUpdatedValidationPredictorListContentType() {
+        return updatedValidationPredictorListContentType;
+    }
+
+    public void setUpdatedValidationPredictorListContentType(String updatedValidationPredictorListContentType) {
+        this.updatedValidationPredictorListContentType = updatedValidationPredictorListContentType;
+    }
+
+    public String getUpdatedValidationPredictorListFileName() {
+        return updatedValidationPredictorListFileName;
+    }
+
+    public void setUpdatedValidationPredictorListFileName(String updatedValidationPredictorListFileName) {
+        this.updatedValidationPredictorListFileName = updatedValidationPredictorListFileName;
+    }
+
+    public String getUpdatedValidationPredictorListTempFileName() {
+        return updatedValidationPredictorListTempFileName;
+    }
+
+    public void setUpdatedValidationPredictorListTempFileName(String updatedValidationPredictorListTempFileName) {
+        this.updatedValidationPredictorListTempFileName = updatedValidationPredictorListTempFileName;
+    }
+
     public Long getValidationCohortResultsId() {
         return validationCohortResultsId;
     }
@@ -1194,5 +1281,69 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setTestingComparisonThreshold(Double testingComparisonThreshold) {
         this.testingComparisonThreshold = testingComparisonThreshold;
     }
-   
+
+    public File getUpdatedTestingMasterSheet() {
+        return updatedTestingMasterSheet;
+    }
+
+    public void setUpdatedTestingMasterSheet(File updatedTestingMasterSheet) {
+        this.updatedTestingMasterSheet = updatedTestingMasterSheet;
+    }
+
+    public String getUpdatedTestingMasterSheetContentType() {
+        return updatedTestingMasterSheetContentType;
+    }
+
+    public void setUpdatedTestingMasterSheetContentType(String updatedTestingMasterSheetContentType) {
+        this.updatedTestingMasterSheetContentType = updatedTestingMasterSheetContentType;
+    }
+
+    public String getUpdatedTestingMasterSheetFileName() {
+        return updatedTestingMasterSheetFileName;
+    }
+
+    public void setUpdatedTestingMasterSheetFileName(String updatedTestingMasterSheetFileName) {
+        this.updatedTestingMasterSheetFileName = updatedTestingMasterSheetFileName;
+    }
+
+    public String getUpdatedTestingMasterSheetTempFileName() {
+        return updatedTestingMasterSheetTempFileName;
+    }
+
+    public void setUpdatedTestingMasterSheetTempFileName(String updatedTestingMasterSheetTempFileName) {
+        this.updatedTestingMasterSheetTempFileName = updatedTestingMasterSheetTempFileName;
+    }
+
+    public File getUpdatedTestingPredictorList() {
+        return updatedTestingPredictorList;
+    }
+
+    public void setUpdatedTestingPredictorList(File updatedTestingPredictorList) {
+        this.updatedTestingPredictorList = updatedTestingPredictorList;
+    }
+
+    public String getUpdatedTestingPredictorListContentType() {
+        return updatedTestingPredictorListContentType;
+    }
+
+    public void setUpdatedTestingPredictorListContentType(String updatedTestingPredictorListContentType) {
+        this.updatedTestingPredictorListContentType = updatedTestingPredictorListContentType;
+    }
+
+    public String getUpdatedTestingPredictorListFileName() {
+        return updatedTestingPredictorListFileName;
+    }
+
+    public void setUpdatedTestingPredictorListFileName(String updatedTestingPredictorListFileName) {
+        this.updatedTestingPredictorListFileName = updatedTestingPredictorListFileName;
+    }
+
+    public String getUpdatedTestingPredictorListTempFileName() {
+        return updatedTestingPredictorListTempFileName;
+    }
+
+    public void setUpdatedTestingPredictorListTempFileName(String updatedTestingPredictorListTempFileName) {
+        this.updatedTestingPredictorListTempFileName = updatedTestingPredictorListTempFileName;
+    }
+
 }

@@ -276,6 +276,14 @@
                 <td> <s:textfield  style="text-align: right;" name="nonStepwiseScore" /></td>
             </tr>
         </table>        
+         
+        <p>
+        Updated Master Sheet CSV File (optional): <s:file name="updatedValidationMasterSheet"/>
+        </p>
+
+        <p>
+        Updated Predictor List CSV File (optional): <s:file name="updatedValidationPredictorList"/>
+        </p>
           
     </fieldset> 
  
@@ -296,10 +304,15 @@
         <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="testingComparisonThreshold"/>
         </p>
         
-    <p>
-    Updated predictor list CSV file (optional):
-    <s:file name="updatedPredictorListCsv" style="margin-left: 1em;"/>
-    </p>
+        <p>
+        Updated Predictor List CSV File (optional)
+        <s:file name="updatedTestingPredictorList" />
+        </p>
+
+        <p>
+        Updated Master Sheet CSV File (optional)
+        <s:file name="updatedTestingMasterSheet" />
+        </p>
     
     <table class="dataTable">
         <tr>

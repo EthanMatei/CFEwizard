@@ -45,6 +45,8 @@ import cfe.utils.WebAppProperties;
 public class ValidationScoresCalc {
 
 	private static final Logger log = Logger.getLogger(ValidationScoresCalc.class.getName());
+	
+	public static final String VALIDATION_R_SCRIPT = "Validation.R";
 
     private String errorMessage;
     
@@ -191,7 +193,7 @@ public class ValidationScoresCalc {
 	        }
 
 	        String scriptDir  = new File(getClass().getResource("/R").toURI()).getAbsolutePath();
-	        String scriptFile = new File(getClass().getResource("/R/Validation.R").toURI()).getAbsolutePath();
+	        String scriptFile = new File(getClass().getResource("/R/" + VALIDATION_R_SCRIPT).toURI()).getAbsolutePath();
 
 	        if (scriptDir == null || scriptDir.isEmpty()) {
 	            throw new Exception("The R script directory could not be determined for validation scoring.");    
@@ -353,6 +355,8 @@ public class ValidationScoresCalc {
 	                );
 	        log.info("cfeResults object created.");
 	        log.info("CFE RESULTS: \n" + cfeResults.asString());
+	        
+	        cfeResults.copyAttributes(validationCohort);
 
 	        // Add files from input results
 	        cfeResults.addCsvAndTextFiles(validationData);
@@ -472,7 +476,7 @@ public class ValidationScoresCalc {
         }
         log.info("Predictor List file in validation scoring specification: \"" + predictorListFileName + "\" created.");               
 
-        fileNames.set(0,predictorListFileName);
+        fileNames.add(0,predictorListFileName);
 
         log.info("Starting to create master sheet for validation scoring.");
 
@@ -490,7 +494,7 @@ public class ValidationScoresCalc {
             throw new Exception("Could not create validation master sheet.");
         }
         
-        fileNames.set(1, validationMasterSheetFileName);
+        fileNames.add(1, validationMasterSheetFileName);
         
         return fileNames; // [0] => predictorListFileName, [1] => masterSheetFileName
     }

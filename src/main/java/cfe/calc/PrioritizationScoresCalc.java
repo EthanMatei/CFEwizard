@@ -110,6 +110,7 @@ public class PrioritizationScoresCalc {
             }
 
             cfeResults = new CfeResults();
+            cfeResults.copyAttributes(discoveryResults);
             cfeResults.setResultsSpreadsheet(workbook);
 
             LinkedHashMap<String,DataTable> dataTables = discoveryDataTables;

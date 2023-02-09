@@ -155,6 +155,17 @@ public class CfeResults implements Serializable {
     }
   */
     
+    /**
+     * Copies the attribute fields (used to identify the results) from the specified results.
+     * 
+     * @param results the results from which attribute fields are to be copied.
+     */
+    public void copyAttributes(CfeResults results) {
+        this.phene      = results.phene;
+        this.lowCutoff  = results.lowCutoff;
+        this.highCutoff = results.highCutoff;
+    }
+    
     public String asString() {
         String value = "";
         value += "ID: " + this.cfeResultsId + "\n";

@@ -47,6 +47,10 @@
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
     </div>
+    <div style="margin-top: 17px;">
+        <span style="font-weight: bold;">STACK TRACE:</span>
+        <pre><s:property value="exceptionStack"/></pre>
+    </div>
 </s:if>
         
 <s:actionerror />
@@ -59,6 +63,15 @@
     <s:hidden name="testingDbFileName"/>
 
     <fieldset class=dataInput>
+        <legend>Start Point</legend>
+        <p>
+        Starting Results (optional): <s:select name="startingCfeResultsId" list="pastCfeResultsMap" />
+        </p>
+    </fieldset>
+    
+    <div>&nbsp;</div>
+   
+    <fieldset class=dataInput>
         <legend>Data Files</legend>
         
         <table class="dataTable">
@@ -68,30 +81,20 @@
                 <td> <s:file name="probesetToGeneMappingDb" label="Probeset to Gene Mapping Database" /> </td>
             </tr>
             <tr>
-                <td> Follow-Up Database </td>
-                <td> <s:file name="followUpDb" label="Follow-Up Database" /> </td>
-            </tr>
-            <tr>
                 <td> Discovery Gene Expression CSV File</td>
                 <td> <s:file name="discoveryGeneExpressionCsv" label="Discovery Gene Expression CSV" /> </td>
             </tr>   
             <tr>
                 <td> Gene Expression CSV File</td>
                 <td> <s:file name="geneExpressionCsv" label="Gene Expression CSV" /> </td>
-            </tr>
-            <tr>
-                <td> Starting Results (optional):</td>
-                <td>
-                    <s:select list="pastCfeResultsMap" />
-                </td>
-            </tr>           
+            </tr>          
         </table>
     </fieldset>
     
     <div>&nbsp;</div>
     
     <fieldset class="dataInput">
-        <legend>Discovery</legend>
+        <legend>Discovery Cohort</legend>
 
         <p>
             Phene: <s:select name="discoveryPheneInfo" list="discoveryPheneList"/>
@@ -110,30 +113,16 @@
         </p>
 
         <%-- DIAGNOSIS --%>        
+    </fieldset>
+
+    <div>&nbsp;</div>
+        
+    <fieldset class="dataInput">
+        <legend>Discovery Scoring</legend>
         
         <p>
         Diagnosis: <s:select name="diagnosisCode" list="diagnosisCodesList"/>
         </p>
-        
-        <%--
-        <h3>Diagnosis</h3>
-        <table class="dataTable" style="margin-top: 1em;">
-            <tr>
-                <th> Diagnosis&nbsp;Code </th>
-                <th> Examples </th>
-            </tr>
-            <tr>
-                <td> <s:radio name="diagnosisCode" list="{'All'}" checked="true" style="fontweight:bold;"/> </td>
-                <td> (All diagnosis codes will be processed) </td>
-            </tr>
-            <s:iterator value="diagnosisCodes">
-                <tr>
-                    <td> <s:radio name="diagnosisCode" list="{key}" /> </td>
-                    <td> <s:property value="value"/> </td>
-                </tr>
-            </s:iterator>
-        </table>
-        --%>
         
         <table class="dataTable">
             <thead>
@@ -223,9 +212,9 @@
     <div>&nbsp;</div>
     
     
-    <%-- VALIDATION ===================================================================================== --%>
+    <%-- VALIDATION COHORT ===================================================================================== --%>
     <fieldset class="dataInput">
-        <legend>Validation</legend>
+        <legend>Validation Cohort</legend>
         
         <table class="dataTable">
             <tr> <th>Phene</th> <th>Relation</th> <th>Value</th> </tr>
@@ -251,11 +240,23 @@
             <s:textfield name="percentInValidationCohort" value="50" size="4" style="text-align: right;"/>
         </div>
         
-                
+        <p>
+        Comparison threshold:
+        <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="validationCohortComparisonThreshold"/>
+        </p>
+    </fieldset>
+    
+    <div>&nbsp;</div>
+    
+    
+    <%-- VALIDATION SCORES ===================================================================================== --%>
+    <fieldset class="dataInput">
+        <legend>Validation Scores</legend>
+                       
         <p>
         Score cutoff (&ge;): <s:textfield style="text-align: right;" name="validationScoreCutoff" />
         <span style="margin-left: 1em;">Comparison threshold:</span>
-        <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="validationComparisonThreshold"/>
+        <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="validationScoresComparisonThreshold"/>
         </p>
         
         <table class="dataTable" style="margin-top: 17px;">
@@ -289,15 +290,24 @@
  
     <div>&nbsp;</div>
         
-    <%-- TESTING ===================================================================================== --%>
+    <%-- TESTING COHORT ================================================================================= --%>
     <fieldset class="dataInput">
-        <legend>Testing</legend>
-  
+        <legend>Testing Cohort</legend>
+        
+        <p>
+        Follow-Up Database: <s:file name="followUpDb" label="Follow-Up Database" />
+        </p>
+              
         <p>
         Admission phene: <s:select name="admissionPhene" list="admissionReasons"/>
         </p>
+    </fieldset>
+    
+    <div>&nbsp;</div>
         
-                        
+    <%-- TESTING SCORES ================================================================================= --%>
+    <fieldset class="dataInput">
+        <legend>Testing Scores</legend>                        
         <p>
         Score cutoff (&ge;): <s:textfield style="text-align: right;" name="testingScoreCutoff" />
         <span style="margin-left: 1em;">Comparison threshold:</span>

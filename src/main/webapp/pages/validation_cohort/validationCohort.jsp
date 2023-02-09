@@ -21,7 +21,7 @@
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
         <div style="margin-top: 17px;">
             <span style="font-weight: bold;">STACK TRACE:</span>
-            <pre><s:property value="exceptionStack" /></pre>
+            <pre><s:property value="exceptionStack"/></pre>
         </div>
     </div>
 </s:if>

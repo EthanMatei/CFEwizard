@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +22,8 @@ import cfe.calc.PrioritizationScoresCalc;
 import cfe.calc.ValidationCohortCalc;
 import cfe.calc.ValidationScoresCalc;
 import cfe.model.CfeResults;
+import cfe.model.CfeResultsNewestFirstComparator;
+import cfe.model.CfeResultsType;
 import cfe.model.PercentileScores;
 import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.disease.DiseaseSelection;
@@ -76,9 +79,11 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     private List<String> phenes;
     
+    /* Starting Results (optional) -------------------------------------------------- */
     private Map<Long, String> pastCfeResultsMap;
+    private Long startingCfeResultsId;
     
-    /* Discovery ------------------------------------------------------------- */
+    /* Discovery Cohort ------------------------------------------------------------- */
     private String discoveryPhene;
     private String discoveryPheneInfo;
     private String discoveryPheneTable;
@@ -90,9 +95,12 @@ public class BatchAction extends BaseAction implements SessionAware {
     List<String> discoveryPheneList;
     
     Long discoveryCohortResultsId;
-    Long discoveryScoresResultsId;
+    
+    /* Discovery Scores ------------------------------------------------------------- */
     
     private PercentileScores discoveryPercentileScores = new PercentileScores();
+    
+    Long discoveryScoresResultsId;
     
     /* Prioritization -------------------------------------------------------- */
     private String geneListSpecification;
@@ -141,8 +149,10 @@ public class BatchAction extends BaseAction implements SessionAware {
 
 	private String percentInValidationCohort;
 	
-    private double validationScoreCutoff = 6.0;
-    private Double validationComparisonThreshold = 0.0001; 
+    private Double validationScoreCutoff = 6.0;
+    //private Double validationComparisonThreshold = 0.0001; 
+    private Double validationCohortComparisonThreshold = 0.0001;
+    private Double validationScoresComparisonThreshold = 0.0001; 
     
     private double bonferroniScore  = 6;
     private double nominalScore     = 4;
@@ -164,6 +174,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 
 
     /* Testing --------------------------------------------------------------- */
+    
     private File followUpDb;
     private String followUpDbContentType;
     private String followUpDbFileName;
@@ -182,6 +193,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String updatedTestingPredictorListContentType;
     private String updatedTestingPredictorListFileName;
     private String updatedTestingPredictorListTempFileName;
+    
+    Long testingCohortsResultsId;
     
     
     
@@ -246,14 +259,30 @@ public class BatchAction extends BaseAction implements SessionAware {
 		    try {
 		        log.info("Testing database \"" + this.testingDbFileName + "\" uploaded.");
 	
-		        pastCfeResultsMap = new HashMap<Long, String>();
-		        List<CfeResults> pastCfeResults = CfeResultsService.getAllMetadata();
+		        pastCfeResultsMap = new LinkedHashMap<Long, String>();
+		        pastCfeResultsMap.put(0L, "");
+		        
+		        List<CfeResults> pastCfeResults = CfeResultsService.getMetadata(
+		                CfeResultsType.DISCOVERY_COHORT,
+		                CfeResultsType.DISCOVERY_SCORES,
+		                CfeResultsType.PRIORITIZATION_SCORES,
+		                CfeResultsType.VALIDATION_COHORT,
+		                CfeResultsType.VALIDATION_SCORES,
+		                CfeResultsType.TESTING_COHORTS
+		        );
+		        Collections.sort(pastCfeResults, new CfeResultsNewestFirstComparator());
+		          
 		        for (CfeResults cfeResults: pastCfeResults) {
 		            Long key = cfeResults.getCfeResultsId();
 		            String value = "["  + cfeResults.getCfeResultsId() + "]";
 		            value += " " + cfeResults.getResultsType();
+		            value += " (" + cfeResults.getGeneratedTime() + ")";
+		            value += " " + cfeResults.getLowCutoff() + " <=";
+		            value += " " + cfeResults.getPhene() + " <= " + cfeResults.getHighCutoff();
 		            pastCfeResultsMap.put(key, value);
 		        }
+		        
+		        
 		        
 			    // Copy the upload files to temporary files, because the upload files get deleted
 			    // and they are needed beyond this method
@@ -328,183 +357,219 @@ public class BatchAction extends BaseAction implements SessionAware {
                 String[] pheneInfo = this.discoveryPheneInfo.split("]", 2);
                 this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
                 this.discoveryPhene = discoveryPheneTable + "." + pheneInfo[1].trim();
+
+                //----------------------------------------
+                // Get starting results (if any)
+                //----------------------------------------
+                CfeResultsType startingResultsType = null;
+                CfeResults startingResults = null;
+                if (this.startingCfeResultsId != null && this.startingCfeResultsId > 0) {
+                    startingResults = CfeResultsService.get(startingCfeResultsId);
+                    if (startingResults == null) {
+                        throw new Exception("Starting results with ID " + startingCfeResultsId + " could not be found.");
+                    }
+                    
+                    startingResultsType = new CfeResultsType(startingResults.getResultsType());
+                }
                 
+                        
                 //=========================================================================
                 // Create Discovery Cohort
                 //=========================================================================
-                DiscoveryCohortCalc discoveryCohortCalc = new DiscoveryCohortCalc();
-                CfeResults discoveryCohort = discoveryCohortCalc.calculate(
-                        testingDbTempFileName,
-                        testingDbFileName,
-                        discoveryPhene,
-                        discoveryPheneTable,
-                        this.discoveryPheneLowCutoff,
-                        this.discoveryPheneHighCutoff,
-                        this.genomicsTable,
-                        this.discoveryCohortComparisonThreshold
-                );
+                CfeResults discoveryCohort = null;
+                this.discoveryCohortResultsId = null;
                 
-                /*
-                 * OLD CODE:
-                CfeResults discoveryCohort = DiscoveryCalc.createDiscoveryCohort(
-                        this.testingDbTempFileName,
-                        this.discoveryPheneTable,
-                        this.discoveryPhene,
-                        this.discoveryPheneLowCutoff,
-                        this.discoveryPheneHighCutoff,
-                        this.discoveryCohortComparisonThreshold,
-                        this.genomicsTable
-                );
-                */
-                
-                this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
+                // Skip this phase if starting results were specified that are this phase or after
+                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.DISCOVERY_COHORT)) {
+                    DiscoveryCohortCalc discoveryCohortCalc = new DiscoveryCohortCalc();
+                    discoveryCohort = discoveryCohortCalc.calculate(
+                            testingDbTempFileName,
+                            testingDbFileName,
+                            discoveryPhene,
+                            discoveryPheneTable,
+                            this.discoveryPheneLowCutoff,
+                            this.discoveryPheneHighCutoff,
+                            this.genomicsTable,
+                            this.discoveryCohortComparisonThreshold
+                    );
+                    
+                    this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
+                }
+                else if (startingResultsType.isEqualTo(CfeResultsType.DISCOVERY_COHORT)) {
+                    discoveryCohort = startingResults;       
+                    this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
+                }
+
                 
 
                 //=========================================================================
                 // Calculate Discovery Scores
                 //=========================================================================
+                CfeResults discoveryScores = null;
                 
-                DiscoveryScoresCalc discoveryScoresCalc = new DiscoveryScoresCalc();
-                
-                CfeResults discoveryScores = discoveryScoresCalc.calculate(
-                        discoveryCohort,
-                        this.discoveryGeneExpressionCsv,
-                        this.probesetToGeneMappingDb,
-                        diagnosisCode,
-                        this.discoveryPercentileScores,
-                        debugDiscoveryScoring
-                );
-                    
+                // Skip this phase if starting results were specified that are this phase or after
+                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.DISCOVERY_SCORES)) {
+                    DiscoveryScoresCalc discoveryScoresCalc = new DiscoveryScoresCalc();
 
-//                CfeResults discoveryCfeResults = DiscoveryCalc.calculateScores(
-//                    discoveryCohortResultsId,
-//                    discoveryGeneExpressionCsv,
-//                    probesetToGeneMappingDbFileName,
-//                    discoveryPheneTable,
-//                    discoveryPhene,
-//                    discoveryPheneLowCutoff,
-//                    discoveryPheneHighCutoff,
-//                    diagnosisCode,
-//                    discoveryPercentileScores,
-//                    scriptDir,
-//                    scriptFile,
-//                    debugDiscoveryScoring
-//                );
+                    discoveryScores = discoveryScoresCalc.calculate(
+                            discoveryCohort,
+                            this.discoveryGeneExpressionCsv,
+                            this.probesetToGeneMappingDb,
+                            diagnosisCode,
+                            this.discoveryPercentileScores,
+                            debugDiscoveryScoring
+                            );
 
-                
-                if (discoveryScores == null) {
-                    throw new Exception("Discovery scores could not be calculated.");
+
+                    if (discoveryScores == null) {
+                        throw new Exception("Discovery scores could not be calculated.");
+                    }
+                    this.discoveryScoresResultsId = discoveryScores.getCfeResultsId();
                 }
-                this.discoveryScoresResultsId = discoveryScores.getCfeResultsId();
+                else if (startingResultsType.isEqualTo(CfeResultsType.DISCOVERY_SCORES)) {
+                    discoveryScores = startingResults;       
+                    this.discoveryScoresResultsId = discoveryScores.getCfeResultsId();
+                }
                 
                 //=========================================================================
                 // Calculate Prioritization Scores
                 //=========================================================================
 
-                // Process the gene list
-                if (this.geneListSpecification.contentEquals("All")) {
-                    this.geneListUploadFileName = "";
-                    this.geneListInput = new GeneListInput();
-                }
-                else if (this.geneListSpecification.contentEquals("Upload File:")) {
-                    this.geneListInput = new GeneListInput(this.geneListUploadFileName);
-                }
-                else if (this.geneListSpecification.contentEquals("Generate from Discovery:")) {
-                    this.geneListUploadFileName = "";
-                    this.geneListInput = new GeneListInput(discoveryScores, this.prioritizationScoreCutoff, this.prioritizationComparisonThreshold);
-                }
-                else {
-                    result = INPUT;
-                    throw new Exception("Gene list specification\"" + this.geneListSpecification + "\" is invalid.");
-                }
-                
-                this.diseaseSelectors = DiseaseSelector.importCsvFile(diseasesCsvFileName, diseasesCsv);
-                List<cfe.enums.prioritization.ScoringWeights> weights = this.getPrioritizationWeights();
-                
-                PrioritizationScoresCalc prioritizationScoresCalc = new PrioritizationScoresCalc();
-                
-                CfeResults prioritizationScores = prioritizationScoresCalc.calculate(
-                        discoveryScores,
-                        diseaseSelectors,
-                        weights,
-                        geneListInput,
-                        this.geneListUploadFileName,
-                        this.prioritizationScoreCutoff
-                );
-                
-                this.prioritizationScoresResultsId = prioritizationScores.getCfeResultsId();
+                CfeResults prioritizationScores = null;
+                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.PRIORITIZATION_SCORES)) {
+                    // Process the gene list
+                    if (this.geneListSpecification.contentEquals("All")) {
+                        this.geneListUploadFileName = "";
+                        this.geneListInput = new GeneListInput();
+                    }
+                    else if (this.geneListSpecification.contentEquals("Upload File:")) {
+                        // FIX!!!!!!!!!! - NOT CORRECT FILE NAME HERE - need the path????????????????
+                        this.geneListInput = new GeneListInput(this.geneListUpload.getAbsolutePath());
+                    }
+                    else if (this.geneListSpecification.contentEquals("Generate from Discovery:")) {
+                        this.geneListUploadFileName = "";
+                        this.geneListInput = new GeneListInput(discoveryScores, this.prioritizationScoreCutoff, this.prioritizationComparisonThreshold);
+                    }
+                    else {
+                        result = INPUT;
+                        throw new Exception("Gene list specification\"" + this.geneListSpecification + "\" is invalid.");
+                    }
 
+                    this.diseaseSelectors = DiseaseSelector.importCsvFile(diseasesCsvFileName, diseasesCsv);
+                    List<cfe.enums.prioritization.ScoringWeights> weights = this.getPrioritizationWeights();
+
+                    PrioritizationScoresCalc prioritizationScoresCalc = new PrioritizationScoresCalc();
+
+                    prioritizationScores = prioritizationScoresCalc.calculate(
+                            discoveryScores,
+                            diseaseSelectors,
+                            weights,
+                            geneListInput,
+                            this.geneListUploadFileName,
+                            this.prioritizationScoreCutoff
+                            );
+
+                    this.prioritizationScoresResultsId = prioritizationScores.getCfeResultsId();
+                }
+                else if (startingResultsType.isEqualTo(CfeResultsType.PRIORITIZATION_SCORES)) {
+                    prioritizationScores = startingResults;       
+                    this.prioritizationScoresResultsId = prioritizationScores.getCfeResultsId();
+                }
                 
-                //-------------------------------------------
+                //================================================================================
                 // Create Validation Cohort
-                //-------------------------------------------
-                phene1 = phene1.replace("[", "").replace("] ", ".");
-                phene2 = phene2.replace("[", "").replace("] ", ".");
-                phene3 = phene3.replace("[", "").replace("] ", ".");
-                List<PheneCondition> pheneConditions = PheneCondition.createList(
-                        phene1, operator1, value1,
-                        phene2, operator2, value2,
-                        phene3, operator3, value3
-                );
+                //================================================================================
                 
-                double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
+                CfeResults validationCohort = null;
+                
+                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.VALIDATION_COHORT)) {
+                    phene1 = phene1.replace("[", "").replace("] ", ".");
+                    phene2 = phene2.replace("[", "").replace("] ", ".");
+                    phene3 = phene3.replace("[", "").replace("] ", ".");
+                    List<PheneCondition> pheneConditions = PheneCondition.createList(
+                            phene1, operator1, value1,
+                            phene2, operator2, value2,
+                            phene3, operator3, value3
+                            );
 
-                ValidationCohortCalc validationCohortCalc = new ValidationCohortCalc();
+                    double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
+
+                    ValidationCohortCalc validationCohortCalc = new ValidationCohortCalc();
+
+                    validationCohort = validationCohortCalc.calculate(
+                            prioritizationScores,
+                            pheneConditions,
+                            percentInValidation,
+                            this.validationCohortComparisonThreshold
+                            );
+
+                    this.validationCohortResultsId = validationCohort.getCfeResultsId();
+                }
+                else if (startingResultsType.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
+                    validationCohort = startingResults;       
+                    this.validationCohortResultsId = validationCohort.getCfeResultsId();
+                }
                 
-                CfeResults validationCohort = validationCohortCalc.calculate(
-                        prioritizationScores,
-                        pheneConditions,
-                        percentInValidation,
-                        this.validationComparisonThreshold
-                );
-                
-                this.validationCohortResultsId = validationCohort.getCfeResultsId();
-                
-                
-//                CfeResults ValidationCohortCfeResults = ValidationCalc.createValidationCohort(
-//                        prioritizationCfeResults,
-//                        this.discoveryPhene,
-//                        this.discoveryPheneLowCutoff,
-//                        this.discoveryPheneHighCutoff,
-//                        pheneConditions,
-//                        percentInValidation,
-//                        validationComparisonThreshold
-//                ); 
-//                
-                //-------------------------------------------
+             
+                //===============================================================
                 // Calculate Validation Scores
-                //-------------------------------------------
-                ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
-                
-                
-                List<String> fileNames = validationScoresCalc.createValidationPredictorListAndMasterSheetFiles(
-                        validationCohortResultsId,
-                        this.geneExpressionCsv
-                );
-                
-                String predictorListFileName = fileNames.get(0);
-                String masterSheetFileName = fileNames.get(1);
-                
-                // FIX PARAMETERS!!!!!!!!!!!!!!!!!!!!!!!!!
+                //===============================================================
 
-                CfeResults validationScores = validationScoresCalc.calculate(
-                        validationCohort,
-                        this.validationScoreCutoff,
-                        this.validationComparisonThreshold,
-                        this.bonferroniScore,
-                        this.nominalScore,
-                        this.stepwiseScore,
-                        this.nonStepwiseScore,
-                        masterSheetFileName,
-                        this.updatedValidationMasterSheetFileName,
-                        predictorListFileName,
-                        this.updatedValidationPredictorListFileName
-                );
+                CfeResults validationScores = null;
                 
-                this.validationScoresResultsId = validationScores.getCfeResultsId();
+                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.VALIDATION_SCORES)) {
+                    ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
 
+
+                    List<String> fileNames = validationScoresCalc.createValidationPredictorListAndMasterSheetFiles(
+                            validationCohortResultsId,
+                            this.geneExpressionCsv
+                            );
+
+                    String predictorListFileName = fileNames.get(0);
+                    String masterSheetFileName = fileNames.get(1);
+
+                    log.info("Validation score cutoff: " + this.validationScoreCutoff);
+                    log.info("Validation scores comparison threshold: " + this.validationScoresComparisonThreshold);
+                    
+                    validationScores = validationScoresCalc.calculate(
+                            validationCohort,
+                            this.validationScoreCutoff,
+                            this.validationScoresComparisonThreshold,
+                            this.bonferroniScore,
+                            this.nominalScore,
+                            this.stepwiseScore,
+                            this.nonStepwiseScore,
+                            masterSheetFileName,
+                            this.updatedValidationMasterSheetFileName,
+                            predictorListFileName,
+                            this.updatedValidationPredictorListFileName
+                    );
+
+                    this.validationScoresResultsId = validationScores.getCfeResultsId();
+                }
+                else if (startingResultsType.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
+                    validationScores = startingResults;       
+                    this.validationScoresResultsId = validationScores.getCfeResultsId();
+                }
+                
+                
+                
+                //================================================================================
+                // Create Testing Cohorts
+                //================================================================================
+                
+                CfeResults testingCohorts = null;
+                
+                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.TESTING_COHORTS)) {
+                    
+                }
+                else if (startingResultsType.isEqualTo(CfeResultsType.TESTING_COHORTS)) {
+                    testingCohorts = startingResults;       
+                    this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
+                }
+                
             }
-            
             catch (Exception exception) {
                 this.setErrorMessage("The input data could not be processed. " + exception.getLocalizedMessage());
                 String stackTrace = ExceptionUtils.getStackTrace(exception);
@@ -567,7 +632,16 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setPastCfeResultsMap(Map<Long, String> pastCfeResultsMap) {
         this.pastCfeResultsMap = pastCfeResultsMap;
     }
+    
+    public Long getStartingCfeResultsId() {
+        return startingCfeResultsId;
+    }
 
+    public void setStartingCfeResultsId(Long startingCfeResultsId) {
+        this.startingCfeResultsId = startingCfeResultsId;
+    }
+
+    
     public File getTestingDb() {
         return testingDb;
     }
@@ -1136,20 +1210,30 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.percentInValidationCohort = percentInValidationCohort;
     }
 
-    public double getValidationScoreCutoff() {
+    public Double getValidationScoreCutoff() {
         return validationScoreCutoff;
     }
 
-    public void setValidationScoreCutoff(double validationScoreCutoff) {
+    public void setValidationScoreCutoff(Double validationScoreCutoff) {
         this.validationScoreCutoff = validationScoreCutoff;
     }
 
-    public Double getValidationComparisonThreshold() {
-        return validationComparisonThreshold;
+
+
+    public Double getValidationCohortComparisonThreshold() {
+        return validationCohortComparisonThreshold;
     }
 
-    public void setValidationComparisonThreshold(Double validationComparisonThreshold) {
-        this.validationComparisonThreshold = validationComparisonThreshold;
+    public void setValidationCohortComparisonThreshold(Double validationCohortComparisonThreshold) {
+        this.validationCohortComparisonThreshold = validationCohortComparisonThreshold;
+    }
+
+    public Double getValidationScoresComparisonThreshold() {
+        return validationScoresComparisonThreshold;
+    }
+
+    public void setValidationScoresComparisonThreshold(Double validationScoresComparisonThreshold) {
+        this.validationScoresComparisonThreshold = validationScoresComparisonThreshold;
     }
 
     public double getBonferroniScore() {
@@ -1345,6 +1429,14 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setUpdatedTestingPredictorListTempFileName(String updatedTestingPredictorListTempFileName) {
         this.updatedTestingPredictorListTempFileName = updatedTestingPredictorListTempFileName;
+    }
+
+    public Long getTestingCohortsResultsId() {
+        return testingCohortsResultsId;
+    }
+
+    public void setTestingCohortsResultsId(Long testingCohortsResultsId) {
+        this.testingCohortsResultsId = testingCohortsResultsId;
     }
 
 }

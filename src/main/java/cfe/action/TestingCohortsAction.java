@@ -193,7 +193,7 @@ public class TestingCohortsAction extends BaseAction implements SessionAware {
                         throw new Exception("Could not find \"" + CfeResultsSheets.VALIDATION_COHORT_INFO + "\" sheet in results workbook.");
                     }
                 }
-                DataTable validationCohortInfo = new DataTable();
+                DataTable validationCohortInfo = new DataTable("attribute");
                 validationCohortInfo.initializeToWorkbookSheet(validationCohortInfoSheet);
                 
                 this.validationConstraint1 = validationCohortInfo.getValue("Constraint 1", "value");

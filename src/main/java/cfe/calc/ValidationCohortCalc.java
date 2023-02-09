@@ -269,6 +269,7 @@ public class ValidationCohortCalc {
 	    // Create and save CFE results
 	    //-------------------------------------------
 	    CfeResults cfeResults = new CfeResults();
+	    cfeResults.copyAttributes(inputResults);
 
 	    if (inputResults.getResultsType().equals(CfeResultsType.DISCOVERY_COHORT)) {
 	        cfeResults.setResultsType(CfeResultsType.VALIDATION_COHORT_ONLY);
@@ -279,9 +280,6 @@ public class ValidationCohortCalc {
 	    }
 
 	    cfeResults.setResultsSpreadsheet(resultsWorkbook);
-	    cfeResults.setPhene(discoveryPhene);
-	    cfeResults.setLowCutoff(discoveryLowCutoff);
-	    cfeResults.setHighCutoff(discoveryHighCutoff);
 	    cfeResults.setGeneratedTime(new Date());
 
 	    CfeResultsService.save(cfeResults);

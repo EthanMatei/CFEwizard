@@ -504,6 +504,7 @@ public class DiscoveryScoresCalc {
                     lowCutoff, highCutoff);
             log.info("cfeResults object created.");
             
+            cfeResults.copyAttributes(discoveryCohortResults);
             
             cfeResults.setDiscoveryRScriptLog(scriptOutput);
             log.info("Discovery scoring results object created.");

@@ -1,7 +1,9 @@
 package cfe.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CfeResultsType {
     public final static String DISCOVERY_COHORT        = "discovery cohort";
@@ -28,6 +30,15 @@ public class CfeResultsType {
     //public final static String ALL_COHORTS_PLUS_VALIDATION_SCORES = "all cohorts + validation scores";
     //public final static String ALL_COHORTS_PLUS_ALL_SCORES         = "all cohort + all scores";
 
+    private String value;
+    
+    public CfeResultsType(String value) throws Exception {
+        Set<String> typesSet = this.getTypesSet();
+        if (!typesSet.contains(value)) {
+            throw new Exception("CFE Results type \"" + value + "\" is not a valid type.");
+        }
+        this.value = value;    
+    }
     
     public List<String> getTypes() {
         List<String> types = new ArrayList<String>();
@@ -54,5 +65,88 @@ public class CfeResultsType {
         //types.add(ALL_COHORTS_PLUS_ALL_SCORES);
 
         return types;
+    }
+    
+    public int getOrder() throws Exception {
+        int order = 0;
+        
+        String type = this.value;
+        
+        if (!this.isValid(type)) {
+            throw new Exception("CFE results type \"" + type + "\" is not valid.");
+        }
+        
+        if (type.equals(DISCOVERY_COHORT)) {
+            order = 1;
+        }
+        else if (type.equals(DISCOVERY_SCORES)) {
+            order = 2;
+        }
+        else if (type.equals(PRIORITIZATION_SCORES) || type.equals(PRIORITIZATION_SCORES_ONLY)) {
+            order = 3;
+        }
+        else if (type.equals(VALIDATION_COHORT) || type.equals(VALIDATION_COHORT_ONLY)) {
+            order = 4;
+        }
+        else if (type.equals(VALIDATION_SCORES)) {
+            order = 5;
+        }
+        else if (type.equals(TESTING_COHORTS) || type.equals(TESTING_COHORTS_ONLY)) {
+            order = 6;
+        }
+        else if (type.equals(TESTING_SCORES)) {
+            order = 7;
+        }
+        
+        return order;
+    }
+    
+    public Set<String> getTypesSet() {
+        Set<String> typesSet = new HashSet<String>(this.getTypes());
+        
+        return typesSet;
+    }
+    
+    public boolean isValid(String type) {
+        boolean isValid = false;
+        Set<String> types = this.getTypesSet();
+        if (types.contains(type)) {
+            isValid = true;
+        }
+        return isValid;
+    }
+    
+    /**
+     * Indicates if this type come before the specified type in the pipeline workflow order.
+     * 
+     * @param type the type to check.
+     * @return
+     */
+    public boolean isBefore(String type) throws Exception {
+        boolean isBefore = false;
+        
+        CfeResultsType compareType = new CfeResultsType(type);
+        
+        if (this.getOrder() < compareType.getOrder()) {
+            isBefore = true;
+        }
+
+        return isBefore;
+    }
+    
+    public boolean isEqualTo(String type) throws Exception {
+        boolean isEqual = false;
+        
+        CfeResultsType compareType = new CfeResultsType(type);
+        
+        if (this.getOrder() == compareType.getOrder()) {
+            isEqual = true;
+        }
+
+        return isEqual;
+    }
+    
+    public String getValue() {
+        return this.value;
     }
 }

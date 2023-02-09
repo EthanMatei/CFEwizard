@@ -105,8 +105,8 @@ public class TestingCohortsCalc {
     // Fllow-up MS Access database
     
     private File followUpDb;
-    private String followUpDbContentType;
     private String followUpDbFileName;
+
     private String scoringDataFileName;
     private String pheneVisitsFileName;
     
@@ -143,7 +143,9 @@ public class TestingCohortsCalc {
 	 *
 	 */
     public CfeResults calculate(
-            CfeResults validationResults
+            CfeResults validationResults,
+            File followUpDb,
+            String followUpDbFileName
     ) throws Exception {
 
         CfeResults cfeResults = null;
@@ -151,6 +153,9 @@ public class TestingCohortsCalc {
         try {
 
             this.validationResults = validationResults;
+            this.followUpDb        = followUpDb;
+            this.followUpDbFileName = followUpDbFileName;
+            
             if (this.validationResults == null) {
                 throw new Exception("No validation results specified.");
             }
@@ -328,6 +333,7 @@ public class TestingCohortsCalc {
             // Create and save CFE results
             //-------------------------------------------
             cfeResults = new CfeResults();
+            cfeResults.copyAttributes(validationResults);
 
             if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_COHORT_ONLY)) {
                 cfeResults.setResultsType(CfeResultsType.TESTING_COHORTS_ONLY);
@@ -338,9 +344,6 @@ public class TestingCohortsCalc {
             }
 
             cfeResults.setResultsSpreadsheet(resultsWorkbook);
-            cfeResults.setPhene(discoveryPhene);
-            cfeResults.setLowCutoff(discoveryLowCutoff);
-            cfeResults.setHighCutoff(discoveryHighCutoff);
             cfeResults.setGeneratedTime(new Date());
 
             // Add the Python script command
@@ -739,14 +742,6 @@ public class TestingCohortsCalc {
 
     public void setFollowUpDb(File followUpDb) {
         this.followUpDb = followUpDb;
-    }
-
-    public String getFollowUpDbContentType() {
-        return followUpDbContentType;
-    }
-
-    public void setFollowUpDbContentType(String followUpDbContentType) {
-        this.followUpDbContentType = followUpDbContentType;
     }
 
     public String getFollowUpDbFileName() {

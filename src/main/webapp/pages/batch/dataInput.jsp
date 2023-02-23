@@ -77,14 +77,6 @@
         <table class="dataTable">
             <tr> <th>Data</th> <th>File</th> </tr>
             <tr>
-                <td> Probeset to Gene Mapping Database </td>
-                <td> <s:file name="probesetToGeneMappingDb" label="Probeset to Gene Mapping Database" /> </td>
-            </tr>
-            <tr>
-                <td> Discovery Gene Expression CSV File</td>
-                <td> <s:file name="discoveryGeneExpressionCsv" label="Discovery Gene Expression CSV" /> </td>
-            </tr>   
-            <tr>
                 <td> Gene Expression CSV File</td>
                 <td> <s:file name="geneExpressionCsv" label="Gene Expression CSV" /> </td>
             </tr>          
@@ -119,6 +111,18 @@
         
     <fieldset class="dataInput">
         <legend>Discovery Scoring</legend>
+        
+        <table class="dataTable">
+            <tr> <th>Data</th> <th>File</th> </tr>
+            <tr>
+                <td> Probeset to Gene Mapping Database </td>
+                <td> <s:file name="probesetToGeneMappingDb" label="Probeset to Gene Mapping Database" /> </td>
+            </tr>
+            <tr>
+                <td> Discovery Gene Expression CSV File</td>
+                <td> <s:file name="discoveryGeneExpressionCsv" label="Discovery Gene Expression CSV" /> </td>
+            </tr>            
+        </table>
         
         <p>
         Diagnosis: <s:select name="diagnosisCode" list="diagnosisCodesList"/>
@@ -290,9 +294,9 @@
  
     <div>&nbsp;</div>
         
-    <%-- TESTING COHORT ================================================================================= --%>
+    <%-- TESTING COHORTS ================================================================================= --%>
     <fieldset class="dataInput">
-        <legend>Testing Cohort</legend>
+        <legend>Testing Cohorts</legend>
         
         <p>
         Follow-Up Database: <s:file name="followUpDb" label="Follow-Up Database" />
@@ -347,7 +351,7 @@
                 <s:textfield size="5" style="text-align: right;" name="predictionPheneHighCutoff"/>
                 
                 <span style="margin-left: 2em;">Comparison Threshold:</span>
-                <s:textfield size="10" style="text-align: right;" name="comparisonThreshold"/>
+                <s:textfield size="10" style="text-align: right;" name="predictionPheneComparisonThreshold"/>
                 </p>
             </td>
         </tr>

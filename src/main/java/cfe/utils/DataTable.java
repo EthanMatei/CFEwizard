@@ -440,7 +440,9 @@ public class DataTable {
 			}
 			else if (this.index.containsKey(keyValue)) {
 			    // If the index already contains this key
-		        throw new Exception("Attempt to add row to data table with key \"" + keyValue + "\" that already exists.");
+			    String message = "Attempt to add row to data table (key: \"" + this.getKey() 
+			            + "\") with key value \"" + keyValue + "\" that already exists.";
+			    throw new Exception(message);
 			}
 			else {
 		        this.index.put(keyValue, row);

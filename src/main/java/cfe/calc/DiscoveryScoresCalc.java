@@ -74,9 +74,9 @@ public class DiscoveryScoresCalc {
 	private String discoveryCsvContentType;
 	private String discoveryCsvFileName;
 	    
-	private File discoveryDb;
-	private String discoveryDbContentType;
-	private String discoveryDbFileName;
+	//private File discoveryDb;
+	//private String discoveryDbContentType;
+	//private String discoveryDbFileName;
 	
 	private File probesetMappingDb;
 	private String probesetMappingDbContentType;
@@ -172,6 +172,7 @@ public class DiscoveryScoresCalc {
 	        CfeResults discoveryCohortResults,
 	        File discoveryCsv,
 	        File probeSetMappingDb,
+	        String probeSetMappingDbFileName,
 	        String diagnosisCode,
 	        PercentileScores discoveryPercentileScores,
 	        boolean debugDiscoveryScoring
@@ -183,8 +184,11 @@ public class DiscoveryScoresCalc {
 	    
 	    //try {
 	        this.discoveryCsv          = discoveryCsv;
-	        this.probesetMappingDb     = probeSetMappingDb;
-            this.diagnosisCode         = diagnosisCode;
+	        
+	        this.probesetMappingDb         = probeSetMappingDb;
+	        this.probesetMappingDbFileName = probeSetMappingDbFileName;
+            
+	        this.diagnosisCode         = diagnosisCode;
             this.discoveryPercentileScores = discoveryPercentileScores;
 	        this.debugDiscoveryScoring = debugDiscoveryScoring;
 	        
@@ -206,6 +210,16 @@ public class DiscoveryScoresCalc {
 	            String errorMessage = "No percentile scores were specified.";
 	            log.severe(errorMessage);
 	            throw new Exception(errorMessage);
+	        }
+	        
+	        if (this.probesetMappingDb == null || this.probesetMappingDbFileName == null) {
+	            String message = "No probeset to gene mapping database was specified.";
+	            throw new Exception(message);
+	        }
+	        else if (!this.probesetMappingDbFileName.endsWith(".accdb")) {
+	            String message = "Probeset to gene mapping database file \"" + probesetMappingDbFileName
+	                    + "\" does not have MS Access database file extension \".accdb\".";
+	            throw new Exception(message);
 	        }
 	        
 	        // Get phene table name from the phene selection - the phene selection whould be "phene-table.phene-name"
@@ -668,6 +682,11 @@ public class DiscoveryScoresCalc {
         row.add(this.scoresGeneratedTime.toString());
         infoTable.addRow(row);
         
+        row = new ArrayList<String>();
+        row.add("Probeset to Gene Mapping DB");
+        row.add(this.probesetMappingDbFileName);
+        infoTable.addRow(row);
+        
         List<Double> lowerBounds = this.discoveryPercentileScores.getLowerBounds();
         List<Double> upperBounds = this.discoveryPercentileScores.getUpperBounds();
         List<Double> scores      = this.discoveryPercentileScores.getScores();
@@ -704,68 +723,7 @@ public class DiscoveryScoresCalc {
 	    return infoTable;
 	}
 	
-    public DataTable createCohortInfoTable() throws Exception {
-		DataTable infoTable = new DataTable("attribute");
-		infoTable.insertColumn("attribute", 0, "");
-		infoTable.insertColumn("value",  1,  "");
-		
-		ArrayList<String> row = new ArrayList<String>();
-		row.add("CFE Version");
-		row.add(VersionNumber.VERSION_NUMBER);
-		infoTable.addRow(row);
-		
-		row = new ArrayList<String>();
-		row.add("Time Cohort Generated");
-		row.add(this.cohortGeneratedTime.toString());
-		infoTable.addRow(row);
-        
-        row = new ArrayList<String>();
-        row.add("Test Database");
-        row.add(this.discoveryDbFileName);
-        infoTable.addRow(row);
-        
-		row = new ArrayList<String>();
-		row.add("Phene Table");
-		row.add(this.pheneTable);
-		infoTable.addRow(row);
-		
-		row = new ArrayList<String>();
-		row.add("Phene");
-		row.add(this.pheneSelection);
-		infoTable.addRow(row);
-		
-		row = new ArrayList<String>();
-		row.add("Low Cutoff");
-		row.add(this.lowCutoff + "");
-		infoTable.addRow(row);
-		
-		row = new ArrayList<String>();
-		row.add("High Cutoff");
-		row.add(this.highCutoff + "");
-		infoTable.addRow(row);
-		
-		row = new ArrayList<String>();
-		row.add("Microarray Table");
-		row.add(this.genomicsTable);
-		infoTable.addRow(row);
 
-        row = new ArrayList<String>();
-        row.add("Number of Cohort Subjects");
-        row.add(this.numberOfSubjects + "");
-        infoTable.addRow(row);
-        
-	    row = new ArrayList<String>();
-	    row.add("Number of Cohort Low Visits");
-	    row.add(this.lowVisits + "");
-	    infoTable.addRow(row);
-
-        row = new ArrayList<String>();
-        row.add("Number of Cohort High Visits");
-        row.add(this.highVisits + "");
-        infoTable.addRow(row);	        
-		return infoTable;
-    }
-    
     /** 
      * WORK IN PROGRESS
      * For checking that gene expression file has phene visit, instead of affy visit, columns. 
@@ -858,31 +816,6 @@ public class DiscoveryScoresCalc {
 		this.discoveryCsvFileName = discoveryCsvFileName;
 	}
 
-	public File getDiscoveryDb() {
-		return discoveryDb;
-	}
-
-	public void setDiscoveryDb(File discoveryDb) {
-		this.discoveryDb = discoveryDb;
-	}
-
-	public String getDiscoveryDbContentType() {
-		return discoveryDbContentType;
-	}
-
-	public void setDiscoveryDbContentType(String discoverDbContentType) {
-		this.discoveryDbContentType = discoverDbContentType;
-	}
-
-	public String getDiscoveryDbFileName() {
-		return discoveryDbFileName;
-	}
-
-	public void setDiscoveryDbFileName(String dicoveryDbFileName) {
-		this.discoveryDbFileName = dicoveryDbFileName;
-	}
-	
-	
 	public File getProbesetMappingDb() {
         return probesetMappingDb;
     }

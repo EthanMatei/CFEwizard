@@ -19,6 +19,8 @@ import com.healthmarketscience.jackcess.Table;
 import cfe.calc.DiscoveryCohortCalc;
 import cfe.calc.DiscoveryScoresCalc;
 import cfe.calc.PrioritizationScoresCalc;
+import cfe.calc.TestingCohortsCalc;
+import cfe.calc.TestingScoresCalc;
 import cfe.calc.ValidationCohortCalc;
 import cfe.calc.ValidationScoresCalc;
 import cfe.model.CfeResults;
@@ -46,6 +48,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 
 	private Map<String, Object> webSession;
 	
+	private double DEFAULT_COMPARISON_THRESHOLD = 0.0001;
 	private File testingDb;
 	private String testingDbContentType;
 	private String testingDbFileName;
@@ -54,9 +57,10 @@ public class BatchAction extends BaseAction implements SessionAware {
     private File probesetToGeneMappingDb;
     private String probesetToGeneMappingDbContentType;
     private String probesetToGeneMappingDbFileName;
-    private String probesetToGeneMappingDbTempFileName;
-    private DataTable probesetToGeneMapTable;
-    private Map<String,String> probesetToGeneMap;
+    //private String probesetToGeneMappingDbTempFileName;
+    
+    //private DataTable probesetToGeneMapTable;
+    //private Map<String,String> probesetToGeneMap;
     
     private File discoveryGeneExpressionCsv;
     private String discoveryGeneExpressionCsvContentType;
@@ -90,7 +94,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     private double discoveryPheneLowCutoff;
     private double discoveryPheneHighCutoff;
-    private Double discoveryCohortComparisonThreshold = 0.0001; 
+    private Double discoveryCohortComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD; 
    
     List<String> discoveryPheneList;
     
@@ -110,7 +114,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String geneListUploadFileName;
     
     private Double prioritizationScoreCutoff;
-    private Double prioritizationComparisonThreshold = 0.0001;
+    private Double prioritizationComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
     
     private double huBrainScore;
     private double huPerScore;
@@ -151,8 +155,8 @@ public class BatchAction extends BaseAction implements SessionAware {
 	
     private Double validationScoreCutoff = 6.0;
     //private Double validationComparisonThreshold = 0.0001; 
-    private Double validationCohortComparisonThreshold = 0.0001;
-    private Double validationScoresComparisonThreshold = 0.0001; 
+    private Double validationCohortComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
+    private Double validationScoresComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD; 
     
     private double bonferroniScore  = 6;
     private double nominalScore     = 4;
@@ -173,14 +177,19 @@ public class BatchAction extends BaseAction implements SessionAware {
     Long validationScoresResultsId;
 
 
-    /* Testing --------------------------------------------------------------- */
+    /* Testing Cohorts --------------------------------------------------------------- */
     
     private File followUpDb;
     private String followUpDbContentType;
     private String followUpDbFileName;
+
+    private String admissionPhene;
     
-    private double testingScoreCutoff;
-    private Double testingComparisonThreshold = 0.0001;
+    private Long testingCohortsResultsId;
+    
+    /* Testing -Scores -------------------------------------------------------------- */
+    private double testingScoreCutoff = 8.0;
+    private Double testingComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
     
     private List<String> admissionReasons;
     
@@ -194,7 +203,18 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String updatedTestingPredictorListFileName;
     private String updatedTestingPredictorListTempFileName;
     
-    Long testingCohortsResultsId;
+    private boolean stateCrossSectional;
+    private boolean stateLongitudinal;
+    private boolean firstYearCrossSectional;
+    private boolean firstYearLongitudinal;
+    private boolean futureCrossSectional;
+    private boolean futuretLongitudinal;
+    
+    private String predictionPhene;
+    private Double predictionPheneHighCutoff;
+    private Double predictionPheneComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
+    
+    private Long testingScoresResultsId;
     
     
     
@@ -326,33 +346,24 @@ public class BatchAction extends BaseAction implements SessionAware {
         if (!Authorization.isAdmin(webSession)) {
             result = LOGIN;
         }
-        else if (this.probesetToGeneMappingDb == null || this.probesetToGeneMappingDbFileName == null) {
-            this.setErrorMessage("No probeset to gene mapping database was specified.");
-            result = ERROR;
-        }
-        else if (!this.probesetToGeneMappingDbFileName.endsWith(".accdb")) {
-            this.setErrorMessage("Probeset to gene mapping database file \"" + probesetToGeneMappingDbFileName
-                    + "\" does not have MS Access database file extension \".accdb\".");
-            result = ERROR;
-        }
         else {
             try { 
                 // Probeset to gene database mapping
-                File probesetToGeneMappingDbTmp = FileUtil.createTempFile("probest-to-gene-mapping-db-", ".accdb");
-                FileUtils.copyFile(this.probesetToGeneMappingDb, probesetToGeneMappingDbTmp);
-                this.probesetToGeneMappingDbTempFileName = probesetToGeneMappingDbTmp.getAbsolutePath();
-                this.probesetToGeneMappingDbFileName = probesetToGeneMappingDb.getAbsolutePath();
+                //File probesetToGeneMappingDbTmp = FileUtil.createTempFile("probest-to-gene-mapping-db-", ".accdb");
+                //FileUtils.copyFile(this.probesetToGeneMappingDb, probesetToGeneMappingDbTmp);
+                //this.probesetToGeneMappingDbTempFileName = probesetToGeneMappingDbTmp.getAbsolutePath();
+                //this.probesetToGeneMappingDbFileName = probesetToGeneMappingDb.getAbsolutePath();
 
                 //------------------------------------------------------------
                 // Get the probeset to mapping information
                 //------------------------------------------------------------
-                String key = ProbesetMappingParser.PROBE_SET_ID_COLUMN;
-                DataTable probesetMapping = new DataTable(key);
+                //String key = ProbesetMappingParser.PROBE_SET_ID_COLUMN;
+                //DataTable probesetMapping = new DataTable(key);
 
-                ProbesetMappingParser probesetDbParser = new ProbesetMappingParser(this.probesetToGeneMappingDb.getAbsolutePath());
-                Table table = probesetDbParser.getMappingTable();
-                probesetMapping.initializeToAccessTable(table);
-                this.probesetToGeneMap = probesetMapping.getMap(key, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
+                //ProbesetMappingParser probesetDbParser = new ProbesetMappingParser(this.probesetToGeneMappingDb.getAbsolutePath());
+                //Table table = probesetDbParser.getMappingTable();
+                //probesetMapping.initializeToAccessTable(table);
+                //this.probesetToGeneMap = probesetMapping.getMap(key, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
                 
                 String[] pheneInfo = this.discoveryPheneInfo.split("]", 2);
                 this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
@@ -415,6 +426,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                             discoveryCohort,
                             this.discoveryGeneExpressionCsv,
                             this.probesetToGeneMappingDb,
+                            this.probesetToGeneMappingDbFileName,
                             diagnosisCode,
                             this.discoveryPercentileScores,
                             debugDiscoveryScoring
@@ -548,7 +560,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                     this.validationScoresResultsId = validationScores.getCfeResultsId();
                 }
-                else if (startingResultsType.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
+                else if (startingResultsType.isEqualTo(CfeResultsType.VALIDATION_SCORES)) {
                     validationScores = startingResults;       
                     this.validationScoresResultsId = validationScores.getCfeResultsId();
                 }
@@ -562,13 +574,66 @@ public class BatchAction extends BaseAction implements SessionAware {
                 CfeResults testingCohorts = null;
                 
                 if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.TESTING_COHORTS)) {
+                    TestingCohortsCalc testingCohortsCalc = new TestingCohortsCalc();
                     
+                    testingCohorts = testingCohortsCalc.calculate(
+                            validationScores,
+                            this.followUpDb,
+                            this.followUpDbFileName,
+                            this.admissionPhene
+                    );
+                    if (testingCohorts == null) {
+                        throw new Exception("Testing cohorts could not be calculated.");
+                    }
+                    this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
                 }
                 else if (startingResultsType.isEqualTo(CfeResultsType.TESTING_COHORTS)) {
                     testingCohorts = startingResults;       
                     this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
                 }
+
                 
+                //===============================================================
+                // Calculate Testing Scores
+                //===============================================================
+                CfeResults testingScores = null;
+                
+                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.TESTING_SCORES)) {
+                    TestingScoresCalc testingScoresCalc = new TestingScoresCalc();
+                    
+                    String[] predictionPheneInfo = this.predictionPhene.split("]", 2);
+                    String predictionPheneTable = predictionPheneInfo[0].replace('[', ' ').trim();
+                    this.predictionPhene = predictionPheneTable + "." + predictionPheneInfo[1].trim();
+                    
+                    testingScores = testingScoresCalc.calculate(
+                            testingCohorts,
+                            this.testingScoreCutoff,
+                            this.testingComparisonThreshold,
+                            this.geneExpressionCsv,
+                            this.geneExpressionCsvFileName,
+                            this.updatedTestingPredictorList,
+                            this.updatedTestingPredictorListFileName,
+                            this.updatedTestingMasterSheet,
+                            this.updatedTestingMasterSheetFileName,
+                            this.stateCrossSectional,
+                            this.stateLongitudinal,
+                            this.firstYearCrossSectional,
+                            this.firstYearLongitudinal,
+                            this.futureCrossSectional,
+                            this.futuretLongitudinal,
+                            this.predictionPhene,
+                            this.predictionPheneHighCutoff,
+                            this.predictionPheneComparisonThreshold
+                    );
+                    if (testingScores == null) {
+                        throw new Exception("Testing scores could not be calculated.");
+                    }
+                    this.testingScoresResultsId = testingScores.getCfeResultsId();
+                }
+                else if (startingResultsType.isEqualTo(CfeResultsType.TESTING_SCORES)) {
+                    testingScores = startingResults;       
+                    this.testingScoresResultsId = testingScores.getCfeResultsId();
+                }
             }
             catch (Exception exception) {
                 this.setErrorMessage("The input data could not be processed. " + exception.getLocalizedMessage());
@@ -698,6 +763,7 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.probesetToGeneMappingDbFileName = probesetToGeneMappingDbFileName;
     }
 
+    /*
     public String getProbesetToGeneMappingDbTempFileName() {
         return probesetToGeneMappingDbTempFileName;
     }
@@ -705,7 +771,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setProbesetToGeneMappingDbTempFileName(String probesetToGeneMappingDbTempFileName) {
         this.probesetToGeneMappingDbTempFileName = probesetToGeneMappingDbTempFileName;
     }
-
+    */
+    
     public File getDiscoveryGeneExpressionCsv() {
         return discoveryGeneExpressionCsv;
     }
@@ -842,6 +909,7 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.discoveryPercentileScores = discoveryPercentileScores;
     }
 
+    /*
     public Map<String, String> getProbesetToGeneMap() {
         return probesetToGeneMap;
     }
@@ -849,7 +917,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setProbesetToGeneMap(Map<String, String> probesetToGeneMap) {
         this.probesetToGeneMap = probesetToGeneMap;
     }
-
+*/
     public boolean isDebugDiscoveryScoring() {
         return debugDiscoveryScoring;
     }
@@ -1186,6 +1254,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 		this.value3 = value3;
 	}
 
+	/*
     public DataTable getProbesetToGeneMapTable() {
         return probesetToGeneMapTable;
     }
@@ -1193,7 +1262,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setProbesetToGeneMapTable(DataTable probesetToGeneMapTable) {
         this.probesetToGeneMapTable = probesetToGeneMapTable;
     }
-
+    */
+	
     public Double getDiscoveryCohortComparisonThreshold() {
         return discoveryCohortComparisonThreshold;
     }
@@ -1351,6 +1421,14 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     /* TESTING ----------------------------------------------------------------------------------------- */
 
+    public String getAdmissionPhene() {
+        return admissionPhene;
+    }
+
+    public void setAdmissionPhene(String admissionPhene) {
+        this.admissionPhene = admissionPhene;
+    }
+    
     public double getTestingScoreCutoff() {
         return testingScoreCutoff;
     }
@@ -1437,6 +1515,86 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setTestingCohortsResultsId(Long testingCohortsResultsId) {
         this.testingCohortsResultsId = testingCohortsResultsId;
+    }
+    
+    public boolean isStateCrossSectional() {
+        return stateCrossSectional;
+    }
+
+    public void setStateCrossSectional(boolean stateCrossSectional) {
+        this.stateCrossSectional = stateCrossSectional;
+    }
+
+    public boolean isStateLongitudinal() {
+        return stateLongitudinal;
+    }
+
+    public void setStateLongitudinal(boolean stateLongitudinal) {
+        this.stateLongitudinal = stateLongitudinal;
+    }
+
+    public boolean isFirstYearCrossSectional() {
+        return firstYearCrossSectional;
+    }
+
+    public void setFirstYearCrossSectional(boolean firstYearCrossSectional) {
+        this.firstYearCrossSectional = firstYearCrossSectional;
+    }
+
+    public boolean isFirstYearLongitudinal() {
+        return firstYearLongitudinal;
+    }
+
+    public void setFirstYearLongitudinal(boolean firstYearLongitudinal) {
+        this.firstYearLongitudinal = firstYearLongitudinal;
+    }
+
+    public boolean isFutureCrossSectional() {
+        return futureCrossSectional;
+    }
+
+    public void setFutureCrossSectional(boolean futureCrossSectional) {
+        this.futureCrossSectional = futureCrossSectional;
+    }
+
+    public boolean isFuturetLongitudinal() {
+        return futuretLongitudinal;
+    }
+
+    public void setFuturetLongitudinal(boolean futuretLongitudinal) {
+        this.futuretLongitudinal = futuretLongitudinal;
+    }
+
+    public String getPredictionPhene() {
+        return predictionPhene;
+    }
+
+    public void setPredictionPhene(String predictionPhene) {
+        this.predictionPhene = predictionPhene;
+    }
+
+    public Double getPredictionPheneHighCutoff() {
+        return predictionPheneHighCutoff;
+    }
+
+    public void setPredictionPheneHighCutoff(Double predictionPheneHighCutoff) {
+        this.predictionPheneHighCutoff = predictionPheneHighCutoff;
+    }
+
+    public Double getPredictionPheneComparisonThreshold() {
+        return predictionPheneComparisonThreshold;
+    }
+
+    public void setPredictionPheneComparisonThreshold(Double predictionPheneComparisonThreshold) {
+        this.predictionPheneComparisonThreshold = predictionPheneComparisonThreshold;
+    }
+
+    public Long getTestingScoresResultsId() {
+        return testingScoresResultsId;
+    }
+
+    public void setTestingScoresResultsId(Long testingScoresResultsId) {
+        this.testingScoresResultsId = testingScoresResultsId;
     }
 
 }

@@ -59,8 +59,6 @@ public class TestingCohortsCalc {
 	private Long validationId;
 	
 	private String admissionPhene;
-    
-	private String errorMessage;
 	
 	private String validationConstraint1;
 	private String validationConstraint2;
@@ -145,16 +143,18 @@ public class TestingCohortsCalc {
     public CfeResults calculate(
             CfeResults validationResults,
             File followUpDb,
-            String followUpDbFileName
+            String followUpDbFileName,
+            String admissionPhene
     ) throws Exception {
 
         CfeResults cfeResults = null;
  
-        try {
+        //try {
 
             this.validationResults = validationResults;
             this.followUpDb        = followUpDb;
             this.followUpDbFileName = followUpDbFileName;
+            this.admissionPhene     = admissionPhene;
             
             if (this.validationResults == null) {
                 throw new Exception("No validation results specified.");
@@ -165,6 +165,11 @@ public class TestingCohortsCalc {
                 String errorMessage = "Validation resultes do not have an ID.";
                 log.severe(errorMessage);
                 throw new Exception(errorMessage);
+            }
+            
+            this.discoveryPhene = validationResults.getPhene();
+            if (this.discoveryPhene == null || this.discoveryPhene.trim().isEmpty()) {
+                throw new Exception("Validation results do no contain a discovery phene.");
             }
 
             log.info("Testing follow-up database file name: " + this.followUpDbFileName);
@@ -187,8 +192,9 @@ public class TestingCohortsCalc {
             }
             
             CohortDataTable cohortData = new CohortDataTable();
+            cohortData.setKey(null);
             cohortData.initializeToWorkbookSheet(sheet);
-            cohortData.setKey("Subject Identifiers.PheneVisit");
+
 
 
             // NEED TO RESET THIS TO JUST GET THE INFORMATION ???
@@ -276,7 +282,9 @@ public class TestingCohortsCalc {
 
 
             // Create hospitalizations data table
-            DataTable hospitalizationsData = new DataTable("hospitalizations cohort data", "TestingVisit");
+            //DataTable hospitalizationsData = new DataTable("hospitalizations cohort data", "TestingVisit");
+            DataTable hospitalizationsData = new DataTable();
+            hospitalizationsData.setName("hospitalizations cohort data");
             hospitalizationsData.initializeToCsv(this.outputFile);
 
 
@@ -299,7 +307,8 @@ public class TestingCohortsCalc {
             cohortDataForTesting.deleteRows("Cohort", "clinical");
 
 
-            DataTable testingCohortData = DataTable.join("TestingVisit", "TestingVisit", "Subject Identifiers.PheneVisit",
+            String keyColumn = null;
+            DataTable testingCohortData = DataTable.join(keyColumn, "TestingVisit", "Subject Identifiers.PheneVisit",
                     hospitalizationsData, cohortDataForTesting, DataTable.JoinType.RIGHT_OUTER);
             testingCohortData.renameColumn("Time to 1st Hosp", "time");
 
@@ -379,12 +388,12 @@ public class TestingCohortsCalc {
                 FileUtils.write(cohortCheckCsvFile, cohortCheckCsv, "UTF-8");
             }
             this.cohortCheckCsvFileName = cohortCheckCsvFile.getAbsolutePath();
-        }
-        catch (Exception exception) {
-            String message = "Testing cohorts creation error: " + exception.getLocalizedMessage();
-            this.setErrorMessage(message);
-            log.severe(message);
-        }  
+        //}
+        //catch (Exception exception) {
+        //    String message = "Testing cohorts creation error: " + exception.getLocalizedMessage();
+        //    log.severe(message);
+        //    throw new Exception(message);
+        //}  
 
         return cfeResults;
     }
@@ -556,14 +565,6 @@ public class TestingCohortsCalc {
         
         this.pheneVisitsFileName = pheneVisitsCsvFile.getAbsolutePath();
     }
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
 
     public List<CfeResults> getValidationResultsList() {
         return validationResultsList;

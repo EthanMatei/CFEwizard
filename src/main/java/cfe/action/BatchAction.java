@@ -462,11 +462,9 @@ public class BatchAction extends BaseAction implements SessionAware {
                 CfeResults discoveryCohort = null;
                 this.discoveryCohortResultsId = null;
                 
-                // Skip this phase if starting results were specified that are this phase or after
-                if (endingResultsTypeObj.isBefore(CfeResultsType.DISCOVERY_COHORT)) {
-                    ; // Don't process
-                }
-                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.DISCOVERY_COHORT)) {
+                // Skip this step, if it is out of the range of the steps specified
+                if (CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_COHORT, this.startingResultsType,  this.endingResultsType)) {
+                    log.info("Step " + CfeResultsType.DISCOVERY_COHORT + " started.");
                     DiscoveryCohortCalc discoveryCohortCalc = new DiscoveryCohortCalc();
                     discoveryCohort = discoveryCohortCalc.calculate(
                             testingDbTempFileName,
@@ -480,12 +478,15 @@ public class BatchAction extends BaseAction implements SessionAware {
                     );
                     
                     this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
+                    log.info("Step " + CfeResultsType.DISCOVERY_COHORT + " completed.");
                 }
-                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.DISCOVERY_COHORT)) {
-                    discoveryCohort = startingResults;       
-                    this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
+                else {
+                    if (startingResultsTypeObj.isEqualTo(CfeResultsType.DISCOVERY_COHORT)) {
+                        discoveryCohort = startingResults;       
+                        this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
+                    }
+                    log.info("Step " + CfeResultsType.DISCOVERY_COHORT + " skipped.");
                 }
-
                 
 
                 //=========================================================================
@@ -493,11 +494,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //=========================================================================
                 CfeResults discoveryScores = null;
                 
-                // Skip this phase if starting results were specified that are this phase or after
-                if (endingResultsTypeObj.isBefore(CfeResultsType.DISCOVERY_SCORES)) {
-                    ; // Don't process
-                }
-                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.DISCOVERY_SCORES)) {
+                // Skip this step, if it is out of the range of the steps specified
+                if (CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_SCORES, this.startingResultsType,  this.endingResultsType)) {
+                    log.info("Step " + CfeResultsType.DISCOVERY_SCORES + " started.");
+                    
                     DiscoveryScoresCalc discoveryScoresCalc = new DiscoveryScoresCalc();
 
                     discoveryScores = discoveryScoresCalc.calculate(
@@ -515,10 +515,14 @@ public class BatchAction extends BaseAction implements SessionAware {
                         throw new Exception("Discovery scores could not be calculated.");
                     }
                     this.discoveryScoresResultsId = discoveryScores.getCfeResultsId();
+                    log.info("Step " + CfeResultsType.DISCOVERY_SCORES + " completed.");
                 }
-                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.DISCOVERY_SCORES)) {
-                    discoveryScores = startingResults;       
-                    this.discoveryScoresResultsId = discoveryScores.getCfeResultsId();
+                else {
+                    if (startingResultsTypeObj.isEqualTo(CfeResultsType.DISCOVERY_SCORES)) {
+                        discoveryScores = startingResults;       
+                        this.discoveryScoresResultsId = discoveryScores.getCfeResultsId();
+                    }
+                    log.info("Step " + CfeResultsType.DISCOVERY_SCORES + " skipped.");
                 }
                 
                 //=========================================================================
@@ -526,10 +530,11 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //=========================================================================
 
                 CfeResults prioritizationScores = null;
-                if (endingResultsTypeObj.isBefore(CfeResultsType.PRIORITIZATION_SCORES)) {
-                    ; // Don't process
-                }
-                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.PRIORITIZATION_SCORES)) {
+                
+                // Skip this step, if it is out of the range of the steps specified
+                if (CfeResultsType.typeIsInRange(CfeResultsType.PRIORITIZATION_SCORES, this.startingResultsType,  this.endingResultsType)) {
+                    log.info("Step " + CfeResultsType.PRIORITIZATION_SCORES + " started.");
+                    
                     // Process the gene list
                     if (this.geneListSpecification.contentEquals("All")) {
                         this.geneListUploadFileName = "";
@@ -563,11 +568,16 @@ public class BatchAction extends BaseAction implements SessionAware {
                             );
 
                     this.prioritizationScoresResultsId = prioritizationScores.getCfeResultsId();
+                    log.info("Step " + CfeResultsType.PRIORITIZATION_SCORES + " completed.");
                 }
-                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.PRIORITIZATION_SCORES)) {
-                    prioritizationScores = startingResults;       
-                    this.prioritizationScoresResultsId = prioritizationScores.getCfeResultsId();
+                else {
+                    if (startingResultsTypeObj.isEqualTo(CfeResultsType.PRIORITIZATION_SCORES)) {
+                        prioritizationScores = startingResults;       
+                        this.prioritizationScoresResultsId = prioritizationScores.getCfeResultsId();
+                    }
+                    log.info("Step " + CfeResultsType.PRIORITIZATION_SCORES + " skipped.");
                 }
+                
                 
                 //================================================================================
                 // Create Validation Cohort
@@ -575,10 +585,11 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 CfeResults validationCohort = null;
                 
-                if (endingResultsTypeObj.isBefore(CfeResultsType.VALIDATION_COHORT)) {
-                    ; // Don't process
-                }
-                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.VALIDATION_COHORT)) {
+                // Skip this step, if it is out of the range of the steps specified
+                if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_COHORT, this.startingResultsType,  this.endingResultsType)) {
+                    
+                    log.info("Step " + CfeResultsType.VALIDATION_COHORT + " started.");
+                    
                     phene1 = phene1.replace("[", "").replace("] ", ".");
                     phene2 = phene2.replace("[", "").replace("] ", ".");
                     phene3 = phene3.replace("[", "").replace("] ", ".");
@@ -600,10 +611,14 @@ public class BatchAction extends BaseAction implements SessionAware {
                             );
 
                     this.validationCohortResultsId = validationCohort.getCfeResultsId();
+                    log.info("Step " + CfeResultsType.VALIDATION_COHORT + " completed.");
                 }
-                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
-                    validationCohort = startingResults;       
-                    this.validationCohortResultsId = validationCohort.getCfeResultsId();
+                else {
+                    if (startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
+                        validationCohort = startingResults;       
+                        this.validationCohortResultsId = validationCohort.getCfeResultsId();
+                    }
+                    log.info("Step " + CfeResultsType.VALIDATION_COHORT + " skipped.");
                 }
                 
              
@@ -613,10 +628,9 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                 CfeResults validationScores = null;
                 
-                if (endingResultsTypeObj.isBefore(CfeResultsType.VALIDATION_SCORES)) {
-                    ; // Don't process
-                }
-                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.VALIDATION_SCORES)) {
+                // Skip this step, if it is out of the range of the steps specified
+                if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType,  this.endingResultsType)) {
+                    log.info("Step " + CfeResultsType.VALIDATION_SCORES + " started.");
                     ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
 
 
@@ -646,10 +660,14 @@ public class BatchAction extends BaseAction implements SessionAware {
                     );
 
                     this.validationScoresResultsId = validationScores.getCfeResultsId();
+                    log.info("Step " + CfeResultsType.VALIDATION_SCORES + " completed.");
                 }
-                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_SCORES)) {
-                    validationScores = startingResults;       
-                    this.validationScoresResultsId = validationScores.getCfeResultsId();
+                else {
+                    if (startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_SCORES)) {
+                        validationScores = startingResults;       
+                        this.validationScoresResultsId = validationScores.getCfeResultsId();
+                    }
+                    log.info("Step " + CfeResultsType.VALIDATION_SCORES + " skipped.");
                 }
                 
                 
@@ -660,10 +678,9 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 CfeResults testingCohorts = null;
                 
-                if (endingResultsTypeObj.isBefore(CfeResultsType.TESTING_COHORTS)) {
-                    ; // Don't process
-                }
-                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.TESTING_COHORTS)) {
+                // Skip this step, if it is out of the range of the steps specified
+                if (CfeResultsType.typeIsInRange(CfeResultsType.TESTING_COHORTS, this.startingResultsType,  this.endingResultsType)) {
+                    log.info("Step " + CfeResultsType.TESTING_COHORTS + " started.");
                     TestingCohortsCalc testingCohortsCalc = new TestingCohortsCalc();
                     
                     testingCohorts = testingCohortsCalc.calculate(
@@ -676,10 +693,14 @@ public class BatchAction extends BaseAction implements SessionAware {
                         throw new Exception("Testing cohorts could not be calculated.");
                     }
                     this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
+                    log.info("Step " + CfeResultsType.TESTING_COHORTS + " completed.");
                 }
-                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.TESTING_COHORTS)) {
-                    testingCohorts = startingResults;       
-                    this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
+                else {
+                    if (startingResultsTypeObj.isEqualTo(CfeResultsType.TESTING_COHORTS)) {
+                        testingCohorts = startingResults;       
+                        this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
+                    }
+                    log.info("Step " + CfeResultsType.TESTING_COHORTS + " skipped.");
                 }
 
                 
@@ -688,10 +709,9 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //===============================================================
                 CfeResults testingScores = null;
                 
-                if (endingResultsTypeObj.isBefore(CfeResultsType.TESTING_SCORES)) {
-                    ; // Don't process
-                }
-                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.TESTING_SCORES)) {
+                // Skip this step, if it is out of the range of the steps specified
+                if (CfeResultsType.typeIsInRange(CfeResultsType.TESTING_SCORES, this.startingResultsType,  this.endingResultsType)) {
+                    log.info("Step " + CfeResultsType.TESTING_SCORES + " started.");
                     TestingScoresCalc testingScoresCalc = new TestingScoresCalc();
                     
                     String[] predictionPheneInfo = this.predictionPhene.split("]", 2);
@@ -718,14 +738,20 @@ public class BatchAction extends BaseAction implements SessionAware {
                             this.predictionPheneHighCutoff,
                             this.predictionPheneComparisonThreshold
                     );
+                    
                     if (testingScores == null) {
                         throw new Exception("Testing scores could not be calculated.");
                     }
+                    
                     this.testingScoresResultsId = testingScores.getCfeResultsId();
+                    log.info("Step " + CfeResultsType.TESTING_SCORES + " completed.");
                 }
-                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.TESTING_SCORES)) {
-                    testingScores = startingResults;       
-                    this.testingScoresResultsId = testingScores.getCfeResultsId();
+                else {
+                    if (startingResultsTypeObj.isEqualTo(CfeResultsType.TESTING_SCORES)) {
+                        testingScores = startingResults;       
+                        this.testingScoresResultsId = testingScores.getCfeResultsId();
+                    }
+                    log.info("Step " + CfeResultsType.TESTING_SCORES + " skipped.");
                 }
             }
             catch (Exception exception) {

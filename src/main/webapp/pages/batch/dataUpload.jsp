@@ -32,10 +32,19 @@
         
 <s:actionerror />
 
+        
+
 <s:form id ="dataUploadForm" theme="simple" name="dataUploadForm"
         action="BatchDataUpload"
         method="post" enctype="multipart/form-data">
 
+    <!-- <s:submit value="Upload" id="uploadButton" onclick="submitForm();" /> -->
+    <p>
+    <s:submit value="Upload" id="uploadButton" style="font-weight: bold; font-size: 120%;"/>
+    </p>
+    
+    <s:token />
+    
     <table class="dataTable">
         <tr> <th>Data</th> <th>File</th> </tr>
         <tr>
@@ -45,11 +54,42 @@
     </table>
 
     <s:hidden name="testingDbTempFileName" /> 
+
+    <p>Ending Step: <s:select name="endingResultsType" list="endingResultsTypeList" value="@cfe.model.CfeResultsType@TESTING_SCORES"/> </p>
     
-    <br />
-    <!-- <s:submit value="Upload" id="uploadButton" onclick="submitForm();" /> -->
-    <s:submit value="Upload" id="uploadButton" />
-    <s:token />
+    <p>Starting Results (Optional)</p>
+    
+    <table class="dataTable">
+        <tr> 
+            <th>ID</th>
+            <th>Results</th>
+            <th>Results Type</th>
+            <th>Time Generated</th>
+            <th>Phene</th>
+            <th>Phene Low Cutoff</th>
+            <th>Phene High Cutoff</th>
+        </tr>
+
+        <s:iterator value="startingResultsList" var="result">
+            <tr>
+                <td>
+                     <s:radio name="startingCfeResultsId" list="{cfeResultsId}"/>
+                </td>
+                <td>
+                    <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
+                        <s:param name="cfeResultsId" value="cfeResultsId" />
+                        results.xlsx
+                     </s:a>
+                </td>
+                <td> <s:property value="resultsType"/>
+                <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
+                <td> <s:property value="phene"/> </td>
+                <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
+                <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
+            </tr>
+        </s:iterator>
+    </table>
+
 
 </s:form>
 

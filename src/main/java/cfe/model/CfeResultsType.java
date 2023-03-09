@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
+
+import cfe.calc.DiscoveryCohortCalc;
 
 public class CfeResultsType {
+    private static Logger log = Logger.getLogger(CfeResultsType.class.getName());
+    
     public final static String DISCOVERY_COHORT        = "discovery cohort";
     public final static String DISCOVERY_SCORES        = "discovery scores";
        
@@ -40,6 +45,27 @@ public class CfeResultsType {
         this.value = value;    
     }
     
+    /**
+     * Gets types that can be specified as the end of the calculation.
+     * 
+     * @return
+     */
+    public static List<String> getEndTypes() {
+        List<String> types = new ArrayList<String>();
+        types.add(DISCOVERY_COHORT);
+        types.add(DISCOVERY_SCORES);
+        
+        types.add(PRIORITIZATION_SCORES);
+        
+        types.add(VALIDATION_COHORT);
+        types.add(VALIDATION_SCORES);
+        
+        types.add(TESTING_COHORTS);
+        types.add(TESTING_SCORES);
+
+        return types;
+    }
+ 
     public List<String> getTypes() {
         List<String> types = new ArrayList<String>();
         types.add(DISCOVERY_COHORT);
@@ -66,6 +92,7 @@ public class CfeResultsType {
 
         return types;
     }
+    
     
     public int getOrder() throws Exception {
         int order = 0;
@@ -144,6 +171,40 @@ public class CfeResultsType {
         }
 
         return isEqual;
+    }
+    
+    public boolean isAfter(String type) throws Exception {
+        boolean isAfter = false;
+        
+        CfeResultsType compareType = new CfeResultsType(type);
+        
+        if (this.getOrder() > compareType.getOrder()) {
+            isAfter = true;
+        }
+
+        return isAfter;        
+    }
+    
+    /**
+     * Indicates if lowerBound < type <= upperBoundInclusive.
+     * 
+     * @param type
+     * @param lowerBound
+     * @param upperBoundInclusive
+     * @return
+     */
+    public static boolean typeIsInRange(String type, String lowerBound, String upperBoundInclusive) throws Exception {
+        log.info("type = \"" + type + "\", lower = \"" + lowerBound + "\", upperBound = \"" + upperBoundInclusive + "\".");
+        boolean inRange = false;
+        CfeResultsType cfeResultsType = new CfeResultsType(type);
+        if (lowerBound == null || lowerBound.trim().equals("") || cfeResultsType.isAfter(lowerBound)) {
+            log.info("FIRST CHECK!!!!!!!!!!");
+            if (!cfeResultsType.isAfter(upperBoundInclusive)) {
+                log.info("SECOND CHECK!!!!!!!!!!!!!");
+                inRange = true;
+            }
+        }
+        return inRange;
     }
     
     public String getValue() {

@@ -83,9 +83,23 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     private List<String> phenes;
     
+    /* UI flags (to avoid static method calls in JSP pages -------------------------*/
+    private boolean showDiscoveryCohort;
+    private boolean showDiscoveryScores;
+    private boolean showPrioritizationScores;
+    private boolean showValidationCohort;
+    private boolean showValidationScores;
+    private boolean showTestingCohorts;
+    private boolean showTestingScores;
+    
     /* Starting Results (optional) -------------------------------------------------- */
     private Map<Long, String> pastCfeResultsMap;
     private Long startingCfeResultsId;
+    private List<CfeResults> startingResultsList;
+    private String startingResultsType;
+    
+    private List<String> endingResultsTypeList;
+    private String endingResultsType;
     
     /* Discovery Cohort ------------------------------------------------------------- */
     private String discoveryPhene;
@@ -251,8 +265,22 @@ public class BatchAction extends BaseAction implements SessionAware {
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		}
+		else {
+	        this.startingResultsList = CfeResultsService.getMetadata(
+	                CfeResultsType.DISCOVERY_COHORT,
+	                CfeResultsType.DISCOVERY_SCORES,
+	                CfeResultsType.PRIORITIZATION_SCORES,
+	                CfeResultsType.TESTING_COHORTS,
+	                CfeResultsType.VALIDATION_COHORT,
+	                CfeResultsType.VALIDATION_SCORES
+	        );
+	        Collections.sort(this.startingResultsList, new CfeResultsNewestFirstComparator());
+	        
+	        this.endingResultsTypeList = CfeResultsType.getEndTypes();
+		}
 	    return result;
 	}
+	
 	
 	/**
 	 * Uploads the testing database that contains the phene and phene visits information.
@@ -278,7 +306,39 @@ public class BatchAction extends BaseAction implements SessionAware {
 		else {
 		    try {
 		        log.info("Testing database \"" + this.testingDbFileName + "\" uploaded.");
-	
+		        
+		        //----------------------------------------------------------------------------
+		        // If starting results were specified, check that they exist and that the
+		        // step of the starting results is before the step specified for the
+		        // ending results.
+		        //----------------------------------------------------------------------------
+		        if (this.startingCfeResultsId != null && this.startingCfeResultsId > 0) {
+		            CfeResults startingResults = CfeResultsService.get(this.startingCfeResultsId);
+		            if (startingResults == null) {
+		                String message = "Starting results with ID " + this.startingCfeResultsId + " could not be found.";
+		                log.severe(message);
+		                throw new Exception(message);
+		            }
+		            this.startingResultsType = startingResults.getResultsType();
+		            CfeResultsType startingResultsTypeObj = new CfeResultsType(startingResultsType);
+		            
+		            if (!startingResultsTypeObj.isBefore(this.endingResultsType)) {
+		                String message = "The starting step \"" + this.startingResultsType + "\" is not"
+		                        + " before the ending step \"" + this.endingResultsType + "\".";
+		                log.severe(message);
+		                throw new Exception(message);
+		            }
+		        }
+
+	            this.showDiscoveryCohort      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_COHORT, this.startingResultsType, this.endingResultsType);
+	            this.showDiscoveryScores      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_SCORES, this.startingResultsType, this.endingResultsType);
+	            this.showPrioritizationScores = CfeResultsType.typeIsInRange(CfeResultsType.PRIORITIZATION_SCORES, this.startingResultsType, this.endingResultsType);
+	            this.showValidationCohort     = CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_COHORT, this.startingResultsType, this.endingResultsType);
+	            this.showValidationScores     = CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType, this.endingResultsType);   
+	            this.showTestingCohorts       = CfeResultsType.typeIsInRange(CfeResultsType.TESTING_COHORTS, this.startingResultsType, this.endingResultsType); 
+	            this.showTestingScores        = CfeResultsType.typeIsInRange(CfeResultsType.TESTING_SCORES, this.startingResultsType, this.endingResultsType); 
+	               
+	            /*
 		        pastCfeResultsMap = new LinkedHashMap<Long, String>();
 		        pastCfeResultsMap.put(0L, "");
 		        
@@ -301,7 +361,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 		            value += " " + cfeResults.getPhene() + " <= " + cfeResults.getHighCutoff();
 		            pastCfeResultsMap.put(key, value);
 		        }
-		        
+		        */
 		        
 		        
 			    // Copy the upload files to temporary files, because the upload files get deleted
@@ -326,6 +386,8 @@ public class BatchAction extends BaseAction implements SessionAware {
 			    this.phenes = new ArrayList<String>();
 			    this.phenes.add("");
 			    this.phenes.addAll(this.discoveryPheneList);
+			    
+
 			    
 		    } catch (Exception exception) {
 		        this.setErrorMessage("The database could not be processed. " + exception.getLocalizedMessage());
@@ -365,14 +427,12 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //probesetMapping.initializeToAccessTable(table);
                 //this.probesetToGeneMap = probesetMapping.getMap(key, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
                 
-                String[] pheneInfo = this.discoveryPheneInfo.split("]", 2);
-                this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
-                this.discoveryPhene = discoveryPheneTable + "." + pheneInfo[1].trim();
+                String[] pheneInfo = null;
 
                 //----------------------------------------
                 // Get starting results (if any)
                 //----------------------------------------
-                CfeResultsType startingResultsType = null;
+                CfeResultsType startingResultsTypeObj = null;
                 CfeResults startingResults = null;
                 if (this.startingCfeResultsId != null && this.startingCfeResultsId > 0) {
                     startingResults = CfeResultsService.get(startingCfeResultsId);
@@ -380,8 +440,20 @@ public class BatchAction extends BaseAction implements SessionAware {
                         throw new Exception("Starting results with ID " + startingCfeResultsId + " could not be found.");
                     }
                     
-                    startingResultsType = new CfeResultsType(startingResults.getResultsType());
+                    pheneInfo = startingResults.getPhene().split(".", 2);
+                   
+                    startingResultsTypeObj = new CfeResultsType(startingResults.getResultsType());
                 }
+                else {
+                    // No starting results, so get phene info from input fields
+                    pheneInfo = this.discoveryPheneInfo.split("]", 2);
+                }
+                this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
+                this.discoveryPhene = discoveryPheneTable + "." + pheneInfo[1].trim();
+                
+                
+                CfeResultsType endingResultsTypeObj = new CfeResultsType(this.endingResultsType);
+               
                 
                         
                 //=========================================================================
@@ -391,7 +463,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                 this.discoveryCohortResultsId = null;
                 
                 // Skip this phase if starting results were specified that are this phase or after
-                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.DISCOVERY_COHORT)) {
+                if (endingResultsTypeObj.isBefore(CfeResultsType.DISCOVERY_COHORT)) {
+                    ; // Don't process
+                }
+                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.DISCOVERY_COHORT)) {
                     DiscoveryCohortCalc discoveryCohortCalc = new DiscoveryCohortCalc();
                     discoveryCohort = discoveryCohortCalc.calculate(
                             testingDbTempFileName,
@@ -406,7 +481,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                     
                     this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
                 }
-                else if (startingResultsType.isEqualTo(CfeResultsType.DISCOVERY_COHORT)) {
+                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.DISCOVERY_COHORT)) {
                     discoveryCohort = startingResults;       
                     this.discoveryCohortResultsId = discoveryCohort.getCfeResultsId();
                 }
@@ -419,7 +494,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                 CfeResults discoveryScores = null;
                 
                 // Skip this phase if starting results were specified that are this phase or after
-                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.DISCOVERY_SCORES)) {
+                if (endingResultsTypeObj.isBefore(CfeResultsType.DISCOVERY_SCORES)) {
+                    ; // Don't process
+                }
+                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.DISCOVERY_SCORES)) {
                     DiscoveryScoresCalc discoveryScoresCalc = new DiscoveryScoresCalc();
 
                     discoveryScores = discoveryScoresCalc.calculate(
@@ -438,7 +516,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                     }
                     this.discoveryScoresResultsId = discoveryScores.getCfeResultsId();
                 }
-                else if (startingResultsType.isEqualTo(CfeResultsType.DISCOVERY_SCORES)) {
+                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.DISCOVERY_SCORES)) {
                     discoveryScores = startingResults;       
                     this.discoveryScoresResultsId = discoveryScores.getCfeResultsId();
                 }
@@ -448,7 +526,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //=========================================================================
 
                 CfeResults prioritizationScores = null;
-                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.PRIORITIZATION_SCORES)) {
+                if (endingResultsTypeObj.isBefore(CfeResultsType.PRIORITIZATION_SCORES)) {
+                    ; // Don't process
+                }
+                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.PRIORITIZATION_SCORES)) {
                     // Process the gene list
                     if (this.geneListSpecification.contentEquals("All")) {
                         this.geneListUploadFileName = "";
@@ -483,7 +564,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                     this.prioritizationScoresResultsId = prioritizationScores.getCfeResultsId();
                 }
-                else if (startingResultsType.isEqualTo(CfeResultsType.PRIORITIZATION_SCORES)) {
+                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.PRIORITIZATION_SCORES)) {
                     prioritizationScores = startingResults;       
                     this.prioritizationScoresResultsId = prioritizationScores.getCfeResultsId();
                 }
@@ -494,7 +575,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 CfeResults validationCohort = null;
                 
-                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.VALIDATION_COHORT)) {
+                if (endingResultsTypeObj.isBefore(CfeResultsType.VALIDATION_COHORT)) {
+                    ; // Don't process
+                }
+                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.VALIDATION_COHORT)) {
                     phene1 = phene1.replace("[", "").replace("] ", ".");
                     phene2 = phene2.replace("[", "").replace("] ", ".");
                     phene3 = phene3.replace("[", "").replace("] ", ".");
@@ -517,7 +601,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                     this.validationCohortResultsId = validationCohort.getCfeResultsId();
                 }
-                else if (startingResultsType.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
+                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
                     validationCohort = startingResults;       
                     this.validationCohortResultsId = validationCohort.getCfeResultsId();
                 }
@@ -529,7 +613,10 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                 CfeResults validationScores = null;
                 
-                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.VALIDATION_SCORES)) {
+                if (endingResultsTypeObj.isBefore(CfeResultsType.VALIDATION_SCORES)) {
+                    ; // Don't process
+                }
+                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.VALIDATION_SCORES)) {
                     ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
 
 
@@ -560,7 +647,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                     this.validationScoresResultsId = validationScores.getCfeResultsId();
                 }
-                else if (startingResultsType.isEqualTo(CfeResultsType.VALIDATION_SCORES)) {
+                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_SCORES)) {
                     validationScores = startingResults;       
                     this.validationScoresResultsId = validationScores.getCfeResultsId();
                 }
@@ -573,7 +660,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 CfeResults testingCohorts = null;
                 
-                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.TESTING_COHORTS)) {
+                if (endingResultsTypeObj.isBefore(CfeResultsType.TESTING_COHORTS)) {
+                    ; // Don't process
+                }
+                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.TESTING_COHORTS)) {
                     TestingCohortsCalc testingCohortsCalc = new TestingCohortsCalc();
                     
                     testingCohorts = testingCohortsCalc.calculate(
@@ -587,7 +677,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                     }
                     this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
                 }
-                else if (startingResultsType.isEqualTo(CfeResultsType.TESTING_COHORTS)) {
+                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.TESTING_COHORTS)) {
                     testingCohorts = startingResults;       
                     this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
                 }
@@ -598,7 +688,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //===============================================================
                 CfeResults testingScores = null;
                 
-                if (startingResultsType == null || startingResultsType.isBefore(CfeResultsType.TESTING_SCORES)) {
+                if (endingResultsTypeObj.isBefore(CfeResultsType.TESTING_SCORES)) {
+                    ; // Don't process
+                }
+                else if (startingResultsTypeObj == null || startingResultsTypeObj.isBefore(CfeResultsType.TESTING_SCORES)) {
                     TestingScoresCalc testingScoresCalc = new TestingScoresCalc();
                     
                     String[] predictionPheneInfo = this.predictionPhene.split("]", 2);
@@ -630,7 +723,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                     }
                     this.testingScoresResultsId = testingScores.getCfeResultsId();
                 }
-                else if (startingResultsType.isEqualTo(CfeResultsType.TESTING_SCORES)) {
+                else if (startingResultsTypeObj.isEqualTo(CfeResultsType.TESTING_SCORES)) {
                     testingScores = startingResults;       
                     this.testingScoresResultsId = testingScores.getCfeResultsId();
                 }
@@ -686,9 +779,62 @@ public class BatchAction extends BaseAction implements SessionAware {
         
         return weights;
     }
-    
-    
+        
+    public boolean isShowDiscoveryCohort() {
+        return showDiscoveryCohort;
+    }
 
+    public void setShowDiscoveryCohort(boolean showDiscoveryCohort) {
+        this.showDiscoveryCohort = showDiscoveryCohort;
+    }
+
+    public boolean isShowDiscoveryScores() {
+        return showDiscoveryScores;
+    }
+
+    public void setShowDiscoveryScores(boolean showDiscoveryScores) {
+        this.showDiscoveryScores = showDiscoveryScores;
+    }
+
+    public boolean isShowPrioritizationScores() {
+        return showPrioritizationScores;
+    }
+
+    public void setShowPrioritizationScores(boolean showPrioritizationScores) {
+        this.showPrioritizationScores = showPrioritizationScores;
+    }
+
+    public boolean isShowValidationCohort() {
+        return showValidationCohort;
+    }
+
+    public void setShowValidationCohort(boolean showValidationCohort) {
+        this.showValidationCohort = showValidationCohort;
+    }
+
+    public boolean isShowValidationScores() {
+        return showValidationScores;
+    }
+
+    public void setShowValidationScores(boolean showValidationScores) {
+        this.showValidationScores = showValidationScores;
+    }
+
+    public boolean isShowTestingCohorts() {
+        return showTestingCohorts;
+    }
+
+    public void setShowTestingCohorts(boolean showTestingCohorts) {
+        this.showTestingCohorts = showTestingCohorts;
+    }
+
+    public boolean isShowTestingScores() {
+        return showTestingScores;
+    }
+
+    public void setShowTestingScores(boolean showTestingScores) {
+        this.showTestingScores = showTestingScores;
+    }
 
     public Map<Long, String> getPastCfeResultsMap() {
         return pastCfeResultsMap;
@@ -704,6 +850,39 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setStartingCfeResultsId(Long startingCfeResultsId) {
         this.startingCfeResultsId = startingCfeResultsId;
+    }
+
+    
+    public List<CfeResults> getStartingResultsList() {
+        return startingResultsList;
+    }
+
+    public void setStartingResultsList(List<CfeResults> startingResultsList) {
+        this.startingResultsList = startingResultsList;
+    }
+
+    public String getStartingResultsType() {
+        return startingResultsType;
+    }
+
+    public void setStartingResultsType(String startingResultsType) {
+        this.startingResultsType = startingResultsType;
+    }
+
+    public List<String> getEndingResultsTypeList() {
+        return endingResultsTypeList;
+    }
+
+    public void setEndingResultsTypeList(List<String> endingResultsTypeList) {
+        this.endingResultsTypeList = endingResultsTypeList;
+    }
+    
+    public String getEndingResultsType() {
+        return endingResultsType;
+    }
+
+    public void setEndingResultsType(String endingResultsType) {
+        this.endingResultsType = endingResultsType;
     }
 
     

@@ -337,14 +337,14 @@
 	            <!-- STATE -->
 	            <s:a action="CfeResultsFileDisplay" title="Testing State Cross-Sectional R Script Log">
 	                <s:param name="cfeResultsId" value="testingScoresResultsId" />
-	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@REDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_LOG" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@PREDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_LOG" />
 	                <s:property value="'testing-state-cross-sectional-r-script-log'" />
 	            </s:a>
 	            <br/>
 	            
 	            <s:a action="CfeResultsFileDisplay" title="Testing State Longitudinal R Script Log">
 	                <s:param name="cfeResultsId" value="testingScoresResultsId" />
-	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@REDICTION_STATE_LONGITUDINAL_R_SCRIPT_LOG" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@PREDICTION_STATE_LONGITUDINAL_R_SCRIPT_LOG" />
 	                <s:property value="'testing-state-longitudinal-r-script-log'" />
 	            </s:a> 
                 <br/>
@@ -352,14 +352,14 @@
                 <!-- FIRST YEAR -->
 	            <s:a action="CfeResultsFileDisplay" title="Testing First Year Cross-Sectional R Script Log">
 	                <s:param name="cfeResultsId" value="testingScoresResultsId" />
-	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@REDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_LOG" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@PREDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_LOG" />
 	                <s:property value="'testing-first-year-cross-sectional-r-script-log'" />
 	            </s:a>
 	            <br/>
 	            
 	            <s:a action="CfeResultsFileDisplay" title="Testing First Year Longitudinal R Script Log">
 	                <s:param name="cfeResultsId" value="testingScoresResultsId" />
-	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@REDICTION_FIRST_YEAR_LONGITUDINAL_R_SCRIPT_LOG" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@PREDICTION_FIRST_YEAR_LONGITUDINAL_R_SCRIPT_LOG" />
 	                <s:property value="'testing-first-year-longitudinal-r-script-log'" />
 	            </s:a>
 	            <br/> 
@@ -367,14 +367,14 @@
                 <!-- FUTURE -->
 	            <s:a action="CfeResultsFileDisplay" title="Testing Future Cross-Sectional R Script Log">
 	                <s:param name="cfeResultsId" value="testingScoresResultsId" />
-	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@REDICTION_FUTURE_CROSS_SECTIONAL_R_SCRIPT_LOG" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@PREDICTION_FUTURE_CROSS_SECTIONAL_R_SCRIPT_LOG" />
 	                <s:property value="'testing-future-cross-sectional-r-script-log'" />
 	            </s:a>	            
 	            <br/>
 	            
 	            <s:a action="CfeResultsFileDisplay" title="Testing Future Longitudinal R Script Log">
 	                <s:param name="cfeResultsId" value="testingScoresResultsId" />
-	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@REDICTION_FUTURE_LONGITUDINAL_R_SCRIPT_LOG" />
+	                <s:param name="fileType" value="@cfe.model.CfeResultsFileType@PREDICTION_FUTURE_LONGITUDINAL_R_SCRIPT_LOG" />
 	                <s:property value="'testing-future-longitudinal-r-script-log'" />
 	            </s:a>
 	            <br/> 

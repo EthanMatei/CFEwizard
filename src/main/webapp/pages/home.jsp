@@ -10,28 +10,36 @@
 
 <%-- User: <s:property value="#session.username" /> --%>
 
-<h2>1. Discovery</h2>
+<p style="font-size: 120%; font-weight: bold;">
+<s:a action="BatchInitialization">CFE Pipeline</s:a>
+</p>
 
+<fieldset>
+<legend>Discovery</legend>
+
+<%--
 <div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
     <ol type="A" style="margin-top: 0;">
         <li> <s:a action="DiscoveryDbUpload">Discovery Cohort Creation</s:a> </li>
         <li> <s:a action="DiscoveryCohortSelection">Discovery Scoring</s:a> </li>
     </ol>
 </div>
+--%>
 
 <div style="display: inline-block; vertical-align: top;">
     <ul style="margin-top: 0;">
         <li> <s:a action="TestingDbUploadInit">Testing Database Check</s:a></li>
     </ul>
 </div>
+</fieldset>
 
-
-<h2>2. Prioritization</h2>
+<fieldset>
+<legend>Prioritization</legend>
 
 <div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
-    <ol type="A" style="margin-top: 0;">        
+    <ul>        
         <li><s:a action="PrioritizationGeneListUpload">Prioritization Scoring</s:a></li>
-    </ol>
+    </ul>
 </div>
 
 <div style="display: inline-block; vertical-align: top;">
@@ -53,16 +61,20 @@
         <li> <s:a action="DatabaseStatusAction">CFE Prioritization Database Status</s:a></li>
     </ul>
 </div>
+</fieldset>
 
 
-<h2>3. Validation</h2>
+<fieldset>
+<legend>Validation</legend>
 
+<%--
 <div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
     <ol type="A" style="margin-top: 0;">
         <li> <s:a action="ValidationCohortDataSelection">Validation Cohort Creation</s:a> </li>
         <li> <s:a action="ValidationDataSelection">Validation Scoring</s:a></li>
     </ol>
 </div>
+--%>
 
 <div style="display: inline-block; vertical-align: top;">
     <ul style="margin-top: 0;">
@@ -70,16 +82,19 @@
     </ul>
 </div>
 
+</fieldset>
+
+<%--
 <h2>4. Testing</h2>
 <ol type="A">
     <li> <s:a action="TestingCohortsDataSelection">Testing Cohorts Creation</s:a> </li>
     <li> <s:a action="TestingDataSelection">Testing Scoring</s:a></li>
 </ol>
+--%>
 
-<h2>Automatic Processing</h2>
-<ul>
-    <li><s:a action="BatchInitialization">Automatic CFE Calculation</s:a> (WORK IN PROGRESS)</li>
-</ul>
+
+
+
 
 <h2>Results</h2>
 <ul>

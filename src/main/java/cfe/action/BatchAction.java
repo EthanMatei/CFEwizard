@@ -440,19 +440,31 @@ public class BatchAction extends BaseAction implements SessionAware {
                         throw new Exception("Starting results with ID " + startingCfeResultsId + " could not be found.");
                     }
                     
-                    pheneInfo = startingResults.getPhene().split(".", 2);
+                    log.info("STARTING RESULTS PHENE: " + startingResults.getPhene());
+                    pheneInfo = startingResults.getPhene().split("\\.", 2);
+                    log.info("PHENE INFO from starting results with ID: " + startingCfeResultsId);
                    
                     startingResultsTypeObj = new CfeResultsType(startingResults.getResultsType());
                 }
                 else {
                     // No starting results, so get phene info from input fields
                     pheneInfo = this.discoveryPheneInfo.split("]", 2);
+                    log.info("PHENE INFO from input field");
                 }
+                
+                if (pheneInfo.length > 1) {
+                    log.info("PHENE INFO (2): " + pheneInfo[0] + " | " + pheneInfo[1]);
+                }
+                else if (pheneInfo.length == 1) {
+                    log.info("PHENE INFO (1): " + pheneInfo[0]);
+                }
+                
                 this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
                 this.discoveryPhene = discoveryPheneTable + "." + pheneInfo[1].trim();
+                log.info("PHENE TABLE: " + this.discoveryPheneTable);
+                log.info("PHENE: " + this.discoveryPhene);
                 
-                
-                CfeResultsType endingResultsTypeObj = new CfeResultsType(this.endingResultsType);
+                //CfeResultsType endingResultsTypeObj = new CfeResultsType(this.endingResultsType);
                
                 
                         

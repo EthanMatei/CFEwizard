@@ -129,7 +129,54 @@
             <p>
             Diagnosis: <s:select name="diagnosisCode" list="diagnosisCodesList"/>
             </p>
-        
+
+            <table class="dataTable" id="scoreTable">
+                <thead>
+                    <tr>
+                        <th>Percentile Range</th> <th>Score</th>
+                    </tr>
+                </thead>
+    
+                <tbody>
+                    <s:iterator value="discoveryPercentileScores.lowerBounds" var="lowerBound" status="status">
+                        <tr>
+                            <td>
+                               <%--
+                                <span id="lower<s:property value='#status.index'/>" style="text-align: right;margin-left: 1em; width: 10em; display: inline-block;">
+                                    <s:property value="lowerBound" />
+                                </span>
+                
+                                &le; 
+                                
+                                --%>
+                                &nbsp; x &lt;
+                
+                                <s:set value="%{'upper' + #status.index}" var="upperId" />
+                
+                                <s:if test="#status.last">
+                                    <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em" readonly="true"
+                                        name="discoveryPercentileScores.upperBounds[%{#status.index}]"
+                                        id="%{upperId}"
+                                    />
+                                </s:if>
+                                <s:else>
+                                    <s:textfield size="8" cssStyle="text-align: right;margin-left: 1em"
+                                                 name="discoveryPercentileScores.upperBounds[%{#status.index}]"
+                                                 id="%{upperId}"
+                                    />
+                                </s:else>
+                            </td>
+                            <td>
+                                <s:textfield size="7" cssStyle="text-align: right;margin-left: 1em"
+                                             name="discoveryPercentileScores.scores[%{#status.index}]"
+                                />
+                            </td>
+                        </tr>
+                    </s:iterator>
+                </tbody>
+            </table>
+            
+            <%--         
             <table class="dataTable">
                 <thead>
                     <tr>
@@ -157,6 +204,8 @@
                     </s:iterator>            
                 </tbody>
             </table>
+            --%>
+            
         </fieldset>
     </s:if>
     

@@ -479,14 +479,6 @@ public class DiscoveryScoresCalc {
             discoveryCohortInfoDataTable.initializeToWorkbookStreamingSheet(streamingSheet);
             log.info("Discovery cohort info data table created.");
             
-            // Create "Discovery R script log" data table
-            //DataTable discoveryRScriptLogDataTable = new DataTable(null);
-            //discoveryRScriptLogDataTable.addColumn("Discovery R Script Log", "");
-            //ArrayList<String> dataRow = new ArrayList<String>();
-            //dataRow.add(this.scriptOutput);
-            //discoveryRScriptLogDataTable.addRow(dataRow);
-            
-            
             LinkedHashMap<String, DataTable> resultsTables = new LinkedHashMap<String, DataTable>();
 
             resultsTables.put(CfeResultsSheets.DISCOVERY_SCORES, outputDataTable);
@@ -571,7 +563,7 @@ public class DiscoveryScoresCalc {
 	    //catch (Exception exception) {
 	    //    String errorMessage = "Discovery scoring failed: " + exception.getLocalizedMessage();
 	    //    log.severe(errorMessage);
-	    //    throw new Exception(errorMessage);
+	    //    throw new Exception(errorMessage, exception);
 	    //}
 
 		return cfeResults;

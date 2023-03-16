@@ -488,6 +488,24 @@ public class BatchAction extends BaseAction implements SessionAware {
                     log.info("Step " + CfeResultsType.DISCOVERY_COHORT + " skipped.");
                 }
                 
+                // Delete the testing database temporary file
+                if (testingDbTempFileName != null) {
+				    File testingDbFile = new File(testingDbFileName);
+				    boolean fileDeleted = testingDbFile.delete();
+				    if (fileDeleted) {
+					    log.info(
+					        "Temporary file \"" + testingDbTempFileName
+					        + "\" for testing database \"" + testingDbFileName + "\" deleted."
+					    );
+					}
+					else {
+						log.warning(
+						    "Unable to delete temporary file \"" + testingDbTempFileName
+						    + "\" for testing datbase \"" + testingDbFileName + "\"."
+						);
+					}
+				} 
+                
 
                 //=========================================================================
                 // Calculate Discovery Scores

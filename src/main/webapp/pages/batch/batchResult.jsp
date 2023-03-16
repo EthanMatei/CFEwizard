@@ -67,6 +67,7 @@
         <th>Name</th>
         <th>ID</th>
         <th>Results</th>
+        <th>Details</th>
         <th>Script Command File</th>
         <th>Script Log File</th></tr>
     <tr>
@@ -80,12 +81,19 @@
                     discovery-cohort-results.xlsx
                 </s:a>
             </td>
+            <td>
+                <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
+                    <s:param name="cfeResultsId" value="discoveryResultsCohortId" />
+                    details
+                 </s:a>
+            </td>
             <td> N/A </td>
             <td> N/A </td>
         </s:if>
         <s:else>
             <td> &nbsp; </td>
             <td> No Results </td>
+            <td> &nbsp; </td>
             <td> N/A </td>
             <td> N/A </td>        
         </s:else>
@@ -102,6 +110,12 @@
 	                discovery-scores-results.xlsx
 	            </s:a>
 	        </td>
+            <td>
+                <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
+                    <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
+                    details
+                 </s:a>
+            </td>
 	        <td>
 	            <s:a action="CfeResultsFileDisplay" title="Discovery R Script Command">
 	                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
@@ -122,6 +136,7 @@
             <td> No Results </td>
             <td> &nbsp; </td>
             <td> &nbsp; </td>
+            <td> &nbsp; </td>
         </s:else>
     </tr>
     
@@ -139,12 +154,19 @@
                     prioritization-scores-results.xlsx
                 </s:a>
             </td>
+            <td>
+                <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
+                    <s:param name="cfeResultsId" value="prioritizationScoresResultsId" />
+                    details
+                 </s:a>
+            </td>
             <td> N/A </td>
             <td> N/A </td>            
         </s:if>
         <s:else>
             <td> &nbsp; </td>
             <td> No Results </td>
+            <td> &nbsp; </td>
             <td> N/A </td>
             <td> N/A </td>
         </s:else>
@@ -165,12 +187,19 @@
                     validation-cohort-results.xlsx
                 </s:a>
             </td>
+            <td>
+                <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
+                    <s:param name="cfeResultsId" value="validationCohortResultsId" />
+                    details
+                </s:a>
+            </td>
             <td> N/A </td>
             <td> N/A </td>
         </s:if>
         <s:else>
             <td> &nbsp; </td>
             <td> No Results </td>
+            <td> &nbsp; </td>
             <td> N/A </td>
             <td> N/A </td>
         </s:else>
@@ -190,6 +219,12 @@
                     <s:param name="fileName" value="'validarion-scores-results.xlsx'" />
                     validation-scores-results.xlsx
                 </s:a>
+            </td>
+            <td>
+                <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
+                    <s:param name="cfeResultsId" value="validationScoresResultsId" />
+                    details
+                 </s:a>
             </td>
 	        <td>
 	            <s:a action="CfeResultsFileDisplay" title="Validation R Script Command">
@@ -211,6 +246,7 @@
             <td> No Results </td>
             <td> &nbsp; </td>
             <td> &nbsp; </td>
+            <td> &nbsp; </td>
         </s:else>
     </tr>
     
@@ -227,6 +263,12 @@
                     <s:param name="fileName" value="'testing-cohorts-results.xlsx'" />
                     testing-cohorts-results.xlsx
                 </s:a>
+            </td>
+            <td>
+                <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
+                    <s:param name="cfeResultsId" value="testingCohortsResultsId" />
+                    details
+                 </s:a>
             </td>
 	        <td>
 	            <s:a action="CfeResultsFileDisplay" title="Testing Cohorts Python Script Command">
@@ -248,6 +290,7 @@
             <td> No Results </td>
             <td> &nbsp; </td>
             <td> &nbsp; </td>
+            <td> &nbsp; </td>
         </s:else>
     </tr>
 
@@ -265,6 +308,12 @@
                     <s:param name="fileName" value="'testing-scores-results.xlsx'" />
                     testing-scores-results.xlsx
                 </s:a>
+            </td>
+            <td>
+                <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
+                    <s:param name="cfeResultsId" value="testingScoresResultsId" />
+                    details
+                 </s:a>
             </td>
 	        <td> 
 	        
@@ -384,6 +433,7 @@
         <s:else>
             <td> &nbsp; </td>
             <td> No Results </td>
+            <td> &nbsp; </td>
             <td> &nbsp; </td>
             <td> &nbsp; </td>
         </s:else>

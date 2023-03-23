@@ -175,6 +175,13 @@ public class ValidationScoresCalc {
 	        // Check for updated master sheet and predictor list
 	        //-------------------------------------------------------
 	        if (this.updatedMasterSheetFileName != null && !this.updatedMasterSheetFileName.isEmpty()) {
+	            if (!this.updatedMasterSheetFileName.endsWith(".csv")) {
+	                String errorMessage = "The updated master sheet file \"" + this.updatedMasterSheetFileName + "\" "
+	                        + " is not a CSV file.";
+	                log.severe(errorMessage);
+	                throw new Exception(errorMessage);
+	            }
+	            
 	            // Updated master sheet provided
 	            log.info("Updated master sheet \"" + this.updatedMasterSheetFileName + "\" specified.");
 	            File updatedMasterSheetTempFile = FileUtil.createTempFile("validation-updated-master-sheet-", ".csv");
@@ -185,6 +192,13 @@ public class ValidationScoresCalc {
 
 
 	        if (this.updatedPredictorListFileName != null && !this.updatedPredictorListFileName.isEmpty()) {
+	           if (!this.updatedPredictorListFileName.endsWith(".csv")) {
+	                String errorMessage = "The updated predictor list file \"" + this.updatedPredictorListFileName + "\" "
+	                            + " is not a CSV file.";
+	                log.severe(errorMessage);
+	                throw new Exception(errorMessage);
+	            }
+	           
 	            // Updated predictor list provided
 	            log.info("Updated predictor list \"" + this.updatedPredictorListFileName + "\" specified.");
 	            File updatedPredictorListTempFile = FileUtil.createTempFile("validation-updated-predictor-list-", ".csv");

@@ -281,6 +281,13 @@ public class TestingScoresCalc {
         //------------------------------------------------------------------------------------
         this.updatedPredictorListTempFile = "";
         if (this.updatedPredictorListCsvFileName != null && this.updatedPredictorListCsvFileName != "") {
+            if (!this.updatedPredictorListCsvFileName.endsWith(".csv")) {
+                String errorMessage = "The updated predictor list file \"" + this.updatedPredictorListCsvFileName + "\" "
+                            + " is not a CSV file.";
+                log.severe(errorMessage);
+                throw new Exception(errorMessage);
+            }
+           
             File tempFile = FileUtil.createTempFile("testing-updated-predictor-list-", ".csv");
             FileUtils.copyFile(this.getUpdatedPredictorListCsv(), tempFile);
             this.updatedPredictorListTempFile = tempFile.getAbsolutePath();
@@ -292,6 +299,13 @@ public class TestingScoresCalc {
         //------------------------------------------------------------------------
         this.updatedMasterSheetTempFile = null;
         if (this.updatedMasterSheetCsvFileName != null && !this.updatedMasterSheetCsvFileName.isEmpty()) {
+            if (!this.updatedMasterSheetCsvFileName.endsWith(".csv")) {
+                String errorMessage = "The updated master sheet file \"" + this.updatedMasterSheetCsvFileName + "\" "
+                        + " is not a CSV file.";
+                log.severe(errorMessage);
+                throw new Exception(errorMessage);
+            }
+            
             File tempFile = FileUtil.createTempFile("testing-updated-master-sheet-", ".csv");
             FileUtils.copyFile(this.updatedMasterSheetCsv, tempFile);
             this.updatedMasterSheetTempFile = tempFile.getAbsolutePath();

@@ -40,7 +40,6 @@ public class TemporaryFileInfo {
         File[] files = dir.listFiles(cfeFileFilter);
 
         if (files != null) {
-            DecimalFormat formatter = new DecimalFormat("#,##0.00");
             for (File file: files) {
                 TemporaryFileInfo tempFile = new TemporaryFileInfo();
 
@@ -52,6 +51,8 @@ public class TemporaryFileInfo {
             }
         }
         
+        infos.sort( new TemporaryFileInfoComparator() );
+
         return infos;
     }
 
@@ -88,7 +89,7 @@ public class TemporaryFileInfo {
         return formatted;
     }
     
-    public double getAgeInDays() {
+    public Double getAgeInDays() {
         long currentTime = System.currentTimeMillis();
         double ageInDays = (currentTime - this.lastModified) / (1000.0 * 60.0 * 60.0 * 24.0);
         return ageInDays;

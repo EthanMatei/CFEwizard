@@ -48,8 +48,6 @@ public class ValidationScoresCalc {
 	private static final Logger log = Logger.getLogger(ValidationScoresCalc.class.getName());
 	
 	public static final String VALIDATION_R_SCRIPT = "Validation.R";
-
-    private String errorMessage;
     
     private File geneExpressionCsv;
     //private String geneExpressionCsvContentType;
@@ -178,6 +176,7 @@ public class ValidationScoresCalc {
 	        //-------------------------------------------------------
 	        if (this.updatedMasterSheetFileName != null && !this.updatedMasterSheetFileName.isEmpty()) {
 	            // Updated master sheet provided
+	            log.info("Updated master sheet \"" + this.updatedMasterSheetFileName + "\" specified.");
 	            File updatedMasterSheetTempFile = FileUtil.createTempFile("validation-updated-master-sheet-", ".csv");
 	            FileUtils.copyFile(this.updatedMasterSheetFile, updatedMasterSheetTempFile);
 	            this.updatedMasterSheetTempFileName = updatedMasterSheetTempFile.getAbsolutePath();
@@ -187,6 +186,7 @@ public class ValidationScoresCalc {
 
 	        if (this.updatedPredictorListFileName != null && !this.updatedPredictorListFileName.isEmpty()) {
 	            // Updated predictor list provided
+	            log.info("Updated predictor list \"" + this.updatedPredictorListFileName + "\" specified.");
 	            File updatedPredictorListTempFile = FileUtil.createTempFile("validation-updated-predictor-list-", ".csv");
 	            FileUtils.copyFile(this.updatedPredictorListFile, updatedPredictorListTempFile);
 	            this.updatedPredictorListTempFileName = updatedPredictorListTempFile.getAbsolutePath();
@@ -262,7 +262,7 @@ public class ValidationScoresCalc {
 	        }
 
 	        if (validationOutputFile == null || validationOutputFile.isEmpty()) {
-	            errorMessage = "Can't find output file from validation scoring R script.";
+	            String errorMessage = "Can't find output file from validation scoring R script.";
 	            log.severe(errorMessage);
 	            throw new Exception(errorMessage);
 	        }
@@ -436,7 +436,7 @@ public class ValidationScoresCalc {
 	    catch (Exception exception) {
 	        if (exception != null) {
 	            String message = "Validation scoring failed: " + exception.getLocalizedMessage();
-	            this.setErrorMessage(message);
+	            throw new Exception(message, exception);
 	        }
 	    }
 	    return cfeResults;
@@ -1088,14 +1088,6 @@ public class ValidationScoresCalc {
 
     public void setValidationOutputFile(String validationOutputFile) {
         this.validationOutputFile = validationOutputFile;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
     }
 
     public Date getScoresGeneratedTime() {

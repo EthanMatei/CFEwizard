@@ -384,6 +384,7 @@
     <s:if test="showTestingScores">    
                              
 
+        <div>&nbsp;</div>
         <fieldset class="dataInput">
             <legend>Testing Scores</legend> 
             

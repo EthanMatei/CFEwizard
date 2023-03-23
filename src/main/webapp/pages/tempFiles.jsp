@@ -12,8 +12,8 @@
 <h2>Temporary Files</h2>
 
 <s:form id ="deleteForm" name="clearForm" theme="simple" action="TemporaryFileDelete" method="post">
-  Delete temporary files older than <s:textfield name="deleteAge" style="text-align: right;" size="3" value="7"/>
-  <s:submit value="Delete" id="deleteButton" style="font-weight: bold;"/>
+  Delete temporary files older than <s:textfield name="deleteAge" style="text-align: right;" size="2" value="7"/> days.
+  <s:submit value="Delete" id="deleteButton" style="font-weight: bold; margin-left: 1em;"/>
 </s:form>
 
 

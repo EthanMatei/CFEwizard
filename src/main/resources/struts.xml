@@ -235,7 +235,18 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-				
+
+		<action name="TemporaryFileDelete" class="cfe.action.TemporaryFilesAction" method="delete">
+			<interceptor-ref name="basicStack"/>
+			<result name="success" type="redirectAction">
+			    <param name="actionName">TemporaryFilesAction</param>
+            </result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+						
 		<action name="SystemStatusAction" class="cfe.action.SystemStatusAction">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/systemStatus.jsp</result>

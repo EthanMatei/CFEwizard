@@ -1,5 +1,6 @@
 package cfe.action;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -34,7 +35,8 @@ public class TemporaryFilesAction extends BaseAction implements SessionAware {
     
     private String tempDir;
     private List<TemporaryFileInfo> tempFileInfos;
-
+    private Integer deleteAge;
+    
     public String execute() throws Exception {
     	
 	    String result = SUCCESS;
@@ -56,13 +58,26 @@ public class TemporaryFilesAction extends BaseAction implements SessionAware {
      * @return status
      * @throws Exception
      */
-    public String clear() throws Exception {
+    public String delete() throws Exception {
 	    String result = SUCCESS;
 	    
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		}
 		else {
+	        this.tempDir = WebAppProperties.getTempDir();
+	        this.tempFileInfos = TemporaryFileInfo.getTemporaryFileInfos(tempDir);
+	        
+	        if (deleteAge == null || deleteAge <= 0) {
+	            throw new Exception("The value specified for temporary file deletion must be a positive integer.");
+	        }
+	        
+	        for (TemporaryFileInfo fileInfo: tempFileInfos) {
+	            File file = new File(tempDir + "/" + fileInfo.getName());
+	            if (fileInfo.getAgeInDays() > deleteAge) {
+	                file.delete();
+	            }
+	        }
 	    }
 
         return result;        
@@ -92,6 +107,13 @@ public class TemporaryFilesAction extends BaseAction implements SessionAware {
     public void setTempFileInfos(List<TemporaryFileInfo> tempFileInfos) {
         this.tempFileInfos = tempFileInfos;
     }
-    
+
+    public Integer getDeleteAge() {
+        return deleteAge;
+    }
+
+    public void setDeleteAge(Integer deleteAge) {
+        this.deleteAge = deleteAge;
+    }
     
 }

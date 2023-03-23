@@ -11,14 +11,11 @@
 <%-- User: <s:property value="#session.username" /> --%>
 <h2>Temporary Files</h2>
 
-<div style="float: right;">
-  <s:form id ="deleteForm" name="clearForm" action="TemporaryFileDelete" method="post">
-    <p>
-    Delete temporary files older than <s:textfield name="deleteAge" value="7"/>
-    <s:submit value="Delete" id="deleteButton" style="font-weight: bold;"/>
-    </p>
-  </s:form>
-</div>
+<s:form id ="deleteForm" name="clearForm" theme="simple" action="TemporaryFileDelete" method="post">
+  Delete temporary files older than <s:textfield name="deleteAge" style="text-align: right;" size="3" value="7"/>
+  <s:submit value="Delete" id="deleteButton" style="font-weight: bold;"/>
+</s:form>
+
 
 <div style="clear: both;"></div>
 

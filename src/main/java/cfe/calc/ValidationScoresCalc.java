@@ -29,6 +29,7 @@ import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
+import cfe.model.DiagnosisType;
 import cfe.model.VersionNumber;
 import cfe.services.CfeResultsService;
 import cfe.utils.CsvUtil;
@@ -215,9 +216,9 @@ public class ValidationScoresCalc {
 	        Set<String> diagnosesSet = cohortData.getUniqueValues("DxCode");
 	        String diagnoses = String.join(",", diagnosesSet);
 
-	        Set<String> genderDiagnosesSet = cohortData.getUniqueCombinedValues("Gender(M/F)", "DxCode", "-");
-	        String genderDiagnoses = String.join(",", genderDiagnosesSet);
-	        log.info("Gender Diagnoses: " + genderDiagnoses);
+	        //Set<String> genderDiagnosesSet = cohortData.getUniqueCombinedValues("Gender(M/F)", "DxCode", "-");
+	        //String genderDiagnoses = String.join(",", genderDiagnosesSet);
+	        //log.info("Gender Diagnoses: " + genderDiagnoses);
 
 	        // Create the R script command
 	        String[] rScriptCommand = new String[7];
@@ -444,7 +445,8 @@ public class ValidationScoresCalc {
 
     public List<String> createValidationPredictorListAndMasterSheetFiles(
             Long validationCohortId,
-            File geneExpressionCsvFile
+            File geneExpressionCsvFile,
+            String diagnosisType
     ) throws Exception {
 
         this.geneExpressionCsv = geneExpressionCsvFile;
@@ -459,7 +461,7 @@ public class ValidationScoresCalc {
         
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
-        DataTable predictorList = this.createPredictorList(validationCohortId);
+        DataTable predictorList = this.createPredictorList(validationCohortId, diagnosisType);
         if (predictorList == null) {
             throw new Exception("Could not create validation predictor list.");
         }
@@ -670,7 +672,7 @@ public class ValidationScoresCalc {
 	}
 
 	
-	public DataTable createPredictorList(Long validationDataId /*, Long prioritizationId*/) throws Exception
+	public DataTable createPredictorList(Long validationDataId, String diagnosisType /*, Long prioritizationId*/) throws Exception
 	{
 	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
@@ -690,7 +692,14 @@ public class ValidationScoresCalc {
         sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
         DataTable cohortData = new DataTable(null);
         cohortData.initializeToWorkbookSheet(sheet);
-        Set<String> diagnoses = cohortData.getUniqueValues("DxCode");
+        Set<String> diagnoses = null;
+        
+        if (diagnosisType.equals(DiagnosisType.GENDER)) {
+            diagnoses = cohortData.getUniqueValues("Gender(M/F)");
+        }
+        else {
+            diagnoses = cohortData.getUniqueValues("DxCode");
+        }
 	    
         
 	    String key = "Predictor";

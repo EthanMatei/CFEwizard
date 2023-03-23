@@ -58,7 +58,7 @@
             <li> <s:a action="PrioritizationDBSelectionInitialize">Upload Databases </s:a></li>
         </s:if>
     
-        <li> <s:a action="DatabaseStatusAction">CFE Prioritization Database Status</s:a></li>
+        <li> <s:a action="DatabaseStatusAction">Prioritization Database Status</s:a></li>
     </ul>
 </div>
 </fieldset>
@@ -107,6 +107,7 @@
     <ul>
         <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>
         <li> <s:a action="SystemStatusAction">System Status</s:a></li>
+        <li> <s:a action="TemporaryFilesAction">Temporary Files</s:a></li>
         <li> <s:a action="TestAction">Test Page</s:a></li>
     </ul>
 </s:if>

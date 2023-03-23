@@ -26,6 +26,7 @@ import cfe.calc.ValidationScoresCalc;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsType;
+import cfe.model.DiagnosisType;
 import cfe.model.PercentileScores;
 import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.disease.DiseaseSelection;
@@ -101,6 +102,9 @@ public class BatchAction extends BaseAction implements SessionAware {
     private List<String> endingResultsTypeList;
     private String endingResultsType;
     
+    /* General */
+    private List<String> diagnosisTypes;
+    
     /* Discovery Cohort ------------------------------------------------------------- */
     private String discoveryPhene;
     private String discoveryPheneInfo;
@@ -117,6 +121,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     /* Discovery Scores ------------------------------------------------------------- */
     
     private PercentileScores discoveryPercentileScores = new PercentileScores();
+    private String discoveryRScriptCommand;
+    private String discoveryRScriptLog;
     
     Long discoveryScoresResultsId;
     
@@ -189,6 +195,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     Long validationCohortResultsId;
     Long validationScoresResultsId;
+    
+    String validationDiagnosisType;
 
 
     /* Testing Cohorts --------------------------------------------------------------- */
@@ -202,6 +210,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     private Long testingCohortsResultsId;
     
     /* Testing -Scores -------------------------------------------------------------- */
+    private String testingDiagnosisType;
+    
     private double testingScoreCutoff = 8.0;
     private Double testingComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
     
@@ -307,6 +317,9 @@ public class BatchAction extends BaseAction implements SessionAware {
 		    try {
 		        log.info("Testing database \"" + this.testingDbFileName + "\" uploaded.");
 		        
+		        // Get diagnosis types
+		        this.diagnosisTypes = DiagnosisType.getTypes();
+		                
 		        //----------------------------------------------------------------------------
 		        // If starting results were specified, check that they exist and that the
 		        // step of the starting results is before the step specified for the
@@ -530,7 +543,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                     
                     DiscoveryScoresCalc discoveryScoresCalc = new DiscoveryScoresCalc();
 
-                    discoveryScores = discoveryScoresCalc.calculate(
+                    try {
+                        discoveryScores = discoveryScoresCalc.calculate(
                             discoveryCohort,
                             this.discoveryGeneExpressionCsv,
                             this.probesetToGeneMappingDb,
@@ -538,7 +552,13 @@ public class BatchAction extends BaseAction implements SessionAware {
                             diagnosisCode,
                             this.discoveryPercentileScores,
                             debugDiscoveryScoring
-                            );
+                        );
+                    } catch (Exception exception) {
+                        throw new Exception("Discovery scoring error: " + exception.getLocalizedMessage(), exception);
+                    } finally {
+                        this.discoveryRScriptCommand = discoveryScoresCalc.getDiscoveryScoringCommand();
+                        this.discoveryRScriptLog     = discoveryScoresCalc.getScriptOutput();
+                    }
 
 
                     if (discoveryScores == null) {
@@ -666,7 +686,8 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                     List<String> fileNames = validationScoresCalc.createValidationPredictorListAndMasterSheetFiles(
                             validationCohortResultsId,
-                            this.geneExpressionCsv
+                            this.geneExpressionCsv,
+                            this.validationDiagnosisType
                             );
 
                     String predictorListFileName = fileNames.get(0);
@@ -766,7 +787,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                             this.futuretLongitudinal,
                             this.predictionPhene,
                             this.predictionPheneHighCutoff,
-                            this.predictionPheneComparisonThreshold
+                            this.predictionPheneComparisonThreshold,
+                            this.testingDiagnosisType
                     );
                     
                     if (testingScores == null) {
@@ -892,6 +914,18 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.showTestingScores = showTestingScores;
     }
 
+
+    // Diagnosis Types 
+
+    public List<String> getDiagnosisTypes() {
+        return diagnosisTypes;
+    }
+
+    public void setDiagnosisTypes(List<String> diagnosisTypes) {
+        this.diagnosisTypes = diagnosisTypes;
+    }
+    
+    
     public Map<Long, String> getPastCfeResultsMap() {
         return pastCfeResultsMap;
     }
@@ -1142,6 +1176,25 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setDiscoveryPercentileScores(PercentileScores discoveryPercentileScores) {
         this.discoveryPercentileScores = discoveryPercentileScores;
+    }
+
+    
+    
+    
+    public String getDiscoveryRScriptCommand() {
+        return discoveryRScriptCommand;
+    }
+
+    public void setDiscoveryRScriptCommand(String discoveryRScriptCommand) {
+        this.discoveryRScriptCommand = discoveryRScriptCommand;
+    }
+
+    public String getDiscoveryRScriptLog() {
+        return discoveryRScriptLog;
+    }
+
+    public void setDiscoveryRScriptLog(String discoveryRScriptLog) {
+        this.discoveryRScriptLog = discoveryRScriptLog;
     }
 
     /*
@@ -1507,6 +1560,18 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.discoveryCohortComparisonThreshold = discoveryCohortComparisonThreshold;
     }
 
+    
+    
+    
+    
+    public String getValidationDiagnosisType() {
+        return validationDiagnosisType;
+    }
+
+    public void setValidationDiagnosisType(String validationDiagnosisType) {
+        this.validationDiagnosisType = validationDiagnosisType;
+    }
+
     public String getPercentInValidationCohort() {
         return percentInValidationCohort;
     }
@@ -1524,6 +1589,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     }
 
 
+    
 
     public Double getValidationCohortComparisonThreshold() {
         return validationCohortComparisonThreshold;
@@ -1656,6 +1722,14 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     /* TESTING ----------------------------------------------------------------------------------------- */
 
+    public String getTestingDiagnosisType() {
+        return testingDiagnosisType;
+    }
+
+    public void setTestingDiagnosisType(String testingDiagnosisType) {
+        this.testingDiagnosisType = testingDiagnosisType;
+    }
+    
     public String getAdmissionPhene() {
         return admissionPhene;
     }

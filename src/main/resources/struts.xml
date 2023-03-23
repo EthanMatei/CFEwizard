@@ -205,7 +205,7 @@
 								
 						
 	    <!-- ================================================================== -->
-	    
+	    <!-- ADMIN PAGES -->
 				
 		<action name="DatabaseStatusAction" class="cfe.action.DatabaseStatusAction">
 			<interceptor-ref name="basicStack"/>
@@ -226,7 +226,16 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
-		
+			
+		<action name="TemporaryFilesAction" class="cfe.action.TemporaryFilesAction">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/tempFiles.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+				
 		<action name="SystemStatusAction" class="cfe.action.SystemStatusAction">
 			<interceptor-ref name="basicStack"/>
 			<result name="success">pages/systemStatus.jsp</result>
@@ -858,6 +867,20 @@
                 <param name="inputName">fileStream</param>
 	            <param name="contentType">${fileContentType}</param>
                 <param name="contentDisposition">attachment; filename="${fileName}"</param>
+            </result>
+            <result name="error">pages/error.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
+		<!-- Script results display -->
+		<action name="ScriptResultsDisplayAction" class="cfe.action.ScriptResultsDisplayAction" method="view">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success" type="dispatcher">
+                <param name="location">pages/scriptResults.jsp</param>
+	            <param name="scriptCommand">${scriptCommand}</param>
+                <param name="scriptOutput">${scriptOutput}"</param>
             </result>
             <result name="error">pages/error.jsp</result>
             <result name="login" type="redirectAction">

@@ -352,7 +352,7 @@ public class DiscoveryScoresCalc {
             
             this.discoveryScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
             
-            scriptOutput = this.runCommand(rScriptCommand);
+            this.scriptOutput = this.runCommand(rScriptCommand);
             
             log.info("Returned from DEdiscovery.R script");
             

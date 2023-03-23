@@ -130,6 +130,13 @@
 	                <s:property value="'discovery-r-script-log'" />
 	            </s:a> 
 	        </td>
+	        <td>
+	            <s:a action="ScriptResultsDisplayAction" title="Discovery R Script Results">
+	                <s:param name="scriptCommand" value="scriptCommand" />
+	                <s:param name="scriptOutput" value="scriptOutput" />
+	                discovery-r-script-results
+	            </s:a> 	            
+	        </td>
         </s:if>
         <s:else>
             <td> &nbsp; </td>

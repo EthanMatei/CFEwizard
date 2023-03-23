@@ -38,7 +38,7 @@ public class AppInitContextListener implements ServletContextListener {
         	System.out.println("    " + name + ": " + context.getAttribute(name));
         }
         
-        WebAppProperties.initialize(rootDir);;
+        WebAppProperties.initialize(rootDir);
         
         DatabaseMigration.migrate();
         

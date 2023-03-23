@@ -232,7 +232,7 @@
                 
                     <p>
                     <s:radio name="geneListSpecification" list="{'Generate from Discovery:'}"/>
-                    <span style="margin-left: 2em;">Score cutoff</span>
+                    <span style="margin-left: 2em;">Score cutoff (&ge;)</span>
                     <s:textfield style="text-align: right;" name="prioritizationScoreCutoff" size="4"/>
                     <span style="margin-left: 1em;">Comparison threshold:</span>
                     <s:textfield size="8" style="text-align: right; margin-left: 1em;" name="prioritizationComparisonThreshold"/>
@@ -319,7 +319,11 @@
     <div>&nbsp;</div>
     <fieldset class="dataInput">
         <legend>Validation Scores</legend>
-                       
+             
+        <p>
+        Diagnosis type: <s:select name="validationDiagnosisType" list="diagnosisTypes" />
+        </p>
+                  
         <p>
         Score cutoff (&ge;): <s:textfield style="text-align: right;" name="validationScoreCutoff" size="4"/>
         <span style="margin-left: 1em;">Comparison threshold:</span>
@@ -363,7 +367,7 @@
         <div>&nbsp;</div>
         <fieldset class="dataInput">
             <legend>Testing Cohorts</legend>
-        
+
             <p>
             Follow-Up Database: <s:file name="followUpDb" label="Follow-Up Database" />
             </p>
@@ -378,10 +382,15 @@
         
     <%-- TESTING SCORES ================================================================================= --%>
     <s:if test="showTestingScores">    
-    
-        <div>&nbsp;</div>
+                             
+
         <fieldset class="dataInput">
-            <legend>Testing Scores</legend>                        
+            <legend>Testing Scores</legend> 
+            
+            <p>
+            Diagnosis type: <s:select name="testingDiagnosisType" list="diagnosisTypes" />
+            </p>
+                               
             <p>
             Score cutoff (&ge;): <s:textfield style="text-align: right;" name="testingScoreCutoff" />
             <span style="margin-left: 1em;">Comparison threshold:</span>

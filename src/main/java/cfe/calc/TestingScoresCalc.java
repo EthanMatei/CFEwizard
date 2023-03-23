@@ -35,6 +35,7 @@ import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
+import cfe.model.DiagnosisType;
 import cfe.model.ScriptRunInfo;
 import cfe.model.VersionNumber;
 import cfe.services.CfeResultsService;
@@ -165,7 +166,8 @@ public class TestingScoresCalc {
 	        
             String predictionPhene,
             Double predictionPheneHighCutoff,
-            Double predictionComparisonThreshold
+            Double predictionComparisonThreshold,
+            String diagnosisType
 	) throws Exception {
 	    
 	    this.testingData               = testingCohorts;
@@ -241,7 +243,7 @@ public class TestingScoresCalc {
         //--------------------------------------------
         // Create predictor list
         //--------------------------------------------
-        DataTable predictorList = this.createPredictorList(this.testingDataId);
+        DataTable predictorList = this.createPredictorList(this.testingDataId, diagnosisType);
         if (predictorList == null) {
             throw new Exception("Could not create testing predictor list.");
         }
@@ -938,7 +940,7 @@ public class TestingScoresCalc {
     }
 
     
-    public DataTable createPredictorList(Long dataId) throws Exception
+    public DataTable createPredictorList(Long dataId, String diagnosisType) throws Exception
     {
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
@@ -1006,7 +1008,14 @@ public class TestingScoresCalc {
         sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);
         DataTable cohortData = new DataTable(null);
         cohortData.initializeToWorkbookSheet(sheet);
-        Set<String> diagnoses = cohortData.getUniqueValues("DxCode");
+        
+        Set<String> diagnoses = null;
+        if (diagnosisType.equals(DiagnosisType.GENDER)) {
+            diagnoses = cohortData.getUniqueValues("Gender(M/F)");
+        }
+        else {
+            diagnoses = cohortData.getUniqueValues("DxCode");
+        }
         
         //---------------------------------------------
         // Create predictor list data table

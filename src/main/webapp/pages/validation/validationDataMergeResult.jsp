@@ -45,6 +45,7 @@ Data merge results:
     </tr>
 </table>
 
+<%--
 <s:if test="true">
     <br/>
     <s:a action="ValidationCohortSpecification" title="Validation Cohort Creation" class="linkButton" style="margin-left: 2em;">
@@ -52,6 +53,8 @@ Data merge results:
         Validation Cohort Creation
     </s:a>
     <br/>
-</s:if>                          
+</s:if>
+--%>
+                          
 </tiles:putAttribute>
 </tiles:insertTemplate>

@@ -27,7 +27,7 @@ Temporary Files Directory: <s:property value="tempDir"/>
 Temporary File Extensions: <s:property value="@cfe.utils.TemporaryFileInfo@fileExtensionsString"/>
 </p>
 
-<table class="dataTable">
+<table class="dataTable" style="margin-bottom: 17px;">
     <caption style="margin-bottom: 7px; font-weight: bold;">Temporary Files</caption>
     <tr>
         <th>File Name</th> <th>Size</th> <th>Age in Days</th>

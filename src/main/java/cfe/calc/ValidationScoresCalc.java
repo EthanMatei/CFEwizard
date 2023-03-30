@@ -114,8 +114,10 @@ public class ValidationScoresCalc {
             double stepwiseScore,
             double nonStepwiseScore,
             String masterSheetFileName,
+            File updatedMasterSheetFile,
             String updatedMasterSheetFileName,
             String predictorListFileName,
+            File updatedPredictorListFile,
             String updatedPredictorListFileName
     ) throws Exception {
 
@@ -134,8 +136,10 @@ public class ValidationScoresCalc {
 	    this.nonStepwiseScore    = nonStepwiseScore;
         
 	    this.validationMasterSheetFile    = masterSheetFileName;
+	    this.updatedMasterSheetFile       = updatedMasterSheetFile;
         this.updatedMasterSheetFileName   = updatedMasterSheetFileName;
-        this.predictorListFile            = predictorListFileName;	    
+        this.predictorListFile            = predictorListFileName;	   
+        this.updatedPredictorListFile     = updatedPredictorListFile;
         this.updatedPredictorListFileName = updatedPredictorListFileName;
         
         
@@ -615,6 +619,9 @@ public class ValidationScoresCalc {
         // <probeset>    <value>       <value>       <value>
         // <probeset>    <value>       <value>       <value>
         //---------------------------------------------------------------------------
+	    if (geneExpressionCsv == null) {
+	        throw new Exception("No gene expression file was specified.");
+	    }
 	    FileReader filereader = new FileReader(geneExpressionCsv);
         CSVReader csvReader = new CSVReader(filereader);
         

@@ -65,7 +65,20 @@
                    <s:param name="cfeResultsId" value="cfeResultsId" />
                    <s:param name="fileType" value="fileType" />
                    <s:property value="fileName" />
-               </s:a>       
+               </s:a>
+               <%--
+               &nbsp;
+               <s:a action="CfeResultsFileDisplay" title="CFE Results" download="true">
+                   <s:param name="cfeResultsId" value="cfeResultsId" />
+                   <s:param name="fileType" value="fileType" />
+                   <div>
+                       <img border="0"
+                            style="margin-top: 2px;"
+                            src="<s:url includeParams='none' value='/images/tango-32x32-document-save.png'/>"
+                            alt="download" />
+                    </div>
+               </s:a>
+               --%>     
         </tr>
     </s:iterator>
 </table>

@@ -3,8 +3,6 @@ package cfe.action;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,9 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.struts2.interceptor.SessionAware;
-
-import com.healthmarketscience.jackcess.Table;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.calc.DiscoveryCohortCalc;
 import cfe.calc.DiscoveryScoresCalc;
@@ -29,14 +25,10 @@ import cfe.model.CfeResultsType;
 import cfe.model.DiagnosisType;
 import cfe.model.PercentileScores;
 import cfe.model.prioritization.GeneListInput;
-import cfe.model.prioritization.disease.DiseaseSelection;
 import cfe.model.prioritization.disease.DiseaseSelector;
-import cfe.model.prioritization.results.Results;
 import cfe.parser.DiscoveryDatabaseParser;
-import cfe.parser.ProbesetMappingParser;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
-import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
 import cfe.utils.PheneCondition;
 
@@ -121,8 +113,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     /* Discovery Scores ------------------------------------------------------------- */
     
     private PercentileScores discoveryPercentileScores = new PercentileScores();
-    private String discoveryRScriptCommand;
-    private String discoveryRScriptLog;
+    private String discoveryRScriptCommandFile;
+    private String discoveryRScriptLogFile;
     
     Long discoveryScoresResultsId;
     
@@ -193,10 +185,13 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String updatedValidationPredictorListFileName;
     private String updatedValidationPredictorListTempFileName;
     
-    Long validationCohortResultsId;
-    Long validationScoresResultsId;
+    private Long validationCohortResultsId;
+    private Long validationScoresResultsId;
     
-    String validationDiagnosisType;
+    private String validationDiagnosisType;
+    
+    private String validationRScriptCommandFile;
+    private String validationRScriptOutputFile;
 
 
     /* Testing Cohorts --------------------------------------------------------------- */
@@ -208,6 +203,9 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String admissionPhene;
     
     private Long testingCohortsResultsId;
+    
+    private String testingCohortsPythonScriptCommandFile;
+    private String testingCohortsPythonScriptOutputFile;
     
     /* Testing -Scores -------------------------------------------------------------- */
     private String testingDiagnosisType;
@@ -238,6 +236,22 @@ public class BatchAction extends BaseAction implements SessionAware {
     private Double predictionPheneHighCutoff;
     private Double predictionPheneComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
     
+    // Script command and output files (for case where process fails)
+    private String stateCrossSectionalRScriptCommandFile;
+    private String stateCrossSectionalRScriptOutputFile;
+    private String stateLongitudinalRScriptCommandFile;
+    private String stateLongitudinalRScriptOutputFile;
+    
+    private String firstYearCrossSectionalRScriptCommandFile;
+    private String firstYearCrossSectionalRScriptOutputFile;
+    private String firstYearLongitudinalRScriptCommandFile;
+    private String firstYearLongitudinalRScriptOutputFile;
+    
+    private String futureCrossSectionalRScriptCommandFile;
+    private String futureCrossSectionalRScriptOutputFile;
+    private String futureLongitudinalRScriptCommandFile;
+    private String futureLongitudinalRScriptOutputFile;       
+    
     private Long testingScoresResultsId;
     
     
@@ -260,7 +274,7 @@ public class BatchAction extends BaseAction implements SessionAware {
         Collections.sort(admissionReasons);
     }
     
-    public void setSession(Map<String, Object> session) {
+    public void withSession(Map<String, Object> session) {
 	    this.webSession = session;    
 	}
 	
@@ -552,12 +566,19 @@ public class BatchAction extends BaseAction implements SessionAware {
                             diagnosisCode,
                             this.discoveryPercentileScores,
                             debugDiscoveryScoring
-                        );
-                    } catch (Exception exception) {
+                                );
+                    }
+                    catch (Exception exception) {
+                        // Something went wrong. Get R script command and output if available.
+                        if (discoveryScoresCalc != null) {
+                            this.discoveryRScriptCommandFile = FileUtil.createTempFile(
+                                    "discovery-r-script-command-", ".txt", discoveryScoresCalc.getDiscoveryScoringCommand()
+                            );
+                            this.discoveryRScriptLogFile = FileUtil.createTempFile(
+                                "discovery-r-script-output-", ".txt", discoveryScoresCalc.getScriptOutput()
+                            );
+                        }
                         throw new Exception("Discovery scoring error: " + exception.getLocalizedMessage(), exception);
-                    } finally {
-                        this.discoveryRScriptCommand = discoveryScoresCalc.getDiscoveryScoringCommand();
-                        this.discoveryRScriptLog     = discoveryScoresCalc.getScriptOutput();
                     }
 
 
@@ -695,21 +716,37 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                     log.info("Validation score cutoff: " + this.validationScoreCutoff);
                     log.info("Validation scores comparison threshold: " + this.validationScoresComparisonThreshold);
-                    
-                    validationScores = validationScoresCalc.calculate(
-                            validationCohort,
-                            this.validationScoreCutoff,
-                            this.validationScoresComparisonThreshold,
-                            this.bonferroniScore,
-                            this.nominalScore,
-                            this.stepwiseScore,
-                            this.nonStepwiseScore,
-                            masterSheetFileName,
-                            this.updatedValidationMasterSheetFileName,
-                            predictorListFileName,
-                            this.updatedValidationPredictorListFileName
-                    );
 
+                    try {
+                        validationScores = validationScoresCalc.calculate(
+                                validationCohort,
+                                this.validationScoreCutoff,
+                                this.validationScoresComparisonThreshold,
+                                this.bonferroniScore,
+                                this.nominalScore,
+                                this.stepwiseScore,
+                                this.nonStepwiseScore,
+                                masterSheetFileName,
+                                this.updatedValidationMasterSheet,
+                                this.updatedValidationMasterSheetFileName,
+                                predictorListFileName,
+                                this.updatedValidationPredictorList,
+                                this.updatedValidationPredictorListFileName
+                        );
+                    }
+                    catch (Exception exception) {
+                        // Something went wrong. Get R script command and output if available.
+                        if (validationScoresCalc != null) {
+                            this.validationRScriptCommandFile = FileUtil.createTempFile(
+                                    "validation-r-script-command-", ".txt", validationScoresCalc.getValidationScoringCommand()
+                            );
+                            this.validationRScriptOutputFile = FileUtil.createTempFile(
+                                "validation-r-script-output-", ".txt", validationScoresCalc.getScriptOutput()
+                            );
+                        }
+                        throw new Exception("Validation scoring error: " + exception.getLocalizedMessage(), exception);
+                    }
+                    
                     this.validationScoresResultsId = validationScores.getCfeResultsId();
                     log.info("Step " + CfeResultsType.VALIDATION_SCORES + " completed.");
                 }
@@ -734,15 +771,31 @@ public class BatchAction extends BaseAction implements SessionAware {
                     log.info("Step " + CfeResultsType.TESTING_COHORTS + " started.");
                     TestingCohortsCalc testingCohortsCalc = new TestingCohortsCalc();
                     
-                    testingCohorts = testingCohortsCalc.calculate(
+                    try {
+                        testingCohorts = testingCohortsCalc.calculate(
                             validationScores,
                             this.followUpDb,
                             this.followUpDbFileName,
                             this.admissionPhene
-                    );
+                        );
+                    }
+                    catch (Exception exception) {
+                        // Something went wrong. Get R script command and output if available.
+                        if (testingCohortsCalc != null) {
+                            this.testingCohortsPythonScriptCommandFile = FileUtil.createTempFile(
+                                    "testing-cohorts-python-script-command-", ".txt", testingCohortsCalc.getPredictionCohortCreationCommand()
+                            );
+                            this.testingCohortsPythonScriptOutputFile = FileUtil.createTempFile(
+                                "testing-cohorts-python-script-output-", ".txt", testingCohortsCalc.getScriptOutput()
+                            );
+                        }
+                        throw new Exception("Testing cohorts creation error: " + exception.getLocalizedMessage(), exception);
+                    }
+                    
                     if (testingCohorts == null) {
                         throw new Exception("Testing cohorts could not be calculated.");
                     }
+                    
                     this.testingCohortsResultsId = testingCohorts.getCfeResultsId();
                     log.info("Step " + CfeResultsType.TESTING_COHORTS + " completed.");
                 }
@@ -769,7 +822,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                     String predictionPheneTable = predictionPheneInfo[0].replace('[', ' ').trim();
                     this.predictionPhene = predictionPheneTable + "." + predictionPheneInfo[1].trim();
                     
-                    testingScores = testingScoresCalc.calculate(
+                    try {
+                        testingScores = testingScoresCalc.calculate(
                             testingCohorts,
                             this.testingScoreCutoff,
                             this.testingComparisonThreshold,
@@ -789,9 +843,69 @@ public class BatchAction extends BaseAction implements SessionAware {
                             this.predictionPheneHighCutoff,
                             this.predictionPheneComparisonThreshold,
                             this.testingDiagnosisType
-                    );
+                        );
+                    }
+                    catch (Exception exception) {
+                        if (testingScoresCalc != null) {
+                            
+                            // STATE CROSS-SECTIONAL
+                            this.stateCrossSectionalRScriptCommandFile = FileUtil.createTempFile(
+                                "state-cross-sectional-r-script-command-", ".txt", testingScoresCalc.getrCommandStateCrossSectional()
+                            );
+                            this.stateCrossSectionalRScriptOutputFile = FileUtil.createTempFile(
+                                "state-cross-sectional-r-script-output-", ".txt", testingScoresCalc.getrScriptOutputFileStateCrossSectional()
+                            );
+                            
+                            // STATE LONGITUDINAL
+                            this.stateLongitudinalRScriptCommandFile = FileUtil.createTempFile(
+                                "state-longitudinal-r-script-command-", ".txt", testingScoresCalc.getrCommandStateLongitudinal()
+                            );
+                            this.stateLongitudinalRScriptOutputFile = FileUtil.createTempFile(
+                                "state-longitudinal-r-script-output-", ".txt", testingScoresCalc.getrScriptOutputFileStateLongitudinal()
+                            );
+                            
+                            //--------------------------------------------------------------------------------------------------
+                            
+                            // FIRST YEAR CROSS-SECTIONAL
+                            this.firstYearCrossSectionalRScriptCommandFile = FileUtil.createTempFile(
+                                "first-year-cross-sectional-r-script-command-", ".txt", testingScoresCalc.getrCommandFirstYearCrossSectional()
+                            );
+                            this.firstYearCrossSectionalRScriptOutputFile = FileUtil.createTempFile(
+                                "first-year-cross-sectional-r-script-output-", ".txt", testingScoresCalc.getrScriptOutputFileFirstYearCrossSectional()
+                            );
+                            
+                            // FIRST YEAR LONGITUDINAL
+                            this.firstYearLongitudinalRScriptCommandFile = FileUtil.createTempFile(
+                                "first-year-longitudinal-r-script-command-", ".txt", testingScoresCalc.getrCommandFirstYearLongitudinal()
+                            );
+                            this.firstYearLongitudinalRScriptOutputFile = FileUtil.createTempFile(
+                                "first-year-longitudinal-r-script-output-", ".txt", testingScoresCalc.getrScriptOutputFileFirstYearLongitudinal()
+                            );
+                            
+                            //--------------------------------------------------------------------------------------------------
+                            
+                            // FUTURE CROSS-SECTIONAL
+                            this.futureCrossSectionalRScriptCommandFile = FileUtil.createTempFile(
+                                "future-cross-sectional-r-script-command-", ".txt", testingScoresCalc.getrCommandFutureCrossSectional()
+                            );
+                            this.futureCrossSectionalRScriptOutputFile = FileUtil.createTempFile(
+                                "future-cross-sectional-r-script-output-", ".txt", testingScoresCalc.getrScriptOutputFileFutureCrossSectional()
+                            );
+                            
+                            // FUTURE LONGITUDINAL
+                            this.futureLongitudinalRScriptCommandFile = FileUtil.createTempFile(
+                                "future-longitudinal-r-script-command-", ".txt", testingScoresCalc.getrCommandFutureLongitudinal()
+                            );
+                            this.futureLongitudinalRScriptOutputFile = FileUtil.createTempFile(
+                                "future-longitudinal-r-script-output-", ".txt", testingScoresCalc.getrScriptOutputFileFutureLongitudinal()
+                            );
+                                                                                        
+                        }
+                        throw new Exception("Testing scoring error: " + exception.getLocalizedMessage(), exception);   
+                    }
                     
                     if (testingScores == null) {
+
                         throw new Exception("Testing scores could not be calculated.");
                     }
                     
@@ -1179,22 +1293,20 @@ public class BatchAction extends BaseAction implements SessionAware {
     }
 
     
-    
-    
-    public String getDiscoveryRScriptCommand() {
-        return discoveryRScriptCommand;
+    public String getDiscoveryRScriptCommandFile() {
+        return discoveryRScriptCommandFile;
     }
 
-    public void setDiscoveryRScriptCommand(String discoveryRScriptCommand) {
-        this.discoveryRScriptCommand = discoveryRScriptCommand;
+    public void setDiscoveryRScriptCommandFile(String discoveryRScriptCommandFile) {
+        this.discoveryRScriptCommandFile = discoveryRScriptCommandFile;
     }
 
-    public String getDiscoveryRScriptLog() {
-        return discoveryRScriptLog;
+    public String getDiscoveryRScriptLogFile() {
+        return discoveryRScriptLogFile;
     }
 
-    public void setDiscoveryRScriptLog(String discoveryRScriptLog) {
-        this.discoveryRScriptLog = discoveryRScriptLog;
+    public void setDiscoveryRScriptLogFile(String discoveryRScriptLogFile) {
+        this.discoveryRScriptLogFile = discoveryRScriptLogFile;
     }
 
     /*
@@ -1572,6 +1684,25 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.validationDiagnosisType = validationDiagnosisType;
     }
 
+
+
+    public String getValidationRScriptCommandFile() {
+        return validationRScriptCommandFile;
+    }
+
+    public void setValidationRScriptCommandFile(String validationRScriptCommandFile) {
+        this.validationRScriptCommandFile = validationRScriptCommandFile;
+    }
+
+    public String getValidationRScriptOutputFile() {
+        return validationRScriptOutputFile;
+    }
+
+    public void setValidationRScriptOutputFile(String validationRScriptOutputFile) {
+        this.validationRScriptOutputFile = validationRScriptOutputFile;
+    }
+
+    
     public String getPercentInValidationCohort() {
         return percentInValidationCohort;
     }
@@ -1826,6 +1957,27 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.testingCohortsResultsId = testingCohortsResultsId;
     }
     
+   
+    public String getTestingCohortsPythonScriptCommandFile() {
+        return testingCohortsPythonScriptCommandFile;
+    }
+
+    public void setTestingCohortsPythonScriptCommandFile(String testingCohortsPythonScriptCommandFile) {
+        this.testingCohortsPythonScriptCommandFile = testingCohortsPythonScriptCommandFile;
+    }
+
+    
+    
+    /* --------------------------------------------- */
+ 
+    public String getTestingCohortsPythonScriptOutputFile() {
+        return testingCohortsPythonScriptOutputFile;
+    }
+
+    public void setTestingCohortsPythonScriptOutputFile(String testingCohortsPythonScriptOutputFile) {
+        this.testingCohortsPythonScriptOutputFile = testingCohortsPythonScriptOutputFile;
+    }
+
     public boolean isStateCrossSectional() {
         return stateCrossSectional;
     }
@@ -1896,6 +2048,103 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setPredictionPheneComparisonThreshold(Double predictionPheneComparisonThreshold) {
         this.predictionPheneComparisonThreshold = predictionPheneComparisonThreshold;
+    }
+
+    
+    public String getStateCrossSectionalRScriptCommandFile() {
+        return stateCrossSectionalRScriptCommandFile;
+    }
+
+    public void setStateCrossSectionalRScriptCommandFile(String stateCrossSectionalRScriptCommandFile) {
+        this.stateCrossSectionalRScriptCommandFile = stateCrossSectionalRScriptCommandFile;
+    }
+
+    public String getStateCrossSectionalRScriptOutputFile() {
+        return stateCrossSectionalRScriptOutputFile;
+    }
+
+    public void setStateCrossSectionalRScriptOutputFile(String stateCrossSectionalRScriptOutputFile) {
+        this.stateCrossSectionalRScriptOutputFile = stateCrossSectionalRScriptOutputFile;
+    }
+
+    public String getStateLongitudinalRScriptCommandFile() {
+        return stateLongitudinalRScriptCommandFile;
+    }
+
+    public void setStateLongitudinalRScriptCommandFile(String stateLongitudinalRScriptCommandFile) {
+        this.stateLongitudinalRScriptCommandFile = stateLongitudinalRScriptCommandFile;
+    }
+
+    public String getStateLongitudinalRScriptOutputFile() {
+        return stateLongitudinalRScriptOutputFile;
+    }
+
+    public void setStateLongitudinalRScriptOutputFile(String stateLongitudinalRScriptOutputFile) {
+        this.stateLongitudinalRScriptOutputFile = stateLongitudinalRScriptOutputFile;
+    }
+
+    public String getFirstYearCrossSectionalRScriptCommandFile() {
+        return firstYearCrossSectionalRScriptCommandFile;
+    }
+
+    public void setFirstYearCrossSectionalRScriptCommandFile(String firstYearCrossSectionalRScriptCommandFile) {
+        this.firstYearCrossSectionalRScriptCommandFile = firstYearCrossSectionalRScriptCommandFile;
+    }
+
+    public String getFirstYearCrossSectionalRScriptOutputFile() {
+        return firstYearCrossSectionalRScriptOutputFile;
+    }
+
+    public void setFirstYearCrossSectionalRScriptOutputFile(String firstYearCrossSectionalRScriptOutputFile) {
+        this.firstYearCrossSectionalRScriptOutputFile = firstYearCrossSectionalRScriptOutputFile;
+    }
+
+    public String getFirstYearLongitudinalRScriptCommandFile() {
+        return firstYearLongitudinalRScriptCommandFile;
+    }
+
+    public void setFirstYearLongitudinalRScriptCommandFile(String firstYearLongitudinalRScriptCommandFile) {
+        this.firstYearLongitudinalRScriptCommandFile = firstYearLongitudinalRScriptCommandFile;
+    }
+
+    public String getFirstYearLongitudinalRScriptOutputFile() {
+        return firstYearLongitudinalRScriptOutputFile;
+    }
+
+    public void setFirstYearLongitudinalRScriptOutputFile(String firstYearLongitudinalRScriptOutputFile) {
+        this.firstYearLongitudinalRScriptOutputFile = firstYearLongitudinalRScriptOutputFile;
+    }
+
+    public String getFutureCrossSectionalRScriptCommandFile() {
+        return futureCrossSectionalRScriptCommandFile;
+    }
+
+    public void setFutureCrossSectionalRScriptCommandFile(String futureCrossSectionalRScriptCommandFile) {
+        this.futureCrossSectionalRScriptCommandFile = futureCrossSectionalRScriptCommandFile;
+    }
+
+    public String getFutureCrossSectionalRScriptOutputFile() {
+        return futureCrossSectionalRScriptOutputFile;
+    }
+
+    public void setFutureCrossSectionalRScriptOutputFile(String futureCrossSectionalRScriptOutputFile) {
+        this.futureCrossSectionalRScriptOutputFile = futureCrossSectionalRScriptOutputFile;
+    }
+
+    public String getFutureLongitudinalRScriptCommandFile() {
+        return futureLongitudinalRScriptCommandFile;
+    }
+
+    public void setFutureLongitudinalRScriptCommandFile(String futureLongitudinalRScriptCommandFile) {
+        this.futureLongitudinalRScriptCommandFile = futureLongitudinalRScriptCommandFile;
+    }
+
+    public String getFutureLongitudinalRScriptOutputFile() {
+        return futureLongitudinalRScriptOutputFile;
+    }
+
+    public void setFutureLongitudinalRScriptOutputFile(String futureLongitudinalRScriptOutputFile) {
+        this.futureLongitudinalRScriptOutputFile = futureLongitudinalRScriptOutputFile;
     }
 
     public Long getTestingScoresResultsId() {

@@ -99,17 +99,18 @@
         </s:else>
     </tr>
     
+    <%-- DISCOVERY SCORES ================================================================================================== --%>
     <tr>
         <td> Discovery Scores </td>
-	        <s:if test="discoveryScoresResultsId != null">
-	        <td> <s:property value="discoveryScoresResultsId"/> </td>
+	    <s:if test="discoveryScoresResultsId != null">
+            <td> <s:property value="discoveryScoresResultsId"/> </td>
 	        <td>
 	            <s:a action="CfeResultsXlsxDisplay" title="Discovery Scores Results">
 	                <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
 	                <s:param name="fileName" value="'discovery-scores-results.xlsx'" />
 	                discovery-scores-results.xlsx
 	            </s:a>
-	        </td>
+    	    </td>
             <td>
                 <s:a action="CfeResultsDetailAction" title="CFE Results Detail">
                     <s:param name="cfeResultsId" value="discoveryScoresResultsId" />
@@ -130,23 +131,37 @@
 	                <s:property value="'discovery-r-script-log'" />
 	            </s:a> 
 	        </td>
-	        <td>
-	            <s:a action="ScriptResultsDisplayAction" title="Discovery R Script Results">
-	                <s:param name="scriptCommand" value="scriptCommand" />
-	                <s:param name="scriptOutput" value="scriptOutput" />
-	                discovery-r-script-results
-	            </s:a> 	            
-	        </td>
         </s:if>
         <s:else>
             <td> &nbsp; </td>
             <td> No Results </td>
             <td> &nbsp; </td>
-            <td> &nbsp; </td>
-            <td> &nbsp; </td>
+            <td>
+                <s:if test="discoveryRScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="Discovery R Script Command">
+	                    <s:param name="textFilePath" value="discoveryRScriptCommandFile" />
+	                    discovery-r-script-command.txt
+    	            </s:a>
+	            </s:else>
+	        </td>
+	        <td>
+                <s:if test="discoveryRScriptLogFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+	                <s:a action="TextFileDisplay" title="Discovery R Script Output">
+	                    <s:param name="textFilePath" value="discoveryRScriptLogFile" />
+	                    discovery-r-script-output.txt
+	                </s:a>
+	            </s:else>
+	        </td>
         </s:else>
     </tr>
-    
+
+    <%-- PRIORITIZATION SCORES ================================================================================================== --%>    
     <tr>
         <td> Prioritization Scores </td>
         
@@ -179,7 +194,7 @@
         </s:else>
     </tr>  
     
-    
+    <%-- VALIDATION COHORT ================================================================================================== --%>      
     <tr>
         <td> Validation Cohort </td>
         
@@ -252,8 +267,28 @@
             <td> &nbsp; </td>
             <td> No Results </td>
             <td> &nbsp; </td>
-            <td> &nbsp; </td>
-            <td> &nbsp; </td>
+            <td>
+                <s:if test="validationRScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="Validation R Script Command">
+	                    <s:param name="textFilePath" value="validationRScriptCommandFile" />
+	                    validation-r-script-command.txt
+    	            </s:a>
+	            </s:else>
+            </td>
+            <td>
+                <s:if test="validationRScriptOutputFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+	                <s:a action="TextFileDisplay" title="Validation R Script Output">
+	                    <s:param name="textFilePath" value="validationRScriptOutputFile" />
+	                    validation-r-script-output.txt
+	                </s:a>
+	            </s:else>
+            </td>
         </s:else>
     </tr>
     
@@ -296,8 +331,28 @@
             <td> &nbsp; </td>
             <td> No Results </td>
             <td> &nbsp; </td>
-            <td> &nbsp; </td>
-            <td> &nbsp; </td>
+            <td>
+                <s:if test="testingCohortsPythonScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="Testing Cohorts Python Script Command">
+	                    <s:param name="textFilePath" value="testingCohortsPythonScriptCommandFile" />
+	                    testing-cohorts-python-script-command.txt
+    	            </s:a>
+	            </s:else>
+            </td>
+            <td>
+                 <s:if test="testingCohortsPythonScriptOutputFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+	                <s:a action="TextFileDisplay" title="Testing Cohorts Python Script Output">
+	                    <s:param name="textFilePath" value="testingCohortsPythonScriptOutputFile" />
+	                    testing-cohorts-python-script-output.txt
+	                </s:a>
+	            </s:else>
+            </td>
         </s:else>
     </tr>
 
@@ -441,8 +496,153 @@
             <td> &nbsp; </td>
             <td> No Results </td>
             <td> &nbsp; </td>
-            <td> &nbsp; </td>
-            <td> &nbsp; </td>
+            
+            <td>
+                <%-- R SCRIPT COMMANDS ========================================================================================= --%>
+	            
+	            <%-- STATE --%>
+                <s:if test="stateCrossSectionalRScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="State Cross-Sectional R Script Command">
+	                    <s:param name="textFilePath" value="stateCrossSectionalRScriptCommandFile" />
+	                    state-cross-sectional-r-script-command.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            
+                <s:if test="stateLongitudinalRScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="State Longitudinal R Script Command">
+	                    <s:param name="textFilePath" value="stateLongitudinalRScriptCommandFile" />
+	                    state-longitudinal-r-script-command.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            
+	            <%-- FIRST YEAR --%>
+                <s:if test="firstYearCrossSectionalRScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="First Year Cross-Sectional R Script Command">
+	                    <s:param name="textFilePath" value="firstYearCrossSectionalRScriptCommandFile" />
+	                    first-year-cross-sectional-r-script-command.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            
+                <s:if test="firstYearLongitudinalRScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="First Year Longitudinal R Script Command">
+	                    <s:param name="textFilePath" value="firstYearLongitudinalRScriptCommandFile" />
+	                    first-year-longitudinal-r-script-command.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            	             
+	            <%-- FUTURE --%>
+                <s:if test="futureCrossSectionalRScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="Future Cross-Sectional R Script Command">
+	                    <s:param name="textFilePath" value="futureCrossSectionalRScriptCommandFile" />
+	                    future-cross-sectional-r-script-command.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            
+                <s:if test="futureLongitudinalRScriptCommandFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="Future Longitudinal R Script Command">
+	                    <s:param name="textFilePath" value="futureLongitudinalRScriptCommandFile" />
+	                    future-longitudinal-r-script-command.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            
+            </td>
+            <td>
+                <%-- R SCRIPT OUTPUT =========================================================================================== --%>
+                <%-- this.futureLongitudinalRScriptOutputFile --%>
+                
+                <%-- STATE --%>
+                <s:if test="stateCrossSectionalRScriptOutputFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="State Cross-Sectional R Script Output">
+	                    <s:param name="textFilePath" value="stateCrossSectionalRScriptOutputFile" />
+	                    state-cross-sectional-r-script-output.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            
+                <s:if test="stateLongitudinalRScriptOutputFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="State Longitudinal R Script Output">
+	                    <s:param name="textFilePath" value="stateLongitudinalRScriptOutputFile" />
+	                    state-longitudinal-r-script-output.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+                
+                <%-- FIRST YEAR --%>
+                <s:if test="firstYearCrossSectionalRScriptOutputFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="First Year Cross-Sectional R Script Output">
+	                    <s:param name="textFilePath" value="firstYearCrossSectionalRScriptOutputFile" />
+	                    first-year-cross-sectional-r-script-output.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            
+                <s:if test="firstYearLongitudinalRScriptOutputFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="First Year Longitudinal R Script Output">
+	                    <s:param name="textFilePath" value="firstYearLongitudinalRScriptOutputFile" />
+	                    first-year-longitudinal-r-script-output.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>	            
+                
+                <%-- FUTURE --%>
+                <s:if test="futureCrossSectionalRScriptOutputFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="Future Cross-Sectional R Script Output">
+	                    <s:param name="textFilePath" value="futureCrossSectionalRScriptOutputFile" />
+	                    future-cross-sectional-r-script-output.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+	            
+                <s:if test="futureLongitudinalRScriptOutputFile == null">
+                    unavailable
+                </s:if>
+                <s:else>
+                    <s:a action="TextFileDisplay" title="Future Longitudinal R Script Output">
+	                    <s:param name="textFilePath" value="futureLongitudinalRScriptOutputFile" />
+	                    future-longitudinal-r-script-output.txt
+    	            </s:a>
+	            </s:else>
+	            <br/>
+            </td>
         </s:else>
     </tr>
         

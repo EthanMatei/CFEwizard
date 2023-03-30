@@ -118,7 +118,7 @@ Gene List File Name: <s:property value="geneListFileName"/>
 New Results: <br />
 --%>
 
-
+<%-- 
 <s:if test="discoveryId != null">
     <p>
     <s:a action="ValidationCohortSpecification" title="Validation Cohort Creation" class="linkButton" style="margin-left: 2em;">
@@ -127,6 +127,7 @@ New Results: <br />
     </s:a>
     </p>
 </s:if>
+--%>
 
 <table class="dataTable">
 <tr>

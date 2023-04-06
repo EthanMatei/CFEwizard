@@ -214,10 +214,10 @@ public class TestingScoresCalc {
         }
 
 
-        testingData = CfeResultsService.get(testingDataId);
-        if (testingData == null) {
-            throw new Exception("Unable to retrieve testing data for ID " + testingDataId + ".");
-        }
+        //testingData = CfeResultsService.get(testingDataId);
+        //if (testingData == null) {
+        //    throw new Exception("Unable to retrieve testing data for ID " + testingDataId + ".");
+        //}
 
         XSSFWorkbook workbook = testingData.getResultsSpreadsheet();
         if (workbook == null) {

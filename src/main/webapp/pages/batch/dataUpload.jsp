@@ -19,8 +19,10 @@
 
 <h1>Data Upload</h1>
 
-        
-<s:if test="!errorMessage.trim().isEmpty()">
+<s:include value="/pages/error_include.jsp"/>
+
+<%--
+<s:if test="errorMessage != null && !errorMessage.trim().isEmpty()">
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
     </div>
@@ -29,6 +31,7 @@
         <pre><s:property value="exceptionStack"/></pre>
     </div>
 </s:if>
+--%>
         
 <s:actionerror />
 
@@ -55,10 +58,24 @@
 
     <s:hidden name="testingDbTempFileName" /> 
 
-    <p>Ending Step: <s:select name="endingResultsType" list="endingResultsTypeList" value="@cfe.model.CfeResultsType@TESTING_SCORES"/> </p>
+    <hr/>
     
-    <p>Starting Results (Optional)</p>
+    <p>
+    <span style="font-weight: bold;">Ending Step:</span>
+    <s:select name="endingResultsType" list="endingResultsTypeList" value="@cfe.model.CfeResultsType@TESTING_SCORES"/>
+    </p>
     
+    <hr/>
+    
+    <p style="font-weight: bold;">Starting Point (Optional)</p>
+
+    <p>
+    <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@TESTING_PHASE_START: 'Start at Testing Phase'}"/> WORK IN PROGESS
+    </p>
+        
+    <p>
+    Start at past result:
+    </p>
     <table class="dataTable">
         <tr> 
             <th>ID</th>
@@ -70,24 +87,26 @@
             <th>Phene High Cutoff</th>
         </tr>
 
-        <s:iterator value="startingResultsList" var="result">
-            <tr>
-                <td>
-                     <s:radio name="startingCfeResultsId" list="{cfeResultsId}"/>
-                </td>
-                <td>
-                    <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
-                        <s:param name="cfeResultsId" value="cfeResultsId" />
-                        results.xlsx
-                     </s:a>
-                </td>
-                <td> <s:property value="resultsType"/>
-                <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
-                <td> <s:property value="phene"/> </td>
-                <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
-                <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
-            </tr>
-        </s:iterator>
+        <s:if test="startingResultsList != null">
+            <s:iterator value="startingResultsList" var="result">
+                <tr>
+                    <td>
+                         <s:radio name="startingCfeResultsId" list="{cfeResultsId}"/>
+                    </td>
+                    <td>
+                        <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">
+                            <s:param name="cfeResultsId" value="cfeResultsId" />
+                            results.xlsx
+                         </s:a>
+                    </td>
+                    <td> <s:property value="resultsType"/>
+                    <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
+                    <td> <s:property value="phene"/> </td>
+                    <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
+                    <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
+                </tr>
+            </s:iterator>
+        </s:if>
     </table>
 
 

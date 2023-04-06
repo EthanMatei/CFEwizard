@@ -24,8 +24,12 @@
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
         <div style="margin-top: 14px;">
-            <span style="font-weight: bold;">STACK TRACE:</span>
-            <pre><s:property value="exceptionStack"/></pre>
+            <s:if test="exceptionStack != null && exceptionStack != ''">
+                <br/>
+                <pre>
+                    <s:property value="exceptionStack" />
+                </pre>
+            </s:if>
         </div>
     </div>
 </s:if>

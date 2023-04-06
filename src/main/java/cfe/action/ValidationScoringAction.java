@@ -492,7 +492,7 @@ public class ValidationScoringAction extends BaseAction implements SessionAware 
                     // there is an updated master sheet or not - for no update case, can use the Discovery Cohort Info values
                     // (or calculate from generated master sheet?)
                     //-----------------------------------------------------------------------------------------------------------
-                    String key = "Subject Identifers.PheneVisit";
+                    String key = "Subject Identifiers.PheneVisit";
                     DataTable updatedMasterSheetValues = new DataTable(key);
                     // Want all columns up to "Biomarkers"
                     List<String> header = Arrays.asList( CsvUtil.getHeader(updatedMasterSheetContents) );

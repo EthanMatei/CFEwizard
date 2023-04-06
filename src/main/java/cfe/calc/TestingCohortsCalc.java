@@ -56,8 +56,6 @@ public class TestingCohortsCalc {
 	
 	private Map<String,ArrayList<ColumnInfo>> pheneMap;
 	
-	private Long validationId;
-	
 	private String admissionPhene;
 	
 	private String validationConstraint1;
@@ -136,10 +134,6 @@ public class TestingCohortsCalc {
 	}
 	
 
-	/** 
-	 * WORK IN PROGRESS
-	 *
-	 */
     public CfeResults calculate(
             CfeResults validationResults,
             File followUpDb,
@@ -151,20 +145,13 @@ public class TestingCohortsCalc {
  
         //try {
 
-            this.validationResults = validationResults;
-            this.followUpDb        = followUpDb;
+            this.validationResults  = validationResults;
+            this.followUpDb         = followUpDb;
             this.followUpDbFileName = followUpDbFileName;
             this.admissionPhene     = admissionPhene;
             
             if (this.validationResults == null) {
                 throw new Exception("No validation results specified.");
-            }
-
-            this.validationId = validationResults.getCfeResultsId();
-            if (this.validationId == null) {
-                String errorMessage = "Validation resultes do not have an ID.";
-                log.severe(errorMessage);
-                throw new Exception(errorMessage);
             }
             
             this.discoveryPhene = validationResults.getPhene();
@@ -392,7 +379,7 @@ public class TestingCohortsCalc {
         //catch (Exception exception) {
         //    String message = "Testing cohorts creation error: " + exception.getLocalizedMessage();
         //    log.severe(message);
-        //    throw new Exception(message);
+        //    throw new Exception(message, exception);
         //}  
 
         return cfeResults;
@@ -580,14 +567,6 @@ public class TestingCohortsCalc {
 
     public void setValidationResults(CfeResults validationResults) {
         this.validationResults = validationResults;
-    }
-
-    public Long getValidationId() {
-        return validationId;
-    }
-
-    public void setValidationId(Long validationId) {
-        this.validationId = validationId;
     }
 
     public ArrayList<String> getPhenes() {

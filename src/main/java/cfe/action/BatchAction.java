@@ -41,12 +41,20 @@ public class BatchAction extends BaseAction implements SessionAware {
 
 	private Map<String, Object> webSession;
 	
+	public final static long TESTING_PHASE_START = -1L;
+	
 	private double DEFAULT_COMPARISON_THRESHOLD = 0.0001;
 	private File testingDb;
 	private String testingDbContentType;
 	private String testingDbFileName;
 	private String testingDbTempFileName;
-	
+
+	// Testing Input Spreadsheet for running the Testng Phase by itself
+	private File testingInputSpreadsheet;
+	private String testingInputSpreadsheetContentType;
+	private String testingInputSpreadsheetFileName;
+	private String testingInputSpreadsheetTempFileName;
+	    
     private File probesetToGeneMappingDb;
     private String probesetToGeneMappingDbContentType;
     private String probesetToGeneMappingDbFileName;
@@ -82,6 +90,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     private boolean showPrioritizationScores;
     private boolean showValidationCohort;
     private boolean showValidationScores;
+    private boolean showTestingInputs;    // For case when starting from testing phase
     private boolean showTestingCohorts;
     private boolean showTestingScores;
     
@@ -314,18 +323,18 @@ public class BatchAction extends BaseAction implements SessionAware {
 	 */
 	public String uploadData() throws Exception {
 		String result = SUCCESS;
-		
+
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		}
 		else if (this.testingDb == null || this.testingDbFileName == null) {
 		    this.setErrorMessage("No testing database was specified.");
-		    result = ERROR;
+		    result = INPUT;
 		}
 		else if (!this.testingDbFileName.endsWith(".accdb")) {
 		    this.setErrorMessage("Testing database file \"" + testingDbFileName
 		            + "\" does not have MS Access database file extension \".accdb\".");
-		    result = ERROR;
+		    result = INPUT;
 		}
 		else {
 		    try {
@@ -333,37 +342,46 @@ public class BatchAction extends BaseAction implements SessionAware {
 		        
 		        // Get diagnosis types
 		        this.diagnosisTypes = DiagnosisType.getTypes();
-		                
+                
+		        this.showTestingInputs = false;
+                
 		        //----------------------------------------------------------------------------
 		        // If starting results were specified, check that they exist and that the
 		        // step of the starting results is before the step specified for the
 		        // ending results.
 		        //----------------------------------------------------------------------------
-		        if (this.startingCfeResultsId != null && this.startingCfeResultsId > 0) {
-		            CfeResults startingResults = CfeResultsService.get(this.startingCfeResultsId);
-		            if (startingResults == null) {
-		                String message = "Starting results with ID " + this.startingCfeResultsId + " could not be found.";
-		                log.severe(message);
-		                throw new Exception(message);
+		        if (this.startingCfeResultsId != null) {
+		            if (this.startingCfeResultsId > 0) {
+		                CfeResults startingResults = CfeResultsService.get(this.startingCfeResultsId);
+		                if (startingResults == null) {
+		                    String message = "Starting results with ID " + this.startingCfeResultsId + " could not be found.";
+		                    log.severe(message);
+		                    throw new Exception(message);
+		                }
+		                this.startingResultsType = startingResults.getResultsType();
+		                CfeResultsType startingResultsTypeObj = new CfeResultsType(startingResultsType);
+
+		                if (!startingResultsTypeObj.isBefore(this.endingResultsType)) {
+		                    String message = "The starting step \"" + this.startingResultsType + "\" is not"
+		                            + " before the ending step \"" + this.endingResultsType + "\".";
+		                    log.severe(message);
+		                    throw new Exception(message);
+		                }
 		            }
-		            this.startingResultsType = startingResults.getResultsType();
-		            CfeResultsType startingResultsTypeObj = new CfeResultsType(startingResultsType);
-		            
-		            if (!startingResultsTypeObj.isBefore(this.endingResultsType)) {
-		                String message = "The starting step \"" + this.startingResultsType + "\" is not"
-		                        + " before the ending step \"" + this.endingResultsType + "\".";
-		                log.severe(message);
-		                throw new Exception(message);
-		            }
+		            else if (this.startingCfeResultsId == BatchAction.TESTING_PHASE_START) {
+		                this.startingResultsType = CfeResultsType.VALIDATION_SCORES;
+	                    this.showTestingInputs        = true;
+	                }
 		        }
 
 	            this.showDiscoveryCohort      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_COHORT, this.startingResultsType, this.endingResultsType);
 	            this.showDiscoveryScores      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_SCORES, this.startingResultsType, this.endingResultsType);
 	            this.showPrioritizationScores = CfeResultsType.typeIsInRange(CfeResultsType.PRIORITIZATION_SCORES, this.startingResultsType, this.endingResultsType);
 	            this.showValidationCohort     = CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_COHORT, this.startingResultsType, this.endingResultsType);
-	            this.showValidationScores     = CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType, this.endingResultsType);   
+	            this.showValidationScores     = CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType, this.endingResultsType);
 	            this.showTestingCohorts       = CfeResultsType.typeIsInRange(CfeResultsType.TESTING_COHORTS, this.startingResultsType, this.endingResultsType); 
 	            this.showTestingScores        = CfeResultsType.typeIsInRange(CfeResultsType.TESTING_SCORES, this.startingResultsType, this.endingResultsType); 
+
 	               
 	            /*
 		        pastCfeResultsMap = new LinkedHashMap<Long, String>();
@@ -414,10 +432,10 @@ public class BatchAction extends BaseAction implements SessionAware {
 			    this.phenes.add("");
 			    this.phenes.addAll(this.discoveryPheneList);
 			    
-
-			    
 		    } catch (Exception exception) {
 		        this.setErrorMessage("The database could not be processed. " + exception.getLocalizedMessage());
+                String stackTrace = ExceptionUtils.getStackTrace(exception);
+                this.setExceptionStack(stackTrace);
 		        result = ERROR;
 		    }
 		}
@@ -529,7 +547,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 // Delete the testing database temporary file
                 if (testingDbTempFileName != null) {
-				    File testingDbFile = new File(testingDbFileName);
+				    File testingDbFile = new File(testingDbTempFileName);
 				    boolean fileDeleted = testingDbFile.delete();
 				    if (fileDeleted) {
 					    log.info(
@@ -1011,6 +1029,14 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setShowValidationScores(boolean showValidationScores) {
         this.showValidationScores = showValidationScores;
     }
+    
+    public boolean isShowTestingInputs() {
+        return showTestingInputs;
+    }
+
+    public void setShowTestingInputs(boolean showTestingInputs) {
+        this.showTestingInputs = showTestingInputs;
+    }
 
     public boolean isShowTestingCohorts() {
         return showTestingCohorts;
@@ -1122,6 +1148,44 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.testingDbTempFileName = testingDbTempFileName;
     }
 
+    //------------------------------------
+    // Testing Input Spreadsheet
+    //------------------------------------
+    public File getTestingInputSpreadsheet() {
+        return testingInputSpreadsheet;
+    }
+
+    public void setTestingInputSpreadsheet(File testingInputSpreadsheet) {
+        this.testingInputSpreadsheet = testingInputSpreadsheet;
+    }
+
+    public String getTestingInputSpreadsheetContentType() {
+        return testingInputSpreadsheetContentType;
+    }
+
+    public void setTestingInputSpreadsheetContentType(String testingInputSpreadsheetContentType) {
+        this.testingInputSpreadsheetContentType = testingInputSpreadsheetContentType;
+    }
+
+    public String getTestingInputSpreadsheetFileName() {
+        return testingInputSpreadsheetFileName;
+    }
+
+    public void setTestingInputSpreadsheetFileName(String testingInputSpreadsheetFileName) {
+        this.testingInputSpreadsheetFileName = testingInputSpreadsheetFileName;
+    }
+
+    public String getTestingInputSpreadsheetTempFileName() {
+        return testingInputSpreadsheetTempFileName;
+    }
+
+    public void setTestingInputSpreadsheetTempFileName(String testingInputSpreadsheetTempFileName) {
+        this.testingInputSpreadsheetTempFileName = testingInputSpreadsheetTempFileName;
+    }
+    
+    
+    
+    
     public File getProbesetToGeneMappingDb() {
         return probesetToGeneMappingDb;
     }

@@ -712,8 +712,11 @@
 		<action name="BatchDataUpload" class="cfe.action.BatchAction" method="uploadData">
 		    <interceptor-ref name="fileUploadStack"/>
 	        <result name="success">pages/batch/dataInput.jsp</result>
-			<result name="error">pages/batch/dataInput.jsp</result>
-			<result name="input">pages/batch/dataInput.jsp</result>
+			<result name="error">pages/batch/dataUpload.jsp</result>
+			<result name="input" type="redirectAction">
+			    <param name="actionName">BatchInitialization</param>	
+			    <param name="errorMessage">${errorMessage}</param>
+			</result>
 			<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>

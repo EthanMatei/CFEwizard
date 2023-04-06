@@ -43,7 +43,7 @@
 <h1>Data Input</h1>
 
         
-<s:if test="!errorMessage.trim().isEmpty()">
+<s:if test="errorMessage != null && !errorMessage.trim().isEmpty()">
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
     </div>
@@ -82,6 +82,7 @@
     
     <div>&nbsp;</div>
     
+    <%-- DISCOVERY COHORTS ========================================================================= --%>
     <s:if test="showDiscoveryCohort">
         <fieldset class="dataInput">
             <legend>Discovery Cohort</legend>
@@ -108,6 +109,7 @@
         </fieldset>
     </s:if>
 
+    <%-- DISCOVERY SCORES ============================================================================= --%>
     <s:if test="showDiscoveryScores">
         <div>&nbsp;</div>
         
@@ -359,7 +361,23 @@
           
     </fieldset> 
     </s:if>
+ 
+    <%-- TESTING INPUTS (for starting at Testing Phase) ================================================= --%>
+    <s:if test="showTestingInputs">    
     
+        <div>&nbsp;</div>
+        <fieldset class="dataInput">
+            <legend>Testing Inputs</legend>
+
+            <p>
+            Testing Input Spreadsheet: <s:file name="testingInputSpreadsheet" />
+            </p>
+              
+            <p>
+            Phene: <s:select name="discoveryPheneInfo" list="discoveryPheneList"/>
+            </p>
+        </fieldset>
+    </s:if>   
         
     <%-- TESTING COHORTS ================================================================================= --%>
     <s:if test="showTestingCohorts">    

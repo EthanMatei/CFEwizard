@@ -93,6 +93,21 @@ public class CfeResultsType {
         return types;
     }
     
+    public static List<String> getCompleteTypes() {
+        List<String> types = new ArrayList<String>();
+        types.add(DISCOVERY_COHORT);
+        types.add(DISCOVERY_SCORES);
+        
+        types.add(PRIORITIZATION_SCORES);
+
+        types.add(VALIDATION_COHORT);
+        types.add(VALIDATION_SCORES);
+        
+        types.add(TESTING_COHORTS);
+        types.add(TESTING_SCORES);
+
+        return types;
+    }   
     
     public int getOrder() throws Exception {
         int order = 0;

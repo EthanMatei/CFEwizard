@@ -3,7 +3,7 @@
 <!DOCTYPE HTML>
       
 <%-- 
-CFE Template
+CFE Template with status message
 --%>
 
 <%@ taglib prefix="s" uri="/struts-tags"%>
@@ -22,17 +22,11 @@ CFE Template
             <h4 style="margin-top:2px; margin-bottom:4px">version <s:property value="@cfe.model.VersionNumber@VERSION_NUMBER" /> </h4>
         </div>
         
-        
+
         <div style="clear: both;"></div>
         
         <s:if test="#session.username != null & #session.username != ''" >
-            <div style="float: left;">
-                <s:a action="Home">Home</s:a>
-                &nbsp;|&nbsp;
-                <s:a action="BatchInitialization">CFE Pipeline</s:a>
-                &nbsp;|&nbsp;
-                <s:a action="CfeResults">Saved Results</s:a>
-            </div>
+            <div style="float: left;"> <s:a action="Home">Home</s:a> </div>
             <div style="float: right;"> <s:a action="LogoutAction">Logout</s:a> </div>
             <div style="clear: both;"></div>
         </s:if>
@@ -42,6 +36,19 @@ CFE Template
             
         <%-- Content --%>
     	<div class="content">
+    	    <%-- Error Message --%>
+    	    <s:if test="errorMessage != null && errorMessage != ''">
+                <div class="cfeError">
+                    <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
+                    <s:if test="exceptionStack != null && exceptionStack != ''">
+                        <br/>
+                        <pre>
+                        <s:property value="exceptionStack" />
+                        </pre>
+                    </s:if>
+                </div>
+            </s:if>
+            <tiles:insertAttribute name="contentHeader" />
             <tiles:insertAttribute name="content" />
         </div>
     </body>

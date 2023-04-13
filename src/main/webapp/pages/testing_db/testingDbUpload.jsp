@@ -42,7 +42,7 @@
     
     <br />
     <!-- <s:submit value="Upload" id="uploadButton" onclick="submitForm();" /> -->
-    <s:submit value="Upload" id="uploadButton" />
+    <s:submit value="Check" id="checkButton" />
     <s:token />
 
 </s:form>

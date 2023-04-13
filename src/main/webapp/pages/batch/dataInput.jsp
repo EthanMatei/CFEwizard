@@ -42,7 +42,9 @@
 
 <h1>Data Input</h1>
 
-        
+<s:include value="/pages/error_include.jsp"/>
+
+<%--        
 <s:if test="errorMessage != null && !errorMessage.trim().isEmpty()">
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
@@ -52,8 +54,9 @@
         <pre><s:property value="exceptionStack"/></pre>
     </div>
 </s:if>
+--%>
         
-<s:actionerror />
+<%-- <s:actionerror /> --%>
 
 
 <s:form id ="dataInputForm" theme="simple" name="dataInputForm"
@@ -363,6 +366,7 @@
     </s:if>
  
     <%-- TESTING INPUTS (for starting at Testing Phase) ================================================= --%>
+    <%--
     <s:if test="showTestingInputs">    
     
         <div>&nbsp;</div>
@@ -378,6 +382,7 @@
             </p>
         </fieldset>
     </s:if>   
+    --%>
         
     <%-- TESTING COHORTS ================================================================================= --%>
     <s:if test="showTestingCohorts">    

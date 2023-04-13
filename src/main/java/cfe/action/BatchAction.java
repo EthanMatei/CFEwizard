@@ -3,6 +3,7 @@ package cfe.action;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +44,10 @@ public class BatchAction extends BaseAction implements SessionAware {
 	
 	public final static long TESTING_PHASE_START = -1L;
 	
+    public final static long MANUAL_RESULTS_START = 0L;
+	
 	private double DEFAULT_COMPARISON_THRESHOLD = 0.0001;
+	
 	private File testingDb;
 	private String testingDbContentType;
 	private String testingDbFileName;
@@ -99,6 +103,12 @@ public class BatchAction extends BaseAction implements SessionAware {
     private Long startingCfeResultsId;
     private List<CfeResults> startingResultsList;
     private String startingResultsType;
+    
+    private List<String> manualResultsTypeList;
+    private String manualResultsType;
+    private File manualResultsSpreadsheet;
+    private String manualResultsSpreadsheetFileName;
+    private String manualResultsSpreadsheetContentType;
     
     private List<String> endingResultsTypeList;
     private String endingResultsType;
@@ -262,6 +272,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String futureLongitudinalRScriptOutputFile;       
     
     private Long testingScoresResultsId;
+
     
     
     
@@ -309,6 +320,8 @@ public class BatchAction extends BaseAction implements SessionAware {
 	        );
 	        Collections.sort(this.startingResultsList, new CfeResultsNewestFirstComparator());
 	        
+	        this.manualResultsTypeList = CfeResultsType.getCompleteTypes();
+	        
 	        this.endingResultsTypeList = CfeResultsType.getEndTypes();
 		}
 	    return result;
@@ -351,6 +364,33 @@ public class BatchAction extends BaseAction implements SessionAware {
 		        // ending results.
 		        //----------------------------------------------------------------------------
 		        if (this.startingCfeResultsId != null) {
+                    
+                    if (this.startingCfeResultsId == BatchAction.MANUAL_RESULTS_START) {
+                        log.info("Starting with manually created results.");
+                        
+                        this.startingResultsType = this.manualResultsType;
+
+                        String[] pheneInfo = this.discoveryPheneInfo.split("\\.", 2);
+                        this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
+                        this.discoveryPhene = discoveryPheneTable + "." + pheneInfo[1].trim();
+                        
+                        CfeResults manualResults = new CfeResults();
+                        byte[] resultsSpreadsheet = FileUtils.readFileToByteArray(this.manualResultsSpreadsheet);
+                        Date generatedTime = new Date();
+                        manualResults.setGeneratedTime(generatedTime);
+                        manualResults.setResultsType(this.manualResultsType);
+                        manualResults.setResults(resultsSpreadsheet);
+                        manualResults.setPhene(this.discoveryPhene);
+                        manualResults.setLowCutoff(this.discoveryPheneLowCutoff);
+                        manualResults.setHighCutoff(this.discoveryPheneHighCutoff);
+                        manualResults.setUploaded(true);
+                        
+                        CfeResultsService.save(manualResults);
+                        
+                        this.startingCfeResultsId = manualResults.getCfeResultsId();
+                        log.info("Manually created results asigned ID of " + this.startingCfeResultsId + ".");
+                    }		            
+		            
 		            if (this.startingCfeResultsId > 0) {
 		                CfeResults startingResults = CfeResultsService.get(this.startingCfeResultsId);
 		                if (startingResults == null) {
@@ -368,10 +408,11 @@ public class BatchAction extends BaseAction implements SessionAware {
 		                    throw new Exception(message);
 		                }
 		            }
-		            else if (this.startingCfeResultsId == BatchAction.TESTING_PHASE_START) {
-		                this.startingResultsType = CfeResultsType.VALIDATION_SCORES;
-	                    this.showTestingInputs        = true;
-	                }
+
+		            //else if (this.startingCfeResultsId == BatchAction.TESTING_PHASE_START) {
+		            //    this.startingResultsType = CfeResultsType.VALIDATION_SCORES;
+	                //    this.showTestingInputs        = true;
+	                //}
 		        }
 
 	            this.showDiscoveryCohort      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_COHORT, this.startingResultsType, this.endingResultsType);
@@ -433,9 +474,11 @@ public class BatchAction extends BaseAction implements SessionAware {
 			    this.phenes.addAll(this.discoveryPheneList);
 			    
 		    } catch (Exception exception) {
-		        this.setErrorMessage("The database could not be processed. " + exception.getLocalizedMessage());
+		        this.setErrorMessage("The uploads could not be processed. " + exception.getLocalizedMessage());
                 String stackTrace = ExceptionUtils.getStackTrace(exception);
                 this.setExceptionStack(stackTrace);
+                log.severe(exception.getMessage());
+                log.severe(stackTrace);
 		        result = ERROR;
 		    }
 		}
@@ -479,6 +522,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 //----------------------------------------
                 CfeResultsType startingResultsTypeObj = null;
                 CfeResults startingResults = null;
+                
                 if (this.startingCfeResultsId != null && this.startingCfeResultsId > 0) {
                     startingResults = CfeResultsService.get(startingCfeResultsId);
                     if (startingResults == null) {
@@ -487,6 +531,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                     
                     log.info("STARTING RESULTS PHENE: " + startingResults.getPhene());
                     pheneInfo = startingResults.getPhene().split("\\.", 2);
+                    this.discoveryPheneLowCutoff  = startingResults.getLowCutoff();
+                    this.discoveryPheneHighCutoff = startingResults.getHighCutoff();
                     log.info("PHENE INFO from starting results with ID: " + startingCfeResultsId);
                    
                     startingResultsTypeObj = new CfeResultsType(startingResults.getResultsType());
@@ -1099,6 +1145,50 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.startingResultsType = startingResultsType;
     }
 
+    
+    
+    public List<String> getManualResultsTypeList() {
+        return manualResultsTypeList;
+    }
+
+    public void setManualResultsTypeList(List<String> manualResultsTypeList) {
+        this.manualResultsTypeList = manualResultsTypeList;
+    }
+
+    public String getManualResultsType() {
+        return manualResultsType;
+    }
+
+    public void setManualResultsType(String manualResultsType) {
+        this.manualResultsType = manualResultsType;
+    }
+    
+    
+    public File getManualResultsSpreadsheet() {
+        return manualResultsSpreadsheet;
+    }
+
+    public void setManualResultsSpreadsheet(File manualResultsSpreadsheet) {
+        this.manualResultsSpreadsheet = manualResultsSpreadsheet;
+    }
+
+    public String getManualResultsSpreadsheetFileName() {
+        return manualResultsSpreadsheetFileName;
+    }
+
+    public void setManualResultsSpreadsheetFileName(String manualResultsSpreadsheetFileName) {
+        this.manualResultsSpreadsheetFileName = manualResultsSpreadsheetFileName;
+    }
+
+    public String getManualResultsSpreadsheetContentType() {
+        return manualResultsSpreadsheetContentType;
+    }
+
+    public void setManualResultsSpreadsheetContentType(String manualResultsSpreadsheetContentType) {
+        this.manualResultsSpreadsheetContentType = manualResultsSpreadsheetContentType;
+    }
+
+    
     public List<String> getEndingResultsTypeList() {
         return endingResultsTypeList;
     }

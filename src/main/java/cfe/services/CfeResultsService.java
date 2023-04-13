@@ -58,7 +58,7 @@ public class CfeResultsService {
         }
         catch (Exception exception) {
             tx.rollback();
-            throw new Exception("Unable to save CfeResults object: " + exception.getMessage());
+            throw new Exception("Unable to save CfeResults object: " + exception.getMessage(), exception);
         }
         finally {
             session.close();

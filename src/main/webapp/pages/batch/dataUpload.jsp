@@ -20,18 +20,6 @@
 <h1>Data Upload</h1>
 
 <s:include value="/pages/error_include.jsp"/>
-
-<%--
-<s:if test="errorMessage != null && !errorMessage.trim().isEmpty()">
-    <div class="cfeError">
-        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
-    </div>
-    <div style="margin-top: 17px;">
-        <span style="font-weight: bold;">STACK TRACE:</span>
-        <pre><s:property value="exceptionStack"/></pre>
-    </div>
-</s:if>
---%>
         
 <s:actionerror />
 
@@ -70,11 +58,18 @@
     <p style="font-weight: bold;">Starting Point (Optional)</p>
 
     <p>
-    <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@TESTING_PHASE_START: 'Start at Testing Phase'}"/> WORK IN PROGESS
+    <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created result:'}"/> [WORK IN PROGESS]
     </p>
+    <div style="margin-left: 4em;">
+        Type: <s:select name="manualResultsType" list="manualResultsTypeList" value="@cfe.model.CfeResultsType@DISCOVERY_COHORT"/>
+        <br/> Spreadsheet: <s:file name="manualResultsSpreadsheet" label="Spreadsheet"/>
+        <br/> Discovery Phene: <s:textfield name="discoveryPheneInfo"/> format: <i>table-name.phene-name</i> (e.g., "PANSS.P1 Delusions (1-7)")
+        <br/> Discovery Phene Low Cutoff (phene &ge;): <s:textfield name="discoveryPheneLowCutoff" style="text-align: right;" size="4"/>
+        <br/> Discovery Phene High Cutoff (phene &le;): <s:textfield name="discoveryPheneHighCutoff" style="text-align: right;" size="4"/>
+    </div>
         
     <p>
-    Start at past result:
+    Past calculated or uploaded result:
     </p>
     <table class="dataTable">
         <tr> 

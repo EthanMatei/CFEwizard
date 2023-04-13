@@ -504,6 +504,7 @@ public class ValidationScoresCalc {
 
         String validationMasterSheetFileName = this.createValidationMasterSheet(
                 validationCohortId,
+                diagnosisType,
                 predictorList,
                 this.geneExpressionCsv
         );
@@ -551,7 +552,7 @@ public class ValidationScoresCalc {
 	}
 
 	
-	public String createValidationMasterSheet(Long validationDataId, DataTable predictorList, File geneExpressionCsvFile)
+	public String createValidationMasterSheet(Long validationDataId, String diagnosisType, DataTable predictorList, File geneExpressionCsvFile)
 	        throws Exception
 	{
 	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
@@ -588,7 +589,13 @@ public class ValidationScoresCalc {
         for (int i = 0; i < masterSheet.getNumberOfRows(); i++) {
             String gender = masterSheet.getValue(i, "Gender(M/F)");
             String dxCode = masterSheet.getValue(i, "DxCode");
-            masterSheet.setValue(i, "dx", gender + "-" + dxCode);
+            
+            if (diagnosisType.equals(DiagnosisType.GENDER)) { 
+                masterSheet.setValue(i, "dx", gender);
+            }
+            else {
+                 masterSheet.setValue(i, "dx", gender + "-" + dxCode);
+            }
         }
         
         // Create Biomarkers column (contains pheneVisit as value)

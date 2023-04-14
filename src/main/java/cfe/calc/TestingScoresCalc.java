@@ -266,7 +266,8 @@ public class TestingScoresCalc {
         this.testingMasterSheetFile = this.createTestingMasterSheet(
                 this.testingDataId,
                 predictorList,
-                this.geneExpressionCsv
+                this.geneExpressionCsv,
+                diagnosisType
                 );
 
         log.info("Master Sheet file name: " + this.testingMasterSheetFile);
@@ -379,8 +380,8 @@ public class TestingScoresCalc {
                     testType, studyType,
                     this.predictionPhene,
                     (this.predictionPheneHighCutoff - this.predictionComparisonThreshold),
-                    diagnoses,
-                    genderDiagnoses,
+                    //diagnoses,
+                    //genderDiagnoses,
                     this.finalMasterSheetFile,
                     this.predictorListFile,
                     this.updatedPredictorListTempFile
@@ -404,7 +405,7 @@ public class TestingScoresCalc {
             this.rScriptOutputStateLongitudinal = this.runScript(
                     testType, studyType,
                     this.predictionPhene, this.predictionPheneHighCutoff - this.predictionComparisonThreshold,
-                    diagnoses, genderDiagnoses,
+                    //diagnoses, genderDiagnoses,
                     this.finalMasterSheetFile,
                     this.predictorListFile, this.updatedPredictorListTempFile
             );
@@ -425,7 +426,7 @@ public class TestingScoresCalc {
             this.rScriptOutputFirstYearCrossSectional = this.runScript(
                     testType, studyType,
                     this.predictionPhene, this.predictionPheneHighCutoff,
-                    diagnoses, genderDiagnoses,
+                    //diagnoses, genderDiagnoses,
                     this.finalMasterSheetFile,
                     this.predictorListFile, this.updatedPredictorListTempFile
             );
@@ -446,7 +447,7 @@ public class TestingScoresCalc {
             this.rScriptOutputFirstYearLongitudinal = this.runScript(
                     testType, studyType,
                     this.predictionPhene, this.predictionPheneHighCutoff,
-                    diagnoses, genderDiagnoses,
+                    //diagnoses, genderDiagnoses,
                     this.finalMasterSheetFile,
                     this.predictorListFile, this.updatedPredictorListTempFile
             );
@@ -469,7 +470,7 @@ public class TestingScoresCalc {
             this.rScriptOutputFutureCrossSectional = this.runScript(
                     testType, studyType,
                     this.predictionPhene, this.predictionPheneHighCutoff,
-                    diagnoses, genderDiagnoses,
+                    //diagnoses, genderDiagnoses,
                     this.finalMasterSheetFile,
                     this.predictorListFile, this.updatedPredictorListTempFile
             );
@@ -491,7 +492,7 @@ public class TestingScoresCalc {
             this.rScriptOutputFutureLongitudinal = this.runScript(
                     testType, studyType,
                     this.predictionPhene, this.predictionPheneHighCutoff,
-                    diagnoses, genderDiagnoses,
+                    //diagnoses, genderDiagnoses,
                     this.finalMasterSheetFile,
                     this.predictorListFile, this.updatedPredictorListTempFile
             );
@@ -663,7 +664,7 @@ public class TestingScoresCalc {
 
    
 	
-    public String createTestingMasterSheet(Long testingDataId, DataTable predictorList, File geneExpressionCsvFile)
+    public String createTestingMasterSheet(Long testingDataId, DataTable predictorList, File geneExpressionCsvFile, String diagnosisType)
             throws Exception
     {
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
@@ -708,12 +709,19 @@ public class TestingScoresCalc {
         masterSheetDataTable.moveColumn("Demographics.PheneVisit", 4);
         
         masterSheetDataTable.insertColumn("dx", 5, "");
+        
+        String value = "";
         for (int rowIndex = 0; rowIndex < masterSheetDataTable.getNumberOfRows(); rowIndex++) {
-            String value =
+            if (diagnosisType.equals(DiagnosisType.GENDER)) {
+                value = masterSheetDataTable.getValue(rowIndex, "Gender(M/F)");                
+            }
+            else {
+                value =
                     masterSheetDataTable.getValue(rowIndex, "Gender(M/F)")
                     + "-"
                     + masterSheetDataTable.getValue(rowIndex, "DxCode")
                     ;
+            }
 
             masterSheetDataTable.setValue(rowIndex, "dx", value);
         }
@@ -918,7 +926,7 @@ public class TestingScoresCalc {
             if (predictor != null && !predictor.isEmpty()) {
                 for (int i = 1; i < row.length; i++) {
                     String pheneVisit = header[i];
-                    String value = row[i];
+                    String rowValue = row[i];
                     
                     predictor = predictor.replaceAll("/", ValidationScoresCalc.PREDICTOR_SLASH_REPLACEMENT);
                     predictor = predictor.replaceAll("-", ValidationScoresCalc.PREDICTOR_HYPHEN_REPLACEMENT);
@@ -930,7 +938,7 @@ public class TestingScoresCalc {
                     // ... <phene-visit> <value>               <value>
                     int rowIndex = masterSheetDataTable.getRowIndex("Subject Identifiers.PheneVisit", pheneVisit);
                     if (rowIndex >= 0) {
-                        masterSheetDataTable.setValue(rowIndex, predictor, value);    
+                        masterSheetDataTable.setValue(rowIndex, predictor, rowValue);    
                     }
                 }
             }
@@ -1262,7 +1270,7 @@ public class TestingScoresCalc {
 	 */
     public String runScript(String testType, String studyType,
             String phene, double pheneHighCutoff,
-            Set<String> diagnoses, Set<String> genderDiagnoses,
+            //Set<String> diagnoses, Set<String> genderDiagnoses,
             String masterSheetFile, String predictorListFile, String updatedPredictorListFile) throws Exception {
         log.info("runScript start.");
         log.info("Starting runScript for test type \"" + testType + "\" and study type \"" + studyType + "\".");

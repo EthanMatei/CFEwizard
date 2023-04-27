@@ -352,6 +352,30 @@ public class BatchAction extends BaseAction implements SessionAware {
 		else {
 		    try {
 		        log.info("Testing database \"" + this.testingDbFileName + "\" uploaded.");
+
+	              
+                // Copy the upload files to temporary files, because the upload files get deleted
+                // and they are needed beyond this method
+                
+                // Testing database
+                File testingDbTmp = FileUtil.createTempFile("testing-db-", ".accdb");
+                FileUtils.copyFile(this.testingDb, testingDbTmp);
+                this.testingDbTempFileName = testingDbTmp.getAbsolutePath();
+
+                // Process testing database
+                DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDbTempFileName);
+                dbParser.checkCoreTables();
+                //this.pheneTables = dbParser.getPheneTables();
+                this.discoveryPheneList = dbParser.getPheneList();
+                this.genomicsTables = dbParser.getGenomicsTables();
+                this.diagnosisCodes = dbParser.getDiagnosisCodes();
+                this.diagnosisCodesList = new ArrayList<String>();
+                this.diagnosisCodesList.add("All");
+                this.diagnosisCodesList.addAll(diagnosisCodes.keySet());
+                
+                this.phenes = new ArrayList<String>();
+                this.phenes.add("");
+                this.phenes.addAll(this.discoveryPheneList);
 		        
 		        // Get diagnosis types
 		        this.diagnosisTypes = DiagnosisType.getTypes();
@@ -370,9 +394,16 @@ public class BatchAction extends BaseAction implements SessionAware {
                         
                         this.startingResultsType = this.manualResultsType;
 
+                        if (this.discoveryPheneInfo == null || this.discoveryPheneInfo.isEmpty()) {
+                            throw new Exception("No discovery phene specified for manually created results upload.");
+                        }
                         String[] pheneInfo = this.discoveryPheneInfo.split("\\.", 2);
-                        this.discoveryPheneTable = pheneInfo[0].replace('[', ' ').trim();
-                        this.discoveryPhene = discoveryPheneTable + "." + pheneInfo[1].trim();
+                        this.discoveryPheneTable = pheneInfo[0].trim();
+                        this.discoveryPhene = this.discoveryPheneInfo;
+                        
+                        if (!this.discoveryPheneList.contains(this.discoveryPhene)) {
+                            throw new Exception("Phene \"" + this.discoveryPhene + "\" was not found in the testing database.");
+                        }
                         
                         CfeResults manualResults = new CfeResults();
                         byte[] resultsSpreadsheet = FileUtils.readFileToByteArray(this.manualResultsSpreadsheet);
@@ -384,6 +415,11 @@ public class BatchAction extends BaseAction implements SessionAware {
                         manualResults.setLowCutoff(this.discoveryPheneLowCutoff);
                         manualResults.setHighCutoff(this.discoveryPheneHighCutoff);
                         manualResults.setUploaded(true);
+                        
+                        if (this.discoveryPheneLowCutoff > this.discoveryPheneHighCutoff) {
+                            throw new Exception("The discovery phene low cutoff " + this.discoveryPheneLowCutoff + " is"
+                                    + " greater than the high cutoff " + this.discoveryPheneHighCutoff);    
+                        }
                         
                         CfeResultsService.save(manualResults);
                         
@@ -449,29 +485,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 		        }
 		        */
 		        
-		        
-			    // Copy the upload files to temporary files, because the upload files get deleted
-			    // and they are needed beyond this method
-		        
-		        // Testing database
-			    File testingDbTmp = FileUtil.createTempFile("testing-db-", ".accdb");
-			    FileUtils.copyFile(this.testingDb, testingDbTmp);
-			    this.testingDbTempFileName = testingDbTmp.getAbsolutePath();
 
-                // Process testing database
-			    DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDbTempFileName);
-			    dbParser.checkCoreTables();
-			    //this.pheneTables = dbParser.getPheneTables();
-			    this.discoveryPheneList = dbParser.getPheneList();
-			    this.genomicsTables = dbParser.getGenomicsTables();
-			    this.diagnosisCodes = dbParser.getDiagnosisCodes();
-			    this.diagnosisCodesList = new ArrayList<String>();
-			    this.diagnosisCodesList.add("All");
-			    this.diagnosisCodesList.addAll(diagnosisCodes.keySet());
-			    
-			    this.phenes = new ArrayList<String>();
-			    this.phenes.add("");
-			    this.phenes.addAll(this.discoveryPheneList);
 			    
 		    } catch (Exception exception) {
 		        this.setErrorMessage("The uploads could not be processed. " + exception.getLocalizedMessage());

@@ -388,6 +388,8 @@ public class BatchAction extends BaseAction implements SessionAware {
 		        // ending results.
 		        //----------------------------------------------------------------------------
 		        if (this.startingCfeResultsId != null) {
+		            
+		            log.info("STARTING RESULTS IS NOT NULL: " + this.startingCfeResultsId);
                     
                     if (this.startingCfeResultsId == BatchAction.MANUAL_RESULTS_START) {
                         log.info("Starting with manually created results.");
@@ -397,12 +399,25 @@ public class BatchAction extends BaseAction implements SessionAware {
                         if (this.discoveryPheneInfo == null || this.discoveryPheneInfo.isEmpty()) {
                             throw new Exception("No discovery phene specified for manually created results upload.");
                         }
+                        
+                        if (!this.discoveryPheneInfo.contains(".")) {
+                            throw new Exception("The specified discovery phene \"" + this.discoveryPheneInfo + "\" does not"
+                                    + " contain a table name.");
+                        }
+                        
                         String[] pheneInfo = this.discoveryPheneInfo.split("\\.", 2);
                         this.discoveryPheneTable = pheneInfo[0].trim();
                         this.discoveryPhene = this.discoveryPheneInfo;
+                        // Need to change to bracket format for search of phene
+                        String searchPhene = "[" + pheneInfo[0] + "] " + pheneInfo[1];
                         
-                        if (!this.discoveryPheneList.contains(this.discoveryPhene)) {
-                            throw new Exception("Phene \"" + this.discoveryPhene + "\" was not found in the testing database.");
+                        if (!this.discoveryPheneList.contains(searchPhene)) {
+                            String message = "Phene \"" + this.discoveryPhene + "\" was not found in the testing database.";
+                            //String validPhenes = String.join(", ", this.discoveryPheneList);
+                            //validPhenes = validPhenes.substring(0, 100) + "...";
+                            //message += " Valid phenes are: " + validPhenes + ".";
+                            
+                            throw new Exception(message);
                         }
                         
                         CfeResults manualResults = new CfeResults();
@@ -416,6 +431,9 @@ public class BatchAction extends BaseAction implements SessionAware {
                         manualResults.setHighCutoff(this.discoveryPheneHighCutoff);
                         manualResults.setUploaded(true);
                         
+                        log.info("DISCOVERY PHENE LOW CUTOFF: " + this.discoveryPheneLowCutoff);
+                        log.info("DISCOVERY PHENE HIGH CUTOFF: " + this.discoveryPheneHighCutoff);
+                       
                         if (this.discoveryPheneLowCutoff > this.discoveryPheneHighCutoff) {
                             throw new Exception("The discovery phene low cutoff " + this.discoveryPheneLowCutoff + " is"
                                     + " greater than the high cutoff " + this.discoveryPheneHighCutoff);    

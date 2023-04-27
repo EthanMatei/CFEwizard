@@ -57,23 +57,35 @@
     
     <p style="font-weight: bold;">Starting Point (Optional)</p>
 
-    <div style="margin-left: 4em;">
+    <div style="margin-left: 3em;">
     
         <fieldset class="dataInput">
             <p style="font-weight: bold;">
-            <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created result:'}"/> [WORK IN PROGESS]
+            <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created result:'}"/>
             </p>
             <div style="margin-left: 3em;">
-                <div style="margin-bottom: 5px;">
+                <div style="margin-bottom: 7px;">
                 Type: <s:select name="manualResultsType" list="manualResultsTypeList" value="@cfe.model.CfeResultsType@DISCOVERY_COHORT"/>
                 &nbsp; Spreadsheet: <s:file name="manualResultsSpreadsheet" label="Spreadsheet"/>
                 </div>
-                <div style="margin-bottom: 5px;">
-                Discovery Phene: <s:textfield name="discoveryPheneInfo"/> format: <i>table-name.phene-name</i> (e.g., "PANSS.P1 Delusions (1-7)")
+                
+                <div style="margin-bottom: 7px;">
+                <s:radio name="manualPheneInfoSource" list="#{'spreadsheet': 'Get discovery phene info from spreadsheet'}" checked="true"/>
                 </div>
-                <div>
-                Discovery Phene Low Cutoff (phene &ge;): <s:textfield name="discoveryPheneLowCutoff" style="text-align: right;" size="4"/>
-                &nbsp; Discovery Phene High Cutoff (phene &le;): <s:textfield name="discoveryPheneHighCutoff" style="text-align: right;" size="4"/>
+                
+                <div style="margin-bottom: 5px;">
+                <s:radio name="manualPheneInfoSource" list="#{'input': 'Enter discovery phene info:'}"/>
+                </div>
+                
+                <div style="margin-left: 3em;">
+
+                    <div style="margin-bottom: 5px;">
+                    Discovery Phene: <s:textfield name="discoveryPheneInfo"/> format: <i>table-name.phene-name</i> (e.g., "PANSS.P1 Delusions (1-7)")
+                    </div>
+                    <div>
+                    Discovery Phene Low Cutoff (phene &ge;): <s:textfield name="discoveryPheneLowCutoff" style="text-align: right;" size="4"/>
+                    &nbsp; Discovery Phene High Cutoff (phene &le;): <s:textfield name="discoveryPheneHighCutoff" style="text-align: right;" size="4"/>
+                    </div>
                 </div>
             </div>
         </fieldset>

@@ -1,6 +1,8 @@
 package cfe.action;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -11,6 +13,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Triple;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.action.SessionAware;
 
 import cfe.calc.DiscoveryCohortCalc;
@@ -23,6 +27,7 @@ import cfe.calc.ValidationScoresCalc;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsType;
+import cfe.model.CfeResultsWorkbook;
 import cfe.model.DiagnosisType;
 import cfe.model.PercentileScores;
 import cfe.model.prioritization.GeneListInput;
@@ -87,6 +92,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     private boolean debugDiscoveryScoring = false;
     
     private List<String> phenes;
+    
+    private String manualPheneInfoSource;
     
     /* UI flags (to avoid static method calls in JSP pages -------------------------*/
     private boolean showDiscoveryCohort;
@@ -395,6 +402,22 @@ public class BatchAction extends BaseAction implements SessionAware {
                         log.info("Starting with manually created results.");
                         
                         this.startingResultsType = this.manualResultsType;
+                        log.info("MANUAL STARTING RESULTS TYPE: " + this.startingResultsType);
+                        
+                        // Get the results spreadsheet
+                        byte[] resultsSpreadsheet = FileUtils.readFileToByteArray(this.manualResultsSpreadsheet);
+                        
+                        if (this.manualPheneInfoSource.equals("spreadsheet")) {
+                            // If the user specified to get the discovery phene information
+                            // from the uploaded results spreasheet
+                            InputStream inputStream = new ByteArrayInputStream(resultsSpreadsheet);
+
+                            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+                            Triple<String, Double, Double> pheneNameLowHigh = CfeResultsWorkbook.getPheneInfo(workbook);
+                            this.discoveryPheneInfo       = pheneNameLowHigh.getLeft();
+                            this.discoveryPheneLowCutoff  = pheneNameLowHigh.getMiddle();
+                            this.discoveryPheneHighCutoff = pheneNameLowHigh.getRight();
+                        }
 
                         if (this.discoveryPheneInfo == null || this.discoveryPheneInfo.isEmpty()) {
                             throw new Exception("No discovery phene specified for manually created results upload.");
@@ -421,14 +444,16 @@ public class BatchAction extends BaseAction implements SessionAware {
                         }
                         
                         CfeResults manualResults = new CfeResults();
-                        byte[] resultsSpreadsheet = FileUtils.readFileToByteArray(this.manualResultsSpreadsheet);
+
                         Date generatedTime = new Date();
                         manualResults.setGeneratedTime(generatedTime);
                         manualResults.setResultsType(this.manualResultsType);
                         manualResults.setResults(resultsSpreadsheet);
+
                         manualResults.setPhene(this.discoveryPhene);
                         manualResults.setLowCutoff(this.discoveryPheneLowCutoff);
                         manualResults.setHighCutoff(this.discoveryPheneHighCutoff);
+
                         manualResults.setUploaded(true);
                         
                         log.info("DISCOVERY PHENE LOW CUTOFF: " + this.discoveryPheneLowCutoff);
@@ -1067,7 +1092,15 @@ public class BatchAction extends BaseAction implements SessionAware {
         
         return weights;
     }
-        
+
+    public String getManualPheneInfoSource() {
+        return manualPheneInfoSource;
+    }
+
+    public void setManualPheneInfoSource(String manualPheneInfoSource) {
+        this.manualPheneInfoSource = manualPheneInfoSource;
+    }
+
     public boolean isShowDiscoveryCohort() {
         return showDiscoveryCohort;
     }

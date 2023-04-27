@@ -28,6 +28,7 @@
         <th>ID</th>
         <th>Results</th> <th>Results Type</th> <th>Details</th>
         <th>Time Generated</th>
+        <th>Uploaded</th>
         <%--<th>Uploaded</th>--%>
         <th>Discovery Phene</th> <th>Discovery Phene<br/>Low Cutoff</th> <th>Discovery Phene<br/>High Cutoff</th>
         <s:if test="#session.username==adminUser">
@@ -51,6 +52,7 @@
                  </s:a>
             </td>
             <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
+            <td> <s:property value="uploaded"/> </td>
             <%--
             <td>
                 <s:if test="uploaded == true">

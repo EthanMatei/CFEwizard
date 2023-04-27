@@ -379,6 +379,14 @@ public class CfeResults implements Serializable {
         this.cfeResultsFile = cfeResultsFile;
     }
 
+
+    //@Column(nullable = false, columnDefinition = "TINYINT", length = 1)
+    //@Column(nullable = false, columnDefinition = "BOOLEAN")
+    //@Column(nullable=false)
+    //@Column(nullable = false, columnDefinition = "TINYINT(1)")
+    //@Type(type = "org.hibernate.type.NumbericBooleanType")
+    //@Column(name = "uploaded", columnDefinition = "BOOLEAN")
+    //@Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     //@Column(nullable=false)
     //@Type(type = "org.hibernate.type.NumbericBooleanType")
     public boolean isUploaded() {

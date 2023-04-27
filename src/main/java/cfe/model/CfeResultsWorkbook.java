@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.tuple.MutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -25,6 +27,72 @@ public class CfeResultsWorkbook {
     
     public CfeResultsWorkbook(XSSFWorkbook workbook) {
         this.workbook = workbook;
+    }
+    
+    /**
+     * Gets the discovery phene and its low and high cutoffs from a CfeResults workbook.
+     *
+     * @param workbook
+     * @return
+     * @throws Exception
+     */
+    public static Triple<String, Double, Double> getPheneInfo(XSSFWorkbook workbook) throws Exception {
+
+        String sheetName = CfeResultsSheets.DISCOVERY_COHORT_INFO;
+        
+        XSSFSheet sheet = workbook.getSheet(sheetName);
+        if (sheet == null) {
+            throw new Exception("Sheet \"" + sheetName + "\" not found in workbook.");
+        }
+        DataTable discoveryCohortInfo = new DataTable("attribute");
+        discoveryCohortInfo.initializeToWorkbookSheet(sheet);
+        
+        //------------------------------------------------
+        // Get the discovery phene
+        //------------------------------------------------
+        String phene = discoveryCohortInfo.getValue("Phene", "value");
+        if (phene == null || phene.isEmpty()) {
+            throw new Exception("No phene value found in workbook sheet \"" + sheetName + "\".");
+        }
+        
+        //-------------------------------------------
+        // Get the discovery phene low cutoff
+        //-------------------------------------------
+        String lowCutoffString = discoveryCohortInfo.getValue("Low Cutoff", "value");
+        if (lowCutoffString == null || lowCutoffString.isEmpty()) {
+            throw new Exception("No phene low cutoff specified in sheet \"" + sheetName + "\".");
+        }
+        
+        Double lowCutoff = 0.0;
+        try {
+            lowCutoff = Double.parseDouble(lowCutoffString);
+        }
+        catch (NumberFormatException exception) {
+            throw new Exception("The phene low cutoff \"" + lowCutoffString + "\" in sheet \"" + sheetName +
+                    "\" is not a valid number.");
+        }
+        
+        //-------------------------------------------
+        // Get the discovery phene high cutoff
+        //-------------------------------------------
+        String highCutoffString = discoveryCohortInfo.getValue("High Cutoff", "value");
+        if (highCutoffString == null || highCutoffString.isEmpty()) {
+            throw new Exception("No phene high cutoff specifiied in sheet \"" + sheetName + "\".");
+        }
+        
+        Double highCutoff = 0.0;
+        try {
+            highCutoff = Double.parseDouble(highCutoffString);
+        }
+        catch (NumberFormatException exception) {
+            throw new Exception("The phene high cutoff \"" + highCutoffString + "\" in sheet \"" + sheetName +
+                    "\" is not a valid number.");
+        }        
+        
+        Triple<String, Double, Double> pheneNameLowHigh
+            = new MutableTriple<String, Double, Double>(phene, lowCutoff, highCutoff);
+        
+        return pheneNameLowHigh;
     }
     
     

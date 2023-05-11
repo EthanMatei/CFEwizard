@@ -205,7 +205,7 @@ fieldset.home {
 /*********************************/
 /* Anchor help                   */
 /*********************************/
-a.help {
+span.help {
 	color: #000000;
     background-color: #DEE7EF;
 	border: 2px solid #000000;

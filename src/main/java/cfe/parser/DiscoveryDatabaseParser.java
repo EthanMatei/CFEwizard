@@ -296,9 +296,17 @@ public class DiscoveryDatabaseParser extends AccessDatabaseParser {
 		Map<String,HashSet<String>> codes = new TreeMap<String,HashSet<String>>();
 
 	    Table table = this.database.getTable(DIAGNOSIS_TABLE);
+	    
+	    if (table == null) {
+	        throw new Exception("The database is missing required table \"" + DIAGNOSIS_TABLE + "\".");
+	    }
 		
 	    for (Row row: table) {
 	    	String value = row.getString("Primary DIGS DX");
+	    	if (value == null) {
+	    	    value = "";
+	    	}
+	    	
 	    	String key = row.getString("DxCode");
 	    	if (key != null && !key.trim().contentEquals("")) {
 	    		if (!codes.containsKey(key)) {

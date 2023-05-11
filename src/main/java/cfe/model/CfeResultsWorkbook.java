@@ -1,6 +1,7 @@
 package cfe.model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -27,6 +28,64 @@ public class CfeResultsWorkbook {
     
     public CfeResultsWorkbook(XSSFWorkbook workbook) {
         this.workbook = workbook;
+    }
+    
+    // WORK IN PROGRESS
+    public static String inferResultsType(XSSFWorkbook workbook) {
+        String resultsType = null;
+        
+
+        Set<String> sheetNames = new HashSet<String>();
+        
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            String name = workbook.getSheetName(i);
+            sheetNames.add(name);
+        }
+        
+        // Check for sheets - NEED TO CHECK IN ORDER OF LAST PHASE TO FIRST PHASE!
+        if (sheetNames.contains(CfeResultsSheets.TESTING_SCORES_INFO)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_FIRST_YEAR_CROSS_SECTIONAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_FIRST_YEAR_LONGITUDINAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_FUTURE_CROSS_SECTIONAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_FUTURE_LONGITUDINAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_STATE_CROSS_SECTIONAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_STATE_LONGITUDINAL)
+            ) {
+                resultsType = CfeResultsType.TESTING_SCORES;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.TESTING_COHORT)   // ??? Is this for testing or validation cohort???
+                || sheetNames.contains(CfeResultsSheets.TESTING_COHORT_DATA)  // ????????? Is this for testing or validation cohort
+                || sheetNames.contains(CfeResultsSheets.TESTING_COHORT_INFO)
+            ) {
+            resultsType = CfeResultsType.TESTING_COHORTS;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.VALIDATION_SCORES)
+                || sheetNames.contains(CfeResultsSheets.VALIDATION_SCORES_INFO)
+            ) {
+            resultsType = CfeResultsType.VALIDATION_SCORES;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.VALIDATION_COHORT)
+                || sheetNames.contains(CfeResultsSheets.VALIDATION_COHORT_INFO)
+            ) {
+            resultsType = CfeResultsType.VALIDATION_COHORT;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.PRIORITIZATION_DISEASES)
+                || sheetNames.contains(CfeResultsSheets.PRIORITIZATION_GENE_LIST)
+                || sheetNames.contains(CfeResultsSheets.PRIORITIZATION_SCORE_DETAILS)
+                || sheetNames.contains(CfeResultsSheets.PRIORITIZATION_SCORES)
+                || sheetNames.contains(CfeResultsSheets.PRIORITIZATION_SCORES_INFO)
+                || sheetNames.contains(CfeResultsSheets.PRIORITIZATION_SCORING_WEIGHTS)
+            ) {
+            resultsType = CfeResultsType.PRIORITIZATION_SCORES;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.DISCOVERY_SCORES)) {
+            resultsType = CfeResultsType.DISCOVERY_SCORES;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.DISCOVERY_COHORT)) {
+            resultsType = CfeResultsType.DISCOVERY_COHORT;
+        }
+
+        return resultsType;
     }
     
     /**

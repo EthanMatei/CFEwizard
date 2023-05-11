@@ -398,7 +398,11 @@ public class BatchAction extends BaseAction implements SessionAware {
 		            
 		            log.info("STARTING RESULTS IS NOT NULL: " + this.startingCfeResultsId);
                     
+		            //-----------------------------------------------------------
+		            // If starting with manually created results
+		            //-----------------------------------------------------------
                     if (this.startingCfeResultsId == BatchAction.MANUAL_RESULTS_START) {
+                        
                         log.info("Starting with manually created results.");
                         
                         this.startingResultsType = this.manualResultsType;

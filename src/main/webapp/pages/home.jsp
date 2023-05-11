@@ -14,7 +14,7 @@
 <s:a action="BatchInitialization">CFE Pipeline</s:a>
 </p>
 
-<fieldset>
+<fieldset class="home" style="margin-left: 2em;">
 <legend>Discovery</legend>
 
 <%--
@@ -33,17 +33,17 @@
 </div>
 </fieldset>
 
-<fieldset>
+<fieldset class="home" style="margin-left: 2em; margin-top: 14px;">
 <legend>Prioritization</legend>
 
 <div style="display: inline-block; vertical-align: top; margin-top: 0; padding-top: 0;">
-    <ul>        
+    <ul style="margin: 0;">        
         <li><s:a action="PrioritizationGeneListUpload">Prioritization Scoring</s:a></li>
     </ul>
 </div>
 
 <div style="display: inline-block; vertical-align: top;">
-    <ul style="margin-top: 0;">
+    <ul style="margin: 0;">
         <li>
             <s:a action="PrioritizationReport">
                 <s:param name="reportName" value="'diseases'" />
@@ -64,7 +64,7 @@
 </fieldset>
 
 
-<fieldset>
+<fieldset class="home" style="margin-left: 2em; margin-top: 14px;">
 <legend>Validation</legend>
 
 <%--
@@ -77,16 +77,18 @@
 --%>
 
 <div style="display: inline-block; vertical-align: top;">
-    <ul style="margin-top: 0;">
+    <ul style="margin: 0;">
         <li> <s:a action="ValidationDataMergeSelection">Merge Priority Scores with Discovery Scores</s:a></li>
     </ul>
 </div>
 
 </fieldset>
 
-<fieldset>
+<%--
+<fieldset style="margin-left: 2em; margin-top: 14px;">
   <legend>Testing</legend>
 </fieldset>
+--%>
 
 <%--
 <h2>4. Testing</h2>
@@ -99,14 +101,15 @@
 
 
 
-
-<h2>Results</h2>
-<ul>
+<fieldset class="home" style="margin-left: 2em; margin-top: 14px;">
+  <legend>Results</legend>
+  <ul style="margin: 0;">
     <li><s:a action="CfeResults">Saved Results</s:a></li>
-</ul>
+  </ul>
+</fieldset>
 
 <s:if test="#session.username==adminUser">
-<hr />
+<hr style="margin-top: 14px;"/>
 <h3>Admin</h3>
     <ul>
         <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>

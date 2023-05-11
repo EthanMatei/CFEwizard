@@ -192,3 +192,26 @@ fieldset.dataInputLevel2 legend {
 	font-weight: normal;
 	color: #000063;
 }
+
+/*****************/
+/* Fieldset home */
+/*****************/
+fieldset.home {
+	border-radius: 5px;
+    border: 1px solid #000000;
+    /* background-color: #F5F5F5; */
+}
+
+/*********************************/
+/* Anchor help                   */
+/*********************************/
+a.help {
+	color: #000000;
+    background-color: #DEE7EF;
+	border: 2px solid #000000;
+	border-radius: 4px;
+	font-weight: bold;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-decoration: none;
+}

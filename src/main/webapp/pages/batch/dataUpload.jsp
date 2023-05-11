@@ -71,6 +71,7 @@
                 
                 <div style="margin-bottom: 7px;">
                 <s:radio name="manualPheneInfoSource" list="#{'spreadsheet': 'Get discovery phene info from spreadsheet'}" checked="true"/>
+                <%-- <a href="#" target="_blank" class="help">?</a> --%>
                 </div>
                 
                 <div style="margin-bottom: 5px;">

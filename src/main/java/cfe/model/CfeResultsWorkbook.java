@@ -43,6 +43,70 @@ public class CfeResultsWorkbook {
         }
         
         // Check for sheets - NEED TO CHECK IN ORDER OF LAST PHASE TO FIRST PHASE!
+        if (sheetNames.contains(CfeResultsSheets.TESTING_FIRST_YEAR_CROSS_SECTIONAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_FIRST_YEAR_LONGITUDINAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_FUTURE_CROSS_SECTIONAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_FUTURE_LONGITUDINAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_STATE_CROSS_SECTIONAL)
+                    || sheetNames.contains(CfeResultsSheets.TESTING_STATE_LONGITUDINAL)
+            ) {
+                resultsType = CfeResultsType.TESTING_SCORES;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.PREDICTION_COHORT)) {
+            resultsType = CfeResultsType.TESTING_COHORTS;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.VALIDATION_SCORES)) {
+            resultsType = CfeResultsType.VALIDATION_SCORES;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.VALIDATION_COHORT)) {
+            resultsType = CfeResultsType.VALIDATION_COHORT;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.PRIORITIZATION_SCORES)) {
+            resultsType = CfeResultsType.PRIORITIZATION_SCORES;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.DISCOVERY_SCORES)) {
+            resultsType = CfeResultsType.DISCOVERY_SCORES;
+        }
+        else if (sheetNames.contains(CfeResultsSheets.DISCOVERY_COHORT)) {
+            resultsType = CfeResultsType.DISCOVERY_COHORT;
+        }
+
+        return resultsType;
+    }
+    
+    /**
+     * Checks a CFE Results Spreadsheet to see if it is valid.
+     * 
+     * @param workbook
+     * @throws Exception
+     */
+    public static String check(XSSFWorkbook workbook, String workbookName) throws Exception {
+        String[] sheetsList = {
+                CfeResultsSheets.DISCOVERY_COHORT,
+                CfeResultsSheets.DISCOVERY_SCORES,
+                CfeResultsSheets.PRIORITIZATION_SCORES,
+                CfeResultsSheets.VALIDATION_COHORT,
+                CfeResultsSheets.VALIDATION_SCORES,
+                CfeResultsSheets.PREDICTION_COHORT,
+                CfeResultsSheets.TESTING_FIRST_YEAR_CROSS_SECTIONAL,
+                CfeResultsSheets.TESTING_FIRST_YEAR_LONGITUDINAL,
+                CfeResultsSheets.TESTING_FUTURE_CROSS_SECTIONAL,
+                CfeResultsSheets.TESTING_FUTURE_LONGITUDINAL,
+                CfeResultsSheets.TESTING_STATE_CROSS_SECTIONAL,
+                CfeResultsSheets.TESTING_STATE_LONGITUDINAL
+        };
+        String sheetsListString = "\"" + String.join("\", \"", sheetsList) + "\"";
+        
+        String resultsType = CfeResultsWorkbook.inferResultsType(workbook) ;
+        if (resultsType == null) {
+            String message = "Spreadsheet \"" + workbookName + "\" is not valid and its type could not be determined."
+                    + " The spreadsheet needs to contain at least one of the following sheets: "
+                    + sheetsListString;
+            throw new Exception(message);
+        }
+        
+        /*
+        // Check for sheets - NEED TO CHECK IN ORDER OF LAST PHASE TO FIRST PHASE!
         if (sheetNames.contains(CfeResultsSheets.TESTING_SCORES_INFO)
                     || sheetNames.contains(CfeResultsSheets.TESTING_FIRST_YEAR_CROSS_SECTIONAL)
                     || sheetNames.contains(CfeResultsSheets.TESTING_FIRST_YEAR_LONGITUDINAL)
@@ -84,6 +148,7 @@ public class CfeResultsWorkbook {
         else if (sheetNames.contains(CfeResultsSheets.DISCOVERY_COHORT)) {
             resultsType = CfeResultsType.DISCOVERY_COHORT;
         }
+        */
 
         return resultsType;
     }
@@ -95,13 +160,13 @@ public class CfeResultsWorkbook {
      * @return
      * @throws Exception
      */
-    public static Triple<String, Double, Double> getPheneInfo(XSSFWorkbook workbook) throws Exception {
+    public static Triple<String, Double, Double> getPheneInfo(XSSFWorkbook workbook, String workbookName) throws Exception {
 
         String sheetName = CfeResultsSheets.DISCOVERY_COHORT_INFO;
         
         XSSFSheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
-            throw new Exception("Sheet \"" + sheetName + "\" not found in workbook.");
+            throw new Exception("required sheet \"" + sheetName + "\" not found in workbook \"" + workbookName + "\".");
         }
         DataTable discoveryCohortInfo = new DataTable("attribute");
         discoveryCohortInfo.initializeToWorkbookSheet(sheet);
@@ -111,7 +176,7 @@ public class CfeResultsWorkbook {
         //------------------------------------------------
         String phene = discoveryCohortInfo.getValue("Phene", "value");
         if (phene == null || phene.isEmpty()) {
-            throw new Exception("No phene value found in workbook sheet \"" + sheetName + "\".");
+            throw new Exception("No phene value found in workbook sheet \"" + sheetName + "\" for workbook \"" + workbookName + "\".");
         }
         
         //-------------------------------------------
@@ -119,7 +184,7 @@ public class CfeResultsWorkbook {
         //-------------------------------------------
         String lowCutoffString = discoveryCohortInfo.getValue("Low Cutoff", "value");
         if (lowCutoffString == null || lowCutoffString.isEmpty()) {
-            throw new Exception("No phene low cutoff specified in sheet \"" + sheetName + "\".");
+            throw new Exception("No phene low cutoff specified in sheet \"" + sheetName + "\" for workbook \"" + workbookName + "\".");
         }
         
         Double lowCutoff = 0.0;
@@ -128,7 +193,7 @@ public class CfeResultsWorkbook {
         }
         catch (NumberFormatException exception) {
             throw new Exception("The phene low cutoff \"" + lowCutoffString + "\" in sheet \"" + sheetName +
-                    "\" is not a valid number.");
+                    "\" in workbook \"" + workbookName + "\" is not a valid number.");
         }
         
         //-------------------------------------------
@@ -136,7 +201,7 @@ public class CfeResultsWorkbook {
         //-------------------------------------------
         String highCutoffString = discoveryCohortInfo.getValue("High Cutoff", "value");
         if (highCutoffString == null || highCutoffString.isEmpty()) {
-            throw new Exception("No phene high cutoff specifiied in sheet \"" + sheetName + "\".");
+            throw new Exception("No phene high cutoff specifiied in sheet \"" + sheetName + "\" in workbook \"" + workbookName + "\".");
         }
         
         Double highCutoff = 0.0;
@@ -145,7 +210,7 @@ public class CfeResultsWorkbook {
         }
         catch (NumberFormatException exception) {
             throw new Exception("The phene high cutoff \"" + highCutoffString + "\" in sheet \"" + sheetName +
-                    "\" is not a valid number.");
+                    "\" in workbook \"" + workbookName + "\" is not a valid number.");
         }        
         
         Triple<String, Double, Double> pheneNameLowHigh

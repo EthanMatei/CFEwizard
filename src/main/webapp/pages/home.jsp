@@ -26,11 +26,11 @@
 </div>
 --%>
 
-<div style="display: inline-block; vertical-align: top;">
-    <ul style="margin-top: 0;">
+
+    <ul style="margin: 0;">
         <li> <s:a action="TestingDbUploadInit">Testing Database Check</s:a></li>
     </ul>
-</div>
+
 </fieldset>
 
 <fieldset class="home" style="margin-left: 2em; margin-top: 14px;">
@@ -114,7 +114,10 @@
     <ul>
         <%-- <li> <s:a action="DatabaseList">Database Upload Info</s:a> </li> --%>
         <li> <s:a action="SystemStatusAction">System Status</s:a></li>
-        <li> <s:a action="TemporaryFilesAction">Temporary Files</s:a></li>
+        <li>
+            <s:a action="TemporaryFilesAction">Temporary Files</s:a>
+            <span class="help" onclick="window.open('pages/help/temporaryFiles.jsp', '_blank', 'left=440, top=170, width=680, height=200');">?</span>
+        </li>
         <li> <s:a action="TestAction">Test Page</s:a></li>
     </ul>
 </s:if>

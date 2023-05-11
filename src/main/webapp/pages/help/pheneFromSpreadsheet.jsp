@@ -1,11 +1,12 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 
-<h1>Phene Help</h1>
+<h1>Phene from Spreadsheet Help</h1>
 
 <p>
 For the CFE Wizard to get the discovery phene information from an uploaded spreadsheet,
-it needs to contain a sheet named "<s:property value="@cfe.model.CfeResultsSheets@DISCOVERY_COHORT_INFO"/>""
+it needs to contain a sheet named 
+<strong>"<s:property value="@cfe.model.CfeResultsSheets@DISCOVERY_COHORT_INFO"/>"</strong>
 that contains the following information (example phene name and cutoffs shown):
 </p>
 
@@ -15,16 +16,16 @@ that contains the following information (example phene name and cutoffs shown):
     </tr>
     
     <tr>
-        <td>Phene</td> <td>Sheet1.SAS4</td>
+        <td>Phene</td> <td>PANSS.P1 Delusions (1-7) </td>
     </tr> 
     <tr>
-        <td>Low Cutoff</td>	<td style="text-align: right;">40</td>
+        <td>Low Cutoff</td>	<td style="text-align: right;">1</td>
     </tr>
     <tr>
-        <td>High Cutoff</td> <td style="text-align: right;">60</td>
+        <td>High Cutoff</td> <td style="text-align: right;">4</td>
     </tr>
 </table>
 
 <p>
-Note: the phene name needs to contain the phene's database table name ("Sheet1" in the example above).
+Note: the phene name needs to contain the phene's database table name ("PANSS" in the example above).
 </p>

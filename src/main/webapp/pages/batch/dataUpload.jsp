@@ -61,20 +61,27 @@
     
         <fieldset class="dataInput">
             <p style="font-weight: bold;">
-            <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created result:'}"/>
+            <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created results spreadsheet:'}"/>
+            <span class="help" onclick="window.open('pages/help/manuallyCreatedSpreadsheet.jsp', '_blank', 'left=440, top=270, width=680,height=360');">?</span>
             </p>
             <div style="margin-left: 3em;">
                 <div style="margin-bottom: 7px;">
-                Type: <s:select name="manualResultsType" list="manualResultsTypeList" value="@cfe.model.CfeResultsType@DISCOVERY_COHORT"/>
-                &nbsp; Spreadsheet: <s:file name="manualResultsSpreadsheet" label="Spreadsheet"/>
+                    <%--
+                    Type: <s:select name="manualResultsType" list="manualResultsTypeList" value="@cfe.model.CfeResultsType@DISCOVERY_COHORT"/>
+                    &nbsp;
+                    --%> 
+                    Spreadsheet: <s:file name="manualResultsSpreadsheet" label="Spreadsheet"/>
                 </div>
                 
+                <%--
                 <div style="margin-bottom: 7px;">
                 <s:radio name="manualPheneInfoSource" list="#{'spreadsheet': 'Get discovery phene info from spreadsheet'}" checked="true"/>
+                --%>
                 <%-- <a href="#" target="_blank" class="help" onclick="window.open('home.jsp');">?</a> --%>
-                <span class="help" onclick="window.open('pages/help/phene.jsp', '_blank', 'left=400, top=200, width=600,height=370');">?</span>
-                </div>
+
+                <%-- </div> --%>
                 
+                <%--
                 <div style="margin-bottom: 5px;">
                 <s:radio name="manualPheneInfoSource" list="#{'input': 'Enter discovery phene info:'}"/>
                 </div>
@@ -89,6 +96,7 @@
                     &nbsp; Discovery Phene High Cutoff (phene &le;): <s:textfield name="discoveryPheneHighCutoff" style="text-align: right;" size="4"/>
                     </div>
                 </div>
+                --%>
             </div>
         </fieldset>
     
@@ -130,6 +138,7 @@
                 </s:if>
             </table>
         </fieldset>
+        
     </div>
 
 

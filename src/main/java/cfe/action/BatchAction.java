@@ -405,23 +405,25 @@ public class BatchAction extends BaseAction implements SessionAware {
                         
                         log.info("Starting with manually created results.");
                         
-                        this.startingResultsType = this.manualResultsType;
-                        log.info("MANUAL STARTING RESULTS TYPE: " + this.startingResultsType);
-                        
                         // Get the results spreadsheet
                         byte[] resultsSpreadsheet = FileUtils.readFileToByteArray(this.manualResultsSpreadsheet);
                         
-                        if (this.manualPheneInfoSource.equals("spreadsheet")) {
+                        //if (this.manualPheneInfoSource.equals("spreadsheet")) {
                             // If the user specified to get the discovery phene information
                             // from the uploaded results spreasheet
                             InputStream inputStream = new ByteArrayInputStream(resultsSpreadsheet);
 
                             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-                            Triple<String, Double, Double> pheneNameLowHigh = CfeResultsWorkbook.getPheneInfo(workbook);
+                            Triple<String, Double, Double> pheneNameLowHigh = CfeResultsWorkbook.getPheneInfo(workbook, this.manualResultsSpreadsheetFileName);
                             this.discoveryPheneInfo       = pheneNameLowHigh.getLeft();
                             this.discoveryPheneLowCutoff  = pheneNameLowHigh.getMiddle();
                             this.discoveryPheneHighCutoff = pheneNameLowHigh.getRight();
-                        }
+                            
+                            this.manualResultsType = CfeResultsWorkbook.check(workbook, this.manualResultsSpreadsheetFileName);  // Do some validity checks
+                            
+                            this.startingResultsType = this.manualResultsType;
+                            log.info("MANUAL STARTING RESULTS TYPE: " + this.startingResultsType);
+                        //}
 
                         if (this.discoveryPheneInfo == null || this.discoveryPheneInfo.isEmpty()) {
                             throw new Exception("No discovery phene specified for manually created results upload.");
@@ -943,10 +945,13 @@ public class BatchAction extends BaseAction implements SessionAware {
                     log.info("Step " + CfeResultsType.TESTING_SCORES + " started.");
                     TestingScoresCalc testingScoresCalc = new TestingScoresCalc();
                     
-                    String[] predictionPheneInfo = this.predictionPhene.split("]", 2);
-                    String predictionPheneTable = predictionPheneInfo[0].replace('[', ' ').trim();
-                    this.predictionPhene = predictionPheneTable + "." + predictionPheneInfo[1].trim();
-                    
+                    if (this.predictionPhene != null && !this.predictionPhene.trim().isEmpty()) {
+                        this.predictionPhene = this.predictionPhene.trim();
+                        String[] predictionPheneInfo = this.predictionPhene.split("]", 2);
+                        String predictionPheneTable = predictionPheneInfo[0].replace('[', ' ').trim();
+                        this.predictionPhene = predictionPheneTable + "." + predictionPheneInfo[1].trim();
+                    }
+                
                     try {
                         testingScores = testingScoresCalc.calculate(
                             testingCohorts,

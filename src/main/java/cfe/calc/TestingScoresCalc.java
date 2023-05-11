@@ -214,6 +214,12 @@ public class TestingScoresCalc {
         }
 
 
+        if (!this.stateCrossSectional && !this.stateLongitudinal && !this.firstYearCrossSectional && !this.firstYearLongitudinal
+                && !this.futureCrossSectional && !this.futuretLongitudinal) {
+            String message = "No testing calculations were specified.";
+            throw new Exception(message);    
+        }
+
         //testingData = CfeResultsService.get(testingDataId);
         //if (testingData == null) {
         //    throw new Exception("Unable to retrieve testing data for ID " + testingDataId + ".");
@@ -369,7 +375,7 @@ public class TestingScoresCalc {
         //-------------------------------------------------------
         // Make specified calculations
         //-------------------------------------------------------
-
+        
         // STATE CROSS-SECTIONAL
         if (this.stateCrossSectional) {
             log.info("Testing state cross-sectional");

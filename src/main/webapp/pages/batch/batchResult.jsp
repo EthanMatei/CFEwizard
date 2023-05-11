@@ -26,9 +26,7 @@
         <div style="margin-top: 14px;">
             <s:if test="exceptionStack != null && exceptionStack != ''">
                 <br/>
-                <pre>
-                    <s:property value="exceptionStack" />
-                </pre>
+                <pre><s:property value="exceptionStack" /></pre>
             </s:if>
         </div>
     </div>

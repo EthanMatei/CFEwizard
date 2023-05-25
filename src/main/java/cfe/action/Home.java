@@ -27,6 +27,10 @@ public class Home extends BaseAction implements SessionAware {
 		this.session = session;
 	}
 	
+	public Home() {
+	    this.setCurrentTab("Home");    
+	}
+	
 	public String execute() throws Exception {
 		String result = SUCCESS;
 		if (!Authorization.isLoggedIn(session)) {

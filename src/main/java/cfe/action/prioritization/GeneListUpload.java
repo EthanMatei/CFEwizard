@@ -56,6 +56,11 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     
     Boolean includeNonDiscoveryOptions;
     
+    public GeneListUpload() {
+        this.setCurrentTab("Special Functions");    
+        this.setCurrentSubTab("Scoring");
+    }
+    
     public void setUpload(File file) {
        this.file = file;
     }

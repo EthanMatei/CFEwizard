@@ -36,6 +36,11 @@ public class TestAction extends BaseAction implements SessionAware {
 		this.session = session;
 	}
     
+	public TestAction() {
+	    this.setCurrentTab("Admin");
+	    this.setCurrentSubTab("Test Page");
+	}
+	
     public String initialize() throws Exception {
         String result = SUCCESS;
         if (!Authorization.isLoggedIn(session)) {

@@ -9,7 +9,13 @@
 <tiles:putAttribute name="content">
 
 <%-- User: <s:property value="#session.username" /> --%>
-<h2>Temporary Files</h2>
+<h2 style="float: left;">Temporary Files</h2>
+
+<h2 style="float: right;">
+<span class="help" onclick="window.open('pages/help/temporaryFiles.jsp', '_blank', 'left=440, top=170, width=680, height=200');">?</span>
+</h2>            
+
+<div style="clear: both;"></div>
 
 <s:form id ="deleteForm" name="clearForm" theme="simple" action="TemporaryFileDelete" method="post">
   Delete temporary files older than <s:textfield name="deleteAge" style="text-align: right;" size="2" value="7"/> days.

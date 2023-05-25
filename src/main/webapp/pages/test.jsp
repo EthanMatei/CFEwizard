@@ -10,6 +10,9 @@
 
 <%-- User: <s:property value="#session.username" /> --%>
 
+<%--
+<s:include value="/pages/mainTabs.jsp"/>
+--%>
 
 <s:form action="TestProcessAction" theme="simple" method="post">
 

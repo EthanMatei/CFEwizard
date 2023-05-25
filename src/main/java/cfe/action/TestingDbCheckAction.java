@@ -80,6 +80,11 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	
+	public TestingDbCheckAction() {
+	    this.setCurrentTab("Special Functions");
+	    this.setCurrentSubTab("Testing Database Check");
+	}
+	
 	public String initialize() throws Exception {
 		String result = SUCCESS;
 		

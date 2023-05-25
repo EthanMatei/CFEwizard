@@ -46,6 +46,11 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
 
     private String currentFreeHeapSizeFormatted;
 
+    public SystemStatusAction() {
+        this.setCurrentTab("Admin"); 
+        this.setCurrentSubTab("System Status");
+    }
+    
     public String execute() throws Exception {
     	
 	    String result = SUCCESS;

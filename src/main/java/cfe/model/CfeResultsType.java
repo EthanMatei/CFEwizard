@@ -11,6 +11,7 @@ import cfe.calc.DiscoveryCohortCalc;
 public class CfeResultsType {
     private static Logger log = Logger.getLogger(CfeResultsType.class.getName());
     
+    public final static String NONE                    = "none";
     public final static String DISCOVERY_COHORT        = "discovery cohort";
     public final static String DISCOVERY_SCORES        = "discovery scores";
        
@@ -118,7 +119,10 @@ public class CfeResultsType {
             throw new Exception("CFE results type \"" + type + "\" is not valid.");
         }
         
-        if (type.equals(DISCOVERY_COHORT)) {
+        if (type.equals(NONE)) {
+            order = 1;
+        }
+        else if (type.equals(DISCOVERY_COHORT)) {
             order = 1;
         }
         else if (type.equals(DISCOVERY_SCORES)) {
@@ -145,6 +149,8 @@ public class CfeResultsType {
     
     public Set<String> getTypesSet() {
         Set<String> typesSet = new HashSet<String>(this.getTypes());
+        
+        typesSet.add(NONE);
         
         return typesSet;
     }

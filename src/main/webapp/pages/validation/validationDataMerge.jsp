@@ -4,14 +4,14 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Validation - Validation Input Data Merge</title>
+    <title>CFE Wizard - Discovery and Prioritization Scores Merge</title>
     <s:head />
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery.fancytree-all-deps.min.js'/>"></script> 
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h2>Validation - Validation Input Data Merge</h2>
+<h2>Discovery and Prioritization Scores Merge</h2>
 
 <p>
 This page merges Prioritization Only Scores with Discovery Scores to create a result that

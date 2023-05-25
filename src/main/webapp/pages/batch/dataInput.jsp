@@ -39,22 +39,9 @@
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-
-<h1>Data Input</h1>
+<s:include value="/pages/batch/steps.jsp"/>
 
 <s:include value="/pages/error_include.jsp"/>
-
-<%--        
-<s:if test="errorMessage != null && !errorMessage.trim().isEmpty()">
-    <div class="cfeError">
-        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
-    </div>
-    <div style="margin-top: 17px;">
-        <span style="font-weight: bold;">STACK TRACE:</span>
-        <pre><s:property value="exceptionStack"/></pre>
-    </div>
-</s:if>
---%>
         
 <%-- <s:actionerror /> --%>
 

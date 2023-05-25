@@ -1,7 +1,7 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
 
-<h1>Temporary Files Help</h1>
+<h2>Temporary Files</h2>
 
 <p>
 The CFE Wizard creates temporary files when doing calculations; and these files could eventually fill up

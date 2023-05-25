@@ -38,6 +38,12 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
     private String dbHost;
     private String dbUser;
 
+    public DatabaseStatusAction() {
+        this.setCurrentTab("Special Functions");
+        this.setCurrentSubTab("CFE Database Status");
+    }
+    
+    
     public String execute() throws Exception {
     	
 	    String result = SUCCESS;

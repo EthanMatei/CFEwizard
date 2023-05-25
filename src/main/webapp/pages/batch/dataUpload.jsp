@@ -17,13 +17,11 @@
     }
 </script>
 
-<h1>Data Upload</h1>
+<s:include value="/pages/batch/steps.jsp"/>
 
 <s:include value="/pages/error_include.jsp"/>
         
-<s:actionerror />
-
-        
+<s:actionerror />  
 
 <s:form id ="dataUploadForm" theme="simple" name="dataUploadForm"
         action="BatchDataUpload"

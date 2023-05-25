@@ -36,6 +36,10 @@ public class CfeResultsAction extends BaseAction implements SessionAware {
 
     private List<CfeResults> cfeResults;
     
+    public CfeResultsAction() {
+        this.setCurrentTab("Saved Results");    
+    }
+    
 	public String execute() throws Exception {
 		String result = SUCCESS;
 		

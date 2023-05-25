@@ -40,6 +40,11 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
     private Long cfeResultsId;
 	
 
+    public ValidationDataMergeAction() {
+        this.setCurrentTab("Special Functions");
+        this.setCurrentSubTab("Merge with Discovery Scores");
+    }
+    
 	/**
 	 * Select validation data (cohorts + discovery and prioritization scores)
 	 * @return

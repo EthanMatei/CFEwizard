@@ -18,7 +18,13 @@ public class DBSelection extends BaseAction implements SessionAware {
 	private String[] dbnames;
 	
 	private Map<String, Object> webSession;
-		
+	
+	public DBSelection() {
+	    this.setCurrentTab("Special Functions"); 
+	    this.setCurrentSubTab("Upload Access Databases");
+	    // this.setCurrentStep(1);
+	}
+	
 	public String initialize() throws Exception {
 	    String result = SUCCESS;
 		if (!Authorization.isAdmin(webSession)) {

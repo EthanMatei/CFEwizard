@@ -16,9 +16,18 @@ public abstract class BaseAction extends ActionSupport {
 	private String errorMessage;
 	private String exceptionStack;
 	
+	// Navigation
+	private String currentTab;
+	private String currentSubTab;
+	private Integer currentStep;
+	
 	public BaseAction() {
 	    this.errorMessage = "";
 	    this.exceptionStack = "";
+	    
+	    this.currentTab    = "";
+	    this.currentSubTab = "";
+	    this.currentStep   = null;
 	}
 	
 	public String getErrorMessage() {
@@ -37,6 +46,7 @@ public abstract class BaseAction extends ActionSupport {
         this.exceptionStack = exceptionStack;
     }
     
+    
 	//public String getToken() {
 	//	return token;
 	//}
@@ -44,6 +54,30 @@ public abstract class BaseAction extends ActionSupport {
 	//public void setToken(String token) {
 	//	this.token = token;
 	//}
+
+    public String getCurrentTab() {
+        return currentTab;
+    }
+
+    public void setCurrentTab(String currentTab) {
+        this.currentTab = currentTab;
+    }
+
+    public String getCurrentSubTab() {
+        return currentSubTab;
+    }
+
+    public void setCurrentSubTab(String currentSubTab) {
+        this.currentSubTab = currentSubTab;
+    }
+
+    public Integer getCurrentStep() {
+        return currentStep;
+    }
+
+    public void setCurrentStep(Integer currentStep) {
+        this.currentStep = currentStep;
+    }
 
     public String getAdminUser() {
 		return WebAppProperties.getAdminUsername();

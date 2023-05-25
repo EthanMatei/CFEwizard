@@ -37,6 +37,11 @@ public class TemporaryFilesAction extends BaseAction implements SessionAware {
     private List<TemporaryFileInfo> tempFileInfos;
     private Integer deleteAge;
     
+    public TemporaryFilesAction() {
+        this.setCurrentTab("Admin");
+        this.setCurrentSubTab("Temporary Files");
+    }
+    
     public String execute() throws Exception {
     	
 	    String result = SUCCESS;

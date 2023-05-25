@@ -17,21 +17,12 @@
     }
 </script>
 
-<h1>CFE Results</h1>
+<s:include value="/pages/batch/steps.jsp"/>
 
-        
-<s:if test="!errorMessage.trim().isEmpty()">
-    <div class="cfeError">
-        <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
-        <div style="margin-top: 14px;">
-            <s:if test="exceptionStack != null && exceptionStack != ''">
-                <br/>
-                <pre><s:property value="exceptionStack" /></pre>
-            </s:if>
-        </div>
-    </div>
-</s:if>
-        
+
+<h1>CFE Results</h1> 
+
+<s:include value="/pages/error_include.jsp"/>       
 <s:actionerror />
 
 <s:iterator value="validationMsgs" status="vstat">
@@ -74,7 +65,7 @@
         <th>Script Log File</th></tr>
     <tr>
         <td> Discovery Cohort </td>
-        <s:if test="discoveryResultsCohortId != null">
+        <s:if test="discoveryCohortResultsId != null">
             <td> <s:property value="discoveryCohortResultsId"/> </td>
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="Discovery Cohort Results">
@@ -676,6 +667,10 @@ R Script LOG: <s:property value="@cfe.model.CfeResultsFileType@DISCOVERY_R_SCRIP
     </s:iterator>
 </table>
 --%>
+
+<p>
+&nbsp;
+</p>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

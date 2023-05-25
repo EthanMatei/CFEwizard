@@ -527,7 +527,7 @@ for (i in 1:(nrow(predictors))) {
           
           #if you couldn't calculate all these values, fill the table with "NA" values instead of crashing
 
-          if ((dx == 'F' && gender == 'M') || (dx == 'M' && gender == 'F')) {
+          if ((dx == 'F' && sex == 'M') || (dx == 'M' && sex == 'F')) {
             # Do not add row
           } else {
             tableRow <- c(tableRow, "NA", "NA", "NA", "NA", "NA", "NA", "NA")

@@ -194,10 +194,14 @@ function selectBox(element) {
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
+<s:include value="/pages/prioritization/prioritizationSteps.jsp"/>
+
 <div style="width:100%">
+    <%--
     <div style="float:left">
         <h1>Prioritization - Disease Selection</h1>
     </div>
+    --%>
     
     <div style="float:right">
         <s:a action="PrioritizationReport">

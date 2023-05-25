@@ -57,7 +57,16 @@ CFE Template
                 </s:else>
                 
                 &nbsp;|&nbsp;
+ 
+                 <s:if test="currentTab.equals('Instructions')">
+                    <s:a class="selectedMainTab" action="InstructionsAction"><i class="fa fa-circle-info"></i> Instructions</s:a>
+                </s:if>
+                <s:else>
+                    <s:a action="InstructionsAction"><i class="fa fa-circle-info"></i> Instructions</s:a>
+                </s:else>
                 
+                &nbsp;|&nbsp;
+                               
                 <%--
                 <s:a action=""><i class="fa fa-circle-info"></i> Info</s:a>
                                 
@@ -97,7 +106,7 @@ CFE Template
                         <s:a class="selectedMainTab" action="SystemStatusAction"><i class="fa fa-gear"></i> Admin</s:a></li>
                     </s:if>
                     <s:else>
-                        <s:a action="SystemStatusAction"><i class="fa fa-gear"></i> Admin</s:a>
+                        <s:a action="SystemStatusAction"><i class="fa fa-screwdriver-wrench"></i> Admin</s:a>
                     </s:else>
                 </s:if>
                 
@@ -138,11 +147,11 @@ CFE Template
                     
                     <fieldset style="float: left;">
                         <legend>Discovery</legend>
-                    <s:if test="currentSubTab.equals('Testing Database Check')">
-                        <s:a class="selectedSubTab" action="TestingDbUploadInit">Testing Database Check</s:a>
+                    <s:if test="currentSubTab.equals('Phenomic Database Check')">
+                        <s:a class="selectedSubTab" action="TestingDbUploadInit">Phenomic Database Check</s:a>
                     </s:if>
                     <s:else>
-                        <s:a action="TestingDbUploadInit">Testing Database Check</s:a>
+                        <s:a action="TestingDbUploadInit">Phenomic Database Check</s:a>
                     </s:else>
                     </fieldset>
                     
@@ -167,11 +176,11 @@ CFE Template
                        &nbsp;|&nbsp;
                                            
                         <s:if test="#session.username==adminUser">
-                           <s:if test="currentSubTab.equals('Upload Access Databases')">
-                              <s:a class="selectedSubTab" action="PrioritizationDBSelectionInitialize">Upload Access Databases</s:a>
+                           <s:if test="currentSubTab.equals('Upload Literature Databases')">
+                              <s:a class="selectedSubTab" action="PrioritizationDBSelectionInitialize">Upload Literature Databases</s:a>
                            </s:if>
                            <s:else>
-                               <s:a action="PrioritizationDBSelectionInitialize">Upload Access Databases</s:a>
+                               <s:a action="PrioritizationDBSelectionInitialize">Upload Literature Databases</s:a>
                             </s:else>
                         </s:if>
                         
@@ -206,7 +215,7 @@ CFE Template
         
         
         
-        <hr />
+        <hr style="margin-bottom: 0px;"/>
 
             
         <%-- Content --%>

@@ -82,7 +82,7 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	
 	public TestingDbCheckAction() {
 	    this.setCurrentTab("Special Functions");
-	    this.setCurrentSubTab("Testing Database Check");
+	    this.setCurrentSubTab("Phenomic Database Check");
 	}
 	
 	public String initialize() throws Exception {

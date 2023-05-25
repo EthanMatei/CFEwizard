@@ -4,13 +4,13 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Database Upload</title>
+    <title>CFE Wizard - Phenomic Database Check Results</title>
     <s:head />
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
 
-<h1>Testing Database Check Results</h1>
+<h1>Phenomic Database Check Results</h1>
 
         
 <s:if test="!errorMessage.trim().isEmpty()">

@@ -108,6 +108,15 @@
             </result>
 		</action>
 		
+	    <action name="InstructionsAction" class="cfe.action.InstructionsAction">
+			<interceptor-ref name="basicStack"/>
+			<result name="success">pages/instructions.jsp</result>
+			<result name="error">pages/error.jsp</result>
+			<result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+		</action>
+		
 		
 		<!-- TESTING DB CHECK ======================================================= -->
 		

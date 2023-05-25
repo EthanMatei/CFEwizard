@@ -49,6 +49,12 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 	    
 	private List<Disorder> disorders;
 	
+	public DiseaseSelectionAction() {
+        this.setCurrentTab("Special Functions");    
+        this.setCurrentSubTab("Scoring");
+        this.setCurrentStep(3);    
+	}
+	
 	public List<DiseaseSelector> getModel() {
 		return diseaseSelectors;
 	}

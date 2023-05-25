@@ -9,7 +9,12 @@
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h1>Prioritization - Gene List Specification</h1>
+
+<s:include value="/pages/prioritization/prioritizationSteps.jsp"/>
+
+<%--
+<h4>Prioritization - Gene List Specification</h4>
+--%>
 
 
 <s:if test="errorMessage != null && errorMessage != ''">

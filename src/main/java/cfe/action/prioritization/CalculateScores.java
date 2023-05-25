@@ -61,6 +61,12 @@ public class CalculateScores extends BaseAction implements SessionAware {
 
 	private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
 
+	public CalculateScores() {
+        this.setCurrentTab("Special Functions");    
+        this.setCurrentSubTab("Scoring");
+        this.setCurrentStep(4);
+	}
+	
 	public String execute() {
 	    log.info("Starting prioritization scoring.");
 	    log.info("Prioritization scoring Discovery ID: " + this.discoveryId);

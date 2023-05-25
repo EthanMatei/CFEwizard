@@ -47,6 +47,11 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 	private double nhGeneAssocScore;
 	private double nhGeneLinkageScore;
 
+	public ScoringWeights() {
+        this.setCurrentTab("Special Functions");    
+        this.setCurrentSubTab("Scoring");
+        this.setCurrentStep(2);
+	}
 	
 	public double getHuBrainScore() {		
 		return huBrainScore;

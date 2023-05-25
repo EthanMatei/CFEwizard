@@ -29,20 +29,15 @@
 
     <!-- <s:submit value="Upload" id="uploadButton" onclick="submitForm();" /> -->
     <p>
-    <s:submit value="Upload" id="uploadButton" style="font-weight: bold; font-size: 120%;"/>
+    <s:submit value="Upload" id="uploadButton" class="submit"/>
     </p>
-    
+        
+    <s:hidden name="testingDbTempFileName" />     
     <s:token />
     
-    <table class="dataTable">
-        <tr> <th>Data</th> <th>File</th> </tr>
-        <tr>
-            <td> Testing Database </td>
-            <td> <s:file name="testingDb" label="Testing Database" /> </td>
-        </tr>
-    </table>
-
-    <s:hidden name="testingDbTempFileName" /> 
+    <p>
+    <span style="font-weight: bold;">Phenomic Database:</span>
+    <s:file name="testingDb" label="Testing Database" />
 
     <hr/>
     
@@ -53,7 +48,7 @@
     
     <hr/>
     
-    <p style="font-weight: bold;">Starting Point (Optional)</p>
+    <p style="font-weight: bold;">Other Starting Point (Optional)</p>
 
     <div style="margin-left: 3em;">
     

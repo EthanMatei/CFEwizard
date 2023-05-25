@@ -46,6 +46,8 @@
 </div>
 --%>
 
+<s:include value="/pages/prioritization/prioritizationSteps.jsp"/>
+
 <div style="float: right;">
     <s:a action="CfeResultsXlsxDisplay" title="Prioritization Scores">
         <s:param name="cfeResultsId" value="cfeResultsId" />
@@ -71,8 +73,12 @@
 </s:form>
 --%>
 
-            
+
+
+<%--            
 <h1 style="padding-top:0px; margin-top:4px;">Prioritization Scores </h1>
+--%>
+
 <s:actionerror />
 
 <%-- FOR DEBUGGING:

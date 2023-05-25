@@ -477,7 +477,7 @@
         
     <!-- <s:submit value="Calculate" id="calculateButton" onclick="submitForm();" /> -->
     <p>
-    <s:submit value="Calculate" id="calculateButton" style="font-size: 125%; font-weight: bold;"/>
+    <s:submit value="Run" id="calculateButton" style="font-size: 125%; font-weight: bold; padding-left: 1em; padding-right: 1em;"/>
     </p>
     
     <s:token />

@@ -59,6 +59,7 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     public GeneListUpload() {
         this.setCurrentTab("Special Functions");    
         this.setCurrentSubTab("Scoring");
+        this.setCurrentStep(1);
     }
     
     public void setUpload(File file) {
@@ -74,8 +75,9 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     }
 
     public String initialize() {
-        
         String result = SUCCESS;
+        
+        this.setCurrentStep(1);
         
         this.discoveryScoringResultsList =
                 CfeResultsService.getMetadata(CfeResultsType.DISCOVERY_SCORES);
@@ -87,6 +89,7 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     public String execute() throws Exception {
 		String result = SUCCESS;
 
+		this.setCurrentStep(2);
 		if (!Authorization.isLoggedIn(session)) {
 			result = LOGIN;
 		}

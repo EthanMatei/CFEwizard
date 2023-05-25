@@ -9,7 +9,12 @@
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
+<s:include value="/pages/prioritization/prioritizationSteps.jsp"/>
+
+<%--
 <h1>Prioritization - Global Scoring Weights</h1>
+--%>
+
 <s:actionerror />
 
 <p>

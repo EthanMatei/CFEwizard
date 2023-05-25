@@ -17,7 +17,7 @@
     }
 </script>
 
-<h1>Testing Database Check</h1>
+<h1>Phenomic Database Check</h1>
 
         
 <s:if test="!errorMessage.trim().isEmpty()">
@@ -38,11 +38,16 @@
         action="TestingDbUploadAndCheck"
         method="post" enctype="multipart/form-data">
 
-    Testing Database: <s:file name="testingDb" label="Testing Database" />
+     
+    <p>
+    Phenomic Database: <s:file name="testingDb" label="Testing Database" />
+    </p>
     
-    <br />
     <!-- <s:submit value="Upload" id="uploadButton" onclick="submitForm();" /> -->
-    <s:submit value="Check" id="checkButton" />
+    <p>
+    <s:submit value="Check" id="checkButton" class="submit"/>
+    </p>
+    
     <s:token />
 
 </s:form>

@@ -21,7 +21,7 @@ public class DBSelection extends BaseAction implements SessionAware {
 	
 	public DBSelection() {
 	    this.setCurrentTab("Special Functions"); 
-	    this.setCurrentSubTab("Upload Access Databases");
+	    this.setCurrentSubTab("Upload Literature Databases");
 	    // this.setCurrentStep(1);
 	}
 	

@@ -161,6 +161,10 @@ div.subTabs a, div.subTabs a:visited {
 div.steps {
     font-weight: bold;
     color: #000063;
+    background-color: #e6e6ff;
+    margin: 0;
+    padding-top: 7px;
+    padding-bottom: 7px;
 }
 
 /* Arrows */
@@ -185,6 +189,15 @@ span.stepNumber {
 	padding-right: 7px;
 }
 
+/******************************************/
+/* Submit button                          */
+/******************************************/
+input.submit {
+	font-weight: bold;
+	font-size: 120%;
+	padding-left: 1em;
+	padding-right: 1em; 
+}
 
 /******************************************/
 /* Login                                  */

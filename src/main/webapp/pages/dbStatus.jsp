@@ -14,11 +14,11 @@
 
 <div style="float: right;">
   <s:form id ="clearForm" name="clearForm" action="DatabaseClear" method="post">
-    <s:submit value="Clear All" id="clearAllButton" style="font-weight: bold;"/>
+    <s:submit value="Clear All" id="clearAllButton" class="submit"/>
   </s:form>
 </div>
 
-<div style="clear: both;"></div>
+<div style="clear: both; margin: 0; padding: 0;"></div>
  
 <%-- Only allow admins see and make database uploads --%>
 <s:if test="#session.username==adminUser">

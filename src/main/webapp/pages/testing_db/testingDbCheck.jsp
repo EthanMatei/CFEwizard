@@ -10,7 +10,7 @@
 <tiles:putAttribute name="content">
 
 
-<h3>Phenomic Database Check Results</h3>
+<h2>Phenomic Database Check Results</h2>
 
         
 <s:if test="!errorMessage.trim().isEmpty()">

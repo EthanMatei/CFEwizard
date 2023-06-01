@@ -1,15 +1,13 @@
 package cfe.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import cfe.action.CfeResultsAction;
 import cfe.model.CfeResults;
 
 
@@ -90,6 +88,27 @@ public class CfeResultsDao extends AbstractDao<CfeResults> {
         }
         
         results = query.list();
+        return results;
+    }
+    
+    public List<String> getPhenes() {
+        List<String> results = null;
+        
+        String queryString = "Select distinct phene from CfeResults order by phene";
+        
+        Query<String> query = sess.createQuery(queryString, String.class);
+        results = query.list();
+        return results;
+    }
+    
+    
+    public Date getMinimumGeneratedTime() {
+        Date results = null;
+        
+        String queryString = "Select min(generatedTime) from CfeResults";
+        
+        Query<Date> query = sess.createQuery(queryString, Date.class);
+        results = query.getSingleResult();
         return results;
     }
 }

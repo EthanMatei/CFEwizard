@@ -11,10 +11,12 @@
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h3>Prioritization and Discovery Scores Merge</h2>
+<h2>Prioritization and Discovery Scores Merge</h2>
 
 <p>
-This page merges Prioritization Only Scores with Discovery Scores to create a result that
+This page merges Prioritization Scores calculated without Discovery Scores
+("prioritization scores only")
+with previously calculated Discovery Scores to create a result that
 can be used as an starting point in the CFE Pipeline.
 </p>
 
@@ -70,7 +72,7 @@ can be used as an starting point in the CFE Pipeline.
 <div style="float: left;">
             
 <table class="dataTable">
-    <caption style="font-weight: bold; color: #000063;">DiscoveryScores</caption>
+    <caption style="font-weight: bold; color: #000063;">Discovery Scores</caption>
     <tr> 
         <th>ID</th>
         <th>Results</th>

@@ -181,5 +181,14 @@
 
 </s:form>
 
+<p>CFE Results Phenes:</p>
+<s:iterator value="phenes" var="phene">
+    &nbsp;&nbsp;PHENE: <s:property value="phene"/> <br/>
+</s:iterator>
+
+<p>
+CFE Results minimum generated time <s:date name="minimumGeneratedTime"/>
+</p>
+
 </tiles:putAttribute>
 </tiles:insertTemplate>

@@ -1,6 +1,7 @@
 package cfe.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -168,5 +169,47 @@ public class CfeResultsService {
         finally {
             session.close();
         }        
+    }
+    
+    public static List<String> getPhenes() {
+        List<String> results = null;
+        
+        Session session = HibernateUtils.getSession();      
+        Transaction tx = session.beginTransaction();
+        CfeResultsDao cfeResultsDao = new CfeResultsDao(session, tx);
+        
+        try {
+            results = cfeResultsDao.getPhenes();
+            tx.commit();
+        }
+        catch (Exception exception) {
+            tx.rollback();
+        }
+        finally {
+            session.close();
+        }
+        
+        return results;
+    }
+    
+    public static Date getMinimumGeneratedTime() {
+        Date results = null;
+        
+        Session session = HibernateUtils.getSession();      
+        Transaction tx = session.beginTransaction();
+        CfeResultsDao cfeResultsDao = new CfeResultsDao(session, tx);
+        
+        try {
+            results = cfeResultsDao.getMinimumGeneratedTime();
+            tx.commit();
+        }
+        catch (Exception exception) {
+            tx.rollback();
+        }
+        finally {
+            session.close();
+        }
+        
+        return results;
     }
 }

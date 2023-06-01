@@ -1,6 +1,7 @@
 package cfe.action;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.apache.struts2.interceptor.SessionAware;
 
 import cfe.model.PercentileScore;
 import cfe.model.PercentileScores;
+import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 
 /**
@@ -30,6 +32,9 @@ public class TestAction extends BaseAction implements SessionAware {
 	private PercentileScores percentileScores;
 	
 	private List<PercentileScore> perScores;
+	
+	private List<String> phenes;
+	private Date minimumGeneratedTime;
 	
 	@Override
 	public void setSession(Map<String, Object> session) {
@@ -53,6 +58,9 @@ public class TestAction extends BaseAction implements SessionAware {
             
             this.percentileScores = new PercentileScores();
             this.perScores = PercentileScore.getDefaultPercentileScores();
+            
+            this.phenes = CfeResultsService.getPhenes();
+            this.minimumGeneratedTime = CfeResultsService.getMinimumGeneratedTime();
         }
         return result;
     }
@@ -87,6 +95,22 @@ public class TestAction extends BaseAction implements SessionAware {
 
     public void setPerScores(List<PercentileScore> perScores) {
         this.perScores = perScores;
+    }
+
+    public List<String> getPhenes() {
+        return phenes;
+    }
+
+    public void setPhenes(List<String> phenes) {
+        this.phenes = phenes;
+    }
+
+    public Date getMinimumGeneratedTime() {
+        return minimumGeneratedTime;
+    }
+
+    public void setMinimumGeneratedTime(Date minimumGeneratedTime) {
+        this.minimumGeneratedTime = minimumGeneratedTime;
     }
 
 }

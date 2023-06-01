@@ -146,7 +146,7 @@ CFE Template
                 <s:if test="currentTab.equals('Special Functions')">
                     
                     <fieldset style="float: left;">
-                        <legend>Discovery</legend>
+                        <legend style="font-weight: bold;">Discovery</legend>
                     <s:if test="currentSubTab.equals('Phenomic Database Check')">
                         <s:a class="selectedSubTab" action="TestingDbUploadInit">Phenomic Database Check</s:a>
                     </s:if>
@@ -156,7 +156,7 @@ CFE Template
                     </fieldset>
                     
                     <fieldset style="float: left;">
-                        <legend>Prioritization</legend>
+                        <legend style="font-weight: bold;">Prioritization</legend>
                         
                         <s:if test="currentSubTab.equals('Scoring')">
                             <s:a class="selectedSubTab" action="PrioritizationGeneListUpload">Scoring</s:a>

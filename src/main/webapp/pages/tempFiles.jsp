@@ -9,11 +9,28 @@
 <tiles:putAttribute name="content">
 
 <%-- User: <s:property value="#session.username" /> --%>
-<h2 style="float: left;">Temporary Files</h2>
+<h2 style="float: left;">Temporary Files
+<i id="temporaryFilesHelpButton" style="margin-left: 1em;" class="fa fa-question-circle"></i>  
+</h2>
 
+<%-- TEMPORARY FILES HELP DIALOG --%>
+<div id="temporaryFilesHelpDialog" title="Temporary Files">
+    <s:include value="/pages/help/temporaryFiles.jsp"/>
+</div>
+ <script>
+$( function() {
+    $("#temporaryFilesHelpDialog").dialog({dialogClass: 'helpDialog', width: 500}).dialog('close');
+    $("#temporaryFilesHelpButton").on("click", function() {
+        	$("#temporaryFilesHelpDialog").dialog('open');	
+        });
+});
+</script>
+
+<%--
 <h2 style="float: right;">
 <span class="help" onclick="window.open('pages/help/temporaryFiles.jsp', '_blank', 'left=440, top=170, width=680, height=200');">?</span>
 </h2>            
+--%>
 
 <div style="clear: both;"></div>
 

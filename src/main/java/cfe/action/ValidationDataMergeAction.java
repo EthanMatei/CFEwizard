@@ -38,6 +38,7 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
 	private Date scoresGeneratedTime;
 
     private Long cfeResultsId;
+    private CfeResults cfeResults;
 	
 
     public ValidationDataMergeAction() {
@@ -111,7 +112,7 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
                 this.scoresGeneratedTime = new Date();
                 
                 // Save the results in the database
-                CfeResults cfeResults = new CfeResults(
+                this.cfeResults = new CfeResults(
                         workbook,
                         CfeResultsType.PRIORITIZATION_SCORES,
                         this.scoresGeneratedTime,
@@ -119,14 +120,14 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
                         lowCutoff, highCutoff
                 );
                 
-                cfeResults.setDiscoveryRScriptLog(discoveryData.getDiscoveryRScriptLog());
+                this.cfeResults.setDiscoveryRScriptLog(discoveryData.getDiscoveryRScriptLog());
                 log.info("Added discovery R script log text to cfeResults.");
                 
-                cfeResults.addCsvAndTextFiles(discoveryData);
+                this.cfeResults.addCsvAndTextFiles(discoveryData);
                 
-                CfeResultsService.save(cfeResults);
+                CfeResultsService.save(this.cfeResults);
                 
-                this.cfeResultsId = cfeResults.getCfeResultsId();
+                this.cfeResultsId = this.cfeResults.getCfeResultsId();
                 log.info("CFE Results ID for merged data = " + cfeResultsId);
                 if (this.cfeResultsId < 1) {
                     throw new Exception("Merge results id is not >= 1: " + cfeResultsId);
@@ -167,6 +168,14 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
 
     public void setCfeResultsId(Long cfeResultsId) {
         this.cfeResultsId = cfeResultsId;
+    }
+
+    public CfeResults getCfeResults() {
+        return cfeResults;
+    }
+
+    public void setCfeResults(CfeResults cfeResults) {
+        this.cfeResults = cfeResults;
     }
 
     public Long getPrioritizationId() {

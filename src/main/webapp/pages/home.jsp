@@ -22,7 +22,9 @@ Requires databases of phenotypic data, expression data, and clinical outcomes.
 
 <p>
 Niculescu AB, Le-Niculescu H. Precision medicine in psychiatry: biomarkers to the forefront.
-<i>Neuropsychopharmacology</i>. 2022  Jan 47(1):422-423. doi: 10.1038/s41386-021-01183-3. PMID: 34584209
+<i>Neuropsychopharmacology</i>. 2022  Jan 47(1):422-423.
+doi: <a href="https://doi.org/10.1038/s41386-021-01183-3" target="_blank">10.1038/s41386-021-01183-3</a>.
+PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/34584209/" target="_blank">34584209</a>
 </p>
 
 </div>

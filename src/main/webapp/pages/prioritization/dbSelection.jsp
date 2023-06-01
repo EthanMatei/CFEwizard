@@ -9,9 +9,10 @@
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
+<s:include value="/pages/prioritization/dbUploadSteps.jsp"/>
 
 <!-- http://stackoverflow.com/questions/4148499/how-to-style-checkbox-using-css -->
-<h1>Database(s) Input Selection</h1>
+<h2>Database(s) Selection</h2>
 <s:actionerror />
 <p>Note: Support for HuGen Linkage is currently disabled.</p>
 Please select the database(s):<br />
@@ -32,7 +33,10 @@ Please select the database(s):<br />
 /> 
 -->
 
-  <s:submit value="Next" />
+  <p>
+  <s:submit class="submit" value="Next"/>
+  </p>
+  
   <s:token />
 </s:form>
 

@@ -17,19 +17,30 @@
     }
 </script>
 
-<h1>Database Upload<br> 
-</h1>
+<s:include value="/pages/prioritization/dbUploadSteps.jsp"/>
+
+<h2>Database Upload</h2>
+
 <p>
 Please select the database(s) to upload:
 </p>
  <!-- http://stackoverflow.com/questions/5633949/jquery-solution-for-dynamically-uploading-multiple-files -->
  <!-- http://stackoverflow.com/questions/8906910/struts2-dynamically-add-remove-list-of-objects-from-page -->
 <s:actionerror />
-<s:form id ="uploadForm" name="uploadForm" action="PrioritizationFileUpload" method="post" enctype="multipart/form-data">
-	<s:iterator value="#session.dbnames" var="dbname">
-    	<s:file name="upload" label="%{dbname}" />
-	</s:iterator>
-	<s:submit value="Upload" id="uploadButton" onclick="submitForm();" />
+<s:form id ="uploadForm" name="uploadForm" theme="simple" action="PrioritizationFileUpload" method="post" enctype="multipart/form-data">
+	<table>
+	    <s:iterator value="#session.dbnames" var="dbname">
+	        <tr>
+    	        <td style="text-align: right; padding-right: 7px;"> <s:property value="dbname"/>: </td>
+    	        <td> <s:file name="upload"/> </td>
+    	    </tr>
+	    </s:iterator>
+	</table>
+	
+	<p>
+	<s:submit value="Upload" id="uploadButton" class="submit" onclick="submitForm();" />
+	</p>
+	
 <s:token />
 
 <%-- Store that selected database name values on the page --%>

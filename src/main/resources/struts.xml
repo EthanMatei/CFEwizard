@@ -282,7 +282,7 @@
 
         <!-- Step 2 -->		
 		<action name="PrioritizationDBSelection" class="cfe.action.prioritization.DBSelection">
-			<result name="success">pages/prioritization/fileUpload.jsp</result>
+			<result name="success">pages/prioritization/dbUpload.jsp</result>
 			<result name="error">pages/error.jsp</result>
 			<result name="input">pages/prioritization/dbSelection.jsp</result>
 			<result name="login" type="redirectAction">
@@ -296,7 +296,7 @@
 	    	<result name="success">pages/prioritization/dbUploadStatus.jsp</result>
 	    	<!-- <result name="error">pages/error.jsp</result> -->
 	        <result name="error">pages/prioritization/dbUploadStatus.jsp</result>
-	    	<result name="input">pages/prioritization/fileUpload.jsp</result>
+	    	<result name="input">pages/prioritization/dbUpload.jsp</result>
 	    	<result name="login" type="redirectAction">
                 <param name="actionName">LoginAction</param>
             </result>   	

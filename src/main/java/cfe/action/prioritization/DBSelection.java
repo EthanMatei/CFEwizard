@@ -22,11 +22,14 @@ public class DBSelection extends BaseAction implements SessionAware {
 	public DBSelection() {
 	    this.setCurrentTab("Special Functions"); 
 	    this.setCurrentSubTab("Upload Literature Databases");
-	    // this.setCurrentStep(1);
+	    this.setCurrentStep(1);
 	}
 	
 	public String initialize() throws Exception {
 	    String result = SUCCESS;
+	      
+	    this.setCurrentStep(1);
+	       
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;
 		}
@@ -35,6 +38,8 @@ public class DBSelection extends BaseAction implements SessionAware {
 	
 	public String execute() throws Exception {
 		String result = SUCCESS;
+		
+        this.setCurrentStep(2);
 		
 		if (!Authorization.isAdmin(webSession)) {
 			result = LOGIN;

@@ -46,4 +46,4 @@ Results
 
 </div>
 
-<hr/>
+<hr style="margin-top: 0;"/>

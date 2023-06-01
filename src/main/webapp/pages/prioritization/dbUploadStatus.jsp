@@ -4,12 +4,14 @@
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
-    <title>CFE Wizard - Prioritization Database Upload Result</title>
+    <title>CFE Wizard - Prioritization Database Upload Results</title>
     <s:head />
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
-<h1>Database Upload Result</h1>
+<s:include value="/pages/prioritization/dbUploadSteps.jsp"/>
+
+<h2>Database Upload Results</h2>
 <s:property value="display" />
 
 <s:if test="%{#session.uploaded}">

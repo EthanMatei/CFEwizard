@@ -17,7 +17,7 @@
     }
 </script>
 
-<h1>Phenomic Database Check</h1>
+<h3>Phenomic Database Check</h3>
 
         
 <s:if test="!errorMessage.trim().isEmpty()">

@@ -49,6 +49,15 @@
 <s:form id ="dataInputForm" theme="simple" name="dataInputForm"
         action="BatchCalculate"
         method="post" enctype="multipart/form-data">
+
+    <script>
+    $( function() {
+    	$("#dataInputForm").on('submit', function(event) {
+    	    $('input[type="submit"]').prop('disabled', true);
+            $("body").css("cursor", "wait");
+    	});
+    });
+    </script>
         
     <s:hidden name="testingDbTempFileName"/>
     <s:hidden name="testingDbFileName"/>

@@ -264,6 +264,16 @@ a.linkButton {
     text-decoration: none;
 }
 
+a.linkButtonThin {
+    border-style: solid;
+    border-color: #000000;
+    border-width: 1px;
+    background-color: #dddddd;
+    color: #000000;
+    padding: 2px;
+    text-decoration: none;
+}
+
 /************************************************/
 /* Data Table                                   */
 /************************************************/

@@ -13,12 +13,18 @@
     	$("#cfeResultsTypesSelect").on("change", function() {
     		$("#cfeResultsForm").submit();
     	});
+    	
     	$("#cfeResultsOrderSelect").on("change", function() {
     		$("#cfeResultsForm").submit();
     	});
+    
     	$("#cfeResultsPheneSelect").on("change", function() {
     		$("#cfeResultsForm").submit();
     	});
+    	
+        $('a.deleteCfeResults').on('click', function () {
+            return confirm('Delete CFE results?');
+        });
     });
 </script>
 
@@ -100,14 +106,16 @@
             <td style="text-align: right;"> <s:property value="lowCutoff"/> </td>
             <td style="text-align: right;"> <s:property value="highCutoff"/> </td>
             <s:if test="#session.username==adminUser">
-                <td>
+                <td style="text-align: center;">
                     <s:url var="deleteUrl" action="CfeResultsDelete">
                         <s:param name="cfeResultsId" value="cfeResultsId"/>
                         <s:param name="resultsOrder" value="resultsOrder"/>
                         <s:param name="resultsPhene" value="resultsPhene"/>
                         <s:param name="cfeResultsType" value="cfeResultsType"/>
                     </s:url>
-                    <s:a href="%{deleteUrl}">delete</s:a>
+                    <s:a class="deleteCfeResults linkButtonThin" href="%{deleteUrl}">
+                        <i class="fa fa-remove" style="padding-left: 1em; padding-right: 1em;"></i>
+                    </s:a>
                 </td>
             </s:if>
         </tr>

@@ -342,6 +342,9 @@ table <- as.data.frame(setNames(replicate(length(tableColNames),0, simplify = F)
 fourCornerstonesScript <- paste(scriptDir, "CurrentBatchFunctionFourCornerstones.R", sep="/")
 source(fourCornerstonesScript)
 
+
+tableRow = NULL;
+
 # for each predictor in your predictorFilePath....
 for (i in 1:(nrow(predictors))) {
   
@@ -436,8 +439,7 @@ for (i in 1:(nrow(predictors))) {
     ####################################################################################################
     
     ######################## (all the stats) #################################################
-    
-    
+
     
     # for each gender requested
     for ( sex in genderList ){ 
@@ -479,8 +481,17 @@ for (i in 1:(nrow(predictors))) {
         }
         
         
-        #populate table row for with descriptive information 
-        tableRow <- c(sex,dx,predictor,  direction)
+        #populate table row for with descriptive information
+        if (sex == "M" && dx == "F") {
+          next
+        }
+        else if (sex == "F" && dx == "M") {
+          next
+        }
+        else {
+          tableRow <- c(sex,dx,predictor,  direction)
+        }
+        
         
         
         #calculate AUC, but only if there's more than one event in the silo

@@ -53,7 +53,7 @@
     <script>
     $( function() {
     	$("#dataInputForm").on('submit', function(event) {
-    	    $('input[type="submit"]').prop('disabled', true);
+    	    $('input[type=submit]').prop('disabled', true);
             $("body").css("cursor", "wait");
     	});
     });
@@ -67,6 +67,9 @@
     <s:hidden name="startingResultsType"/>
     <s:hidden name="endingResultsType"/>
     
+    
+    <%--GENE EXPRESSION FILE (NON-DISCOVERY) ====================================================== --%>
+    <s:if test="showValidationScores || showTestingScores"> 
     <fieldset class=dataInput>
         <legend>Data Files</legend>
         
@@ -78,6 +81,7 @@
             </tr>          
         </table>
     </fieldset>
+    </s:if>
     
     <div>&nbsp;</div>
     

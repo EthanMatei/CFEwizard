@@ -9,7 +9,11 @@
 <tiles:putAttribute name="content">
 
 <%-- User: <s:property value="#session.username" /> --%>
+<h2>CFE Wizard Instructions</h2>
 
+<div style="width: 50%">
+
+<h3>CFE Wizard Processing Steps</h3>
 <p>
 The CFE Wizard supports calculation of CFE (Convergent Functional Evidence) Scores. Calculation of the CFE Scores consists
 of the following steps:
@@ -37,6 +41,59 @@ of the following steps:
     </li>   
     
 </ol>
+
+<hr/>
+
+<h3>CFE Pipeline</h3>
+
+<p>
+The CFE Pipeline allows you to calculate the above steps in sequential order. The CFE Pipeline saves the results
+of each step, and these results can be accessed by clicking on <b>Saved Results</b>.
+</p>
+
+<p>
+By default, the CFE Pipeline runs all steps, however, you can start the process at a middle step by specifying
+previously saved results or a manually created spreadsheet. If a manually created spreadsheet is used, it
+needs to follow the format used by the CFE Wizard. In addition to changing the start point, you
+can also specify a different end point (as long as it is after the specified start point).
+Ending the CFE Pipeline calculations at a middle step can be useful if you need to modify the results
+that are generated before you proceed.
+</p>
+
+<hr/>
+
+<h3>Prioritization Special Functions</h3>
+
+<p>
+In addition to being able to change the starting and ending steps of the CFE Pipeline, it is also possible to run
+the Prioritization step on its own. To run this, click on <b>Special Functions -> (Prioritization) Scoring</b>.
+If you specify a manually uploaded gene list or all genes in the first step, prioritization scores will
+be calculated that do not have associated discovery scores. If you want to use these 
+prioritization scores in the CFE Pipeline,
+you will need to merge them with previously calculated discovery scores by clicking on
+<b>Special Functions -> (Prioritization) Merge with Discovery Scores</b>
+</p>
+
+<p>
+The Prioritization phase uses a literature database, and the data for this need to be uploaded to the CFE Wizard.
+MS Access literature databases are uploaded and combined into a single CFE Wizard MySQL literature database.
+To upload MS Access literature databases, click on <b>Special Functions -> (Prioritization) Upload Literature Databases</b>.
+</p>
+
+<p>
+To download a spreadsheet of the diseases in the CFE Wizard literature database, click on
+<b>Special Functions -> (Prioritization) Diseases Report</b>
+</p>
+
+<p>
+To see information on the CFE Wizard literature database tables, click on 
+<b>Special Functions -> (Prioritization) CFE Database Status</b>.
+This function also provides a button (<b>Clear All</b>) that will delete
+all data currently stored in the CFE literature database.
+
+</p>
+
+</div>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

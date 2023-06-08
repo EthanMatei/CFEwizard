@@ -164,16 +164,17 @@ CFE Template
                         <s:else>
                             <s:a action="PrioritizationGeneListUpload">Scoring</s:a>
                         </s:else>
-                        
+
                         &nbsp;|&nbsp;
-                                            
-                        <s:a action="PrioritizationReport">
-                            <s:param name="reportName" value="'diseases'" />
-                            <s:param name="reportFormat" value="'xlsx'" />
-                            Diseases Report
-                       </s:a>
-                       
-                       &nbsp;|&nbsp;
+                        
+                        <s:if test="currentSubTab.equals('Merge with Discovery Scores')">
+                            <s:a class="selectedSubTab" action="ValidationDataMergeSelection">Merge with Discovery Scores</s:a>
+                        </s:if>
+                        <s:else>
+                            <s:a action="ValidationDataMergeSelection">Merge with Discovery Scores</s:a>
+                        </s:else>           
+                                     
+                        &nbsp;|&nbsp;
                                            
                         <s:if test="#session.username==adminUser">
                            <s:if test="currentSubTab.equals('Upload Literature Databases')">
@@ -185,6 +186,14 @@ CFE Template
                         </s:if>
                         
                         &nbsp;|&nbsp;
+                                            
+                        <s:a action="PrioritizationReport">
+                            <s:param name="reportName" value="'diseases'" />
+                            <s:param name="reportFormat" value="'xlsx'" />
+                            Diseases Report
+                        </s:a>
+                        
+                        &nbsp;|&nbsp;
                         
                         <s:if test="currentSubTab.equals('CFE Database Status')">
                             <s:a class="selectedSubTab" action="DatabaseStatusAction">CFE Database Status</s:a>                 
@@ -192,15 +201,7 @@ CFE Template
                         <s:else>
                             <s:a action="DatabaseStatusAction">CFE Database Status</s:a>
                         </s:else>
-                        
-                        &nbsp;|&nbsp;
-                        
-                        <s:if test="currentSubTab.equals('Merge with Discovery Scores')">
-                            <s:a class="selectedSubTab" action="ValidationDataMergeSelection">Merge with Discovery Scores</s:a>
-                        </s:if>
-                        <s:else>
-                            <s:a action="ValidationDataMergeSelection">Merge with Discovery Scores</s:a>
-                        </s:else>
+
                         
                     </fieldset>
                     

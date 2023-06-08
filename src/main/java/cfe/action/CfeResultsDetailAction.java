@@ -41,7 +41,11 @@ public class CfeResultsDetailAction extends BaseAction implements SessionAware {
 	private CfeResults cfeResults;
 	
 	private TreeSet<CfeResultsFile> cfeResultsFiles = new TreeSet<CfeResultsFile>(new CfeResultsFileComparator());
-    
+
+	public CfeResultsDetailAction() {
+        this.setCurrentTab("Saved Results");    
+	}
+	
 	public String execute() throws Exception {
 		String result = SUCCESS;
 		

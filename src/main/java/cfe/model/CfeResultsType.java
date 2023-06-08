@@ -67,7 +67,7 @@ public class CfeResultsType {
         return types;
     }
  
-    public List<String> getTypes() {
+    public static List<String> getTypes() {
         List<String> types = new ArrayList<String>();
         types.add(DISCOVERY_COHORT);
         types.add(DISCOVERY_SCORES);
@@ -76,11 +76,11 @@ public class CfeResultsType {
         types.add(PRIORITIZATION_SCORES_ONLY);
         
         types.add(VALIDATION_COHORT);
-        types.add(VALIDATION_COHORT_ONLY);
+        //types.add(VALIDATION_COHORT_ONLY);
         types.add(VALIDATION_SCORES);
         
         types.add(TESTING_COHORTS);
-        types.add(TESTING_COHORTS_ONLY);
+        //types.add(TESTING_COHORTS_ONLY);
         types.add(TESTING_SCORES);
         
         //types.add(VALIDATION_COHORT_PLUS_PRIORITIZATION_SCORES);

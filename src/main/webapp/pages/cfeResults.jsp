@@ -8,10 +8,26 @@
 </tiles:putAttribute>
 <tiles:putAttribute name="content">
 
+<script>
+    $( document ).ready(function() {
+    	$("#cfeResultsTypesSelect").on("change", function() {
+    		$("#cfeResultsForm").submit();
+    	});
+    	$("#cfeResultsOrderSelect").on("change", function() {
+    		$("#cfeResultsForm").submit();
+    	});
+    	$("#cfeResultsPheneSelect").on("change", function() {
+    		$("#cfeResultsForm").submit();
+    	});
+    });
+</script>
+
 <%-- User: <s:property value="#session.username" /> --%>
 
 <h2>CFE Saved Results</h2>
 
+<s:include value="/pages/error_include.jsp"/>
+<%--        
 <s:if test="errorMessage != null && errorMessage != ''">
     <div class="cfeError">
         <span style="font-weight: bold;">ERROR:</span> <s:property value="errorMessage" />
@@ -22,6 +38,23 @@
         </s:if>
     </div>
 </s:if>
+--%>
+
+<div style="margin-bottom: 17px; border: 1px solid #000000; border-radius: 7px; padding: 7px;">
+    <s:form theme="simple" id="cfeResultsForm" action="CfeResults" method="post">
+        Order:
+        <s:select id="cfeResultsOrderSelect" list="resultsOrders" name="resultsOrder">
+        </s:select>
+        
+        <span style="margin-left: 1em;">Phene:</span> 
+        <s:select id="cfeResultsPheneSelect" list="resultsPhenes" name="resultsPhene">
+        </s:select>
+                
+        <span style="margin-left: 1em;">Type:</span> 
+        <s:select id="cfeResultsTypesSelect" list="cfeResultsTypes" name="cfeResultsType">
+        </s:select>
+    </s:form>
+</div>
 
 <table class="dataTable">
     <tr>
@@ -51,7 +84,7 @@
                     details
                  </s:a>
             </td>
-            <td> <s:date name="generatedTime" format="MM/dd/yyyy hh:mm"/> </td>
+            <td> <s:date name="generatedTime" format="MM/dd/yyyy HH:mm"/> </td>
             <td> <s:property value="uploaded"/> </td>
             <%--
             <td>

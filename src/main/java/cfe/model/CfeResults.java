@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -329,6 +330,27 @@ public class CfeResults implements Serializable {
             dataTableMap.put(sheetName, dataTable);
         }
         return dataTableMap;
+    }
+    
+    public static void filterByPhene(List<CfeResults> cfeResults, String phene) {
+
+        if (!phene.equals("ALL")) {
+            for (int i = cfeResults.size() - 1; i >= 0; i--) {
+                CfeResults results = cfeResults.get(i);
+                String resultsPhene = results.getPhene();
+                
+                if (resultsPhene == null) {
+                    resultsPhene = "";
+                }
+                resultsPhene = resultsPhene.trim();
+                
+
+
+                if (!resultsPhene.equals(phene)) {
+                    cfeResults.remove(i);
+                }
+            }
+        }
     }
     
     public String getDiscoveryRScriptLog() {

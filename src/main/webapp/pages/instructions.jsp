@@ -90,8 +90,26 @@ To see information on the CFE Wizard literature database tables, click on
 <b>Special Functions -> (Prioritization) CFE Database Status</b>.
 This function also provides a button (<b>Clear All</b>) that will delete
 all data currently stored in the CFE literature database.
-
 </p>
+
+<hr/>
+
+<h3>Admin Pages</h3>
+
+There are a few admin (administrator) pages that can be accessed by clicking on <b>Admin</b>:
+<ul>
+    <li> <b>System Status.</b> The system status page provides various system property values
+    that can be helpful for problem solving. This page is primarily intended for developers.
+    </li>
+    
+    <li> <b>Temporary Files.</b> The temporary files page can be used to see and delete
+    temporary files that are created by the CFE Wizard. These files could eventually fill
+    up the disk space on the computer where the CFE Wizard is running.
+    </li>
+    
+    <li> <b>Test Page.</b> The test page is used by developers for testing.
+    </li>
+</ul>
 
 </div>
 

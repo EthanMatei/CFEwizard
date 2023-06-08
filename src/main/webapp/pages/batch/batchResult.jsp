@@ -10,11 +10,15 @@
 <tiles:putAttribute name="content">
 
 <script>
+
+$( document ).ready(function() {
     function submitForm() {
     	document.getElementById("uploadButton").disabled = true;
     	document.body.style.cursor='wait';
     	document.uploadForm.submit();
     }
+});
+
 </script>
 
 <s:include value="/pages/batch/steps.jsp"/>

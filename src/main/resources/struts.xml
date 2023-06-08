@@ -763,7 +763,7 @@
         </action>
         
         <!-- CFE Results Detail -->
-		<action name="CfeResultsDetailAction" class="cfe.action.CfeResultsDetailAction">
+        <action name="CfeResultsDetailAction" class="cfe.action.CfeResultsDetailAction">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success">pages/cfeResultsDetail.jsp</result>
 		    <result name="error">/pages/error.jsp</result>
@@ -773,6 +773,7 @@
         </action>
                
         <!-- Delete CFE Results -->
+		<!-- 
 		<action name="CfeResultsDelete" class="cfe.action.CfeResultsDeleteAction">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success">pages/cfeResults.jsp</result>
@@ -781,7 +782,16 @@
                 <param name="actionName">LoginAction</param>
             </result>
         </action>
-        
+        -->
+		<action name="CfeResultsDelete" class="cfe.action.CfeResultsAction" method="delete">
+			<interceptor-ref name="basicStack"/>
+		    <result name="success">pages/cfeResults.jsp</result>
+		    <result name="error">/pages/error.jsp</result>
+		    <result name="login" type="redirectAction">
+                <param name="actionName">LoginAction</param>
+            </result>
+        </action>
+                
         <!-- ==================================================================================== -->        		        
 
         <!-- ============ -->

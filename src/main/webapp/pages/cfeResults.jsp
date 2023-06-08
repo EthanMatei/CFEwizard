@@ -40,18 +40,18 @@
 </s:if>
 --%>
 
-<div style="margin-bottom: 17px; border: 1px solid #000000; border-radius: 7px; padding: 7px;">
+<div style="margin-bottom: 22px; border: 1px solid #000000; border-radius: 7px; padding: 7px; background-color: #F5F5FF;">
     <s:form theme="simple" id="cfeResultsForm" action="CfeResults" method="post">
-        Order:
-        <s:select id="cfeResultsOrderSelect" list="resultsOrders" name="resultsOrder">
+        <span style="font-weight: bold;">Order:</span>
+        <s:select id="cfeResultsOrderSelect" list="resultsOrders" name="resultsOrder" value="resultsOrder">
         </s:select>
         
-        <span style="margin-left: 1em;">Phene:</span> 
-        <s:select id="cfeResultsPheneSelect" list="resultsPhenes" name="resultsPhene">
+        <span style="font-weight: bold; margin-left: 1em;">Phene:</span> 
+        <s:select id="cfeResultsPheneSelect" list="resultsPhenes" name="resultsPhene" value="resultsPhene">
         </s:select>
                 
-        <span style="margin-left: 1em;">Type:</span> 
-        <s:select id="cfeResultsTypesSelect" list="cfeResultsTypes" name="cfeResultsType">
+        <span style="font-weight: bold; margin-left: 1em;">Type:</span> 
+        <s:select id="cfeResultsTypesSelect" list="cfeResultsTypes" name="cfeResultsType" value="cfeResultsType">
         </s:select>
     </s:form>
 </div>
@@ -103,6 +103,9 @@
                 <td>
                     <s:url var="deleteUrl" action="CfeResultsDelete">
                         <s:param name="cfeResultsId" value="cfeResultsId"/>
+                        <s:param name="resultsOrder" value="resultsOrder"/>
+                        <s:param name="resultsPhene" value="resultsPhene"/>
+                        <s:param name="cfeResultsType" value="cfeResultsType"/>
                     </s:url>
                     <s:a href="%{deleteUrl}">delete</s:a>
                 </td>

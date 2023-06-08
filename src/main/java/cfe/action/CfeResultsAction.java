@@ -50,6 +50,8 @@ public class CfeResultsAction extends BaseAction implements SessionAware {
 
     private List<CfeResults> cfeResults;
     
+    private Long cfeResultsId;
+    
     public CfeResultsAction() {
         cfeResults = new ArrayList<CfeResults>();
         
@@ -79,25 +81,7 @@ public class CfeResultsAction extends BaseAction implements SessionAware {
 		}
 		else {
 		    try {
-
-		        if (this.cfeResultsType == null || this.cfeResultsType.equals("ALL")) {
-		            this.cfeResults = CfeResultsService.getAllMetadata();
-		        }
-		        else {
-		            this.cfeResults = CfeResultsService.getMetadata(this.cfeResultsType);
-		        }
-
-		        // Filter by specified phene
-                CfeResults.filterByPhene(cfeResults, this.resultsPhene);
-                
-                if (cfeResults.size() > 0) {
-		            if (this.resultsOrder.equals("descending")) {
-		                Collections.sort(this.cfeResults, new CfeResultsNewestFirstComparator());
-		            }
-		            else {
-	                    Collections.sort(this.cfeResults, new CfeResultsOldestFirstComparator());
-		            }
-                }
+                this.filterResults();
 		        
 		        this.tempDir = System.getProperty("java.io.tmpdir");
 		        
@@ -119,6 +103,46 @@ public class CfeResultsAction extends BaseAction implements SessionAware {
 		}
 	    return result;
 	}
+	
+    public String delete() throws Exception {
+	     
+	    String result = SUCCESS;
+	        
+        if (!Authorization.isAdmin(webSession)) {
+	        result = LOGIN;
+	    }
+	    else {
+	        try {
+	            CfeResultsService.deleteById(cfeResultsId);
+	            this.filterResults();
+	        } catch (Exception exception) {
+	            this.errorMessage = "The Discovery database could not be processed. " + exception.getLocalizedMessage();
+	            result = ERROR;
+	        }
+	    }
+	    return result;
+	}
+    
+    public void filterResults() {
+        if (this.cfeResultsType == null || this.cfeResultsType.equals("ALL")) {
+            this.cfeResults = CfeResultsService.getAllMetadata();
+        }
+        else {
+            this.cfeResults = CfeResultsService.getMetadata(this.cfeResultsType);
+        }
+
+        // Filter by specified phene
+        CfeResults.filterByPhene(cfeResults, this.resultsPhene);
+        
+        if (cfeResults.size() > 0) {
+            if (this.resultsOrder.equals("descending")) {
+                Collections.sort(this.cfeResults, new CfeResultsNewestFirstComparator());
+            }
+            else {
+                Collections.sort(this.cfeResults, new CfeResultsOldestFirstComparator());
+            }
+        }        
+    }
 
 	public void setSession(Map<String, Object> session) {
 		this.webSession = session;
@@ -218,6 +242,14 @@ public class CfeResultsAction extends BaseAction implements SessionAware {
 
     public void setResultsPhenes(List<String> resultsPhenes) {
         this.resultsPhenes = resultsPhenes;
+    }
+
+    public Long getCfeResultsId() {
+        return cfeResultsId;
+    }
+
+    public void setCfeResultsId(Long cfeResultsId) {
+        this.cfeResultsId = cfeResultsId;
     }
 
 }

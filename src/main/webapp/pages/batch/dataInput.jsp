@@ -211,6 +211,10 @@
             </table>
             --%>
             
+            <p>
+            <s:checkbox name="debugDiscoveryScoring"/> Debug
+            </p>
+            
         </fieldset>
     </s:if>
     

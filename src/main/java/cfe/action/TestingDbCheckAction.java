@@ -58,6 +58,7 @@ import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
+import cfe.utils.TableCheckInfo;
 import cfe.utils.Util;
 import cfe.utils.WebAppProperties;
 
@@ -76,6 +77,8 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	private String testingDbContentType;
 	private String testingDbFileName;
 	
+	private List<TableCheckInfo> tableCheckInfos;
+	
 	private String report;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
@@ -83,6 +86,8 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	public TestingDbCheckAction() {
 	    this.setCurrentTab("Special Functions");
 	    this.setCurrentSubTab("Phenomic Database Check");
+	    
+	    this.tableCheckInfos = new ArrayList<TableCheckInfo>();
 	}
 	
 	public String initialize() throws Exception {
@@ -119,11 +124,12 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 			
 	            //dbParser.checkCoreTables();
                 
-                StringWriter sout = new StringWriter();
-                PrintWriter out = new PrintWriter(sout);
+                //StringWriter sout = new StringWriter();
+                //PrintWriter out = new PrintWriter(sout);
 			    
 		        // Get the names of tables in the database
-		        Set<String> tableNames = new TreeSet<String>();         
+		        
+			    Set<String> tableNames = new TreeSet<String>();         
 		        tableNames = dbParser.getTableNames();
 			    
 			    Map<String, List<String>> coreTableMap = new LinkedHashMap<String, List<String>>();
@@ -140,66 +146,88 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
                         Arrays.asList(DiscoveryDatabaseParser.SUBJECT_IDENTIFIERS_REQUIRED_COLUMNS)
                 );  
                 
+                //----------------------------------------------------------------------
+                // Check for required tables
+                //----------------------------------------------------------------------
                 for (Map.Entry<String, List<String>> entry : coreTableMap.entrySet()) {
-                    String table = entry.getKey();
-			        out.println("TABLE: \"" + table + "\"");
+                    TableCheckInfo tableCheckInfo = new TableCheckInfo();
+                    
+                    String tableName = entry.getKey();
+			        // out.println("TABLE: \"" + tableName + "\"");
+                    tableCheckInfo.setName(tableName);
 
-			        if (!tableNames.contains(table)) {
-			            out.println("    ERROR: this required table does not exist in the database.");
+			        if (!tableNames.contains(tableName)) {
+			            // out.println("    ERROR: this required table does not exist in the database.");
+	                    tableCheckInfo.addError("This required table does not exist in the database.");
 			        }
 			        else {
-		                 Set<String> columns = dbParser.getTableColumnNames(table);
-		                 out.println("    COLUMNS: " + String.join(", ", columns));
+		                 Set<String> columns = dbParser.getTableColumnNames(tableName);
+		                 // out.println("    COLUMNS: " + String.join(", ", columns));
+		                 tableCheckInfo.setColumns(columns);
+		                 
 		                 List<String> requiredColumns = entry.getValue();
 		                 for (String requiredColumn: requiredColumns) {
 		                     if (!columns.contains(requiredColumn)) {
-		                         out.println("    ERROR: required column \"" + requiredColumn + "\" was not found in the table");
+		                         // out.println("    ERROR: required column \"" + requiredColumn + "\" was not found in the table");
+	                             tableCheckInfo.addError("Required column \"" + requiredColumn + "\" was not found in the table");
 		                     }
 		                 }
 			        }
 			        
-			        out.println();
+			        tableCheckInfos.add(tableCheckInfo);
+			        // out.println();
 			    }
 		          
                 Set<String> pheneTables = dbParser.getPheneTables();
                 
 			    this.phenes = dbParser.getTableColumnMap();
 
-			    
+			    //--------------------------------------------------------------
+			    // Check phene tables
+			    //--------------------------------------------------------------
 	            for (String pheneTable: pheneTables) {
-	                out.println("TABLE: \"" + pheneTable + "\"");
+                    TableCheckInfo tableCheckInfo = new TableCheckInfo();
+                    
+                    tableCheckInfo.setName(pheneTable);
+	                // out.println("TABLE: \"" + pheneTable + "\"");
+                    
 	                Set<String> columns = dbParser.getTableColumnNames(pheneTable);
-	                out.println("    COLUMNS: " + String.join(", ", columns));
+	                // out.println("    COLUMNS: " + String.join(", ", columns));
+	                tableCheckInfo.setColumns(columns);
 	                
 	                Table dbTable = dbParser.getTable(pheneTable);
 	                DataTable dataTable = new DataTable();
 	                dataTable.initializeToAccessTable(dbTable);
 	                
 	                if (!dataTable.hasColumn("PheneVisit")) {
-	                    out.println(    "WARNING: Table \"" + pheneTable +"\" has no \"PheneVisit\" column.");
+	                    // out.println(    "WARNING: Table \"" + pheneTable +"\" has no \"PheneVisit\" column.");
+	                    tableCheckInfo.addWarning("Table \"" + pheneTable +"\" has no \"PheneVisit\" column.");
 	                }
 	                else {                    
 	                    Set<String> pheneVisits = new HashSet<String>();
 	                    for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
 	                        String pheneVisit = dataTable.getValue(i, "PheneVisit");
 	                        if (pheneVisits.contains(pheneVisit)) {
-	                            out.println("    ERROR: duplicate phene visit \"" + pheneVisit + "\" on line " + (i+1) + ".");
+	                            // out.println("    ERROR: duplicate phene visit \"" + pheneVisit + "\" on line " + (i+1) + ".");
+	                            tableCheckInfo.addError("Duplicate phene visit \"" + pheneVisit + "\" on line " + (i+1) + ".");
 	                        }
 	                        else if (pheneVisit.matches(PHENE_VISIT_PATTERN)) {
 	                            pheneVisits.add(pheneVisit);
 	                        }
 	                        else {
-	                            out.println("    ERROR: phene visit \"" + pheneVisit + "\" on line " + (i+1) + " has an incorrect format.");
+	                            // out.println("    ERROR: phene visit \"" + pheneVisit + "\" on line " + (i+1) + " has an incorrect format.");
+	                            tableCheckInfo.addError("Phene visit \"" + pheneVisit + "\" on line " + (i+1) + " has an incorrect format.");
 	                        }
 	                           
 	                    }
 	                }
-	                out.println();
+	                tableCheckInfos.add(tableCheckInfo);
+	                //out.println();
 	            }
 	            
-	            report = sout.toString();
-	            sout.close();
-	            out.close();
+	            //report = sout.toString();
+	            //sout.close();
+	            //out.close();
 		    } catch (Exception exception) {
 		        String message = "The Discovery database \"" + this.testingDbFileName + "\" could not be processed: " + exception.getLocalizedMessage();
 		        log.severe(message);
@@ -262,5 +290,14 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
     public void setReport(String report) {
         this.report = report;
     }
+
+    public List<TableCheckInfo> getTableCheckInfos() {
+        return tableCheckInfos;
+    }
+
+    public void setTableCheckInfos(List<TableCheckInfo> tableCheckInfos) {
+        this.tableCheckInfos = tableCheckInfos;
+    }
+
 
 }

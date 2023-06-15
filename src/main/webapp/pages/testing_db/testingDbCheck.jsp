@@ -22,8 +22,29 @@
 <s:actionerror />
 
 <pre>
-<s:property value="report"/>
+<%-- <s:property value="report"/> --%>
 </pre>
+
+<s:iterator value="tableCheckInfos">
+    <hr/>
+    <div>
+        <span style="font-weight: bold;">TABLE "<s:property value="name"/>"</span>
+        <ul>
+            <s:if test="!columns.isEmpty()">
+                <li><span style="font-weight: bold;">COLUMNS:</span> <s:property value="columnsString"/></li>
+            </s:if>
+
+            <s:iterator value="errors" var="error">
+                <li style="color: red;"><span style="color: red;"><i class="fa fa-exclamation-triangle"></i> ERROR: <s:property value="error"/></span></li>
+            </s:iterator>
+            
+            <s:iterator value="warnings" var="error">
+                <li style="color: #FF8000;"><span><i class="fa fa-exclamation-triangle"></i> WARNING: <s:property value="error"/></span></li>
+            </s:iterator>
+        </ul>
+    </div>
+
+</s:iterator>
 
 <s:iterator value="validationMsgs" status="vstat">
     <s:property value="validationMsgs[%{#vstat.index}]" />

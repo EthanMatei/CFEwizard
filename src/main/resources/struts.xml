@@ -397,7 +397,7 @@
         <!-- ==================================================================================== -->
  
         <!-- ========================== -->
-        <!-- VALIDATION COHORT CREATION -->
+        <!-- VALIDATION DATA MERGE -->
         <!-- ========================== -->
         
 		<!-- merge discovery and prioritization results -->
@@ -428,42 +428,7 @@
             </result>
 		</action>
 		
-		<action name="ValidationCohortDataSelection"
-		        class="cfe.action.ValidationCohortAction"
-		        method="initialize">
-			<interceptor-ref name="basicStack"/>
-		    <result name="success">pages/validation_cohort/validationCohortDiscoveryCohortSelection.jsp</result>
-		    <result name="error">/pages/error.jsp</result>
-		    <result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-        </action>
 
-        
-		<action name="ValidationCohortSpecification"
-		        class="cfe.action.ValidationCohortAction"
-		        method="specification">
-			<interceptor-ref name="basicStack"/>
-		    <result name="success">pages/validation_cohort/validationCohortSpecification.jsp</result>
-		    <result name="error">/pages/error.jsp</result>
-		    <result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-        </action>
-        
-                   
-		<action name="ValidationCohortProcess"
-		        class="cfe.action.ValidationCohortAction"
-		        method="process">
-			<interceptor-ref name="basicStack"/>
-		    <result name="success">pages/validation_cohort/validationCohort.jsp</result>
-		    <result name="error">pages/validation_cohort/validationCohort.jsp</result>
-		    <result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-        </action>
-        
-		
         <!-- ==================================================================================== -->
 
         <!-- ================== -->

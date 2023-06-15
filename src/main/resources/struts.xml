@@ -141,78 +141,7 @@
             </result>
 		</action>
 		
-		<!-- DISCOVERY ======================================================= -->
-		
-		<action name="DiscoveryDbUpload" class="cfe.action.DiscoveryAction" method="initialize">
-		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/discovery_cohort/discoveryDatabaseUpload.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discovery_cohort/discoveryDatabaseUpload.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-		
-		<!--  Upload specified database, and parse it to get values for cohort specification -->
-		<action name="DiscoveryCohortSpecification" class="cfe.action.DiscoveryAction" method="uploadDatabase">
-		    <interceptor-ref name="fileUploadStack"/>
-	        <result name="success">pages/discovery_cohort/discoveryCohortSpecification.jsp</result>
-			<result name="error">pages/discovery_cohort/discoveryDatabaseUpload.jsp</result>
-			<result name="input">pages/discovery_cohort/discoveryDatabaseUpload.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-		
-		<action name="DiscoveryCohort" class="cfe.action.DiscoveryAction" method="cohortSpecification">
-		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/discovery_cohort/discoveryCohort.jsp</result>
-			<result name="error">pages/error.jsp</result>
-			<result name="input">pages/discovery_cohort/discoveryCohort.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
 
-       <!-- ======================================== -->		
-
-		<action name="DiscoveryCohortSelection" class="cfe.action.DiscoveryAction" method="cohortSelection">
-		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/discovery/discoveryCohortSelection.jsp</result>
-			<result name="error">pages/discovery/discoveryCohortSelection.jsp</result>	
-			<result name="input">pages/error.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-
-		<action name="DiscoveryScoringSpecification" class="cfe.action.DiscoveryAction" method="discoveryScoringSpecification">
-		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/discovery/discoveryScoringSpecification.jsp</result>
-			<result name="error">pages/discovery/discoveryCohortSelection.jsp</result>
-			<result name="input">pages/error.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-						
-		<!--  Upload specified CSV file, upload probeset to Genecards symbol mapping DB,
-		      get Diagnostic input, and calculate values -->
-		<action name="DiscoveryCalculate" class="cfe.action.DiscoveryAction" method="calculate">
-		    <interceptor-ref name="fileUploadStack"/>
-	        <result name="success">pages/discovery/discoveryResult.jsp</result>
-			<result name="input" type="redirectAction">
-			    <param name="actionName">DiscoveryScoringSpecification</param>	
-			    <param name="discoveryId">${discoveryId}</param>	
-			    <param name="errorMessage">${errorMessage}</param>
-			</result>
-	        <result name="error">pages/discovery/discoveryResult.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-								
-						
 	    <!-- ================================================================== -->
 	    <!-- ADMIN PAGES -->
 				

@@ -8,7 +8,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import cfe.action.DiscoveryAction;
 import cfe.utils.HibernateUtils;
 
 import org.apache.commons.logging.Log;

@@ -105,7 +105,7 @@
     
         <fieldset class="dataInput">
             <p style="font-weight: bold;">
-            <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created results spreadsheet:'}"/>
+            <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created spreadsheet:'}"/>
             <i id="manuallyCreatedHelpButton" style="margin-left: 1em;" class="fa fa-question-circle"></i>    
             </p>
             

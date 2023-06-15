@@ -92,6 +92,7 @@ if (!is.null(specialPredictorListCsvFile) && specialPredictorListCsvFile != "") 
 predictorColumnNames <- colnames(predictors)
 diagnoses <- predictorColumnNames[predictorColumnNames %in% c("Predictor", "Direction", "Male", "Female", "All") == FALSE]
 diagnoses <- unlist(diagnoses)    # convert to vector
+
 genderDiagnoses <- c(paste("F", diagnoses, sep="-"), paste("M", diagnoses, sep="-"))
 genderDiagnoses <- genderDiagnoses[genderDiagnoses %in% c("M-F", "F-M") == FALSE]
 genderDiagnoses <- unlist(genderDiagnoses)

@@ -1,0 +1,185 @@
+<%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+ 
+<tiles:insertTemplate template="/pages/template.jsp" flush="true">
+
+<tiles:putAttribute name="header">
+    <title>CFE Wizard</title>
+</tiles:putAttribute>
+<tiles:putAttribute name="content">
+
+<%-- User: <s:property value="#session.username" /> --%>
+
+<h2>Discovery Results</h2>
+
+<s:if test="errorMessage != null && errorMessage != ''">
+    <div class="cfeError">
+        ERROR: <s:property value="errorMessage" />
+        <p>
+        <s:if test="exceptionStack != ''">
+            <br/>
+            <pre>
+            <s:property value="exceptionStack" />
+            </pre>
+        </s:if>
+        </p>
+    </div>
+</s:if>
+
+
+<br/>
+Discovery Scoring Results:
+<s:if test="cfeResultsId != null">
+    <s:a action="CfeResultsXlsxDisplay" title="CFE Results">
+        <s:param name="cfeResultsId" value="cfeResultsId" />
+        <div>
+            <img border="0"
+                 style="margin-top: 2px;"
+                 src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_x-office-spreadsheet.png'/>"
+                 alt="Discovery Scores" />
+            <br />
+            <s:property value="outputFileName"/>
+        </div>
+    </s:a>
+</s:if>
+<s:else>
+    <p>No results generated</p>
+</s:else>
+    
+<br/>
+Discovery R Script Output:
+
+
+<s:a action="TextFileDisplay" title="Discovery R script output file">
+    <s:if test="cfeResultsId != null">
+        <s:a action="CfeResultsDiscoveryRScriptLogDisplay" title="Discovery R Script Log">
+            <s:param name="cfeResultsId" value="cfeResultsId" />
+            <div>
+                <img border="0" style="margin-top: 2px;"
+                     src="<s:url includeParams='none' value='/images/gnome_48x48_mimetypes_text-x-generic.png'/>"
+                     alt="Discovery R Script Output"
+                 />
+                 <br/>
+                 discovery-r-script-log.txt
+            </div>
+        </s:a>
+    </s:if>
+    <s:else>
+        <p>No results generated</p>
+    </s:else>
+</s:a>
+
+<s:if test="true">
+    <p>
+    <s:a action="PrioritizationGeneListUpload" title="Prioritization" class="linkButton" style="margin-left: 2em;">
+        <s:param name="discoveryId" value="cfeResultsId" />
+        <s:param name="includeNonDiscoveryOptions" value="false"/>
+        Prioritization
+    </s:a>
+    </p>
+</s:if>
+
+<hr style="margin-top: 12px;"/>
+
+<h3>Inputs</h3>
+<table class="dataTable">
+    <tr>
+        <th> Phene </th>
+        <td> <s:property value="pheneSelection"/> </td>
+    </tr>
+    <tr>
+        <th> Phene Table </th>
+        <td> <s:property value="pheneTable"/> </td>
+    </tr>
+    <tr>
+        <th>Phene Low Cutoff</th>
+        <td> <s:property value="lowCutoff" /> </td>
+    </tr>
+    <tr>
+        <th>Phene High Cutoff</th>
+        <td> <s:property value="highCutoff" /> </td>
+    </tr>
+    <tr>
+        <th> Diagnosis Code </th>
+        <td> <s:property value="diagnosisCode"/> </td>
+    </tr>
+    <tr>
+        <th>Gene Expression CSV File</th>
+        <td><s:property value="discoveryCsvFileName" /></td>
+    </tr>
+    <tr>
+        <th>Genomics Table</th>
+        <td><s:property value="genomicsTable" /></td>
+    </tr>    
+</table>
+
+
+
+
+<s:if test="debugDiscoveryScoring">
+
+    <hr style="margin-top: 12px;"/>
+
+    <h3>Debug Information</h3>
+
+    <h5>R Script Input Files</h5>
+    <table class="dataTable">
+        <tr>
+            <th>Cohort CSV temp file</th>
+            <td>
+                <s:a action="CsvDisplay">
+                    <s:param name="csvFilePath" value="cohortCsvFile" />
+                    <s:property value="cohortCsvFile" />
+                </s:a>
+            </td>
+        </tr>
+        <tr>
+            <th>Big data CSV temp file</th>
+            <td>
+                <s:a action="CsvDisplay">
+                    <s:param name="csvFilePath" value="bigDataTempFileName" />
+                    <s:property value="bigDataTempFileName" />
+                </s:a>
+            </td>
+        </tr>
+        <tr>
+            <th>Gene Expression CSV temp file</th>
+            <td>
+                <s:a action="CsvDisplay">
+                    <s:param name="csvFilePath" value="discoveryCsvTempFileName" />
+                    <s:property value="discoveryCsvTempFileName" />
+                </s:a>
+            </td>
+        </tr>
+    </table>
+    
+    <h5>Other Information</h5>
+    <table class="dataTable">
+        <tr>
+            <th>Discovery Scoring Command</th>
+            <td> <s:property value="discoveryScoringCommand"/> </td>
+        </tr>
+        <tr>
+            <th>Temp Directory</th>
+            <td> <s:property value="tempDir" /> </td>
+        </tr>
+        <tr>
+            <th>CFE Wizard Base directory</th>
+            <td> <s:property value="baseDir"/> </td>
+        </tr>
+        <tr>
+            <th>R Script Directory</th>
+            <td> <s:property value="scriptDir" /> </td>
+        <tr>
+            <th>R Script File</th>
+            <td> <s:property value="scriptFile" /> </td>
+        </tr>
+    </table>
+
+</s:if>
+
+<br/>
+
+
+</tiles:putAttribute>
+</tiles:insertTemplate>

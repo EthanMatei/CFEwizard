@@ -109,8 +109,8 @@ public class DiscoveryScoresCalc {
 	
 	private String pheneSelection;
 	
-	private double lowCutoff;
-	private double highCutoff;
+	private double discoveryPheneLowCutoff;
+	private double discoveryPheneHighCutoff;
     private double discoveryCohortComparisonThreshold = 0.0001;  
     
 	private String cohortDataCsv;
@@ -177,7 +177,9 @@ public class DiscoveryScoresCalc {
 	        PercentileScores discoveryPercentileScores,
 	        boolean debugDiscoveryScoring
 	) throws Exception {
-		
+	    
+
+        
 	    log.info("Discovery scores calculation phase started");
 	    
 	    CfeResults cfeResults = null;
@@ -205,6 +207,9 @@ public class DiscoveryScoresCalc {
 	        if (pheneSelection == null || pheneSelection.isEmpty()) {
 	            throw new Exception("No phene found in discovery cohort.");
 	        }
+	        
+	        this.discoveryPheneLowCutoff  = discoveryCohortResults.getLowCutoff();
+	        this.discoveryPheneHighCutoff = discoveryCohortResults.getHighCutoff();
 	        
 	        if (this.discoveryPercentileScores == null || this.discoveryPercentileScores.getScores().size() <= 0) {
 	            String errorMessage = "No percentile scores were specified.";
@@ -336,8 +341,8 @@ public class DiscoveryScoresCalc {
             rScriptCommand[5] = this.discoveryCsvTempFileName;
             rScriptCommand[6] = this.pheneSelection;
             rScriptCommand[7] = this.pheneTable;
-            rScriptCommand[8] = this.lowCutoff + "";
-            rScriptCommand[9] = this.highCutoff + "";
+            rScriptCommand[8] = this.discoveryPheneLowCutoff + "";
+            rScriptCommand[9] = this.discoveryPheneHighCutoff + "";
             rScriptCommand[10] = this.tempDir;
             rScriptCommand[11] = this.bigDataTempFileName;
 
@@ -507,7 +512,7 @@ public class DiscoveryScoresCalc {
             // Save the results in the database
             cfeResults = new CfeResults(resultsWorkbook, CfeResultsType.DISCOVERY_SCORES,
                     this.scoresGeneratedTime, this.pheneSelection,
-                    lowCutoff, highCutoff);
+                    this.discoveryPheneLowCutoff, this.discoveryPheneHighCutoff);
             log.info("cfeResults object created.");
             
             cfeResults.copyAttributes(discoveryCohortResults);
@@ -938,23 +943,28 @@ public class DiscoveryScoresCalc {
 		this.pheneSelection = pheneSelection;
 	}
 
-	public double getLowCutoff() {
-		return lowCutoff;
-	}
 
-	public void setLowCutoff(double lowCutoff) {
-		this.lowCutoff = lowCutoff;
-	}
+	public double getDiscoveryPheneLowCutoff() {
+        return discoveryPheneLowCutoff;
+    }
 
-	public double getHighCutoff() {
-		return highCutoff;
-	}
 
-	public void setHighCutoff(double highCutoff) {
-		this.highCutoff = highCutoff;
-	}
+    public void setDiscoveryPheneLowCutoff(double discoveryPheneLowCutoff) {
+        this.discoveryPheneLowCutoff = discoveryPheneLowCutoff;
+    }
 
-	public String getPheneTable() {
+
+    public double getDiscoveryPheneHighCutoff() {
+        return discoveryPheneHighCutoff;
+    }
+
+
+    public void setDiscoveryPheneHighCutoff(double discoveryPheneHighCutoff) {
+        this.discoveryPheneHighCutoff = discoveryPheneHighCutoff;
+    }
+
+
+    public String getPheneTable() {
 		return pheneTable;
 	}
 

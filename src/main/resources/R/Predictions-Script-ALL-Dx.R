@@ -461,7 +461,14 @@ for (i in 1:(nrow(predictors))) {
           data.subset.Gender.Dx <- subset(data.subset.Gender, DxCode %in% diagnoses)
         } 
 
-        if (!(dx %in% c("PSYCHOSIS", "GENDER", "PLACEHOLDERDX") ) ) {
+        if (sex == "M" && dx == "M") {
+          data.subset.Gender.Dx <- subset(data.subset.Gender, dx == "M-M")
+        } 
+        else if (sex == "F" && dx == "F") {
+          data.subset.Gender.Dx <- subset(data.subset.Gender, dx == "F-F")
+        }
+
+        if (!(dx %in% c("PSYCHOSIS", "GENDER", "PLACEHOLDERDX", "M", "F") ) ) {
           data.subset.Gender.Dx <- data.subset.Gender[data.subset.Gender$DxCode == dx,]
         }
         

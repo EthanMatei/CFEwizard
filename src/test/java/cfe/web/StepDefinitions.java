@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.htmlunit.WebAssert;
 import org.htmlunit.WebClient;
+import org.htmlunit.html.HtmlAnchor;
 import org.htmlunit.html.HtmlElement;
 import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlPage;
@@ -62,6 +63,12 @@ public class StepDefinitions {
         this.page = submitInput.click();
         
         // System.out.println(this.page.getVisibleText());
+    }
+    
+    @When("I click on link {string}")
+    public void iClickOnLink(String linkText) throws Exception {
+        HtmlAnchor a = this.page.getAnchorByText(linkText);
+        this.page = a.click();
     }
     
     @Then("I should see {string}")

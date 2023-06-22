@@ -116,7 +116,7 @@ public class ValidationCohortCalc {
 	            this.comparisonThreshold,
 	            // clinicalPhene, clinicalHighCutoff,
 	            pheneConditions, percentInValidationDecimal
-	            );
+	    );
 
 	    this.validationSubjects = results.get(0);
 	    this.testingSubjects    = results.get(1);
@@ -174,6 +174,7 @@ public class ValidationCohortCalc {
 	    columns.add("TestingCohort");
 
 
+	    // Filter to get only needed columns
 	    DataTable validationCohort = cohortData.filter("Subject Identifiers.PheneVisit", columns);
 
 	    String[] validationSortColumns = {"Subject", "VisitNumber"};

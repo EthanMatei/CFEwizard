@@ -298,6 +298,7 @@ public class CohortDataTable extends DataTable {
         
         int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         int pheneIndex   = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
+        int cohortIndex  = this.getColumnIndexTrimAndIgnoreCase("Cohort");
         
         //int clinicalPheneIndex = this.getColumnIndexTrimAndIgnoreCase(clinicalPhene.trim());
         
@@ -307,6 +308,10 @@ public class CohortDataTable extends DataTable {
         else if (pheneIndex < 0) {
             throw new Exception("Can't find discovery phene \"" + phene + "\" column in cohort data.");
         }
+        else if (cohortIndex < 0) {
+            throw new Exception("Can't find \"Cohort\" column in cohort data.");
+        }
+        
         //else if (clinicalPheneIndex < 0) {
         //    throw new Exception ("Can't find clinical phene \"" + clinicalPhene + "\" column in cohort data.");
         //}
@@ -314,6 +319,7 @@ public class CohortDataTable extends DataTable {
         log.info("subject index: " + subjectIndex + ", pheneIndex: " + pheneIndex);
 
         // Find subjects with low score and subjects with high score
+        TreeSet<String> discoverySubjects  = new TreeSet<String>();
         TreeSet<String> allSubjects        = new TreeSet<String>();
         TreeSet<String> lowScoreSubjects   = new TreeSet<String>();
         TreeSet<String> highScoreSubjects  = new TreeSet<String>();
@@ -328,22 +334,10 @@ public class CohortDataTable extends DataTable {
             }
             
             String pheneValueString = row.get(pheneIndex);
-            String subject = row.get(subjectIndex);
+            String subject          = row.get(subjectIndex);
+            String cohort           = row.get(cohortIndex);
             
             allSubjects.add(subject);
-            
-            //String clinicalPheneValueString = row.get(clinicalPheneIndex);
-            
-            // If the subject meets the clinical phene condition
-            //if (clinicalPheneValueString != null) {
-            //    clinicalPheneValueString = clinicalPheneValueString.trim();
-            //    if (StringUtil.isFloat(clinicalPheneValueString)) {
-            //        double clinicalPheneValue = Double.parseDouble(clinicalPheneValueString);
-            //        if (clinicalPheneValue >= clinicalHighCutoff) {
-            //            clinicalConditionSubjects.add(subject);
-            //        }
-            //    }
-            //}
             
             // If the subject meets the additional phene conditions
             if (PheneCondition.isTrue(pheneConditions, rowMap)) {
@@ -364,13 +358,19 @@ public class CohortDataTable extends DataTable {
                     }
                 }
             }
+            
+            if (cohort.equalsIgnoreCase("discovery")) {
+                discoverySubjects.add(subject);
+            }
         }
         
-        TreeSet<String> discoverySubjects = lowScoreSubjects;
-        discoverySubjects.retainAll(highScoreSubjects);  
+        // OLD CODE - ignored manual changes to spreadsheet; new code gets discovery subjects from spreadsheet
+        // discoverySubjects = lowScoreSubjects;
+        // discoverySubjects.retainAll(highScoreSubjects);  
 
         // Set cohort subjects to high score subject, who do NOT have a low score, and who
         // meet all the additional phene conditions (if any)
+        
         TreeSet<String> cohortSubjects = allSubjects;
         cohortSubjects.removeAll(discoverySubjects);
         cohortSubjects.retainAll(pheneConditionsSubjects); // Intersection of non-discovery subjects with
@@ -383,7 +383,7 @@ public class CohortDataTable extends DataTable {
         //TreeSet<String> cohortSubjects = clinicalConditionSubjects;
         //cohortSubjects.removeAll(discoverySubjects)array;
         
-        int cohortIndex = this.getColumnIndex("Cohort");
+        cohortIndex = this.getColumnIndex("Cohort");
         if (cohortIndex == -1) {
             throw new Exception("Could not find \"Cohort\" column in cohort data table.");
         }

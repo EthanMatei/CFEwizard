@@ -429,52 +429,6 @@
 		</action>
 		
 
-        <!-- ==================================================================================== -->
-
-        <!-- ================== -->
-        <!-- VALIDATION SCORING -->
-        <!-- ================== -->
-
-			 
-        <!-- select validation cohort -->
-		<action name="ValidationDataSelection" class="cfe.action.ValidationScoringAction" method="validationDataSelection">
-		    <interceptor-ref name="basicStack"/>
-	        <result name="success">pages/validation/validationDataSelection.jsp</result>
-			<result name="error">pages/validation/validationDataSelection.jsp</result>	
-			<result name="input">pages/error.jsp</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-
-		<action name="ValidationScoringSpecification" class="cfe.action.ValidationScoringAction" method="validationScoringSpecification">
-		    <interceptor-ref name="fileUploadStack"/>
-	        <result name="success">pages/validation/validationScoringSpecification.jsp</result>
-			<result name="error">pages/validation/validationScoringSpecification.jsp</result>	
-			<result name="input" type="redirectAction">
-			    <param name="actionName">ValidationDataSelection</param>
-			    <param name="errorMessage">${errorMessage}</param>
-			</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>       
-		
- 
-		<action name="ValidationScoresCalculation" class="cfe.action.ValidationScoringAction" method="calculateValidationScores">
-		    <interceptor-ref name="fileUploadStack"/>
-	        <result name="success">pages/validation/validationScores.jsp</result>
-			<result name="error">pages/validation/validationScores.jsp</result>	
-			<result name="input" type="redirectAction">
-			    <param name="actionName">ValidationScoringSpecification</param>
-			    <param name="errorMessage">${errorMessage}</param>
-			</result>
-			<result name="login" type="redirectAction">
-                <param name="actionName">LoginAction</param>
-            </result>
-		</action>
-		
-        <!-- ==================================================================================== -->
 
         <!-- ==================================================================================== -->
          

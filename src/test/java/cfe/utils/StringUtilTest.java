@@ -1,4 +1,4 @@
-package cfe.test.utils;
+package cfe.utils;
 
 import org.junit.Test;
 

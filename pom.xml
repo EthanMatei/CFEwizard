@@ -146,12 +146,26 @@
       <version>5.7.1</version>
     </dependency>
 
-<dependency>
-    <groupId>org.webjars</groupId>
-    <artifactId>jquery</artifactId>
-    <version>3.6.4</version>
-</dependency>
-      		
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>3.6.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <version>7.12.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-junit</artifactId>
+      <version>7.12.1</version>
+      <scope>test</scope>
+    </dependency>
+    
   </dependencies>
   
   <build>

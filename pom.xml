@@ -165,6 +165,12 @@
       <version>7.12.1</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.htmlunit</groupId>
+      <artifactId>htmlunit</artifactId>
+      <version>3.3.0</version>
+    </dependency>
     
   </dependencies>
   

@@ -21,10 +21,10 @@
 
 <table style="cellpadding: 7px;">
 <tr>
-<td> username: </td> <td> <s:textfield name="username" autocomplete="off" /> </td>
+<td> username: </td> <td> <s:textfield id="username" name="username" autocomplete="off" /> </td>
 </tr>
 <tr>
-<td> password: </td> <td> <s:password name="password" autocomplete="off" /> </td>
+<td> password: </td> <td> <s:password id="password" name="password" autocomplete="off" /> </td>
 </tr>
 <tr>
   <td colspan="2" style="text-align:center"><s:submit value="Login"/></td>

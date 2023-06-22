@@ -714,7 +714,9 @@ public class ValidationScoresCalc {
 	    XSSFWorkbook workbook = discoveryScoresAndCohorts.getResultsSpreadsheet();
         XSSFSheet sheet = workbook.getSheet(CfeResultsSheets.DISCOVERY_SCORES);
         
-        DataTable discoveryScores = new DataTable("Probe Set ID");
+        // This caused problems, because probeset was non-unique
+        // DataTable discoveryScores = new DataTable("Probe Set ID");
+        DataTable discoveryScores = new DataTable();
         discoveryScores.initializeToWorkbookSheet(sheet);
         
         sheet = workbook.getSheet(CfeResultsSheets.COHORT_DATA);

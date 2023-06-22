@@ -8,6 +8,7 @@ import org.htmlunit.WebClient;
 import org.htmlunit.html.HtmlElement;
 import org.htmlunit.html.HtmlForm;
 import org.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlPasswordInput;
 import org.htmlunit.html.HtmlSubmitInput;
 import org.htmlunit.html.HtmlTextInput;
 import org.htmlunit.html.SubmittableElement;
@@ -50,30 +51,17 @@ public class StepDefinitions {
     public void iAmLoggedIntoTheCfeWizard() throws Exception {
         this.page = webClient.getPage(this.cfeUrl);
         
-        System.out.println("URL: " + this.cfeUrl);
-        HtmlPage htmlPage = this.page.getPage();
-        System.out.println(this.page.getVisibleText());
+        HtmlTextInput usernameInput = this.page.getHtmlElementById("username");
+        usernameInput.setText(this.cfeUsername);
         
-        HtmlTextInput usernameInput = htmlPage.getHtmlElementById("username");
-        usernameInput.setValueAttribute(this.cfeUsername);
-        System.out.println("ATTRIBUTE VALUE: " + usernameInput.getValueAttribute());
+        HtmlPasswordInput passwordInput = this.page.getHtmlElementById("password");
+        passwordInput.setText(this.cfePassword);
         
-        HtmlTextInput passwordInput = htmlPage.getHtmlElementById("username");
-        passwordInput.setValueAttribute(this.cfePassword);
+        HtmlForm loginForm = this.page.getFormByName("loginForm");
+        HtmlSubmitInput submitInput = loginForm.getOneHtmlElementByAttribute("input", "type", "submit");
+        this.page = submitInput.click();
         
-        System.out.println(this.cfeUsername + ": " + this.cfePassword);
-        
-        HtmlForm loginForm = htmlPage.getFormByName("loginForm");
-        SubmittableElement s = loginForm.getOneHtmlElementByAttribute("input", "type", "submit");
-        loginForm.submit(s);
-        //HtmlPage newPage = submit.click();
-        
-        //loginForm.get
-        //HtmlElement submit = this.page.getHtmlElementById("loginSubmit");
-        //loginForm.submit();
-        //this.page = submit.click();
-        
-        System.out.println(this.page.getVisibleText());
+        // System.out.println(this.page.getVisibleText());
     }
     
     @Then("I should see {string}")
@@ -81,10 +69,4 @@ public class StepDefinitions {
         WebAssert.assertTextPresent(this.page, text);
     }
     
-
-    @Given("I have {int} cukes in my belly")
-    public void i_have_n_cukes_in_my_belly(int cukes) {
-        System.out.format("Cukes: %n\n", cukes);
-    }
 }
-

@@ -9,7 +9,7 @@
 <tiles:putAttribute name="content">
 
 <div id="login">
-<s:form theme="simple" action="LoginProcess">
+<s:form theme="simple" id="loginForm" name="loginForm" action="LoginProcess">
 
 
 
@@ -27,7 +27,7 @@
 <td> password: </td> <td> <s:password id="password" name="password" autocomplete="off" /> </td>
 </tr>
 <tr>
-  <td colspan="2" style="text-align:center"><s:submit value="Login"/></td>
+  <td colspan="2" style="text-align:center"><s:submit id="loginSubmit" value="Login"/></td>
 </tr>
 </table>
 

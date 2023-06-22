@@ -2,6 +2,7 @@
 /target
 /WebContent
 build.properties
+webtest.properties
 test-datasp.txt
 *.geany
 test-data/ms-access/ReqFields.txt

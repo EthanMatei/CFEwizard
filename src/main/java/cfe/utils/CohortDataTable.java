@@ -299,6 +299,7 @@ public class CohortDataTable extends DataTable {
         int subjectIndex = this.getColumnIndexTrimAndIgnoreCase("Subject");
         int pheneIndex   = this.getColumnIndexTrimAndIgnoreCase(phene.trim());
         int cohortIndex  = this.getColumnIndexTrimAndIgnoreCase("Cohort");
+        int pheneVisitIndex = this.getColumnIndexTrimAndIgnoreCase("Subject Identifiers.PheneVisit");
         
         //int clinicalPheneIndex = this.getColumnIndexTrimAndIgnoreCase(clinicalPhene.trim());
         
@@ -310,6 +311,9 @@ public class CohortDataTable extends DataTable {
         }
         else if (cohortIndex < 0) {
             throw new Exception("Can't find \"Cohort\" column in cohort data.");
+        }
+        else if (pheneVisitIndex < 0) {
+            throw new Exception("Can't find phene visit \"Subject Identifiers.PheneVisit\" column in cohort data.");
         }
         
         //else if (clinicalPheneIndex < 0) {
@@ -419,24 +423,34 @@ public class CohortDataTable extends DataTable {
                 pheneValue = Double.parseDouble(pheneValueString);
             }
             
+            String cohort = row.get(cohortIndex);
+            
             if (discoverySubjects.contains(subject)) {
-                if (pheneValue != null && pheneValue <= lowCutoff + comparisonThreshold) {
-                    row.set(validationIndex, "Low Validation");  
-                    row.set(valCategoryIndex, "Low");
-                    row.set(validationCohortIndex, "0");
-                    row.set(testingCohortIndex, "1");
-                }
-                else if (pheneValue != null && pheneValue >= highCutoff - comparisonThreshold && !clinicalConditionSubjects.contains(subject)) {
-                    row.set(validationIndex, "High Validation");
-                    row.set(valCategoryIndex, "High");
-                    row.set(validationCohortIndex, "0");
-                    row.set(testingCohortIndex, "1");
+                if (cohort.equalsIgnoreCase("discovery")) {
+                    if (pheneValue != null && pheneValue <= lowCutoff + comparisonThreshold) {
+                        row.set(validationIndex, "Low Validation");  
+                        row.set(valCategoryIndex, "Low");
+                        row.set(validationCohortIndex, "0");
+                        row.set(testingCohortIndex, "1");
+                    }
+                    else if (pheneValue != null && pheneValue >= highCutoff - comparisonThreshold && !clinicalConditionSubjects.contains(subject)) {
+                        row.set(validationIndex, "High Validation");
+                        row.set(valCategoryIndex, "High");
+                        row.set(validationCohortIndex, "0");
+                        row.set(testingCohortIndex, "1");
+                    }
+                    else {
+                        row.set(validationIndex, "nothing");
+                        row.set(valCategoryIndex, "nothing");
+                        row.set(validationCohortIndex,  "0");
+                        row.set(testingCohortIndex, "0");
+                    }
                 }
                 else {
                     row.set(validationIndex, "nothing");
-                    row.set(valCategoryIndex, "nothing");
+                    row.set(valCategoryIndex, "non-discovery phenevisit");
                     row.set(validationCohortIndex,  "0");
-                    row.set(testingCohortIndex, "0");
+                    row.set(testingCohortIndex, "0");                    
                 }
             }
             else if (cohortSubjects.contains(subject)) {

@@ -26,3 +26,7 @@ Scenario: Saved Results page
 Scenario: Special Functions page
     When I click on link "Special Functions"
     Then I should see "Phenomic Database Check"
+
+Scenario: Admin page
+    When I click on link "Admin"
+    Then I should see "System Status"

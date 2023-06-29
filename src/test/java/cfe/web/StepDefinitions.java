@@ -6,9 +6,13 @@ import java.util.Properties;
 
 import org.htmlunit.WebAssert;
 import org.htmlunit.WebClient;
+import org.htmlunit.html.DomElement;
+import org.htmlunit.html.DomNodeList;
 import org.htmlunit.html.HtmlAnchor;
 import org.htmlunit.html.HtmlElement;
+import org.htmlunit.html.HtmlFileInput;
 import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlLabel;
 import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlPasswordInput;
 import org.htmlunit.html.HtmlSubmitInput;
@@ -79,6 +83,37 @@ public class StepDefinitions {
     public void iClickOnLink(String linkText) throws Exception {
         HtmlAnchor a = this.page.getAnchorByText(linkText);
         this.page = a.click();
+    }
+    
+    @When("I specify file {string} for input {string}")
+    public void iSpecifyFileForInput(String file, String input) {
+        String filePath = getClass().getClassLoader().getResource(file).toExternalForm();
+        this.getFileInputByLabel(input);
+        
+        //HtmlFileInput fileInput = this.page.getElementById(input);
+    }
+    
+    public HtmlFileInput getFileInputByLabel(String label) {
+        HtmlFileInput fileInput = null;
+        DomNodeList<DomElement> labelList = this.page.getElementsByTagName("label");
+        //this.page.get
+        for (int i = 0; i < labelList.getLength(); i++) {
+            DomElement domElement = labelList.get(i);
+            if (domElement instanceof HtmlLabel) {
+                HtmlLabel labelElement = (HtmlLabel) domElement;
+
+                if (labelElement.getTextContent().equals(label)) {
+                    String id = labelElement.getAttribute("for");
+                    if (id != null) {
+                        DomElement element = this.page.getElementById(id);
+                        if (element instanceof HtmlFileInput) {
+                            fileInput = (HtmlFileInput) element;
+                        }
+                    }
+                }
+            }
+        }
+        return fileInput;
     }
     
     @Then("I should see {string}")

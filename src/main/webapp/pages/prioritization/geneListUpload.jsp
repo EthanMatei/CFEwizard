@@ -59,6 +59,7 @@
     <hr />
 </s:if>
 
+<%--
 <s:form id ="processDiscoveryGeneForm" theme="simple" action="PrioritizationDiscoveryGeneListProcess" method="post">    
     <p>
     <s:submit value="Generate Gene List from Discovery Results" name="geneListButton"
@@ -108,6 +109,7 @@
     </table>
     <s:token />
 </s:form>
+--%>
 
 </tiles:putAttribute>
 </tiles:insertTemplate>

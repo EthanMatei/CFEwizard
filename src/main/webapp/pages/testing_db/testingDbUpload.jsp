@@ -40,7 +40,7 @@
 
      
     <p>
-    Phenomic Database: <s:file name="testingDb" label="Testing Database" />
+    <label for="phenomicDb">Phenomic Database:</label> <s:file id="phenomicDb" name="testingDb" label="Testing Database" />
     </p>
     
     <!-- <s:submit value="Upload" id="uploadButton" onclick="submitForm();" /> -->

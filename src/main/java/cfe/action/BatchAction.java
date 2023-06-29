@@ -843,16 +843,6 @@ public class BatchAction extends BaseAction implements SessionAware {
                     log.info("Step " + CfeResultsType.VALIDATION_SCORES + " started.");
                     ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
 
-
-                    List<String> fileNames = validationScoresCalc.createValidationPredictorListAndMasterSheetFiles(
-                            validationCohortResultsId,
-                            this.geneExpressionCsv,
-                            this.validationDiagnosisType
-                            );
-
-                    String predictorListFileName = fileNames.get(0);
-                    String masterSheetFileName = fileNames.get(1);
-
                     log.info("Validation score cutoff: " + this.validationScoreCutoff);
                     log.info("Validation scores comparison threshold: " + this.validationScoresComparisonThreshold);
 
@@ -865,12 +855,11 @@ public class BatchAction extends BaseAction implements SessionAware {
                                 this.nominalScore,
                                 this.stepwiseScore,
                                 this.nonStepwiseScore,
-                                masterSheetFileName,
                                 this.updatedValidationMasterSheet,
                                 this.updatedValidationMasterSheetFileName,
-                                predictorListFileName,
                                 this.updatedValidationPredictorList,
-                                this.updatedValidationPredictorListFileName
+                                this.updatedValidationPredictorListFileName,
+                                this.validationDiagnosisType
                         );
                     }
                     catch (Exception exception) {

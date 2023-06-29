@@ -113,12 +113,11 @@ public class ValidationScoresCalc {
             double nominalScore,
             double stepwiseScore,
             double nonStepwiseScore,
-            String masterSheetFileName,
             File updatedMasterSheetFile,
             String updatedMasterSheetFileName,
-            String predictorListFileName,
             File updatedPredictorListFile,
-            String updatedPredictorListFileName
+            String updatedPredictorListFileName,
+            String validationDiagnosisType
     ) throws Exception {
 
 	    log.info("Validation scoring phase started");
@@ -135,10 +134,8 @@ public class ValidationScoresCalc {
 	    this.stepwiseScore       = stepwiseScore;
 	    this.nonStepwiseScore    = nonStepwiseScore;
         
-	    this.validationMasterSheetFile    = masterSheetFileName;
 	    this.updatedMasterSheetFile       = updatedMasterSheetFile;
-        this.updatedMasterSheetFileName   = updatedMasterSheetFileName;
-        this.predictorListFile            = predictorListFileName;	   
+        this.updatedMasterSheetFileName   = updatedMasterSheetFileName;   
         this.updatedPredictorListFile     = updatedPredictorListFile;
         this.updatedPredictorListFileName = updatedPredictorListFileName;
         
@@ -172,6 +169,15 @@ public class ValidationScoresCalc {
 
 	        log.info("Starting validation scoring");
 
+            List<String> fileNames = this.createValidationPredictorListAndMasterSheetFiles(
+                    validationDataId,
+                    this.geneExpressionCsv,
+                    validationDiagnosisType
+                    );
+
+            this.predictorListFile = fileNames.get(0);
+            this.validationMasterSheetFile = fileNames.get(1);
+	        
 	        String masterSheetArg   = this.validationMasterSheetFile;
 	        String predictorListArg = this.predictorListFile;
 

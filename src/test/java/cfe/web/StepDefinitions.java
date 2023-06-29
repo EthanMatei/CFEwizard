@@ -1,5 +1,6 @@
 package cfe.web;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Properties;
 
@@ -34,7 +35,16 @@ public class StepDefinitions {
     @Before
     public void init() throws Exception {
         Properties properties = new Properties();
-        FileReader reader = new FileReader(WEB_TEST_PROPERTIES_FILE);
+        FileReader reader = null;
+        File file = new File(WEB_TEST_PROPERTIES_FILE);
+
+        try {
+            reader = new FileReader(file);
+        }
+        catch (FileNotFoundException exception) {
+            System.out.println("The web test properties file \"" + file.getCanonicalPath() + "\" was not found.");
+            System.exit(0);
+        }
         properties.load(reader);
         this.cfeUrl = (String) properties.get("cfe.url");
         this.cfeUsername = (String) properties.getProperty("cfe.username");

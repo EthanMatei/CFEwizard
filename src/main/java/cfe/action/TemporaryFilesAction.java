@@ -3,18 +3,11 @@ package cfe.action;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.interceptor.SessionAware;
 
-import cfe.enums.CfeTables;
-import cfe.enums.prioritization.Tables;
-import cfe.services.TableInfoService;
 import cfe.utils.Authorization;
-import cfe.utils.TableInfo;
 import cfe.utils.TemporaryFileInfo;
 import cfe.utils.WebAppProperties;
 

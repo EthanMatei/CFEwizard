@@ -3,7 +3,7 @@ package cfe.test;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import cfe.parser.MSAccessParser;
+import cfe.parser.prioritization.MSAccessParser;
 
 
 public class TestUtil {

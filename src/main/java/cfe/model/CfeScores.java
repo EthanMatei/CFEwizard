@@ -84,6 +84,7 @@ public class CfeScores {
 		}
 	}
 	
+	/*
 	public void setDiscovery(Discovery discovery, List<CfeScoringWeights> weights) {
 		String probeset = discovery.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
@@ -108,8 +109,9 @@ public class CfeScores {
 		
 		this.setScore(cfeScore);		
 	}
+	*/
 
-	
+	/*
 	public void setPrioritization(Prioritization prioritization, List<CfeScoringWeights> weights) {
 		String probeset = prioritization.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
@@ -144,7 +146,9 @@ public class CfeScores {
 		
 		this.setScore(cfeScore);		
 	}
+	*/
 	
+	/*
 	public void setValidation(Validation validation, List<CfeScoringWeights> weights) throws Exception {
 		String probeset = validation.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
@@ -193,7 +197,9 @@ public class CfeScores {
 		
 		this.setScore(cfeScore);		
 	}
-
+    */
+	
+	/*
 	public void setTesting(Testing testing, List<CfeScoringWeights> weights) throws Exception {
 		String probeset = testing.getProbeset();
 		CfeScore cfeScore = this.getScore(probeset);
@@ -222,7 +228,8 @@ public class CfeScores {
 		
 		this.setScore(cfeScore);		
 	}
-
+    */
+	
 	public void calculateTotalScores(List<CfeScoringWeights> weights) {
 		
 	    for (CfeScore score: this.scores.values()) {

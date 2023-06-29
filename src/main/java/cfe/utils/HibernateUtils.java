@@ -102,10 +102,10 @@ public class HibernateUtils {
 			        // CFE Prototype
 			        //-----------------------------
 					cfe.model.DatabaseUploadInfo.class,
-					cfe.model.Discovery.class,
-					cfe.model.Prioritization.class,
-					cfe.model.Validation.class,
-					cfe.model.Testing.class,
+					//cfe.model.Discovery.class,
+					//cfe.model.Prioritization.class,
+					//cfe.model.Validation.class,
+					//cfe.model.Testing.class,
 					
 					//---------------------------------------
 					// All

@@ -1,0 +1,348 @@
+-------------------TABLE: LOGIN-------------------
+ID
+DATE
+DATABASE
+NUMBER OF ENTRIES
+UPDATE
+WHO
+-----------------
+ID: LONG
+DATE: TEXT
+DATABASE: TEXT
+NUMBER OF ENTRIES: TEXT
+UPDATE: TEXT
+WHO: TEXT
+hm.put("ID","");
+hm.put("DATE","");
+hm.put("DATABASE","");
+hm.put("NUMBER OF ENTRIES","");
+hm.put("UPDATE","");
+hm.put("WHO","");
+**************************************
+-------------------TABLE: NHGEN-ASSOCIATION NJ 10-9-2013-------------------
+ID
+Genecard Symbol
+Paper Symbol
+Gene Name
+Animal type
+P-value
+Chromosome
+Type of Study
+Additional Information
+Psychiatric domain
+Sub domain
+Relevant disorder
+Descriptive Name from Author
+Pub Med ID
+Author/Date
+Title of Paper
+Source info
+Added By
+Date Added
+F16
+F17
+F18
+F19
+F20
+F21
+F22
+F23
+F24
+F25
+F26
+F27
+F28
+F29
+F30
+F31
+-----------------
+ID: DOUBLE
+Genecard Symbol: TEXT
+Paper Symbol: TEXT
+Gene Name: TEXT
+Animal type: TEXT
+P-value: TEXT
+Chromosome: TEXT
+Type of Study: TEXT
+Additional Information: TEXT
+Psychiatric domain: TEXT
+Sub domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name from Author: TEXT
+Pub Med ID: TEXT
+Author/Date: TEXT
+Title of Paper: TEXT
+Source info: TEXT
+Added By: TEXT
+Date Added: TEXT
+F16: TEXT
+F17: TEXT
+F18: TEXT
+F19: TEXT
+F20: TEXT
+F21: TEXT
+F22: TEXT
+F23: TEXT
+F24: TEXT
+F25: TEXT
+F26: TEXT
+F27: TEXT
+F28: TEXT
+F29: TEXT
+F30: TEXT
+F31: TEXT
+hm.put("ID","");
+hm.put("Genecard Symbol","");
+hm.put("Paper Symbol","");
+hm.put("Gene Name","");
+hm.put("Animal type","");
+hm.put("P-value","");
+hm.put("Chromosome","");
+hm.put("Type of Study","");
+hm.put("Additional Information","");
+hm.put("Psychiatric domain","");
+hm.put("Sub domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Pub Med ID","");
+hm.put("Author/Date","");
+hm.put("Title of Paper","");
+hm.put("Source info","");
+hm.put("Added By","");
+hm.put("Date Added","");
+hm.put("F16","");
+hm.put("F17","");
+hm.put("F18","");
+hm.put("F19","");
+hm.put("F20","");
+hm.put("F21","");
+hm.put("F22","");
+hm.put("F23","");
+hm.put("F24","");
+hm.put("F25","");
+hm.put("F26","");
+hm.put("F27","");
+hm.put("F28","");
+hm.put("F29","");
+hm.put("F30","");
+hm.put("F31","");
+**************************************
+-------------------TABLE: NHGEN-CNV NJ 10-3-2013-------------------
+ID
+Genecard symbol
+Paper Symbol
+Gene Name
+Animal type
+CNV
+P-value
+Chromosome
+Type of Study
+Additional Information
+Psychiatric domain
+Sub domain
+Relevant disorder
+Descriptive Name from Author
+Author/Date
+Source info
+Added By
+Date Added
+F16
+F17
+F18
+F19
+F20
+F21
+F22
+F23
+F24
+F25
+F26
+F27
+F28
+F29
+F30
+F31
+Pub Med ID
+Title of Paper
+-----------------
+ID: TEXT
+Genecard symbol: TEXT
+Paper Symbol: TEXT
+Gene Name: TEXT
+Animal type: TEXT
+CNV: TEXT
+P-value: TEXT
+Chromosome: TEXT
+Type of Study: TEXT
+Additional Information: TEXT
+Psychiatric domain: TEXT
+Sub domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name from Author: TEXT
+Author/Date: TEXT
+Source info: TEXT
+Added By: TEXT
+Date Added: TEXT
+F16: TEXT
+F17: TEXT
+F18: TEXT
+F19: TEXT
+F20: TEXT
+F21: TEXT
+F22: TEXT
+F23: TEXT
+F24: TEXT
+F25: TEXT
+F26: TEXT
+F27: TEXT
+F28: TEXT
+F29: TEXT
+F30: TEXT
+F31: TEXT
+Pub Med ID: TEXT
+Title of Paper: TEXT
+hm.put("ID","");
+hm.put("Genecard symbol","");
+hm.put("Paper Symbol","");
+hm.put("Gene Name","");
+hm.put("Animal type","");
+hm.put("CNV","");
+hm.put("P-value","");
+hm.put("Chromosome","");
+hm.put("Type of Study","");
+hm.put("Additional Information","");
+hm.put("Psychiatric domain","");
+hm.put("Sub domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Author/Date","");
+hm.put("Source info","");
+hm.put("Added By","");
+hm.put("Date Added","");
+hm.put("F16","");
+hm.put("F17","");
+hm.put("F18","");
+hm.put("F19","");
+hm.put("F20","");
+hm.put("F21","");
+hm.put("F22","");
+hm.put("F23","");
+hm.put("F24","");
+hm.put("F25","");
+hm.put("F26","");
+hm.put("F27","");
+hm.put("F28","");
+hm.put("F29","");
+hm.put("F30","");
+hm.put("F31","");
+hm.put("Pub Med ID","");
+hm.put("Title of Paper","");
+**************************************
+-------------------TABLE: NHGEN-LINKAGE NJ 10-3-2013-------------------
+ID
+QTL
+Animal type
+P-value
+Chromosome
+Type of Study
+Additional Information
+Psychiatric domain
+Sub domain
+Relevant disorder
+Descriptive Name from Author
+Author/Date
+Source info
+Added By
+Date Added
+F16
+F17
+F18
+F19
+F20
+F21
+F22
+F23
+F24
+F25
+F26
+F27
+F28
+F29
+F30
+F31
+Location of QTL from paper
+Pub Med ID
+Title of Paper
+LOD score
+-----------------
+ID: TEXT
+QTL: TEXT
+Animal type: TEXT
+P-value: TEXT
+Chromosome: TEXT
+Type of Study: TEXT
+Additional Information: TEXT
+Psychiatric domain: TEXT
+Sub domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name from Author: TEXT
+Author/Date: TEXT
+Source info: TEXT
+Added By: TEXT
+Date Added: TEXT
+F16: TEXT
+F17: TEXT
+F18: TEXT
+F19: TEXT
+F20: TEXT
+F21: TEXT
+F22: TEXT
+F23: TEXT
+F24: TEXT
+F25: TEXT
+F26: TEXT
+F27: TEXT
+F28: TEXT
+F29: TEXT
+F30: TEXT
+F31: TEXT
+Location of QTL from paper: TEXT
+Pub Med ID: TEXT
+Title of Paper: TEXT
+LOD score: TEXT
+hm.put("ID","");
+hm.put("QTL","");
+hm.put("Animal type","");
+hm.put("P-value","");
+hm.put("Chromosome","");
+hm.put("Type of Study","");
+hm.put("Additional Information","");
+hm.put("Psychiatric domain","");
+hm.put("Sub domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Author/Date","");
+hm.put("Source info","");
+hm.put("Added By","");
+hm.put("Date Added","");
+hm.put("F16","");
+hm.put("F17","");
+hm.put("F18","");
+hm.put("F19","");
+hm.put("F20","");
+hm.put("F21","");
+hm.put("F22","");
+hm.put("F23","");
+hm.put("F24","");
+hm.put("F25","");
+hm.put("F26","");
+hm.put("F27","");
+hm.put("F28","");
+hm.put("F29","");
+hm.put("F30","");
+hm.put("F31","");
+hm.put("Location of QTL from paper","");
+hm.put("Pub Med ID","");
+hm.put("Title of Paper","");
+hm.put("LOD score","");
+**************************************

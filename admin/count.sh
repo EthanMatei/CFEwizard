@@ -7,6 +7,8 @@ cloc --quiet --hide-rate --exclude-ext=md,html \
     ../src/main/webapp/pages
 
 
+echo
+echo
 echo "CFE Wizard - count of lines of test code"
 cloc --quiet --hide-rate --exclude-ext=md \
     ../src/test/java/cfe

@@ -80,7 +80,7 @@ public class DataTableTest {
 	    Assert.assertEquals(2, dataTable.getIndexSize());
 	    Assert.assertEquals("value4", dataTable.getValue(1, 1));
 
-
+	    /*
 	    for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
 	        System.out.println(dataTable.getRow(i));
 	    } 
@@ -88,5 +88,6 @@ public class DataTableTest {
 	    for (String key: dataTable.getKeys()) {
 	        System.out.println("Key: " + key + " Value: " + "    Row: " + dataTable.getRow(key));
 	    }
+	    */
 	}
 }

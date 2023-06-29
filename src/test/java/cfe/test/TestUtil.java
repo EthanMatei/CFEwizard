@@ -8,7 +8,7 @@ import cfe.parser.MSAccessParser;
 
 public class TestUtil {
 
-	public final static String DB_FILE_DIR = "./test-data/ms-access/";
+	public final static String DB_FILE_DIR = "./src/test/resources/ms-access/";
 
 	public static boolean loadDatabaseFiles() {
 		boolean loaded = true;

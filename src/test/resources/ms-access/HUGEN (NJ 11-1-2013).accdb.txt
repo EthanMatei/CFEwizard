@@ -1,0 +1,1845 @@
+-------------------TABLE: Full Linkage database (HLN2-25-2013)-------------------
+Chromosome
+Chromosomal locus
+Marker from Manuscript
+Map-O-Map Marker_name
+Map-O-Map Sex-averaged_map_position
+Map-O-Map Female_map_position
+Map-O-Map Male_map_position
+Location From Paper
+LOD
+NPL Score
+P-value
+Additional Info
+Number of Subjects
+Ethnicities/populations
+Pyschiatric Domain
+Sub-domain
+Relevant Disorder
+Descriptive Name from Author
+Author/Date
+SOURCE INFO (Tables #, Abstracts, Full Text, Supplementary)
+Title of Paper
+ADDED BY
+Date Added
+Field24
+Field25
+Field26
+Field27
+Field28
+Field29
+Field30
+Field31
+Field32
+Field33
+Field34
+Field35
+Field36
+Field37
+Field38
+Field39
+Field40
+Field41
+Field42
+Field43
+Field44
+Field45
+Field46
+Field47
+Field48
+Field49
+Field50
+Field51
+Field52
+Field53
+Field54
+Field55
+Field56
+Field57
+Field58
+Field59
+Field60
+Field61
+Field62
+Field63
+Field64
+Field65
+Field66
+Field67
+Field68
+Field69
+Field70
+Field71
+Field72
+Field73
+Field74
+Field75
+Field76
+Field77
+Field78
+Field79
+Field80
+Field81
+Field82
+Field83
+Field84
+Field85
+Field86
+Field87
+Field88
+Field89
+Field90
+Field91
+Field92
+Field93
+Field94
+Field95
+Field96
+Field97
+Field98
+Field99
+Field100
+Field101
+Field102
+Field103
+Field104
+Field105
+Field106
+Field107
+Field108
+Field109
+Field110
+Field111
+Field112
+Field113
+Field114
+Field115
+Field116
+Field117
+Field118
+Field119
+Field120
+Field121
+Field122
+Field123
+Field124
+Field125
+Field126
+Field127
+Field128
+Field129
+Field130
+Field131
+Field132
+Field133
+Field134
+Field135
+Field136
+Field137
+Field138
+Field139
+Field140
+Field141
+Field142
+Field143
+Field144
+Field145
+Field146
+Field147
+Field148
+Field149
+Field150
+Field151
+Field152
+Field153
+Field154
+Field155
+Field156
+Field157
+Field158
+Field159
+Field160
+Field161
+Field162
+Field163
+Field164
+Field165
+Field166
+Field167
+Field168
+Field169
+Field170
+Field171
+Field172
+Field173
+Field174
+Field175
+Field176
+Field177
+Field178
+Field179
+Field180
+Field181
+Field182
+Field183
+Field184
+Field185
+Field186
+Field187
+Field188
+Field189
+Field190
+Field191
+Field192
+Field193
+Field194
+Field195
+Field196
+Field197
+Field198
+Field199
+Field200
+Field201
+Field202
+Field203
+Field204
+Field205
+Field206
+Field207
+Field208
+Field209
+Field210
+Field211
+Field212
+Field213
+Field214
+Field215
+Field216
+Field217
+Field218
+Field219
+Field220
+Field221
+Field222
+Field223
+Field224
+Field225
+Field226
+Field227
+Field228
+Field229
+Field230
+Field231
+Field232
+Field233
+Field234
+Field235
+Field236
+Field237
+Field238
+Field239
+Field240
+Field241
+Field242
+Field243
+Field244
+Field245
+Field246
+Field247
+Field248
+Field249
+Field250
+Field251
+Field252
+Field253
+Field254
+Field255
+-----------------
+Chromosome: TEXT
+Chromosomal locus: TEXT
+Marker from Manuscript: TEXT
+Map-O-Map Marker_name: TEXT
+Map-O-Map Sex-averaged_map_position: TEXT
+Map-O-Map Female_map_position: DOUBLE
+Map-O-Map Male_map_position: TEXT
+Location From Paper: TEXT
+LOD: TEXT
+NPL Score: TEXT
+P-value: TEXT
+Additional Info: TEXT
+Number of Subjects: TEXT
+Ethnicities/populations: TEXT
+Pyschiatric Domain: TEXT
+Sub-domain: TEXT
+Relevant Disorder: TEXT
+Descriptive Name from Author: TEXT
+Author/Date: TEXT
+SOURCE INFO (Tables #, Abstracts, Full Text, Supplementary): TEXT
+Title of Paper: TEXT
+ADDED BY: TEXT
+Date Added: TEXT
+Field24: TEXT
+Field25: TEXT
+Field26: TEXT
+Field27: TEXT
+Field28: TEXT
+Field29: TEXT
+Field30: TEXT
+Field31: TEXT
+Field32: TEXT
+Field33: TEXT
+Field34: TEXT
+Field35: TEXT
+Field36: TEXT
+Field37: TEXT
+Field38: TEXT
+Field39: TEXT
+Field40: TEXT
+Field41: TEXT
+Field42: TEXT
+Field43: TEXT
+Field44: TEXT
+Field45: TEXT
+Field46: TEXT
+Field47: TEXT
+Field48: TEXT
+Field49: TEXT
+Field50: TEXT
+Field51: TEXT
+Field52: TEXT
+Field53: TEXT
+Field54: TEXT
+Field55: TEXT
+Field56: TEXT
+Field57: TEXT
+Field58: TEXT
+Field59: TEXT
+Field60: TEXT
+Field61: TEXT
+Field62: TEXT
+Field63: TEXT
+Field64: TEXT
+Field65: TEXT
+Field66: TEXT
+Field67: TEXT
+Field68: TEXT
+Field69: TEXT
+Field70: TEXT
+Field71: TEXT
+Field72: TEXT
+Field73: TEXT
+Field74: TEXT
+Field75: TEXT
+Field76: TEXT
+Field77: TEXT
+Field78: TEXT
+Field79: TEXT
+Field80: TEXT
+Field81: TEXT
+Field82: TEXT
+Field83: TEXT
+Field84: TEXT
+Field85: TEXT
+Field86: TEXT
+Field87: TEXT
+Field88: TEXT
+Field89: TEXT
+Field90: TEXT
+Field91: TEXT
+Field92: TEXT
+Field93: TEXT
+Field94: TEXT
+Field95: TEXT
+Field96: TEXT
+Field97: TEXT
+Field98: TEXT
+Field99: TEXT
+Field100: TEXT
+Field101: TEXT
+Field102: TEXT
+Field103: TEXT
+Field104: TEXT
+Field105: TEXT
+Field106: TEXT
+Field107: TEXT
+Field108: TEXT
+Field109: TEXT
+Field110: TEXT
+Field111: TEXT
+Field112: TEXT
+Field113: TEXT
+Field114: TEXT
+Field115: TEXT
+Field116: TEXT
+Field117: TEXT
+Field118: TEXT
+Field119: TEXT
+Field120: TEXT
+Field121: TEXT
+Field122: TEXT
+Field123: TEXT
+Field124: TEXT
+Field125: TEXT
+Field126: TEXT
+Field127: TEXT
+Field128: TEXT
+Field129: TEXT
+Field130: TEXT
+Field131: TEXT
+Field132: TEXT
+Field133: TEXT
+Field134: TEXT
+Field135: TEXT
+Field136: TEXT
+Field137: TEXT
+Field138: TEXT
+Field139: TEXT
+Field140: TEXT
+Field141: TEXT
+Field142: TEXT
+Field143: TEXT
+Field144: TEXT
+Field145: TEXT
+Field146: TEXT
+Field147: TEXT
+Field148: TEXT
+Field149: TEXT
+Field150: TEXT
+Field151: TEXT
+Field152: TEXT
+Field153: TEXT
+Field154: TEXT
+Field155: TEXT
+Field156: TEXT
+Field157: TEXT
+Field158: TEXT
+Field159: TEXT
+Field160: TEXT
+Field161: TEXT
+Field162: TEXT
+Field163: TEXT
+Field164: TEXT
+Field165: TEXT
+Field166: TEXT
+Field167: TEXT
+Field168: TEXT
+Field169: TEXT
+Field170: TEXT
+Field171: TEXT
+Field172: TEXT
+Field173: TEXT
+Field174: TEXT
+Field175: TEXT
+Field176: TEXT
+Field177: TEXT
+Field178: TEXT
+Field179: TEXT
+Field180: TEXT
+Field181: TEXT
+Field182: TEXT
+Field183: TEXT
+Field184: TEXT
+Field185: TEXT
+Field186: TEXT
+Field187: TEXT
+Field188: TEXT
+Field189: TEXT
+Field190: TEXT
+Field191: TEXT
+Field192: TEXT
+Field193: TEXT
+Field194: TEXT
+Field195: TEXT
+Field196: TEXT
+Field197: TEXT
+Field198: TEXT
+Field199: TEXT
+Field200: TEXT
+Field201: TEXT
+Field202: TEXT
+Field203: TEXT
+Field204: TEXT
+Field205: TEXT
+Field206: TEXT
+Field207: TEXT
+Field208: TEXT
+Field209: TEXT
+Field210: TEXT
+Field211: TEXT
+Field212: TEXT
+Field213: TEXT
+Field214: TEXT
+Field215: TEXT
+Field216: TEXT
+Field217: TEXT
+Field218: TEXT
+Field219: TEXT
+Field220: TEXT
+Field221: TEXT
+Field222: TEXT
+Field223: TEXT
+Field224: TEXT
+Field225: TEXT
+Field226: TEXT
+Field227: TEXT
+Field228: TEXT
+Field229: TEXT
+Field230: TEXT
+Field231: TEXT
+Field232: TEXT
+Field233: TEXT
+Field234: TEXT
+Field235: TEXT
+Field236: TEXT
+Field237: TEXT
+Field238: TEXT
+Field239: TEXT
+Field240: TEXT
+Field241: TEXT
+Field242: TEXT
+Field243: TEXT
+Field244: TEXT
+Field245: TEXT
+Field246: TEXT
+Field247: TEXT
+Field248: TEXT
+Field249: TEXT
+Field250: TEXT
+Field251: TEXT
+Field252: TEXT
+Field253: TEXT
+Field254: TEXT
+Field255: TEXT
+hm.put("Chromosome","");
+hm.put("Chromosomal locus","");
+hm.put("Marker from Manuscript","");
+hm.put("Map-O-Map Marker_name","");
+hm.put("Map-O-Map Sex-averaged_map_position","");
+hm.put("Map-O-Map Female_map_position","");
+hm.put("Map-O-Map Male_map_position","");
+hm.put("Location From Paper","");
+hm.put("LOD","");
+hm.put("NPL Score","");
+hm.put("P-value","");
+hm.put("Additional Info","");
+hm.put("Number of Subjects","");
+hm.put("Ethnicities/populations","");
+hm.put("Pyschiatric Domain","");
+hm.put("Sub-domain","");
+hm.put("Relevant Disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Author/Date","");
+hm.put("SOURCE INFO (Tables #, Abstracts, Full Text, Supplementary)","");
+hm.put("Title of Paper","");
+hm.put("ADDED BY","");
+hm.put("Date Added","");
+hm.put("Field24","");
+hm.put("Field25","");
+hm.put("Field26","");
+hm.put("Field27","");
+hm.put("Field28","");
+hm.put("Field29","");
+hm.put("Field30","");
+hm.put("Field31","");
+hm.put("Field32","");
+hm.put("Field33","");
+hm.put("Field34","");
+hm.put("Field35","");
+hm.put("Field36","");
+hm.put("Field37","");
+hm.put("Field38","");
+hm.put("Field39","");
+hm.put("Field40","");
+hm.put("Field41","");
+hm.put("Field42","");
+hm.put("Field43","");
+hm.put("Field44","");
+hm.put("Field45","");
+hm.put("Field46","");
+hm.put("Field47","");
+hm.put("Field48","");
+hm.put("Field49","");
+hm.put("Field50","");
+hm.put("Field51","");
+hm.put("Field52","");
+hm.put("Field53","");
+hm.put("Field54","");
+hm.put("Field55","");
+hm.put("Field56","");
+hm.put("Field57","");
+hm.put("Field58","");
+hm.put("Field59","");
+hm.put("Field60","");
+hm.put("Field61","");
+hm.put("Field62","");
+hm.put("Field63","");
+hm.put("Field64","");
+hm.put("Field65","");
+hm.put("Field66","");
+hm.put("Field67","");
+hm.put("Field68","");
+hm.put("Field69","");
+hm.put("Field70","");
+hm.put("Field71","");
+hm.put("Field72","");
+hm.put("Field73","");
+hm.put("Field74","");
+hm.put("Field75","");
+hm.put("Field76","");
+hm.put("Field77","");
+hm.put("Field78","");
+hm.put("Field79","");
+hm.put("Field80","");
+hm.put("Field81","");
+hm.put("Field82","");
+hm.put("Field83","");
+hm.put("Field84","");
+hm.put("Field85","");
+hm.put("Field86","");
+hm.put("Field87","");
+hm.put("Field88","");
+hm.put("Field89","");
+hm.put("Field90","");
+hm.put("Field91","");
+hm.put("Field92","");
+hm.put("Field93","");
+hm.put("Field94","");
+hm.put("Field95","");
+hm.put("Field96","");
+hm.put("Field97","");
+hm.put("Field98","");
+hm.put("Field99","");
+hm.put("Field100","");
+hm.put("Field101","");
+hm.put("Field102","");
+hm.put("Field103","");
+hm.put("Field104","");
+hm.put("Field105","");
+hm.put("Field106","");
+hm.put("Field107","");
+hm.put("Field108","");
+hm.put("Field109","");
+hm.put("Field110","");
+hm.put("Field111","");
+hm.put("Field112","");
+hm.put("Field113","");
+hm.put("Field114","");
+hm.put("Field115","");
+hm.put("Field116","");
+hm.put("Field117","");
+hm.put("Field118","");
+hm.put("Field119","");
+hm.put("Field120","");
+hm.put("Field121","");
+hm.put("Field122","");
+hm.put("Field123","");
+hm.put("Field124","");
+hm.put("Field125","");
+hm.put("Field126","");
+hm.put("Field127","");
+hm.put("Field128","");
+hm.put("Field129","");
+hm.put("Field130","");
+hm.put("Field131","");
+hm.put("Field132","");
+hm.put("Field133","");
+hm.put("Field134","");
+hm.put("Field135","");
+hm.put("Field136","");
+hm.put("Field137","");
+hm.put("Field138","");
+hm.put("Field139","");
+hm.put("Field140","");
+hm.put("Field141","");
+hm.put("Field142","");
+hm.put("Field143","");
+hm.put("Field144","");
+hm.put("Field145","");
+hm.put("Field146","");
+hm.put("Field147","");
+hm.put("Field148","");
+hm.put("Field149","");
+hm.put("Field150","");
+hm.put("Field151","");
+hm.put("Field152","");
+hm.put("Field153","");
+hm.put("Field154","");
+hm.put("Field155","");
+hm.put("Field156","");
+hm.put("Field157","");
+hm.put("Field158","");
+hm.put("Field159","");
+hm.put("Field160","");
+hm.put("Field161","");
+hm.put("Field162","");
+hm.put("Field163","");
+hm.put("Field164","");
+hm.put("Field165","");
+hm.put("Field166","");
+hm.put("Field167","");
+hm.put("Field168","");
+hm.put("Field169","");
+hm.put("Field170","");
+hm.put("Field171","");
+hm.put("Field172","");
+hm.put("Field173","");
+hm.put("Field174","");
+hm.put("Field175","");
+hm.put("Field176","");
+hm.put("Field177","");
+hm.put("Field178","");
+hm.put("Field179","");
+hm.put("Field180","");
+hm.put("Field181","");
+hm.put("Field182","");
+hm.put("Field183","");
+hm.put("Field184","");
+hm.put("Field185","");
+hm.put("Field186","");
+hm.put("Field187","");
+hm.put("Field188","");
+hm.put("Field189","");
+hm.put("Field190","");
+hm.put("Field191","");
+hm.put("Field192","");
+hm.put("Field193","");
+hm.put("Field194","");
+hm.put("Field195","");
+hm.put("Field196","");
+hm.put("Field197","");
+hm.put("Field198","");
+hm.put("Field199","");
+hm.put("Field200","");
+hm.put("Field201","");
+hm.put("Field202","");
+hm.put("Field203","");
+hm.put("Field204","");
+hm.put("Field205","");
+hm.put("Field206","");
+hm.put("Field207","");
+hm.put("Field208","");
+hm.put("Field209","");
+hm.put("Field210","");
+hm.put("Field211","");
+hm.put("Field212","");
+hm.put("Field213","");
+hm.put("Field214","");
+hm.put("Field215","");
+hm.put("Field216","");
+hm.put("Field217","");
+hm.put("Field218","");
+hm.put("Field219","");
+hm.put("Field220","");
+hm.put("Field221","");
+hm.put("Field222","");
+hm.put("Field223","");
+hm.put("Field224","");
+hm.put("Field225","");
+hm.put("Field226","");
+hm.put("Field227","");
+hm.put("Field228","");
+hm.put("Field229","");
+hm.put("Field230","");
+hm.put("Field231","");
+hm.put("Field232","");
+hm.put("Field233","");
+hm.put("Field234","");
+hm.put("Field235","");
+hm.put("Field236","");
+hm.put("Field237","");
+hm.put("Field238","");
+hm.put("Field239","");
+hm.put("Field240","");
+hm.put("Field241","");
+hm.put("Field242","");
+hm.put("Field243","");
+hm.put("Field244","");
+hm.put("Field245","");
+hm.put("Field246","");
+hm.put("Field247","");
+hm.put("Field248","");
+hm.put("Field249","");
+hm.put("Field250","");
+hm.put("Field251","");
+hm.put("Field252","");
+hm.put("Field253","");
+hm.put("Field254","");
+hm.put("Field255","");
+**************************************
+-------------------TABLE: HUGEN-ASSOCIATION BK 10-30-2013-------------------
+ID
+Genecard symbol
+Paper symbol
+Gene name
+SNP(Significant)
+# of Nominally Significant SNPs
+P-value
+Chromosome
+Origin of Sample
+Additional information
+Number of Subjects
+Males
+Females
+Psychiatric Domain
+Sub-domain
+Relevant Disorder
+Descriptive Name from Author
+Pub Med ID
+Author/Date
+Title of Paper
+Source info
+Added By
+Date Added
+F23
+F24
+F25
+F26
+F27
+F28
+F29
+F30
+F31
+F32
+F33
+F34
+F35
+F36
+F37
+F38
+F39
+-----------------
+ID: DOUBLE
+Genecard symbol: TEXT
+Paper symbol: TEXT
+Gene name: TEXT
+SNP(Significant): TEXT
+# of Nominally Significant SNPs: TEXT
+P-value: TEXT
+Chromosome: TEXT
+Origin of Sample: TEXT
+Additional information: TEXT
+Number of Subjects: TEXT
+Males: TEXT
+Females: TEXT
+Psychiatric Domain: TEXT
+Sub-domain: TEXT
+Relevant Disorder: TEXT
+Descriptive Name from Author: TEXT
+Pub Med ID: DOUBLE
+Author/Date: TEXT
+Title of Paper: TEXT
+Source info: TEXT
+Added By: TEXT
+Date Added: TEXT
+F23: TEXT
+F24: TEXT
+F25: TEXT
+F26: TEXT
+F27: TEXT
+F28: TEXT
+F29: TEXT
+F30: TEXT
+F31: TEXT
+F32: TEXT
+F33: TEXT
+F34: TEXT
+F35: TEXT
+F36: TEXT
+F37: TEXT
+F38: TEXT
+F39: TEXT
+hm.put("ID","");
+hm.put("Genecard symbol","");
+hm.put("Paper symbol","");
+hm.put("Gene name","");
+hm.put("SNP(Significant)","");
+hm.put("# of Nominally Significant SNPs","");
+hm.put("P-value","");
+hm.put("Chromosome","");
+hm.put("Origin of Sample","");
+hm.put("Additional information","");
+hm.put("Number of Subjects","");
+hm.put("Males","");
+hm.put("Females","");
+hm.put("Psychiatric Domain","");
+hm.put("Sub-domain","");
+hm.put("Relevant Disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Pub Med ID","");
+hm.put("Author/Date","");
+hm.put("Title of Paper","");
+hm.put("Source info","");
+hm.put("Added By","");
+hm.put("Date Added","");
+hm.put("F23","");
+hm.put("F24","");
+hm.put("F25","");
+hm.put("F26","");
+hm.put("F27","");
+hm.put("F28","");
+hm.put("F29","");
+hm.put("F30","");
+hm.put("F31","");
+hm.put("F32","");
+hm.put("F33","");
+hm.put("F34","");
+hm.put("F35","");
+hm.put("F36","");
+hm.put("F37","");
+hm.put("F38","");
+hm.put("F39","");
+**************************************
+-------------------TABLE: HUGEN-CNV NJ 10-7-2013-------------------
+ID
+Genecard symbol
+Paper Symbol
+Gene name
+CNV
+P-value or odds ratio
+Chromosome
+Origin of sample
+Additional information
+Number of Subjects
+Males
+Females
+Psychiatric domain
+sub domain
+Relevant disorder
+Descriptive Name from Author
+Pub Med ID
+Author/Date
+Title of Paper
+Source info
+Added By
+Date Added
+-----------------
+ID: DOUBLE
+Genecard symbol: TEXT
+Paper Symbol: TEXT
+Gene name: TEXT
+CNV: TEXT
+P-value or odds ratio: TEXT
+Chromosome: TEXT
+Origin of sample: TEXT
+Additional information: TEXT
+Number of Subjects: TEXT
+Males: TEXT
+Females: TEXT
+Psychiatric domain: TEXT
+sub domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name from Author: TEXT
+Pub Med ID: TEXT
+Author/Date: TEXT
+Title of Paper: TEXT
+Source info: TEXT
+Added By: TEXT
+Date Added: TEXT
+hm.put("ID","");
+hm.put("Genecard symbol","");
+hm.put("Paper Symbol","");
+hm.put("Gene name","");
+hm.put("CNV","");
+hm.put("P-value or odds ratio","");
+hm.put("Chromosome","");
+hm.put("Origin of sample","");
+hm.put("Additional information","");
+hm.put("Number of Subjects","");
+hm.put("Males","");
+hm.put("Females","");
+hm.put("Psychiatric domain","");
+hm.put("sub domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Pub Med ID","");
+hm.put("Author/Date","");
+hm.put("Title of Paper","");
+hm.put("Source info","");
+hm.put("Added By","");
+hm.put("Date Added","");
+**************************************
+-------------------TABLE: HUGEN-LINKAGE NJ 11-1-2013-------------------
+ID
+Chromosome
+Chromosomal locus
+Marker from Manuscript
+Map-O-Map Marker name
+Map-O-Map Sex-average
+Map-O-Map Female map position
+Map-O-Map Male map position
+Location From Paper
+LOD
+NPL Score
+P-value
+Additional Information
+Origin of sample
+Number of Subjects
+Males
+Females
+Pyschiatric domain
+Sub domain
+Relevant disorder
+Descriptive Name from Author
+Pub Med ID
+Author/Date
+Title of Paper
+Source info
+ADDED BY
+Date Added
+-----------------
+ID: DOUBLE
+Chromosome: TEXT
+Chromosomal locus: TEXT
+Marker from Manuscript: TEXT
+Map-O-Map Marker name: TEXT
+Map-O-Map Sex-average: TEXT
+Map-O-Map Female map position: DOUBLE
+Map-O-Map Male map position: TEXT
+Location From Paper: TEXT
+LOD: TEXT
+NPL Score: TEXT
+P-value: TEXT
+Additional Information: TEXT
+Origin of sample: TEXT
+Number of Subjects: TEXT
+Males: TEXT
+Females: TEXT
+Pyschiatric domain: TEXT
+Sub domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name from Author: TEXT
+Pub Med ID: TEXT
+Author/Date: TEXT
+Title of Paper: TEXT
+Source info: TEXT
+ADDED BY: TEXT
+Date Added: TEXT
+hm.put("ID","");
+hm.put("Chromosome","");
+hm.put("Chromosomal locus","");
+hm.put("Marker from Manuscript","");
+hm.put("Map-O-Map Marker name","");
+hm.put("Map-O-Map Sex-average","");
+hm.put("Map-O-Map Female map position","");
+hm.put("Map-O-Map Male map position","");
+hm.put("Location From Paper","");
+hm.put("LOD","");
+hm.put("NPL Score","");
+hm.put("P-value","");
+hm.put("Additional Information","");
+hm.put("Origin of sample","");
+hm.put("Number of Subjects","");
+hm.put("Males","");
+hm.put("Females","");
+hm.put("Pyschiatric domain","");
+hm.put("Sub domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Pub Med ID","");
+hm.put("Author/Date","");
+hm.put("Title of Paper","");
+hm.put("Source info","");
+hm.put("ADDED BY","");
+hm.put("Date Added","");
+**************************************
+-------------------TABLE: linkage with low LOD scores-------------------
+ID
+Chromosome
+Chromosomal locus
+Marker from Manuscript
+Location From Paper
+LOD
+NPL score
+Author deemed significant (Yes/No/Nominal)
+P-value
+cM (female) Map-o-mat
+cM (male) Map-o-mat
+cM (sex avg) Map-o-mat
+LDB cM (female)
+LDB cM (male)
+LDB (sex avg)
+LDDB cM (female)
+LDDB cM (male)
+LDDB (sex avg)
+Marshfield
+Additional Info
+Number of Subjects
+Ethnicities/populations
+Psychiatric Domain
+Sub-domain
+Relevant disorder
+Descriptive Name from Author
+Author/Date
+Title of Paper
+ADDED BY
+Date Added
+Field1
+Field2
+Field3
+Field4
+Field5
+Field6
+Field7
+Field8
+Field9
+Field10
+Field11
+Field12
+Field13
+Field14
+Field15
+Field16
+Field17
+Field18
+Field19
+Field20
+Field21
+Field22
+Field23
+Field24
+Field25
+Field26
+Field27
+Field28
+Field29
+Field30
+Field31
+Field32
+Field33
+Field34
+Field35
+Field36
+Field37
+Field38
+Field39
+Field40
+Field41
+Field42
+Field43
+Field44
+Field45
+Field46
+Field47
+Field48
+Field49
+Field50
+Field51
+Field52
+Field53
+Field54
+Field55
+Field56
+Field57
+Field58
+Field59
+Field60
+Field61
+Field62
+Field63
+Field64
+Field65
+Field66
+Field67
+Field68
+Field69
+Field70
+Field71
+Field72
+Field73
+Field74
+Field75
+Field76
+Field77
+Field78
+Field79
+Field80
+Field81
+Field82
+Field83
+Field84
+Field85
+Field86
+Field87
+Field88
+Field89
+Field90
+Field91
+Field92
+Field93
+Field94
+Field95
+Field96
+Field97
+Field98
+Field99
+Field100
+Field101
+Field102
+Field103
+Field104
+Field105
+Field106
+Field107
+Field108
+Field109
+Field110
+Field111
+Field112
+Field113
+Field114
+Field115
+Field116
+Field117
+Field118
+Field119
+Field120
+Field121
+Field122
+Field123
+Field124
+Field125
+Field126
+Field127
+Field128
+Field129
+Field130
+Field131
+Field132
+Field133
+Field134
+Field135
+Field136
+Field137
+Field138
+Field139
+Field140
+Field141
+Field142
+Field143
+Field144
+Field145
+Field146
+Field147
+Field148
+Field149
+Field150
+Field151
+Field152
+Field153
+Field154
+Field155
+Field156
+Field157
+Field158
+Field159
+Field160
+Field161
+Field162
+Field163
+Field164
+Field165
+Field166
+Field167
+Field168
+Field169
+Field170
+Field171
+Field172
+Field173
+Field174
+Field175
+Field176
+Field177
+Field178
+Field179
+Field180
+Field181
+Field182
+Field183
+Field184
+Field185
+Field186
+Field187
+Field188
+Field189
+Field190
+Field191
+Field192
+Field193
+Field194
+Field195
+Field196
+Field197
+Field198
+Field199
+Field200
+Field201
+Field202
+Field203
+Field204
+Field205
+Field206
+Field207
+Field208
+Field209
+Field210
+Field211
+Field212
+Field213
+Field214
+Field215
+Field216
+Field217
+Field218
+Field219
+Field220
+Field221
+Field222
+Field223
+Field224
+Field225
+-----------------
+ID: LONG
+Chromosome: DOUBLE
+Chromosomal locus: TEXT
+Marker from Manuscript: TEXT
+Location From Paper: TEXT
+LOD: TEXT
+NPL score: TEXT
+Author deemed significant (Yes/No/Nominal): TEXT
+P-value: TEXT
+cM (female) Map-o-mat: TEXT
+cM (male) Map-o-mat: TEXT
+cM (sex avg) Map-o-mat: TEXT
+LDB cM (female): DOUBLE
+LDB cM (male): DOUBLE
+LDB (sex avg): DOUBLE
+LDDB cM (female): DOUBLE
+LDDB cM (male): DOUBLE
+LDDB (sex avg): TEXT
+Marshfield: TEXT
+Additional Info: TEXT
+Number of Subjects: TEXT
+Ethnicities/populations: TEXT
+Psychiatric Domain: TEXT
+Sub-domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name from Author: TEXT
+Author/Date: TEXT
+Title of Paper: TEXT
+ADDED BY: TEXT
+Date Added: SHORT_DATE_TIME
+Field1: TEXT
+Field2: TEXT
+Field3: TEXT
+Field4: TEXT
+Field5: TEXT
+Field6: TEXT
+Field7: TEXT
+Field8: TEXT
+Field9: TEXT
+Field10: TEXT
+Field11: TEXT
+Field12: TEXT
+Field13: TEXT
+Field14: TEXT
+Field15: TEXT
+Field16: TEXT
+Field17: TEXT
+Field18: TEXT
+Field19: TEXT
+Field20: TEXT
+Field21: TEXT
+Field22: TEXT
+Field23: TEXT
+Field24: TEXT
+Field25: TEXT
+Field26: TEXT
+Field27: TEXT
+Field28: TEXT
+Field29: TEXT
+Field30: TEXT
+Field31: TEXT
+Field32: TEXT
+Field33: TEXT
+Field34: TEXT
+Field35: TEXT
+Field36: TEXT
+Field37: TEXT
+Field38: TEXT
+Field39: TEXT
+Field40: TEXT
+Field41: TEXT
+Field42: TEXT
+Field43: TEXT
+Field44: TEXT
+Field45: TEXT
+Field46: TEXT
+Field47: TEXT
+Field48: TEXT
+Field49: TEXT
+Field50: TEXT
+Field51: TEXT
+Field52: TEXT
+Field53: TEXT
+Field54: TEXT
+Field55: TEXT
+Field56: TEXT
+Field57: TEXT
+Field58: TEXT
+Field59: TEXT
+Field60: TEXT
+Field61: TEXT
+Field62: TEXT
+Field63: TEXT
+Field64: TEXT
+Field65: TEXT
+Field66: TEXT
+Field67: TEXT
+Field68: TEXT
+Field69: TEXT
+Field70: TEXT
+Field71: TEXT
+Field72: TEXT
+Field73: TEXT
+Field74: TEXT
+Field75: TEXT
+Field76: TEXT
+Field77: TEXT
+Field78: TEXT
+Field79: TEXT
+Field80: TEXT
+Field81: TEXT
+Field82: TEXT
+Field83: TEXT
+Field84: TEXT
+Field85: TEXT
+Field86: TEXT
+Field87: TEXT
+Field88: TEXT
+Field89: TEXT
+Field90: TEXT
+Field91: TEXT
+Field92: TEXT
+Field93: TEXT
+Field94: TEXT
+Field95: TEXT
+Field96: TEXT
+Field97: TEXT
+Field98: TEXT
+Field99: TEXT
+Field100: TEXT
+Field101: TEXT
+Field102: TEXT
+Field103: TEXT
+Field104: TEXT
+Field105: TEXT
+Field106: TEXT
+Field107: TEXT
+Field108: TEXT
+Field109: TEXT
+Field110: TEXT
+Field111: TEXT
+Field112: TEXT
+Field113: TEXT
+Field114: TEXT
+Field115: TEXT
+Field116: TEXT
+Field117: TEXT
+Field118: TEXT
+Field119: TEXT
+Field120: TEXT
+Field121: TEXT
+Field122: TEXT
+Field123: TEXT
+Field124: TEXT
+Field125: TEXT
+Field126: TEXT
+Field127: TEXT
+Field128: TEXT
+Field129: TEXT
+Field130: TEXT
+Field131: TEXT
+Field132: TEXT
+Field133: TEXT
+Field134: TEXT
+Field135: TEXT
+Field136: TEXT
+Field137: TEXT
+Field138: TEXT
+Field139: TEXT
+Field140: TEXT
+Field141: TEXT
+Field142: TEXT
+Field143: TEXT
+Field144: TEXT
+Field145: TEXT
+Field146: TEXT
+Field147: TEXT
+Field148: TEXT
+Field149: TEXT
+Field150: TEXT
+Field151: TEXT
+Field152: TEXT
+Field153: TEXT
+Field154: TEXT
+Field155: TEXT
+Field156: TEXT
+Field157: TEXT
+Field158: TEXT
+Field159: TEXT
+Field160: TEXT
+Field161: TEXT
+Field162: TEXT
+Field163: TEXT
+Field164: TEXT
+Field165: TEXT
+Field166: TEXT
+Field167: TEXT
+Field168: TEXT
+Field169: TEXT
+Field170: TEXT
+Field171: TEXT
+Field172: TEXT
+Field173: TEXT
+Field174: TEXT
+Field175: TEXT
+Field176: TEXT
+Field177: TEXT
+Field178: TEXT
+Field179: TEXT
+Field180: TEXT
+Field181: TEXT
+Field182: TEXT
+Field183: TEXT
+Field184: TEXT
+Field185: TEXT
+Field186: TEXT
+Field187: TEXT
+Field188: TEXT
+Field189: TEXT
+Field190: TEXT
+Field191: TEXT
+Field192: TEXT
+Field193: TEXT
+Field194: TEXT
+Field195: TEXT
+Field196: TEXT
+Field197: TEXT
+Field198: TEXT
+Field199: TEXT
+Field200: TEXT
+Field201: TEXT
+Field202: TEXT
+Field203: TEXT
+Field204: TEXT
+Field205: TEXT
+Field206: TEXT
+Field207: TEXT
+Field208: TEXT
+Field209: TEXT
+Field210: TEXT
+Field211: TEXT
+Field212: TEXT
+Field213: TEXT
+Field214: TEXT
+Field215: TEXT
+Field216: TEXT
+Field217: TEXT
+Field218: TEXT
+Field219: TEXT
+Field220: TEXT
+Field221: TEXT
+Field222: TEXT
+Field223: TEXT
+Field224: TEXT
+Field225: TEXT
+hm.put("ID","");
+hm.put("Chromosome","");
+hm.put("Chromosomal locus","");
+hm.put("Marker from Manuscript","");
+hm.put("Location From Paper","");
+hm.put("LOD","");
+hm.put("NPL score","");
+hm.put("Author deemed significant (Yes/No/Nominal)","");
+hm.put("P-value","");
+hm.put("cM (female) Map-o-mat","");
+hm.put("cM (male) Map-o-mat","");
+hm.put("cM (sex avg) Map-o-mat","");
+hm.put("LDB cM (female)","");
+hm.put("LDB cM (male)","");
+hm.put("LDB (sex avg)","");
+hm.put("LDDB cM (female)","");
+hm.put("LDDB cM (male)","");
+hm.put("LDDB (sex avg)","");
+hm.put("Marshfield","");
+hm.put("Additional Info","");
+hm.put("Number of Subjects","");
+hm.put("Ethnicities/populations","");
+hm.put("Psychiatric Domain","");
+hm.put("Sub-domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Author/Date","");
+hm.put("Title of Paper","");
+hm.put("ADDED BY","");
+hm.put("Date Added","");
+hm.put("Field1","");
+hm.put("Field2","");
+hm.put("Field3","");
+hm.put("Field4","");
+hm.put("Field5","");
+hm.put("Field6","");
+hm.put("Field7","");
+hm.put("Field8","");
+hm.put("Field9","");
+hm.put("Field10","");
+hm.put("Field11","");
+hm.put("Field12","");
+hm.put("Field13","");
+hm.put("Field14","");
+hm.put("Field15","");
+hm.put("Field16","");
+hm.put("Field17","");
+hm.put("Field18","");
+hm.put("Field19","");
+hm.put("Field20","");
+hm.put("Field21","");
+hm.put("Field22","");
+hm.put("Field23","");
+hm.put("Field24","");
+hm.put("Field25","");
+hm.put("Field26","");
+hm.put("Field27","");
+hm.put("Field28","");
+hm.put("Field29","");
+hm.put("Field30","");
+hm.put("Field31","");
+hm.put("Field32","");
+hm.put("Field33","");
+hm.put("Field34","");
+hm.put("Field35","");
+hm.put("Field36","");
+hm.put("Field37","");
+hm.put("Field38","");
+hm.put("Field39","");
+hm.put("Field40","");
+hm.put("Field41","");
+hm.put("Field42","");
+hm.put("Field43","");
+hm.put("Field44","");
+hm.put("Field45","");
+hm.put("Field46","");
+hm.put("Field47","");
+hm.put("Field48","");
+hm.put("Field49","");
+hm.put("Field50","");
+hm.put("Field51","");
+hm.put("Field52","");
+hm.put("Field53","");
+hm.put("Field54","");
+hm.put("Field55","");
+hm.put("Field56","");
+hm.put("Field57","");
+hm.put("Field58","");
+hm.put("Field59","");
+hm.put("Field60","");
+hm.put("Field61","");
+hm.put("Field62","");
+hm.put("Field63","");
+hm.put("Field64","");
+hm.put("Field65","");
+hm.put("Field66","");
+hm.put("Field67","");
+hm.put("Field68","");
+hm.put("Field69","");
+hm.put("Field70","");
+hm.put("Field71","");
+hm.put("Field72","");
+hm.put("Field73","");
+hm.put("Field74","");
+hm.put("Field75","");
+hm.put("Field76","");
+hm.put("Field77","");
+hm.put("Field78","");
+hm.put("Field79","");
+hm.put("Field80","");
+hm.put("Field81","");
+hm.put("Field82","");
+hm.put("Field83","");
+hm.put("Field84","");
+hm.put("Field85","");
+hm.put("Field86","");
+hm.put("Field87","");
+hm.put("Field88","");
+hm.put("Field89","");
+hm.put("Field90","");
+hm.put("Field91","");
+hm.put("Field92","");
+hm.put("Field93","");
+hm.put("Field94","");
+hm.put("Field95","");
+hm.put("Field96","");
+hm.put("Field97","");
+hm.put("Field98","");
+hm.put("Field99","");
+hm.put("Field100","");
+hm.put("Field101","");
+hm.put("Field102","");
+hm.put("Field103","");
+hm.put("Field104","");
+hm.put("Field105","");
+hm.put("Field106","");
+hm.put("Field107","");
+hm.put("Field108","");
+hm.put("Field109","");
+hm.put("Field110","");
+hm.put("Field111","");
+hm.put("Field112","");
+hm.put("Field113","");
+hm.put("Field114","");
+hm.put("Field115","");
+hm.put("Field116","");
+hm.put("Field117","");
+hm.put("Field118","");
+hm.put("Field119","");
+hm.put("Field120","");
+hm.put("Field121","");
+hm.put("Field122","");
+hm.put("Field123","");
+hm.put("Field124","");
+hm.put("Field125","");
+hm.put("Field126","");
+hm.put("Field127","");
+hm.put("Field128","");
+hm.put("Field129","");
+hm.put("Field130","");
+hm.put("Field131","");
+hm.put("Field132","");
+hm.put("Field133","");
+hm.put("Field134","");
+hm.put("Field135","");
+hm.put("Field136","");
+hm.put("Field137","");
+hm.put("Field138","");
+hm.put("Field139","");
+hm.put("Field140","");
+hm.put("Field141","");
+hm.put("Field142","");
+hm.put("Field143","");
+hm.put("Field144","");
+hm.put("Field145","");
+hm.put("Field146","");
+hm.put("Field147","");
+hm.put("Field148","");
+hm.put("Field149","");
+hm.put("Field150","");
+hm.put("Field151","");
+hm.put("Field152","");
+hm.put("Field153","");
+hm.put("Field154","");
+hm.put("Field155","");
+hm.put("Field156","");
+hm.put("Field157","");
+hm.put("Field158","");
+hm.put("Field159","");
+hm.put("Field160","");
+hm.put("Field161","");
+hm.put("Field162","");
+hm.put("Field163","");
+hm.put("Field164","");
+hm.put("Field165","");
+hm.put("Field166","");
+hm.put("Field167","");
+hm.put("Field168","");
+hm.put("Field169","");
+hm.put("Field170","");
+hm.put("Field171","");
+hm.put("Field172","");
+hm.put("Field173","");
+hm.put("Field174","");
+hm.put("Field175","");
+hm.put("Field176","");
+hm.put("Field177","");
+hm.put("Field178","");
+hm.put("Field179","");
+hm.put("Field180","");
+hm.put("Field181","");
+hm.put("Field182","");
+hm.put("Field183","");
+hm.put("Field184","");
+hm.put("Field185","");
+hm.put("Field186","");
+hm.put("Field187","");
+hm.put("Field188","");
+hm.put("Field189","");
+hm.put("Field190","");
+hm.put("Field191","");
+hm.put("Field192","");
+hm.put("Field193","");
+hm.put("Field194","");
+hm.put("Field195","");
+hm.put("Field196","");
+hm.put("Field197","");
+hm.put("Field198","");
+hm.put("Field199","");
+hm.put("Field200","");
+hm.put("Field201","");
+hm.put("Field202","");
+hm.put("Field203","");
+hm.put("Field204","");
+hm.put("Field205","");
+hm.put("Field206","");
+hm.put("Field207","");
+hm.put("Field208","");
+hm.put("Field209","");
+hm.put("Field210","");
+hm.put("Field211","");
+hm.put("Field212","");
+hm.put("Field213","");
+hm.put("Field214","");
+hm.put("Field215","");
+hm.put("Field216","");
+hm.put("Field217","");
+hm.put("Field218","");
+hm.put("Field219","");
+hm.put("Field220","");
+hm.put("Field221","");
+hm.put("Field222","");
+hm.put("Field223","");
+hm.put("Field224","");
+hm.put("Field225","");
+**************************************
+-------------------TABLE: LOGIN-------------------
+ID
+Date
+Database
+What Was Done
+Number of Entries
+By Whom
+-----------------
+ID: LONG
+Date: TEXT
+Database: TEXT
+What Was Done: TEXT
+Number of Entries: TEXT
+By Whom: TEXT
+hm.put("ID","");
+hm.put("Date","");
+hm.put("Database","");
+hm.put("What Was Done","");
+hm.put("Number of Entries","");
+hm.put("By Whom","");
+**************************************
+-------------------TABLE: Sheet1$_ImportErrors-------------------
+Error
+Field
+Row
+-----------------
+Error: TEXT
+Field: TEXT
+Row: LONG
+hm.put("Error","");
+hm.put("Field","");
+hm.put("Row","");
+**************************************

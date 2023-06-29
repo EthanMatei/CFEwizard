@@ -1,0 +1,339 @@
+-------------------TABLE: 52-------------------
+ID
+F1
+-----------------
+ID: LONG
+F1: TEXT
+hm.put("ID","");
+hm.put("F1","");
+**************************************
+-------------------TABLE: HUPER-GENE NJ 10-7-2013-------------------
+ID
+Accession Number
+Genecard symbol
+Paper Symbol
+Gene Name
+Type of peripheral tissue
+Change
+Number of subjects
+Males
+Females
+Additional Information
+Psychiatric domain
+Sub domain
+Relevant disorder
+Descriptive Name From Author
+Pub Med ID
+Author/Date
+Title of Paper
+Source info
+Added By
+Date Added
+F19
+F20
+Flagged studies
+-----------------
+ID: DOUBLE
+Accession Number: TEXT
+Genecard symbol: TEXT
+Paper Symbol: TEXT
+Gene Name: TEXT
+Type of peripheral tissue: TEXT
+Change: TEXT
+Number of subjects: TEXT
+Males: TEXT
+Females: TEXT
+Additional Information: TEXT
+Psychiatric domain: TEXT
+Sub domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name From Author: TEXT
+Pub Med ID: TEXT
+Author/Date: TEXT
+Title of Paper: TEXT
+Source info: TEXT
+Added By: TEXT
+Date Added: TEXT
+F19: TEXT
+F20: TEXT
+Flagged studies: TEXT
+hm.put("ID","");
+hm.put("Accession Number","");
+hm.put("Genecard symbol","");
+hm.put("Paper Symbol","");
+hm.put("Gene Name","");
+hm.put("Type of peripheral tissue","");
+hm.put("Change","");
+hm.put("Number of subjects","");
+hm.put("Males","");
+hm.put("Females","");
+hm.put("Additional Information","");
+hm.put("Psychiatric domain","");
+hm.put("Sub domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name From Author","");
+hm.put("Pub Med ID","");
+hm.put("Author/Date","");
+hm.put("Title of Paper","");
+hm.put("Source info","");
+hm.put("Added By","");
+hm.put("Date Added","");
+hm.put("F19","");
+hm.put("F20","");
+hm.put("Flagged studies","");
+**************************************
+-------------------TABLE: HUPER-MET NJ 10-2-2013-------------------
+ID
+Molecule ID
+Genecard symbol
+Paper symbol
+Molecule name
+Type of Molecule
+Type of Peripheral tissue
+Change
+Number of subjects
+Males
+Females
+Additional information
+Psychiatric domain
+Sub domain
+Relevant disorder
+Descriptive Name from Author
+Author/Date
+Source info
+Title of Paper
+Added By
+Date added
+F17
+F18
+F19
+F20
+F21
+F22
+F23
+F24
+F25
+F26
+F27
+F28
+F29
+F30
+F31
+Flagged studies
+-----------------
+ID: TEXT
+Molecule ID: TEXT
+Genecard symbol: TEXT
+Paper symbol: TEXT
+Molecule name: TEXT
+Type of Molecule: TEXT
+Type of Peripheral tissue: TEXT
+Change: TEXT
+Number of subjects: TEXT
+Males: TEXT
+Females: TEXT
+Additional information: TEXT
+Psychiatric domain: TEXT
+Sub domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name from Author: TEXT
+Author/Date: TEXT
+Source info: TEXT
+Title of Paper: TEXT
+Added By: TEXT
+Date added: TEXT
+F17: TEXT
+F18: TEXT
+F19: TEXT
+F20: TEXT
+F21: TEXT
+F22: TEXT
+F23: TEXT
+F24: TEXT
+F25: TEXT
+F26: TEXT
+F27: TEXT
+F28: TEXT
+F29: TEXT
+F30: TEXT
+F31: TEXT
+Flagged studies: TEXT
+hm.put("ID","");
+hm.put("Molecule ID","");
+hm.put("Genecard symbol","");
+hm.put("Paper symbol","");
+hm.put("Molecule name","");
+hm.put("Type of Molecule","");
+hm.put("Type of Peripheral tissue","");
+hm.put("Change","");
+hm.put("Number of subjects","");
+hm.put("Males","");
+hm.put("Females","");
+hm.put("Additional information","");
+hm.put("Psychiatric domain","");
+hm.put("Sub domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Author/Date","");
+hm.put("Source info","");
+hm.put("Title of Paper","");
+hm.put("Added By","");
+hm.put("Date added","");
+hm.put("F17","");
+hm.put("F18","");
+hm.put("F19","");
+hm.put("F20","");
+hm.put("F21","");
+hm.put("F22","");
+hm.put("F23","");
+hm.put("F24","");
+hm.put("F25","");
+hm.put("F26","");
+hm.put("F27","");
+hm.put("F28","");
+hm.put("F29","");
+hm.put("F30","");
+hm.put("F31","");
+hm.put("Flagged studies","");
+**************************************
+-------------------TABLE: HUPER-PROT NJ 10-7-2013-------------------
+ID
+Protein ID
+Genecard symbol
+Paper Symbol
+Protein name
+Type of Molecule
+Type of Peripheral tissue
+Change
+Number of subjects
+Males
+Females
+Additional information
+Psychiatric domain
+Sub domain
+Relevant disorder
+Descriptive Name from Author
+Pub Med ID
+Author/Date
+Title of Paper
+Source info
+Added By
+Date added
+Field1
+Field2
+Field3
+Field4
+Field5
+Field6
+Field7
+Field8
+Field9
+Field10
+Field11
+Field12
+Field13
+Field14
+Field15
+Field16
+Flagged studies
+-----------------
+ID: DOUBLE
+Protein ID: TEXT
+Genecard symbol: TEXT
+Paper Symbol: TEXT
+Protein name: TEXT
+Type of Molecule: TEXT
+Type of Peripheral tissue: TEXT
+Change: TEXT
+Number of subjects: TEXT
+Males: TEXT
+Females: TEXT
+Additional information: TEXT
+Psychiatric domain: TEXT
+Sub domain: TEXT
+Relevant disorder: TEXT
+Descriptive Name from Author: TEXT
+Pub Med ID: TEXT
+Author/Date: TEXT
+Title of Paper: TEXT
+Source info: TEXT
+Added By: TEXT
+Date added: TEXT
+Field1: TEXT
+Field2: TEXT
+Field3: TEXT
+Field4: TEXT
+Field5: TEXT
+Field6: TEXT
+Field7: TEXT
+Field8: TEXT
+Field9: TEXT
+Field10: TEXT
+Field11: TEXT
+Field12: TEXT
+Field13: TEXT
+Field14: TEXT
+Field15: TEXT
+Field16: TEXT
+Flagged studies: TEXT
+hm.put("ID","");
+hm.put("Protein ID","");
+hm.put("Genecard symbol","");
+hm.put("Paper Symbol","");
+hm.put("Protein name","");
+hm.put("Type of Molecule","");
+hm.put("Type of Peripheral tissue","");
+hm.put("Change","");
+hm.put("Number of subjects","");
+hm.put("Males","");
+hm.put("Females","");
+hm.put("Additional information","");
+hm.put("Psychiatric domain","");
+hm.put("Sub domain","");
+hm.put("Relevant disorder","");
+hm.put("Descriptive Name from Author","");
+hm.put("Pub Med ID","");
+hm.put("Author/Date","");
+hm.put("Title of Paper","");
+hm.put("Source info","");
+hm.put("Added By","");
+hm.put("Date added","");
+hm.put("Field1","");
+hm.put("Field2","");
+hm.put("Field3","");
+hm.put("Field4","");
+hm.put("Field5","");
+hm.put("Field6","");
+hm.put("Field7","");
+hm.put("Field8","");
+hm.put("Field9","");
+hm.put("Field10","");
+hm.put("Field11","");
+hm.put("Field12","");
+hm.put("Field13","");
+hm.put("Field14","");
+hm.put("Field15","");
+hm.put("Field16","");
+hm.put("Flagged studies","");
+**************************************
+-------------------TABLE: LOGIN-------------------
+ID
+DATE
+DATABASE
+WHAT WAS DONE
+NO OF ENTRIES
+BY WHOM
+-----------------
+ID: LONG
+DATE: TEXT
+DATABASE: TEXT
+WHAT WAS DONE: TEXT
+NO OF ENTRIES: TEXT
+BY WHOM: TEXT
+hm.put("ID","");
+hm.put("DATE","");
+hm.put("DATABASE","");
+hm.put("WHAT WAS DONE","");
+hm.put("NO OF ENTRIES","");
+hm.put("BY WHOM","");
+**************************************

@@ -14,7 +14,7 @@ use POSIX;
 $| = 1;
 
 
-my $databaseDir = '..\test-data\ms-access\\';
+my $databaseDir = '..\src\test\resources\ms-access\\';
 
 my @databases = ('HUBRAIN (NJ 10-30-2013).accdb', 
                  'HUGEN (NJ 11-1-2013).accdb', 

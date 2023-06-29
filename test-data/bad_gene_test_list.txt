@@ -1,3 +1,0 @@
-This is an evil sql injection
-<script>I'm evil</script>
-<!-- hello -->

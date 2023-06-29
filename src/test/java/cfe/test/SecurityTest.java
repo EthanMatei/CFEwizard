@@ -16,8 +16,8 @@ import org.junit.rules.ExpectedException;
 
 public class SecurityTest {
 	
-	public static final String GOOD_GENE_LIST_FILE_NAME = "./test-data/good_gene_test_list.txt";
-	public static final String BAD_GENE_LIST_FILE_NAME  = "./test-data/bad_gene_test_list.txt";
+	public static final String GOOD_GENE_LIST_FILE_NAME = "./src/test/resources/good_gene_test_list.txt";
+	public static final String BAD_GENE_LIST_FILE_NAME  = "./src/test/resources/bad_gene_test_list.txt";
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();

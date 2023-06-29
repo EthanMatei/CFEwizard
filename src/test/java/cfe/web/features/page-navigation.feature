@@ -22,3 +22,7 @@ Scenario: Saved Results page
     Then I should see "CFE Saved Results"
     And I should see "Order:"
     And I should see "Phene:"
+
+Scenario: Special Functions page
+    When I click on link "Special Functions"
+    Then I should see "Phenomic Database Check"

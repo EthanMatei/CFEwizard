@@ -9,5 +9,5 @@ import org.junit.runner.RunWith;
     features="src/test/java/cfe/web/features/"
 )
 
-public class RunCucumberTest {
+public class RunWebTests {
 }

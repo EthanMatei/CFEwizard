@@ -59,4 +59,16 @@ public class WebUtil {
         }
         return submit;
     }
+    
+    public static HtmlInput getFirstCheckboxByValue(HtmlPage page, String value) {
+        HtmlInput checkbox = null;
+        List<Object> objects = page.getByXPath("/html/body//form//input[@type='checkbox' and @value='" + value + "']");
+        if (objects.size() > 0) {
+            Object object = objects.get(0);
+            if (object instanceof HtmlInput) {
+                checkbox = (HtmlInput) object;
+            }
+        }
+        return checkbox;
+    }
 }

@@ -2,6 +2,7 @@ package cfe.web;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.List;
 import java.util.Properties;
 
 import org.htmlunit.WebAssert;
@@ -17,9 +18,11 @@ import org.htmlunit.html.HtmlLabel;
 import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlPasswordInput;
 import org.htmlunit.html.HtmlSubmitInput;
+import org.htmlunit.html.HtmlTable;
 import org.htmlunit.html.HtmlTextInput;
 import org.htmlunit.html.SubmittableElement;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -120,6 +123,20 @@ public class StepDefinitions {
         WebAssert.assertTextPresent(this.page, text);
     }
     
+    @Then("I should not see {string}")
+    public void iShouldNotSee(String text) throws Exception {
+        WebAssert.assertTextNotPresent(this.page, text);
+    }
     
-    
+    @Then("I should see table")
+    public void iShouldSeeTable(DataTable table) throws Exception {
+        List<List<String>> data = table.asLists();
+        
+        String[] tableHeader = {"MS Access Table", "CFE MySQL Table", "CFE MySQL Table Rows"};
+        HtmlTable webTable = WebUtil.getTableWithHeader(page, tableHeader);
+        boolean match = WebUtil.tablesMatch(webTable, table);
+        if (!match) {
+            throw new Exception("Tables do NOT match.");
+        }
+    }    
 }

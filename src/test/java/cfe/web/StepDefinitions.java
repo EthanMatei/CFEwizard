@@ -12,6 +12,7 @@ import org.htmlunit.html.HtmlAnchor;
 import org.htmlunit.html.HtmlElement;
 import org.htmlunit.html.HtmlFileInput;
 import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlInput;
 import org.htmlunit.html.HtmlLabel;
 import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlPasswordInput;
@@ -93,6 +94,15 @@ public class StepDefinitions {
     public void iClickOnLink(String linkText) throws Exception {
         HtmlAnchor a = this.page.getAnchorByText(linkText);
         this.page = a.click();
+    }
+    
+    @When("I click on submit {string}")
+    public void iClickOnSubmit(String submitValue) throws Exception {
+        HtmlInput submit = WebUtil.getFirstSubmitByValue(page, submitValue);
+        if (submit == null) {
+            throw new Exception("Submit button with value \"" + submitValue + "\" not found.");
+        }
+        this.page = submit.click();
     }
     
     @When("I specify file {string} for input {string}")

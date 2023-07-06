@@ -108,8 +108,8 @@ public class DiseaseSelector {
         
         for (int i = 0; i < diseaseSelectors.size(); i++) {
             DiseaseSelector diseaseSelector = diseaseSelectors.get(i);
-            log.info("= " + diseaseSelector.getPsychiatricDomain()
-            + "." + diseaseSelector.getPsychiatricSubDomain() + "." + diseaseSelector.getRelevantDisorder());
+            //log.info("= " + diseaseSelector.getPsychiatricDomain()
+            //    + "." + diseaseSelector.getPsychiatricSubDomain() + "." + diseaseSelector.getRelevantDisorder());
 
             for (String[] line: data) {
                 String domain           = line[0];
@@ -117,7 +117,7 @@ public class DiseaseSelector {
                 String relevantDisorder = line[2];
                 String coefficient      = line[3];
 
-                log.info("    " + domain + "." + subDomain + "." + relevantDisorder + ": " + coefficient);
+                // log.info("    " + domain + "." + subDomain + "." + relevantDisorder + ": " + coefficient);
 
                 if (diseaseSelector.getPsychiatricDomain().contentEquals(domain)
                         && diseaseSelector.getPsychiatricSubDomain().contentEquals(subDomain)
@@ -127,7 +127,7 @@ public class DiseaseSelector {
 
                     double coefficientValue = 0.0;
 
-                    log.info("*** SETTING domain \"" + domain + "\" with coefficent " + coefficientValue);
+                    // log.info("*** SETTING domain \"" + domain + "\" with coefficent " + coefficientValue);
 
                     try {
                         coefficientValue = Double.parseDouble(coefficient);

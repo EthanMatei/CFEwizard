@@ -151,6 +151,7 @@ public class GeneListUpload extends BaseAction implements SessionAware {
             result = LOGIN;
         }
         else {
+            log.info("***************** PROCESSING DISCOVERY RESULTS FOR PRIORITIZATION");
 
             try {
                 GeneListInput geneListInput = new GeneListInput();
@@ -188,6 +189,7 @@ public class GeneListUpload extends BaseAction implements SessionAware {
                 String message = "Gene list upload error: " + exception.getLocalizedMessage();
                 log.severe(message);
                 this.setErrorMessage(message);
+                result = ERROR;
             }
         }
         
@@ -247,14 +249,15 @@ public class GeneListUpload extends BaseAction implements SessionAware {
     		 }
     	}
     	
-    	br.close();		
+    	br.close();
 		return geneList;
 	}
 	
 	public GeneListInput processDiscoveryResults(CfeResults discoveryResults) throws Exception {
 	    GeneListInput geneList = new GeneListInput();
 	    
-	    String key = "Probe Set ID";
+	    // String key = "Probe Set ID";
+	    String key = null;
 	    DataTable discoveryScores = discoveryResults.getSheetAsDataTable(CfeResultsType.DISCOVERY_SCORES, key);
 	    
 	    Map<String,String> row = null;
@@ -285,6 +288,7 @@ public class GeneListUpload extends BaseAction implements SessionAware {
 	            score = 0.0;    
 	        }
 	        
+	        log.info("DISCOVERY SCORE CUTOFF FOR PRIORITIZATION FROM DISCOVERY SCORES: " + this.discoveryScoreCutoff);
 	        if (score >= this.discoveryScoreCutoff - this.comparisonThreshold) {
 	            String genecardsSymbol = row.get("Genecards Symbol");
 	            geneList.add(genecardsSymbol);

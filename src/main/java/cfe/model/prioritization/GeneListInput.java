@@ -99,16 +99,24 @@ public class GeneListInput {
             comparisonThreshold = 0.0;
         }
         
-	    String key = "Probe Set ID";
+        log.info("********************************************* DISCOVERY SCORE CUTOFF FOR PRIORITIZATION: " + discoveryScoreCutoff);
+        
+	    // String key = "Probe Set ID";
+        String key = null;  // Can have duplicates
 	    DataTable discoveryScores = discoveryResults.getSheetAsDataTable(CfeResultsType.DISCOVERY_SCORES, key);
+	    
 	    if (discoveryScores == null) {
 	        throw new Exception("Discovery scores were not found in discovery results specified for gene list creation.");
 	    }
-	        
+	    
 	    Map<String,String> row = null;
 	        
 	    for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
 	        row = discoveryScores.getRowMap(i);
+	        
+	        for (String rowKey: row.keySet()) {
+	            log.info("    ROW MAP[" + rowKey + "] = " + row.get(rowKey));
+	        }
 	            
 	        String deScore = "DE Score";
 	            
@@ -131,11 +139,15 @@ public class GeneListInput {
 	            }
 	        }
 	            
+	        // log.info("    ******************* SCORE STRING + SCORE + CUTOFF: \"" + scoreString + "\" " + score + " " + discoveryScoreCutoff);
 	        if (score >= discoveryScoreCutoff - comparisonThreshold) {
 	            String genecardsSymbol = row.get("Genecards Symbol");
 	            this.add(genecardsSymbol);
+	            // log.info("*************** ADDED GENE CARD SYMBOL: " + genecardsSymbol + " - cutoff: " + discoveryScoreCutoff + " score: " + score + " comparisonThreshold: " + comparisonThreshold);
 	        }
 	    }
+	    
+	    log.info(" ***** GENE LIST SIZE: " + this.genes.size());
 	}
 	    
 	/**

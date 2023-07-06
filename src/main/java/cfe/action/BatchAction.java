@@ -768,6 +768,8 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                     PrioritizationScoresCalc prioritizationScoresCalc = new PrioritizationScoresCalc();
 
+                    log.info("**** DISEASE SELECTORS COUNT before calculate: " + this.diseaseSelectors.size());
+                    
                     prioritizationScores = prioritizationScoresCalc.calculate(
                             discoveryScores,
                             diseaseSelectors,

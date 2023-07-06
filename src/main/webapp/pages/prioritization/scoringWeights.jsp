@@ -15,6 +15,7 @@
 <h1>Prioritization - Global Scoring Weights</h1>
 --%>
 
+<s:include value="/pages/error_include.jsp"/> 
 <s:actionerror />
 
 <p>

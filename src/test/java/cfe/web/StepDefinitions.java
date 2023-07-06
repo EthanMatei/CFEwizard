@@ -79,6 +79,16 @@ public class StepDefinitions {
         // System.out.println(this.page.getVisibleText());
     }
     
+    @When("I wait for {int} seconds")
+    public void iWaitForSeconds(int seconds) throws Exception {
+        try {
+            Thread.sleep(seconds * 1000);
+        } 
+        catch(InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    
     @When("I click on link {string}")
     public void iClickOnLink(String linkText) throws Exception {
         HtmlAnchor a = this.page.getAnchorByText(linkText);
@@ -86,39 +96,20 @@ public class StepDefinitions {
     }
     
     @When("I specify file {string} for input {string}")
-    public void iSpecifyFileForInput(String file, String input) {
+    public void iSpecifyFileForInput(String file, String input) throws Exception {
         String filePath = getClass().getClassLoader().getResource(file).toExternalForm();
-        this.getFileInputByLabel(input);
-        
-        //HtmlFileInput fileInput = this.page.getElementById(input);
+        HtmlFileInput fileInput = WebUtil.getFileInputByLabel(this.page, input);
+        if (fileInput != null) {
+            fileInput.setValue(filePath);
+        }
     }
     
-    public HtmlFileInput getFileInputByLabel(String label) {
-        HtmlFileInput fileInput = null;
-        DomNodeList<DomElement> labelList = this.page.getElementsByTagName("label");
-        //this.page.get
-        for (int i = 0; i < labelList.getLength(); i++) {
-            DomElement domElement = labelList.get(i);
-            if (domElement instanceof HtmlLabel) {
-                HtmlLabel labelElement = (HtmlLabel) domElement;
-
-                if (labelElement.getTextContent().equals(label)) {
-                    String id = labelElement.getAttribute("for");
-                    if (id != null) {
-                        DomElement element = this.page.getElementById(id);
-                        if (element instanceof HtmlFileInput) {
-                            fileInput = (HtmlFileInput) element;
-                        }
-                    }
-                }
-            }
-        }
-        return fileInput;
-    }
     
     @Then("I should see {string}")
     public void iShouldSee(String text) throws Exception {
         WebAssert.assertTextPresent(this.page, text);
     }
+    
+    
     
 }

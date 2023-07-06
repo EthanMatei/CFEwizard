@@ -1,8 +1,11 @@
 package cfe.web;
 
+import java.util.List;
+
 import org.htmlunit.html.DomElement;
 import org.htmlunit.html.DomNodeList;
 import org.htmlunit.html.HtmlFileInput;
+import org.htmlunit.html.HtmlInput;
 import org.htmlunit.html.HtmlLabel;
 import org.htmlunit.html.HtmlPage;
 
@@ -43,5 +46,17 @@ public class WebUtil {
             fileInput = (HtmlFileInput) element;
         }
         return fileInput;
+    }
+    
+    public static HtmlInput getFirstSubmitByValue(HtmlPage page, String value) {
+        HtmlInput submit = null;
+        List<Object> objects = page.getByXPath("/html/body//form//input[@type='submit' and @value='" + value + "']");
+        if (objects.size() > 0) {
+            Object object = objects.get(0);
+            if (object instanceof HtmlInput) {
+                submit = (HtmlInput) object;
+            }
+        }
+        return submit;
     }
 }

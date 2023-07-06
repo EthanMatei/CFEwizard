@@ -157,18 +157,6 @@ public class ValidationScoresCalc {
 	            throw new Exception("No phene specified in validation cohort.");
 	        }
 
-
-	        if (this.validationMasterSheetFile == null || this.validationMasterSheetFile.isEmpty()) {
-	            throw new Exception("No master sheet specified for validation scoring.");
-	        }
-
-
-	        if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
-	            throw new Exception("No predictor list specified for validation scoring.");
-	        }
-
-	        log.info("Starting validation scoring");
-
             List<String> fileNames = this.createValidationPredictorListAndMasterSheetFiles(
                     validationDataId,
                     this.geneExpressionCsv,
@@ -177,6 +165,14 @@ public class ValidationScoresCalc {
 
             this.predictorListFile = fileNames.get(0);
             this.validationMasterSheetFile = fileNames.get(1);
+	        
+	        if (this.validationMasterSheetFile == null || this.validationMasterSheetFile.isEmpty()) {
+	            throw new Exception("No master sheet specified for validation scoring.");
+	        }
+
+	        if (this.predictorListFile == null || this.predictorListFile.isEmpty()) {
+	            throw new Exception("No predictor list specified for validation scoring.");
+	        }
 	        
 	        String masterSheetArg   = this.validationMasterSheetFile;
 	        String predictorListArg = this.predictorListFile;

@@ -117,7 +117,8 @@ public class ValidationScoresCalc {
             String updatedMasterSheetFileName,
             File updatedPredictorListFile,
             String updatedPredictorListFileName,
-            String validationDiagnosisType
+            String validationDiagnosisType,
+            File geneExpressionCsv
     ) throws Exception {
 
 	    log.info("Validation scoring phase started");
@@ -139,6 +140,7 @@ public class ValidationScoresCalc {
         this.updatedPredictorListFile     = updatedPredictorListFile;
         this.updatedPredictorListFileName = updatedPredictorListFileName;
         
+        this.geneExpressionCsv = geneExpressionCsv;
         
 	    try {
 	        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included

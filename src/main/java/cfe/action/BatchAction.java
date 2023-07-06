@@ -861,7 +861,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                                 this.updatedValidationMasterSheetFileName,
                                 this.updatedValidationPredictorList,
                                 this.updatedValidationPredictorListFileName,
-                                this.validationDiagnosisType
+                                this.validationDiagnosisType,
+                                this.geneExpressionCsv
                         );
                     }
                     catch (Exception exception) {

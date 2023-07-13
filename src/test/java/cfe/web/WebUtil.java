@@ -68,8 +68,11 @@ public class WebUtil {
     public static HtmlInput getFirstCheckboxByValue(HtmlPage page, String value) {
         HtmlInput checkbox = null;
         List<Object> objects = page.getByXPath("/html/body//form//input[@type='checkbox' and @value='" + value + "']");
+        //List<Object> objects = page.getByXPath("/html/body//form//input[@type='checkbox']");
+        //System.out.println("FOUND " + objects.size() + " possible check boxes");
         if (objects.size() > 0) {
             Object object = objects.get(0);
+            //System.out.println("    object class: " + object.getClass());
             if (object instanceof HtmlInput) {
                 checkbox = (HtmlInput) object;
             }

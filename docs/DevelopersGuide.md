@@ -128,6 +128,28 @@ The main files and directories for the cFE Wizard are shown below.
 * pom.xml - Maven configuration file (contains library dependency information)
 
 
+Web Tests
+-----------------------------------------------
+
+Some web tests have been created that test a running instance of the CFE Wizard. These tests are NOT run
+as part of the normal Maven test phase. The tests are in directory:
+
+    src/test/java/cfe/web
+
+To be able to run the tests, you need to create a file **webtest.properties** in the project's top-level
+directory that set the following properties:
+
+    cfe.url = http://localhost:8080/CFE/LoginAction.action
+    cfe.username =
+    cfe.password =
+
+To run the tests in Eclipse, right click on the following file:
+
+    src/test/java/cfe/web/RunWebTests.java
+
+and select:
+
+    Run As -> JUnit Test
 
 GitHub Workflow
 ---------------------------------------

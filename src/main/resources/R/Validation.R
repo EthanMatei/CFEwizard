@@ -136,6 +136,17 @@ predictorColumnNames <- colnames(predictors)
 diagnoses <- predictorColumnNames[predictorColumnNames %in% c("Predictor", "Direction", "Male", "Female", "All") == FALSE]
 diagnoses <- unlist(diagnoses)    # convert to vector
 
+# cat("DIAGNOSES: ")
+# print(diagnoses)
+
+# # Replace transgenders with biological genders ("M" or "F")
+# diagnoses[grep("tran(.*)female", diagnoses, ignore.case = TRUE)]     <- "M"
+# diagnoses[grep("tran(.*)([^e])male", diagnoses, ignore.case = TRUE)] <- "F"
+
+# cat("DIAGNOSES (after transgender to biological gender transformation): ")
+# print(diagnoses)
+# cat("\n")
+
 genderDiagnoses <- c(paste("F", diagnoses, sep="-"), paste("M", diagnoses, sep="-"))
 genderDiagnoses <- genderDiagnoses[genderDiagnoses %in% c("M-F", "F-M") == FALSE]
 genderDiagnoses <- unlist(genderDiagnoses)

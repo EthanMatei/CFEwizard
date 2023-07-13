@@ -43,6 +43,7 @@ import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
+import cfe.utils.GeneExpressionFile;
 import cfe.utils.WebAppProperties;
 
 
@@ -206,10 +207,9 @@ public class TestingScoresCalc {
             throw new Exception("The testing cohorts specified do not have an ID.");    
         }
         
-        if (this.geneExpressionCsv == null || this.geneExpressionCsvFileName == null) {
-            throw new Exception("No gene expression CSV file specified.");
-        }        
-        else if (!this.geneExpressionCsvFileName.endsWith(".csv")) {
+        GeneExpressionFile.checkFile(this.geneExpressionCsv);
+        
+        if (!this.geneExpressionCsvFileName.endsWith(".csv")) {
             throw new Exception("This gene expression file \"" + this.geneExpressionCsvFileName + "\" is not a .csv file.");
         }
 

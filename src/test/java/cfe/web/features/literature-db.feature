@@ -35,3 +35,12 @@ Scenario: Literature database clear
         | NHPER-PROT        | nhperprot       |                    0 |
     But I should not see "Error:"
 
+Scenario: Literature database upload
+    When I click on link "Upload Literature Databases"
+    And I check checkbox with value "HUBRAIN"
+    And I check checkbox with value "HUGENE"
+    And I check checkbox with value "HUPER"
+    And I check checkbox with value "NHBRAIN"
+    And I check checkbox with value "NHGENE"
+    And I check checkbox with value "NHPER"
+    And I click on submit "Next"

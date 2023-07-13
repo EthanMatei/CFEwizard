@@ -25,6 +25,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.opencsv.CSVReader;
 
+import cfe.action.TestingDbCheckAction;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsSheets;
@@ -35,6 +36,7 @@ import cfe.services.CfeResultsService;
 import cfe.utils.CsvUtil;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
+import cfe.utils.GeneExpressionFile;
 import cfe.utils.WebAppProperties;
 
 /**
@@ -145,6 +147,16 @@ public class ValidationScoresCalc {
 	    try {
 	        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
+	        if (this.geneExpressionCsv == null) {
+	            throw new Exception("No gene expression CSV file found for validation calculations.");    
+	        }
+	        else if(!this.geneExpressionCsv.exists()) {
+	            throw new Exception("The gene expression filke does not exist.");
+	        }
+	        else if (!this.geneExpressionCsv.canRead()) {
+	            throw new Exception("The gene expression file cannot be read.");
+	        }
+	        
 	        if (validationCohort == null) {
 	            throw new Exception("No validation cohort specified.");    
 	        }
@@ -481,6 +493,10 @@ public class ValidationScoresCalc {
             throw new Exception("No validation cohort ID speified for validation predictor list creation.");
         }
         
+        if (geneExpressionCsvFile == null) {
+            throw new Exception("No gene expression CSV file specified for validation predictor list and master sheet creation.");
+        }
+        
         ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
         DataTable predictorList = this.createPredictorList(validationCohortId, diagnosisType);
@@ -510,7 +526,7 @@ public class ValidationScoresCalc {
                 validationCohortId,
                 diagnosisType,
                 predictorList,
-                this.geneExpressionCsv
+                geneExpressionCsv
         );
 
         log.info("Master Sheet file name: " + validationMasterSheetFileName);
@@ -565,7 +581,7 @@ public class ValidationScoresCalc {
 	    if (cfeResults == null) {
 	        throw new Exception("Could not get saved results for ID " + validationDataId + ".");
 	    }
-	    
+
 	    XSSFWorkbook workbook = cfeResults.getResultsSpreadsheet();
 	    
 	    if (workbook == null) {
@@ -630,13 +646,20 @@ public class ValidationScoresCalc {
         // <probeset>    <value>       <value>       <value>
         // <probeset>    <value>       <value>       <value>
         //---------------------------------------------------------------------------
-	    if (geneExpressionCsv == null) {
-	        throw new Exception("No gene expression file was specified.");
-	    }
-	    FileReader filereader = new FileReader(geneExpressionCsv);
+        try {
+            GeneExpressionFile.checkFile(geneExpressionCsvFile);
+        }
+        catch (Exception exception) {
+            throw new Exception("Validation scoring data input error: " + exception.getLocalizedMessage());
+        }
+        
+	    FileReader filereader = new FileReader(geneExpressionCsvFile);
         CSVReader csvReader = new CSVReader(filereader);
         
         String[] header = csvReader.readNext();
+        
+        String headerString = String.join(", ", header);
+        log.info("Gene expression file header: " + headerString);
         
         // Create map from probesets to predictors
         HashMap<String,String> probesetToPredictorMap = new HashMap<String,String>();
@@ -658,15 +681,29 @@ public class ValidationScoresCalc {
             }
         }
         
+        for (String probeset: probesetToPredictorMap.keySet()) {
+            log.info("    MAP PROBESET: " + probeset + " -> " + probesetToPredictorMap.get(probeset));    
+        }
+        
         String[] row;
+        int numberOfDataRows = 0;
+        int numberOfPredictorsFound = 0;
         while ((row = csvReader.readNext()) != null) {
+            numberOfDataRows++;
+            // String rowString = String.join(", ", row);
+            // log.info("GENE EXPRESSION ROW: " + rowString);
+            
             String probeset = row[0];
             probeset = probeset.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
             probeset = probeset.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
-            
+
             String predictor = probesetToPredictorMap.get(probeset);
 
+            log.info("    PROBESET: " + probeset + "    - PREDICTOR: " + predictor);
+            
             if (predictor != null && !predictor.isEmpty()) {
+                log.info("        predictor found for probeset");
+                numberOfPredictorsFound++;
                 for (int i = 1; i < row.length; i++) {
                     String pheneVisit = header[i];
                     String value = row[i];
@@ -684,9 +721,14 @@ public class ValidationScoresCalc {
                         masterSheet.setValue(rowIndex, predictor, value);    
                     }
                 }
+            } else {
+                log.info("        predictor NOT found for probset");
             }
         }
         csvReader.close();
+        
+        log.info("Number of data rows for gene expression file for validation master sheet creation: " + numberOfDataRows);
+        log.info("Number of predictors found for gene expression file for validation master sheet creation: " + numberOfPredictorsFound);
         
 	    //-----------------------------)--------------------------
 	    // Write the master sheet to a CSV file

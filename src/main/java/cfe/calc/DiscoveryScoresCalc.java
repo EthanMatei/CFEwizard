@@ -55,6 +55,7 @@ import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
+import cfe.utils.GeneExpressionFile;
 import cfe.utils.Util;
 import cfe.utils.WebAppProperties;
 
@@ -301,6 +302,8 @@ public class DiscoveryScoresCalc {
             //------------------------------------------------------
             // Get the gene expression CSV file
             //------------------------------------------------------
+            GeneExpressionFile.checkFile(discoveryCsv);    // Check for errors
+            
             File discoveryCsvTmp = FileUtil.createTempFile("discovery-csv-",  ".csv");
             if (this.discoveryCsv != null) {
                 FileUtils.copyFile(this.discoveryCsv, discoveryCsvTmp);
@@ -721,23 +724,6 @@ public class DiscoveryScoresCalc {
 	}
 	
 
-    /** 
-     * WORK IN PROGRESS
-     * For checking that gene expression file has phene visit, instead of affy visit, columns. 
-     */
-    public void checkGeneExpressionFile(String geneExpressionFile) throws Exception {
-        FileReader filereader = new FileReader(geneExpressionFile);
-        CSVReader csvReader = new CSVReader(filereader);
-        String[] visits;
-     
-        visits = csvReader.readNext();
-        for (String visit: visits) {
-            // Need to compare these to pheneVisits in the cohort data
-            // ...
-        }
-
-    }
-    
 	/** 
 	 * Executes the specified command and returns the output from the command.
 	 *

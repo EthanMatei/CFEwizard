@@ -108,6 +108,15 @@ public class StepDefinitions {
         this.page = submit.click();
     }
     
+    @When("I check checkbox with value {string}")
+    public void iCheckCheckboxWithValue(String checkboxValue) throws Exception {
+        HtmlInput checkbox = WebUtil.getFirstCheckboxByValue(page, checkboxValue);
+        if (checkbox == null) {
+            throw new Exception("Checkbox with value \"" + checkboxValue + "\" not found.");
+        }
+        checkbox.click();
+    }
+    
     @When("I specify file {string} for input {string}")
     public void iSpecifyFileForInput(String file, String input) throws Exception {
         String filePath = getClass().getClassLoader().getResource(file).toExternalForm();

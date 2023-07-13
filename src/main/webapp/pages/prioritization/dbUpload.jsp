@@ -29,10 +29,15 @@ Please select the database(s) to upload:
 <s:actionerror />
 <s:form id ="uploadForm" name="uploadForm" theme="simple" action="PrioritizationFileUpload" method="post" enctype="multipart/form-data">
 	<table>
-	    <s:iterator value="#session.dbnames" var="dbname">
+	    <s:iterator value="#session.dbnames" var="dbname" status="status">
+	        <s:set value="%{'dbId' + #status.index}" var="dbId" />
 	        <tr>
-    	        <td style="text-align: right; padding-right: 7px;"> <s:property value="dbname"/>: </td>
-    	        <td> <s:file name="upload"/> </td>
+    	        <td style="text-align: right; padding-right: 7px;">
+    	            <label for="<s:property value='%{dbId}'/>">
+    	                <s:property value="dbname"/>:
+    	            </label>
+    	        </td>
+    	        <td> <s:file name="upload" id="%{dbId}"/> </td>
     	    </tr>
 	    </s:iterator>
 	</table>

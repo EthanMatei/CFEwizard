@@ -504,19 +504,7 @@ public class ValidationScoresCalc {
             throw new Exception("Could not create validation predictor list.");
         }
 
-        String predictorListCsv = predictorList.toCsv();
-        File predictorListCsvTmp = FileUtil.createTempFile("validation-predictor-list-",  ".csv");
-        if (predictorListCsv != null) {
-            FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
-        }
-        String predictorListFileName = predictorListCsvTmp.getAbsolutePath();
 
-        if (predictorListFileName == null || predictorListFileName.isEmpty()) {
-            throw new Exception("Could not create validation predictor list file.");
-        }
-        log.info("Predictor List file in validation scoring specification: \"" + predictorListFileName + "\" created.");               
-
-        fileNames.add(0,predictorListFileName);
 
         log.info("Starting to create master sheet for validation scoring.");
 
@@ -535,6 +523,24 @@ public class ValidationScoresCalc {
             throw new Exception("Could not create validation master sheet.");
         }
         
+        //----------------------------------------
+        // Create predictor list file
+        //----------------------------------------
+        String predictorListCsv = predictorList.toCsv();
+        File predictorListCsvTmp = FileUtil.createTempFile("validation-predictor-list-",  ".csv");
+        if (predictorListCsv != null) {
+            FileUtils.write(predictorListCsvTmp, predictorListCsv, "UTF-8");
+        }
+        String predictorListFileName = predictorListCsvTmp.getAbsolutePath();
+
+        if (predictorListFileName == null || predictorListFileName.isEmpty()) {
+            throw new Exception("Could not create validation predictor list file.");
+        }
+        log.info("Predictor List file in validation scoring specification: \"" + predictorListFileName + "\" created.");   
+
+        fileNames.add(0,predictorListFileName);
+        
+    
         fileNames.add(1, validationMasterSheetFileName);
         
         return fileNames; // [0] => predictorListFileName, [1] => masterSheetFileName
@@ -761,9 +767,23 @@ public class ValidationScoresCalc {
             }
         }
         geneExpressionCsvReader.close();
+
+        if (diagnosisType.equals(DiagnosisType.GENDER)) {
+            int columnIndex = masterSheet.getColumnIndex("dx");
+            if (columnIndex < 0) {
+                throw new Exception("Could not find column \"dx\" master sheet.");
+            }
+            masterSheet.replaceColumnValues("dx", "M", "M-M");
+            masterSheet.replaceColumnValues("dx", "F", "F-F");
+        }
         
         // Delete the predictors for which there are no values from the master sheet
         masterSheet.deleteColumns(predictorsToDelete);
+        
+        // Delete the predictors for which there are no values from the predictor list
+        for (String predictor: predictorsToDelete) {
+            predictorList.deleteRows("Predictor", predictor);
+        }
         
         log.info("Number of data rows for gene expression file for validation master sheet creation: " + numberOfDataRows);
         log.info("Number of predictors found for gene expression file for validation master sheet creation: " + numberOfPredictorsFound);
@@ -823,6 +843,11 @@ public class ValidationScoresCalc {
 	    predictorList.addColumn("Direction", "");
         predictorList.addColumn("Male", "");
         predictorList.addColumn("Female", "");
+        
+        if (diagnosisType.equals(DiagnosisType.GENDER)) {
+            predictorList.addColumn("M", "");
+            predictorList.addColumn("F", "");
+        }
         
         // OLD (hard coded):
         //predictorList.addColumn("BP", "");

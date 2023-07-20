@@ -507,7 +507,7 @@ public class DataTable {
         }
         
 	    // Delete entries from data
-	    for (int rowIndex = this.getNumberOfRows() -1; rowIndex >= 0; rowIndex--) {
+	    for (int rowIndex = this.getNumberOfRows() - 1; rowIndex >= 0; rowIndex--) {
 	        ArrayList<String> row = data.get(rowIndex);
 	        if (row.get(columnIndex).contentEquals(columnValue)) {
 	            this.data.remove(rowIndex);
@@ -533,7 +533,7 @@ public class DataTable {
         int keyIndex = this.getKeyIndex();
         
         // Delete entries from data
-        for (int rowIndex = this.getNumberOfRows() -1; rowIndex >= 0; rowIndex--) {
+        for (int rowIndex = this.getNumberOfRows() - 1; rowIndex >= 0; rowIndex--) {
             ArrayList<String> row = data.get(rowIndex);
             if (row.get(keyIndex).contentEquals(keyValue)) {
                 this.data.remove(rowIndex);
@@ -541,6 +541,21 @@ public class DataTable {
             }
         }
 	}
+	
+	public void replaceColumnValues(String columnName, String search, String replace) throws Exception {
+	    int columnIndex = this.getColumnIndex(columnName);
+	    if (columnIndex < 0) {
+	        throw new Exception("In column value replace, column \"" + columnName + "\" not found.");    
+	    }
+	    
+	    for (int i = 0; i < this.data.size(); i++) {
+	        List<String> row = this.data.get(i);
+	        if (row.get(columnIndex).equals(search)) {
+	            row.set(columnIndex, replace);
+	        }
+	    }
+	}
+	
 	
 	/**
 	 * Moves the specified column from its current position to the specified position.
@@ -1607,8 +1622,7 @@ public class DataTable {
             throw new Exception("Column name \"" + columnName + "\" not found for creating column map.");
         }
         
-        // Note: start rowNum at 1 (instead of 0) to skip the header
-        for (int rowNum = 1; rowNum < this.data.size(); rowNum++) {
+        for (int rowNum = 0; rowNum < this.data.size(); rowNum++) {
             List<String> row = data.get(rowNum);
             String columnValue = row.get(columnIndex);
             columnMap.put(columnValue, rowNum);
@@ -1624,9 +1638,8 @@ public class DataTable {
      */
     public Map<String, Integer> getColumnNameMap() {
         Map<String, Integer> columnNameMap = new HashMap<String, Integer>();
-        List<String> header = this.data.get(0);
-        for (int colNum = 0; colNum < header.size(); colNum++) {
-            String columnName = header.get(colNum);
+        for (int colNum = 0; colNum < this.columns.size(); colNum++) {
+            String columnName = this.columns.get(colNum);
             columnNameMap.put(columnName, colNum);
         }
         return columnNameMap;
@@ -1838,5 +1851,30 @@ public class DataTable {
             values.add(value);
         }
         return values;
+    }
+    
+    /*
+    public List<Integer> getMaxLengtColumnLength() {
+        List<Integer> maxLengths = new ArrayList<Integer>();
+        
+        for (String columnName: this.columns) {
+             maxLengths.add(columnName.length());   
+        }
+        
+        for (List<String> row: this.data) {
+            
+        }
+        return maxLengths;
+    }
+    */
+    
+    
+    public String toString() {
+        String value = "";
+        System.out.println(String.join(" | ", this.columns));
+        for (List<String> row: this.data) {
+            System.out.println(String.join(" | ", row));
+        }
+        return value;
     }
 }

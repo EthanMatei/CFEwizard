@@ -2,6 +2,7 @@ package cfe.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,7 +81,30 @@ public class DataTableTest {
 	    Assert.assertEquals(2, dataTable.getIndexSize());
 	    Assert.assertEquals("value4", dataTable.getValue(1, 1));
 
-	    /*
+	    // System.out.println(dataTable);
+	    
+	    dataTable.replaceColumnValues("value", "xyz", "abc");
+	    Assert.assertEquals("abc", dataTable.getValue(0, "value"));
+	    Assert.assertEquals("abc", dataTable.getValue(0, 1));
+	    
+	    Map<String,Integer> columnMap = dataTable.getColumnMap("value");
+	    Assert.assertEquals(2, columnMap.size());
+	    Assert.assertEquals(0, columnMap.get("abc").intValue());
+	    Assert.assertEquals(1, columnMap.get("value4").intValue());
+	    
+	    Map<String, Integer> columnNameMap = dataTable.getColumnNameMap();
+	    Assert.assertEquals(2,  columnNameMap.size());
+	    Assert.assertEquals(0, columnNameMap.get("id").intValue());
+	    Assert.assertEquals(1,  columnNameMap.get("value").intValue());
+	    
+	    //System.out.println(columnNameMap);
+	    
+	    // System.out.println(columnMap);
+
+	    // System.out.println();
+	    System.out.println(dataTable);
+	       
+        /*
 	    for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
 	        System.out.println(dataTable.getRow(i));
 	    } 

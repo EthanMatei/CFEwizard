@@ -44,3 +44,12 @@ Scenario: Literature database upload
     And I check checkbox with value "NHGENE"
     And I check checkbox with value "NHPER"
     And I click on submit "Next"
+    And I specify file "ms-access/HUBRAIN (NJ 10-30-2013).accdb" for input "Human Brain:"
+    And I specify file "ms-access/HUGEN (NJ 11-1-2013).accdb" for input "Human Genetic:"
+    And I specify file "ms-access/HUPER (NJ 11-1-2013).accdb" for input "Human Peripheral:"
+    And I specify file "ms-access/NHBRAIN (NJ 11-1-2013).accdb" for input "NonHuman Brain:"
+    And I specify file "ms-access/NHGEN (NJ 11-1-2013).accdb" for input "NonHuman Genetic:"
+    And I specify file "ms-access/NHPER (NJ 10-30-2013).accdb" for input "NonHuman Peripheral:"
+    And I click on submit "Upload"
+
+

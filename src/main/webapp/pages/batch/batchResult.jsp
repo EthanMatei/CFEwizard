@@ -235,7 +235,7 @@ $( document ).ready(function() {
             <td>
                 <s:a action="CfeResultsXlsxDisplay" title="Validation Scores Results">
                     <s:param name="cfeResultsId" value="validationScoresResultsId" />
-                    <s:param name="fileName" value="'validarion-scores-results.xlsx'" />
+                    <s:param name="fileName" value="'validation-scores-results.xlsx'" />
                     validation-scores-results.xlsx
                 </s:a>
             </td>

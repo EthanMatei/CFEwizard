@@ -55,11 +55,14 @@ public class WebUtil {
     
     public static HtmlInput getFirstSubmitByValue(HtmlPage page, String value) {
         HtmlInput submit = null;
-        List<Object> objects = page.getByXPath("/html/body//form//input[@type='submit' and @value='" + value + "']");
-        if (objects.size() > 0) {
-            Object object = objects.get(0);
+        //List<Object> objects = page.getByXPath("/html/body//form//input[@type='submit' and @value='" + value + "']");
+        List<Object> objects = page.getByXPath("/html/body//form//input[@type='submit']");
+        //if (objects.size() > 0) {
+        for (Object object: objects) {
+            //Object object = objects.get(0);
             if (object instanceof HtmlInput) {
                 submit = (HtmlInput) object;
+                //if (submit.getValue().trim()
             }
         }
         return submit;

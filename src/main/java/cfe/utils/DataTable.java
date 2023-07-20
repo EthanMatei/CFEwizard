@@ -623,6 +623,23 @@ public class DataTable {
 	}
 
     
+    public void deleteColumns(List<String> columnNames) throws Exception {
+        Map<String, Integer> map = this.getColumnNameMap();
+        List<Integer> columnIndexes = new ArrayList<Integer>();
+        
+        for (String columnName: columnNames) {
+            if (map.containsKey(columnName)) {
+                columnIndexes.add(map.get(columnName));
+            }
+        }
+        
+        Collections.sort(columnIndexes);
+        
+        for (int columnIndex = columnIndexes.size() - 1; columnIndex >= 0; columnIndex--) {
+            this.deleteColumn(columnIndex);
+        }
+    }
+    
 	public void renameColumn(String originalColumnName, String newColumnName) throws Exception {
 	    int columnIndex = this.getColumnIndex(originalColumnName);
 	    if (columnIndex < 0) {
@@ -1573,6 +1590,46 @@ public class DataTable {
            }
        }
        return rowIndex;
+    }
+  
+    /**
+     * Returns a map for the specified column from the column value to row index.
+     * 
+     * @param columnName The column for which the map is to be created.
+     * 
+     * @return Map froom specified column's values to row indexes
+     */
+    public Map<String, Integer> getColumnMap(String columnName) throws Exception {
+        Map<String, Integer> columnMap = new HashMap<String, Integer>();
+        
+        int columnIndex = this.getColumnIndex(columnName);
+        if (columnIndex < 0) {
+            throw new Exception("Column name \"" + columnName + "\" not found for creating column map.");
+        }
+        
+        // Note: start rowNum at 1 (instead of 0) to skip the header
+        for (int rowNum = 1; rowNum < this.data.size(); rowNum++) {
+            List<String> row = data.get(rowNum);
+            String columnValue = row.get(columnIndex);
+            columnMap.put(columnValue, rowNum);
+        }
+        
+        return columnMap;
+    }
+    
+    /**
+     * Gets a map from the column name to column index.
+     *
+     * @return
+     */
+    public Map<String, Integer> getColumnNameMap() {
+        Map<String, Integer> columnNameMap = new HashMap<String, Integer>();
+        List<String> header = this.data.get(0);
+        for (int colNum = 0; colNum < header.size(); colNum++) {
+            String columnName = header.get(colNum);
+            columnNameMap.put(columnName, colNum);
+        }
+        return columnNameMap;
     }
     
     /**

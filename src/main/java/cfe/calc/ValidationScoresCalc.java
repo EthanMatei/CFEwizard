@@ -653,15 +653,17 @@ public class ValidationScoresCalc {
             throw new Exception("Validation scoring data input error: " + exception.getLocalizedMessage());
         }
         
-	    FileReader filereader = new FileReader(geneExpressionCsvFile);
-        CSVReader csvReader = new CSVReader(filereader);
+	    FileReader geneExpressionFileReader = new FileReader(geneExpressionCsvFile);
+        CSVReader geneExpressionCsvReader = new CSVReader(geneExpressionFileReader);
         
-        String[] header = csvReader.readNext();
+        String[] header = geneExpressionCsvReader.readNext();
         
         String headerString = String.join(", ", header);
         log.info("Gene expression file header: " + headerString);
         
+        //---------------------------------------------------
         // Create map from probesets to predictors
+        //---------------------------------------------------
         HashMap<String,String> probesetToPredictorMap = new HashMap<String,String>();
         List<String> columns = masterSheet.getColumnNames();
         for (String column: columns) {
@@ -685,11 +687,26 @@ public class ValidationScoresCalc {
             log.info("    MAP PROBESET: " + probeset + " -> " + probesetToPredictorMap.get(probeset));    
         }
         
+        // Create a map for he master sheet for the "Biomarker" column (which contains pheneVisit values) to row index
+        Map<String, Integer> pheneVisitToRowNumMap = masterSheet.getColumnMap("Biomarker");
+        
+        // For keeping track of predictors that have no gene expression values;
+        // these should be delete from the master sheet
+        List<String> predictorsToDelete = new ArrayList<String>();
+        
         String[] row;
         int numberOfDataRows = 0;
         int numberOfPredictorsFound = 0;
-        while ((row = csvReader.readNext()) != null) {
+        // Gene expression file:
+        //
+        // ID        | pheneVisit1 | pheneVisit2 | pheneVisit3 ...
+        // ----------+-------------+-------------+------------
+        // probeset1 | value       | value       | value
+        // probeset2 | value       | value       | value
+        // ...
+        while ((row = geneExpressionCsvReader.readNext()) != null) {
             numberOfDataRows++;
+            
             // String rowString = String.join(", ", row);
             // log.info("GENE EXPRESSION ROW: " + rowString);
             
@@ -699,33 +716,54 @@ public class ValidationScoresCalc {
 
             String predictor = probesetToPredictorMap.get(probeset);
 
-            log.info("    PROBESET: " + probeset + "    - PREDICTOR: " + predictor);
+            //log.info("    PROBESET: " + probeset + "    - PREDICTOR: " + predictor);
             
             if (predictor != null && !predictor.isEmpty()) {
-                log.info("        predictor found for probeset");
+                //log.info("        predictor found for probeset");
                 numberOfPredictorsFound++;
+                
+                // Predictor is from map, and should already have replacement
+                //predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+                //predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
+                
+                int valueCount = 0;
+                // For each phene-visit in a probeset row in the gene expression file
                 for (int i = 1; i < row.length; i++) {
                     String pheneVisit = header[i];
                     String value = row[i];
-                    
-                    predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
-                    predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
+                
+                    // Moved outside of loop:
+                    //predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+                    //predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
 
                     // Set mastersheet values
                     //
                     // ... Biomarker     <gene>biom<probeset>  <gene>biom<probeset> ...
                     // ... <phene-visit> <value>               <value>
                     // ... <phene-visit> <value>               <value>
-                    int rowIndex = masterSheet.getRowIndex("Biomarkers", pheneVisit);
-                    if (rowIndex >= 0) {
-                        masterSheet.setValue(rowIndex, predictor, value);    
+                    
+                    //int rowIndex = masterSheet.getRowIndex("Biomarkers", pheneVisit);
+                    Integer rowIndex = pheneVisitToRowNumMap.get(pheneVisit);
+                    
+                    //if (rowIndex >= 0) {
+                    if (rowIndex != null && rowIndex > 0) {
+                        masterSheet.setValue(rowIndex, predictor, value);
+                        if (value != null || !value.trim().isEmpty()) {
+                            valueCount++;
+                        }
                     }
+                }
+                if (valueCount == 0) {
+                    predictorsToDelete.add(predictor);
                 }
             } else {
                 log.info("        predictor NOT found for probset");
             }
         }
-        csvReader.close();
+        geneExpressionCsvReader.close();
+        
+        // Delete the predictors for which there are no values from the master sheet
+        masterSheet.deleteColumns(predictorsToDelete);
         
         log.info("Number of data rows for gene expression file for validation master sheet creation: " + numberOfDataRows);
         log.info("Number of predictors found for gene expression file for validation master sheet creation: " + numberOfPredictorsFound);

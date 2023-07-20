@@ -32,7 +32,7 @@ public class WebUtil {
             if (domLabelElement instanceof HtmlLabel) {
                 HtmlLabel labelElement = (HtmlLabel) domLabelElement;
 
-                if (labelElement.getTextContent().equals(label)) {
+                if (labelElement.getTextContent().trim().equals(label)) {
                     String id = labelElement.getAttribute("for");
                     if (id != null) {
                         domElement = page.getElementById(id);
@@ -62,7 +62,12 @@ public class WebUtil {
             //Object object = objects.get(0);
             if (object instanceof HtmlInput) {
                 submit = (HtmlInput) object;
-                //if (submit.getValue().trim()
+
+                if (submit.getValue().trim().equals(value)) {
+                    break;  // found
+                } else {
+                    submit = null; // this was not it
+                }
             }
         }
         return submit;
@@ -85,6 +90,10 @@ public class WebUtil {
     
     public static boolean tablesMatch(HtmlTable webTable, DataTable dataTable) throws Exception {
         boolean match = false;
+        
+        if (webTable == null) {
+            throw new Exception("Not web table provided.");    
+        }
         
         List<HtmlTableRow> webRows = webTable.getRows();
         List<List<String>> dataRows = dataTable.asLists();
@@ -120,11 +129,13 @@ public class WebUtil {
     public static HtmlTable getTableWithHeader(HtmlPage page, String[] header) {
         HtmlTable table = null;
         List<Object> tableObjects = page.getByXPath("/html/body//table");
+
         for (Object object: tableObjects) {
             if (object instanceof HtmlTable) {
                 table = (HtmlTable) object;
                 HtmlTableRow row = table.getRow(0);
                 List<HtmlTableCell> cells = row.getCells();
+
                 if (cells.size() == header.length) {
                     int i = 0;
                     for (HtmlTableCell cell: cells) {

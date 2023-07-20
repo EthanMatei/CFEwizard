@@ -123,6 +123,8 @@ public class StepDefinitions {
         HtmlFileInput fileInput = WebUtil.getFileInputByLabel(this.page, input);
         if (fileInput != null) {
             fileInput.setValue(filePath);
+        } else {
+            throw new Exception("Can't find file upload input: \"" + input + "\".");
         }
     }
     

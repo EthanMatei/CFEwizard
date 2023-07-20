@@ -51,5 +51,27 @@ Scenario: Literature database upload
     And I specify file "ms-access/NHGEN (NJ 11-1-2013).accdb" for input "NonHuman Genetic:"
     And I specify file "ms-access/NHPER (NJ 10-30-2013).accdb" for input "NonHuman Peripheral:"
     And I click on submit "Upload"
+    When I click on link "CFE Database Status"
+    Then I should see table
+        | MS Access Table   | CFE MySQL Table | CFE MySQL Table Rows |
+        | HUBRAIN-GEX       | hubraingex      |                    0 |
+        | HUBRAIN-MET       | hubrainmet      |                    1 |
+        | HUBRAIN-PROT      | hubrainprot     |                  605 |
+        | HUGEN-ASSOCIATION | hugeneassoc     |                8,091 |
+        | HUGEN-CNV         | hugenecnv       |                  699 |
+        | HUGEN-LINKAGE     | hugenelinkage   |                    0 |
+        | HUPER-GEX         | hupergex        |                    0 |
+        | HUPER-MET         | hupermet        |                    1 |
+        | HUPER-PROT        | huperprot       |                  459 |
+        | NHBRAIN-GEX       | nhbraingex      |                    0 |
+        | NHBRAIN-MET       | nhbrainmet      |                    1 |
+        | NHBRAIN-PROT      | nhbrainprot     |                  119 |
+        | NHGEN-ASSOCIATION | nhgeneassoc     |                  243 |
+        | NHGEN-CNV         | nhgenecnv       |                    1 |
+        | NHGEN-LINKAGE     | nhgenelinkage   |                    0 |
+        | NHPER-GEX         | nhpergex        |                    0 |
+        | NHPER-MET         | nhpermet        |                    1 |
+        | NHPER-PROT        | nhperprot       |                   47 |
+    But I should not see "Error:"
 
 

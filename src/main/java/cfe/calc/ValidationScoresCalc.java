@@ -122,6 +122,7 @@ public class ValidationScoresCalc {
             String validationDiagnosisType,
             File geneExpressionCsv
     ) throws Exception {
+	    long startTime = System.nanoTime();
 
 	    log.info("Validation scoring phase started");
 
@@ -269,8 +270,15 @@ public class ValidationScoresCalc {
 	        this.validationScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
 	        log.info("Validation Scoring Command: " + this.validationScoringCommand);
 
+	        //-------------------------------------------------------
+	        // Run the Validation R script and collect timing data
+	        //-------------------------------------------------------
+	        long scriptStartTime = System.nanoTime();
 	        this.scriptOutput = this.runCommand(rScriptCommand);
-
+            long scriptEndTime = System.nanoTime();
+            long duration = (scriptEndTime - scriptStartTime) / 1000000000;
+            log.info("TIMING DATA. Validation R script time: " + duration + " seconds.");
+            
 	        // Set generate time
 	        this.scoresGeneratedTime = new Date();
 
@@ -473,6 +481,11 @@ public class ValidationScoresCalc {
 	            throw new Exception(message, exception);
 	        }
 	    }
+	    
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000000;
+        log.info("TIMING DATA. Validation calculate time: " + duration + " seconds.");
+        
 	    return cfeResults;
 	}
 
@@ -482,6 +495,8 @@ public class ValidationScoresCalc {
             File geneExpressionCsvFile,
             String diagnosisType
     ) throws Exception {
+        
+        long startTime = System.nanoTime();
 
         this.geneExpressionCsv = geneExpressionCsvFile;
         
@@ -538,10 +553,16 @@ public class ValidationScoresCalc {
         }
         log.info("Predictor List file in validation scoring specification: \"" + predictorListFileName + "\" created.");   
 
+        //----------------------------------------------------------------------
+        // Add predictor list and master sheet file names to return variable
+        //----------------------------------------------------------------------
         fileNames.add(0,predictorListFileName);
         
-    
         fileNames.add(1, validationMasterSheetFileName);
+ 
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000000;
+        log.info("TIMING DATA. Validation master sheet and predictor list creation time: " + duration + " seconds.");
         
         return fileNames; // [0] => predictorListFileName, [1] => masterSheetFileName
     }
@@ -581,6 +602,8 @@ public class ValidationScoresCalc {
 	public String createValidationMasterSheet(Long validationDataId, String diagnosisType, DataTable predictorList, File geneExpressionCsvFile)
 	        throws Exception
 	{
+        long startTime = System.nanoTime();
+        
 	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
         
 	    CfeResults cfeResults = CfeResultsService.get(validationDataId);
@@ -654,6 +677,7 @@ public class ValidationScoresCalc {
         //---------------------------------------------------------------------------
         try {
             GeneExpressionFile.checkFile(geneExpressionCsvFile);
+            log.info("Gene expression file test successful.");
         }
         catch (Exception exception) {
             throw new Exception("Validation scoring data input error: " + exception.getLocalizedMessage());
@@ -689,12 +713,14 @@ public class ValidationScoresCalc {
             }
         }
         
-        for (String probeset: probesetToPredictorMap.keySet()) {
-            log.info("    MAP PROBESET: " + probeset + " -> " + probesetToPredictorMap.get(probeset));    
-        }
+        log.info("probeset to predictor map created.");
+        
+        //for (String probeset: probesetToPredictorMap.keySet()) {
+        //    log.info("    MAP PROBESET: " + probeset + " -> " + probesetToPredictorMap.get(probeset));    
+        //}
         
         // Create a map for he master sheet for the "Biomarker" column (which contains pheneVisit values) to row index
-        Map<String, Integer> pheneVisitToRowNumMap = masterSheet.getColumnMap("Biomarker");
+        Map<String, Integer> pheneVisitToRowNumMap = masterSheet.getColumnMap("Biomarkers");
         
         // For keeping track of predictors that have no gene expression values;
         // these should be delete from the master sheet
@@ -712,6 +738,10 @@ public class ValidationScoresCalc {
         // ...
         while ((row = geneExpressionCsvReader.readNext()) != null) {
             numberOfDataRows++;
+            
+            if (numberOfDataRows % 1000 == 0) {
+                log.info("Number of gene expression data rows processed: " + numberOfDataRows);
+            }
             
             // String rowString = String.join(", ", row);
             // log.info("GENE EXPRESSION ROW: " + rowString);
@@ -767,6 +797,8 @@ public class ValidationScoresCalc {
             }
         }
         geneExpressionCsvReader.close();
+        
+        log.info("Gene expression file processed.");
 
         if (diagnosisType.equals(DiagnosisType.GENDER)) {
             int columnIndex = masterSheet.getColumnIndex("dx");
@@ -775,6 +807,8 @@ public class ValidationScoresCalc {
             }
             masterSheet.replaceColumnValues("dx", "M", "M-M");
             masterSheet.replaceColumnValues("dx", "F", "F-F");
+            
+            log.info("Gender based scoring dx column replacement completed.");
         }
         
         // Delete the predictors for which there are no values from the master sheet
@@ -800,13 +834,19 @@ public class ValidationScoresCalc {
             throw new Exception("Unable to create validation mastersheet.");
         }
         
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000000;
+        log.info("TIMING DATA. Validation master sheet creation time: " + duration + " seconds.");
+        
         return validationMasterSheetCsvTmp.getAbsolutePath();
 	}
 
 	
 	public DataTable createPredictorList(Long validationDataId, String diagnosisType /*, Long prioritizationId*/) throws Exception
 	{
-	    ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
+        long startTime = System.nanoTime();
+	    
+        ZipSecureFile.setMinInflateRatio(0.001);   // Get an error if this is not included
 
 	    TreeMap<String,Double> prioritizationScores = this.getPrioritizationScores(validationDataId /* prioritizationId */);
 
@@ -844,10 +884,10 @@ public class ValidationScoresCalc {
         predictorList.addColumn("Male", "");
         predictorList.addColumn("Female", "");
         
-        if (diagnosisType.equals(DiagnosisType.GENDER)) {
-            predictorList.addColumn("M", "");
-            predictorList.addColumn("F", "");
-        }
+        //if (diagnosisType.equals(DiagnosisType.GENDER)) {
+        //    predictorList.addColumn("M", "");
+        //    predictorList.addColumn("F", "");
+        //}
         
         // OLD (hard coded):
         //predictorList.addColumn("BP", "");
@@ -942,6 +982,10 @@ public class ValidationScoresCalc {
                 predictorList.addRow(row);
             }
         }
+        
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000000;
+        log.info("TIMING DATA. Validation predictor list creation time: " + duration + " seconds.");
         
         return predictorList;
 	}

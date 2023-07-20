@@ -1,48 +1,14 @@
 package cfe.action;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.poi.openxml4j.util.ZipSecureFile;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.struts2.interceptor.SessionAware;
-
-import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
-import com.healthmarketscience.jackcess.Table;
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.model.CfeResults;
-import cfe.model.VersionNumber;
-import cfe.parser.DiscoveryDatabaseParser;
-import cfe.parser.PheneVisitParser;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
-import cfe.utils.CohortDataTable;
-import cfe.utils.CohortTable;
-import cfe.utils.ColumnInfo;
-import cfe.utils.DataTable;
-import cfe.utils.WebAppProperties;
 
 /**
  * Action for deleting previously calculated discovery results.
@@ -81,7 +47,7 @@ public class CfeResultsDeleteAction extends BaseAction implements SessionAware {
 	    return result;
 	}
 
-	public void setSession(Map<String, Object> session) {
+	public void withSession(Map<String, Object> session) {
 		this.webSession = session;
 		
 	}

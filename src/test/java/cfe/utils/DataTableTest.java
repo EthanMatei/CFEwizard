@@ -42,25 +42,21 @@ public class DataTableTest {
 	}
 	
 	@Test
-	public void testIndex() throws Exception {
-	    DataTable dataTable = new DataTable("id");
-	    Assert.assertNotNull("Data table constructor test", dataTable);
+	public void testCreateDataTableWithIndex() throws Exception {
+	    DataTable dataTable = this.createTestDataTableWithKey();
 	    
-	    dataTable.addColumn("id", "");
-	    dataTable.addColumn("value", "");
-	    
-	    String[] row1 = {"k1", "abc"};
-	    dataTable.addRow(row1);
-	    
-	    String[] row2 = {"k2", "def"};
-	    dataTable.addRow(row2);
-	    
-	    String[] row3 = {"k3", "ghi"};
-	    dataTable.addRow(row3);
+	    Assert.assertNotNull("Data table createion test", dataTable);
 	    
 	    Assert.assertEquals(2, dataTable.getNumberOfColumns());
 	    Assert.assertEquals(3, dataTable.getNumberOfRows());
 	    
+	    String value = dataTable.getValue("k2", "value"); // get value for column "value" where key = "k2"
+	    Assert.assertEquals("def", value);   
+	}
+	
+	public void testAddDeleteRows() throws Exception {
+	    DataTable dataTable = this.createTestDataTableWithKey();
+	       
 	    dataTable.deleteRows("id", "k2");
 	    Assert.assertEquals(2, dataTable.getNumberOfRows());
 	    Assert.assertEquals(2, dataTable.getIndexSize());
@@ -82,15 +78,23 @@ public class DataTableTest {
 	    Assert.assertEquals("value4", dataTable.getValue(1, 1));
 
 	    // System.out.println(dataTable);
-	    
-	    dataTable.replaceColumnValues("value", "xyz", "abc");
-	    Assert.assertEquals("abc", dataTable.getValue(0, "value"));
-	    Assert.assertEquals("abc", dataTable.getValue(0, 1));
-	    
+	}
+	
+	public void testReplace() throws Exception {
+	    DataTable dataTable = this.createTestDataTableWithKey();
+           
+	    dataTable.replaceColumnValues("value", "abc", "xyz");
+	    Assert.assertEquals("xyz", dataTable.getValue(0, "value"));
+	    Assert.assertEquals("xyz", dataTable.getValue(0, 1));   
+	}
+	
+	public void testMaps() throws Exception {
+        DataTable dataTable = this.createTestDataTableWithKey();
+        
 	    Map<String,Integer> columnMap = dataTable.getColumnMap("value");
-	    Assert.assertEquals(2, columnMap.size());
+	    Assert.assertEquals(3, columnMap.size());
 	    Assert.assertEquals(0, columnMap.get("abc").intValue());
-	    Assert.assertEquals(1, columnMap.get("value4").intValue());
+	    Assert.assertEquals(2, columnMap.get("ghi").intValue());
 	    
 	    Map<String, Integer> columnNameMap = dataTable.getColumnNameMap();
 	    Assert.assertEquals(2,  columnNameMap.size());
@@ -113,5 +117,23 @@ public class DataTableTest {
 	        System.out.println("Key: " + key + " Value: " + "    Row: " + dataTable.getRow(key));
 	    }
 	    */
+	}
+	
+	public DataTable createTestDataTableWithKey() throws Exception {
+	    DataTable dataTable = new DataTable("id");
+	    
+	    dataTable.addColumn("id", "");
+	    dataTable.addColumn("value", "");
+	        
+	    String[] row1 = {"k1", "abc"};
+	    dataTable.addRow(row1);
+	        
+	    String[] row2 = {"k2", "def"};
+	    dataTable.addRow(row2);
+	        
+	    String[] row3 = {"k3", "ghi"};
+	    dataTable.addRow(row3);
+	        
+	    return dataTable;
 	}
 }

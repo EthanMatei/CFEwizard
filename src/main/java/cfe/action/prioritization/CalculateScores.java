@@ -6,18 +6,13 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.struts2.interceptor.SessionAware;
-
+import org.apache.struts2.action.SessionAware;
 
 import cfe.action.BaseAction;
-
 import cfe.enums.prioritization.Scores;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFile;
@@ -187,15 +182,15 @@ public class CalculateScores extends BaseAction implements SessionAware {
 		this.scores = scores;
 	}
 	
-
+    public void withSession(Map<String, Object> session) {
+        this.session = session;
+        
+    }
 
 	//---------------------------------------------------------------------
 	// Getters and Setters
 	//---------------------------------------------------------------------
-	public void setSession(Map<String, Object> session) {
-		this.session = session;
-		
-	}
+
 	public Map<String, Object> getSession() {
 		return session;
 	}

@@ -2,28 +2,23 @@ package cfe.action.prioritization;
 
 import java.io.File;
 import java.io.FileReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
-
-import cfe.action.BaseAction;
-import cfe.action.CfeResultsAction;
-import cfe.enums.prioritization.Scores;
-import cfe.model.prioritization.Disorder;
-import cfe.model.prioritization.disease.DiseaseSelector;
-import cfe.services.prioritization.DisorderService;
-import cfe.services.ServiceException;
-import cfe.utils.Authorization;
+import org.apache.struts2.action.SessionAware;
 
 import com.opencsv.CSVReader;
 import com.opensymphony.xwork2.ModelDriven;
+
+import cfe.action.BaseAction;
+import cfe.enums.prioritization.Scores;
+import cfe.model.prioritization.Disorder;
+import cfe.model.prioritization.disease.DiseaseSelector;
+import cfe.services.ServiceException;
+import cfe.services.prioritization.DisorderService;
+import cfe.utils.Authorization;
 
 // http://stackoverflow.com/questions/3044447/iterating-over-hashmap-in-jsp-in-struts-application
 public class DiseaseSelectionAction extends BaseAction implements ModelDriven<List<DiseaseSelector>>, SessionAware {
@@ -223,6 +218,10 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 		return result;
 	}
 
+    public void withSession(Map<String, Object> session) {
+        this.session = session;
+        
+    }
 	
 	//-----------------------------------------------------------------
 	// Getters and Setters
@@ -251,10 +250,6 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 		this.otherCompleted = otherCompleted;
 	}
 
-	public void setSession(Map<String, Object> session) {
-		this.session = session;
-		
-	}
 
 	public List<Disorder> getDisorders() {
 		return disorders;

@@ -1,21 +1,16 @@
 package cfe.action.prioritization;
 
 
-import java.io.File;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.action.BaseAction;
-
 import cfe.enums.prioritization.Scores;
 import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.Score;
@@ -110,24 +105,26 @@ public class ScoreDetail extends BaseAction implements SessionAware {
 			addActionError( "Score calculation for " + this.score + " is currently not supported." );
 
 	}
-
-	public Map<String, ScoreResults> getScores() {
-		return scores;
-	}
-
-	public void setScores(Map<String, ScoreResults> scores) {
-		this.scores = scores;
-	}
+    
 	
+	public void withSession(Map<String, Object> session) {
+        this.session = session;
+        
+    }
 
 
 	//---------------------------------------------------------------------
 	// Getters and Setters
 	//---------------------------------------------------------------------
-	public void setSession(Map<String, Object> session) {
-		this.session = session;
-		
-	}
+    
+    public Map<String, ScoreResults> getScores() {
+        return scores;
+    }
+
+    public void setScores(Map<String, ScoreResults> scores) {
+        this.scores = scores;
+    }
+    
 	public Map<String, Object> getSession() {
 		return session;
 	}

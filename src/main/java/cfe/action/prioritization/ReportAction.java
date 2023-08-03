@@ -1,16 +1,15 @@
 package cfe.action.prioritization;
 
-import java.io.*;
-import java.sql.*;
-import java.util.HashMap;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.action.SessionAware;
 
+import cfe.action.ActionErrorException;
+//import com.i2iconnect.model.SessionInfo;
 import cfe.action.BaseAction;
 import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.ScoreResults;
@@ -20,16 +19,6 @@ import cfe.model.prioritization.reports.ReportGenerator;
 import cfe.model.prioritization.results.Results;
 import cfe.utils.Authorization;
 import cfe.utils.Filter;
-import cfe.action.ActionErrorException;
-//import com.i2iconnect.model.SessionInfo;
-
-//import com.i2iconnect.model.User;
-//import com.i2iconnect.model.reports.ReportGenerator;
-
-
-import cfe.dao.prioritization.ScoringDataDao;
-
-import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * Struts2 action for displaying Excel scoring reports
@@ -43,8 +32,7 @@ public class ReportAction extends BaseAction implements SessionAware {
 	private Log log = LogFactory.getLog(ReportAction.class);
 	
 
-    @SuppressWarnings("unchecked")
-    private Map session;
+    private Map<String, Object> session;
 
     private String reportName;
     private String reportFileName;
@@ -76,8 +64,7 @@ public class ReportAction extends BaseAction implements SessionAware {
         year  = 0;
     }
     
-    @SuppressWarnings("unchecked")
-    public void setSession(Map session) {
+    public void withSession(Map<String, Object> session) {
     	this.session = session;
     }    
 	

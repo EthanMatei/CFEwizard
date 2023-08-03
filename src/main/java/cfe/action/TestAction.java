@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.model.PercentileScore;
 import cfe.model.PercentileScores;
@@ -37,7 +37,7 @@ public class TestAction extends BaseAction implements SessionAware {
 	private Date minimumGeneratedTime;
 	
 	@Override
-	public void setSession(Map<String, Object> session) {
+	public void withSession(Map<String, Object> session) {
 		this.session = session;
 	}
     

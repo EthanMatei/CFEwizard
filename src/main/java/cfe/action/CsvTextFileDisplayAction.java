@@ -1,24 +1,18 @@
 package cfe.action;
 
-import java.io.*;
-import java.net.URLDecoder;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.action.SessionAware;
 
-
-import cfe.action.ActionErrorException;
 import cfe.utils.Authorization;
-import cfe.utils.Filter;
 
 /**
  * Struts2 action for displaying text files.
@@ -32,8 +26,7 @@ public class CsvTextFileDisplayAction extends BaseAction implements SessionAware
 	private Log log = LogFactory.getLog(CsvTextFileDisplayAction.class);
 	
 
-    @SuppressWarnings("unchecked")
-    private Map session;
+    private Map<String, Object> session;
 
     private String textFilePath;
     private String textFileName;
@@ -52,8 +45,7 @@ public class CsvTextFileDisplayAction extends BaseAction implements SessionAware
         fileStream      = null;
     }
     
-    @SuppressWarnings("unchecked")
-    public void setSession(Map session) {
+    public void withSession(Map session) {
     	this.session = session;
     }    
 	

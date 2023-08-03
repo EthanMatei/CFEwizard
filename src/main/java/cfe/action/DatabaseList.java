@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.model.DatabaseUploadInfo;
 import cfe.services.DatabaseUploadInfoService;
@@ -43,7 +43,7 @@ public class DatabaseList extends BaseAction implements SessionAware {
 	
 
 
-	public void setSession(Map<String, Object> session) {
+	public void withSession(Map<String, Object> session) {
 		this.webSession = session;
 		
 	}

@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.utils.Authorization;
 import cfe.utils.WebAppProperties;
@@ -18,6 +18,7 @@ import cfe.utils.WebAppProperties;
  * Action class for displaying system information.
  * 
  * @author Michel Tavares
+ * @author Jim Mullen
  *
  */
 public class SystemStatusAction extends BaseAction implements SessionAware {
@@ -87,7 +88,7 @@ public class SystemStatusAction extends BaseAction implements SessionAware {
         return result;
     }
 
-	public void setSession(Map<String, Object> session) {
+	public void withSession(Map<String, Object> session) {
 		this.webSession = session;
 		
 	}

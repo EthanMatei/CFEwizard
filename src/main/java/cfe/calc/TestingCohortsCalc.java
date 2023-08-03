@@ -16,28 +16,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.struts2.interceptor.SessionAware;
 
 import com.healthmarketscience.jackcess.Table;
 
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
-import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.VersionNumber;
 import cfe.parser.AccessDatabaseParser;
 import cfe.services.CfeResultsService;
-import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
-import cfe.utils.PheneCondition;
 import cfe.utils.WebAppProperties;
 
 public class TestingCohortsCalc {

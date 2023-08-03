@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,27 +18,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.struts2.interceptor.SessionAware;
 
 import com.opencsv.CSVReader;
 
-import cfe.enums.StudyType;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
-import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.DiagnosisType;
-import cfe.model.ScriptRunInfo;
 import cfe.model.VersionNumber;
 import cfe.services.CfeResultsService;
-import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;

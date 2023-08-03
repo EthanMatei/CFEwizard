@@ -1,24 +1,12 @@
 package cfe.action;
 
-import java.io.*;
-import java.net.URLDecoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.action.SessionAware;
 
-
-import cfe.action.ActionErrorException;
 import cfe.utils.Authorization;
-import cfe.utils.Filter;
 
 /**
  * Struts2 action for displaying script results.
@@ -32,8 +20,7 @@ public class ScriptResultsDisplayAction extends BaseAction implements SessionAwa
 	private Log log = LogFactory.getLog(ScriptResultsDisplayAction.class);
 	
 
-    @SuppressWarnings("unchecked")
-    private Map session;
+    private Map<String, Object> session;
     
     private String scriptCommand;
     private String scriptOutput;
@@ -43,8 +30,7 @@ public class ScriptResultsDisplayAction extends BaseAction implements SessionAwa
         this.scriptOutput  = "";
     }
     
-    @SuppressWarnings("unchecked")
-    public void setSession(Map session) {
+    public void withSession(Map<String, Object> session) {
     	this.session = session;
     }    
 	

@@ -4,7 +4,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
+
 
 /**
  * Struts2 action class for login initialization.
@@ -23,7 +24,7 @@ public class LoginAction extends BaseAction implements SessionAware {
 	private String password;
 	
 	@Override
-	public void setSession(Map<String, Object> session) {
+	public void withSession(Map<String, Object> session) {
 			this.session = session;
 	}
 	

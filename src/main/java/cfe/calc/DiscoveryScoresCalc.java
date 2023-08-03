@@ -2,17 +2,11 @@ package cfe.calc;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,39 +18,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.struts2.interceptor.SessionAware;
 
-import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
-import com.opencsv.CSVReader;
 
 import cfe.model.CfeResults;
-import cfe.model.CfeResultsFile;
 import cfe.model.CfeResultsFileType;
-import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsSheets;
 import cfe.model.CfeResultsType;
 import cfe.model.PercentileScores;
 import cfe.model.VersionNumber;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.parser.ProbesetMappingParser;
-import cfe.services.CfeResultsFileService;
 import cfe.services.CfeResultsService;
-import cfe.utils.Authorization;
 import cfe.utils.CohortDataTable;
-import cfe.utils.CohortTable;
 import cfe.utils.ColumnInfo;
 import cfe.utils.DataTable;
 import cfe.utils.FileUtil;
 import cfe.utils.GeneExpressionFile;
-import cfe.utils.Util;
 import cfe.utils.WebAppProperties;
 
 public class DiscoveryScoresCalc {

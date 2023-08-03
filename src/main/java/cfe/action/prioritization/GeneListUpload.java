@@ -10,10 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
-
+import org.apache.struts2.action.SessionAware;
 
 import cfe.action.BaseAction;
 import cfe.model.CfeResults;
@@ -298,11 +295,11 @@ public class GeneListUpload extends BaseAction implements SessionAware {
 	    return geneList;
 	}
 	
-
-	@Override
-	public void setSession(Map<String, Object> session) {
+	
+	public void withSession(Map<String, Object> session) {
 		this.session = session;
 	}
+	
 
     public List<CfeResults> getDiscoveryScoringResultsList() {
         return discoveryScoringResultsList;

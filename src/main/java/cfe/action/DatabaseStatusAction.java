@@ -5,7 +5,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.enums.prioritization.Tables;
 import cfe.services.TableInfoService;
@@ -90,7 +90,7 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
         return result;        
     }
 
-	public void setSession(Map<String, Object> session) {
+	public void withSession(Map<String, Object> session) {
 		this.webSession = session;
 		
 	}

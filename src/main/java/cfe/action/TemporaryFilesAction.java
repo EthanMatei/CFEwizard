@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.utils.Authorization;
 import cfe.utils.TemporaryFileInfo;
@@ -81,7 +81,7 @@ public class TemporaryFilesAction extends BaseAction implements SessionAware {
         return result;        
     }
 
-	public void setSession(Map<String, Object> session) {
+	public void withSession(Map<String, Object> session) {
 		this.webSession = session;
 		
 	}

@@ -10,10 +10,9 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.model.CfeResults;
-import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsNewestFirstComparator;
 import cfe.model.CfeResultsType;
 import cfe.services.CfeResultsService;
@@ -150,7 +149,7 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
 	
 
 	
-	public void setSession(Map<String, Object> session) {
+	public void withSession(Map<String, Object> session) {
 		this.webSession = session;
 		
 	}

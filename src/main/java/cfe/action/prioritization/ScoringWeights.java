@@ -5,17 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.interceptor.SessionAware;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.action.BaseAction;
-
-import cfe.dao.prioritization.ScoringDataDao;
 import cfe.utils.Authorization;
-import cfe.utils.HibernateUtils;
 
 /**
  * Struts2 action class for setting global scoring weights.
@@ -153,7 +146,12 @@ public class ScoringWeights extends BaseAction implements SessionAware {
 		
 		return rtn;
 	}
+
 	
+    public void withSession(Map<String, Object> session) {
+        this.userSession = session;
+    }
+    
 	
 	public double getHuGeneAssocScore() {
 		return huGeneAssocScore;
@@ -247,8 +245,5 @@ public class ScoringWeights extends BaseAction implements SessionAware {
     public void setGeneListFileName(String geneListFileName) {
         this.geneListFileName = geneListFileName;
     }
-    @Override
-	public void setSession(Map<String, Object> session) {
-		this.userSession = session;
-	}
+
 }

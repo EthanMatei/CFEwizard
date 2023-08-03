@@ -25,7 +25,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.opencsv.CSVReader;
 
-import cfe.action.TestingDbCheckAction;
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFileType;
 import cfe.model.CfeResultsSheets;
@@ -647,11 +646,12 @@ public class ValidationScoresCalc {
             }
         }
         
-        // Create Biomarkers column (contains pheneVisit as value)
+        // Create Biomarkers column (contains pheneVisit as value) - modified to AffyVisit
 	    masterSheet.addColumn("Biomarkers",  "");
 	    for (int i = 0; i < masterSheet.getNumberOfRows(); i++) {
-	        String pheneVisit = masterSheet.getValue(i, key);
-	        masterSheet.setValue(i, "Biomarkers", pheneVisit);
+	        //String pheneVisit = masterSheet.getValue(i, key);
+	        String affyVisit = masterSheet.getValue(i, "AffyVisit");
+	        masterSheet.setValue(i, "Biomarkers", affyVisit);
 	    }
 	    
 	    // Add predictor columns (combination of gene cards symbol, "biom" and pro)beset)

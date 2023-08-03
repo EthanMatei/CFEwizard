@@ -1,28 +1,16 @@
 package cfe.action;
 
-import java.io.*;
-import java.net.URLDecoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Map;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.struts2.interceptor.SessionAware;
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.action.SessionAware;
 
-import cfe.action.ActionErrorException;
 import cfe.model.CfeResults;
 import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
-import cfe.utils.Filter;
 
 /**
  * Struts2 action for displaying CFE results spreadsheet in .xlsx format
@@ -36,8 +24,7 @@ public class CfeResultsXlsxDisplayAction extends BaseAction implements SessionAw
 	private Log log = LogFactory.getLog(CfeResultsXlsxDisplayAction.class);
 	
 
-    @SuppressWarnings("unchecked")
-    private Map session;
+    private Map<String, Object> session;
 
     private String reportName;
     private Long cfeResultsId;
@@ -62,8 +49,7 @@ public class CfeResultsXlsxDisplayAction extends BaseAction implements SessionAw
         year  = 0;
     }
     
-    @SuppressWarnings("unchecked")
-    public void setSession(Map session) {
+    public void withSession(Map<String, Object> session) {
     	this.session = session;
     }    
 	

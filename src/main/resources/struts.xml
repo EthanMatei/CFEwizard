@@ -640,6 +640,7 @@
 		</action>
 				
 		<!-- Discovery Results XLSX (spreadsheet) file display -->
+		<!--
 		<action name="CfeResultsDiscoveryRScriptLogDisplay" class="cfe.action.CfeResultsDiscoveryRScriptLogDisplayAction" method="view">
 			<interceptor-ref name="basicStack"/>
 		    <result name="success" type="stream">
@@ -652,6 +653,7 @@
                 <param name="actionName">LoginAction</param>
             </result>
 		</action>
+		-->
 		
 		<!-- Script results display -->
 		<action name="ScriptResultsDisplayAction" class="cfe.action.ScriptResultsDisplayAction" method="view">

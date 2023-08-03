@@ -1,26 +1,18 @@
 package cfe.action;
 
-import java.io.*;
-import java.net.URLDecoder;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.struts2.interceptor.SessionAware;
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.action.SessionAware;
 
-import com.opencsv.CSVReader;
-
-import cfe.action.ActionErrorException;
 import cfe.utils.Authorization;
 import cfe.utils.CsvUtil;
 import cfe.utils.Filter;
@@ -37,8 +29,7 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
 	private Log log = LogFactory.getLog(CsvDisplayAction.class);
 	
 
-    @SuppressWarnings("unchecked")
-    private Map session;
+    private Map<String, Object> session;
 
     private String reportName;
     private String csvFilePath;
@@ -67,8 +58,7 @@ public class CsvDisplayAction extends BaseAction implements SessionAware {
         year  = 0;
     }
     
-    @SuppressWarnings("unchecked")
-    public void setSession(Map session) {
+    public void withSession(Map<String, Object> session) {
     	this.session = session;
     }    
 	

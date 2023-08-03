@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.action.SessionAware;
 
 import cfe.model.CfeResults;
 import cfe.model.CfeResultsFile;
@@ -43,8 +43,7 @@ public class CfeResultsFileDisplayAction extends BaseAction implements SessionAw
         fileStream      = null;
     }
     
-    @SuppressWarnings("unchecked")
-    public void setSession(Map session) {
+    public void withSession(Map<String, Object> session) {
     	this.session = session;
     }    
 	

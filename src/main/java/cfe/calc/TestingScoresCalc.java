@@ -877,6 +877,16 @@ public class TestingScoresCalc {
             String predictor = predictorList.getValue(i, "Predictor");
             masterSheetDataTable.addColumn(predictor, "");
         }
+
+        // Set up Affy Visit to row number map for efficiency reasons
+        Map<String, Integer> affyVisitToRowNumMap = new HashMap<String, Integer>();
+        for (int rowNum = 0; rowNum < masterSheetDataTable.getNumberOfRows(); rowNum++) {
+            String affyVisit = masterSheetDataTable.getValue(rowNum, "AffyVisit");
+            affyVisitToRowNumMap.put(affyVisit, rowNum);
+        }
+        
+        log.info("************* AFFY VISIT TO ROW NUM MAP SIZE: " + affyVisitToRowNumMap.size());
+
         
         //---------------------------------------------------------------------------
         // Read in the gene expression CSV file. It has the following format:
@@ -891,13 +901,17 @@ public class TestingScoresCalc {
         String[] header = csvReader.readNext();
         
         // Create map from probesets to predictors
-        HashMap<String,String> probesetToPredictorMap = new HashMap<String,String>();
+        HashMap<String,ArrayList<String>> probesetToPredictorsMap = new HashMap<String,ArrayList<String>>();
         List<String> columns = masterSheetDataTable.getColumnNames();
         
-        for (String column: columns) {
-            
+        Map<String,Integer> columnNameToIndexMap = new HashMap<String, Integer>();
+        
+        for (int columnIndex = 0; columnIndex < masterSheetDataTable.getNumberOfColumns(); columnIndex++) {
+            String column = masterSheetDataTable.getColumnName(columnIndex);
+
             // If this is a predictor
             if (column.contains("biom")) {
+                columnNameToIndexMap.put(column,  columnIndex);
                 String predictor = column;
                 predictor = predictor.replaceAll("/", ValidationScoresCalc.PREDICTOR_SLASH_REPLACEMENT);
                 predictor = predictor.replaceAll("-", ValidationScoresCalc.PREDICTOR_HYPHEN_REPLACEMENT);
@@ -907,7 +921,12 @@ public class TestingScoresCalc {
                 probeset = probeset.replaceAll("/", ValidationScoresCalc.PREDICTOR_SLASH_REPLACEMENT);
                 probeset = probeset.replaceAll("-", ValidationScoresCalc.PREDICTOR_HYPHEN_REPLACEMENT);        
                 
-                probesetToPredictorMap.put(probeset,  predictor);
+                ArrayList<String> predictors = new ArrayList<String>();
+                if (probesetToPredictorsMap.containsKey(probeset)) {
+                    predictors = probesetToPredictorsMap.get(probeset);
+                }
+                predictors.add(predictor);
+                probesetToPredictorsMap.put(probeset, predictors);
             }
         }
         
@@ -918,29 +937,44 @@ public class TestingScoresCalc {
             probeset = probeset.replaceAll("/", ValidationScoresCalc.PREDICTOR_SLASH_REPLACEMENT);
             probeset = probeset.replaceAll("-", ValidationScoresCalc.PREDICTOR_HYPHEN_REPLACEMENT);
             
-            String predictor = probesetToPredictorMap.get(probeset);
+            ArrayList<String> predictors = new ArrayList<String>();
+            if (probesetToPredictorsMap.containsKey(probeset)) {
+                predictors = probesetToPredictorsMap.get(probeset);
+            }
+            
+            for (String predictor: predictors) {
 
-            if (predictor != null && !predictor.isEmpty()) {
-                for (int i = 1; i < row.length; i++) {
-                    String pheneVisit = header[i];
-                    String rowValue = row[i];
-                    
-                    predictor = predictor.replaceAll("/", ValidationScoresCalc.PREDICTOR_SLASH_REPLACEMENT);
-                    predictor = predictor.replaceAll("-", ValidationScoresCalc.PREDICTOR_HYPHEN_REPLACEMENT);
-
-                    // Set mastersheet values
-                    //
-                    // ... Biomarker     <gene>biom<probeset>  <gene>biom<probeset> ...
-                    // ... <phene-visit> <value>               <value>
-                    // ... <phene-visit> <value>               <value>
-                    int rowIndex = masterSheetDataTable.getRowIndex("Subject Identifiers.PheneVisit", pheneVisit);
-                    if (rowIndex >= 0) {
-                        masterSheetDataTable.setValue(rowIndex, predictor, rowValue);    
+                if (predictor != null && !predictor.isEmpty()) {
+                    for (int i = 1; i < row.length; i++) {
+                        String pheneVisit = header[i];
+                        String rowValue = row[i];
+                        
+                        predictor = predictor.replaceAll("/", ValidationScoresCalc.PREDICTOR_SLASH_REPLACEMENT);
+                        predictor = predictor.replaceAll("-", ValidationScoresCalc.PREDICTOR_HYPHEN_REPLACEMENT);
+    
+                        // Set mastersheet values (Note: phene visit values here should actually be affy visits)
+                        //
+                        // ... Biomarker     <gene>biom<probeset>  <gene>biom<probeset> ...
+                        // ... <phene-visit> <value>               <value>
+                        // ... <phene-visit> <value>               <value>
+                        
+                        //int rowIndex = masterSheetDataTable.getRowIndex("Subject Identifiers.PheneVisit", pheneVisit);
+                        //int rowIndex = masterSheetDataTable.getRowIndex("AffyVisit", pheneVisit);
+                        Integer rowIndex = affyVisitToRowNumMap.get(pheneVisit);
+                        if (rowIndex != null && rowIndex >= 0) {
+                            Integer columnIndex = columnNameToIndexMap.get(predictor);
+                            if (columnIndex != null) {
+                                masterSheetDataTable.setValue(rowIndex, columnIndex, rowValue);
+                            }
+                        }
                     }
                 }
             }
+            
         }
         csvReader.close();
+        
+        log.info("Finished processing gene expression file.");
         
         //-----------------------------)--------------------------
         // Write the master sheet to a CSV file
@@ -954,6 +988,8 @@ public class TestingScoresCalc {
         else {
             throw new Exception("Unable to create testing master sheet.");
         }
+        
+        log.info("Testing master sheet CSV File created.");
         
         return testingMasterSheetCsvTmp.getAbsolutePath();
     }
@@ -990,7 +1026,7 @@ public class TestingScoresCalc {
             throw new Exception(message);
         }
         
-        DataTable discoveryScores = new DataTable("Probe Set ID");
+        DataTable discoveryScores = new DataTable();
         discoveryScores.initializeToWorkbookSheet(sheet);
         
         //---------------------------------------------

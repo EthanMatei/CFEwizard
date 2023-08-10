@@ -694,12 +694,17 @@ public class ValidationScoresCalc {
         //---------------------------------------------------
         // Create map from probesets to predictors
         //---------------------------------------------------
-        HashMap<String,String> probesetToPredictorMap = new HashMap<String,String>();
+        HashMap<String,ArrayList<String>> probesetToPredictorsMap = new HashMap<String,ArrayList<String>>();
         List<String> columns = masterSheet.getColumnNames();
-        for (String column: columns) {
-            
+        
+        Map<String,Integer> columnNameToIndexMap = new HashMap<String, Integer>();
+        
+        for (int columnIndex = 0; columnIndex < masterSheet.getNumberOfColumns(); columnIndex++) {
+            String column = masterSheet.getColumnName(columnIndex);
+
             // If this is a predictor
             if (column.contains("biom")) {
+                columnNameToIndexMap.put(column, columnIndex);
                 String predictor = column;
                 predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
                 predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
@@ -709,7 +714,12 @@ public class ValidationScoresCalc {
                 probeset = probeset.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
                 probeset = probeset.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);        
                 
-                probesetToPredictorMap.put(probeset,  predictor);
+                ArrayList<String>predictors = new ArrayList<String>();
+                if (probesetToPredictorsMap.containsKey(probeset)) {
+                    predictors = probesetToPredictorsMap.get(probeset);
+                }
+                predictors.add(predictor);
+                probesetToPredictorsMap.put(probeset, predictors);
             }
         }
         
@@ -750,50 +760,62 @@ public class ValidationScoresCalc {
             probeset = probeset.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
             probeset = probeset.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
 
-            String predictor = probesetToPredictorMap.get(probeset);
+            
+            ArrayList<String> predictors = new ArrayList<String>();
+            if (probesetToPredictorsMap.containsKey(probeset)) {
+                predictors = probesetToPredictorsMap.get(probeset);
+            }
 
             //log.info("    PROBESET: " + probeset + "    - PREDICTOR: " + predictor);
             
-            if (predictor != null && !predictor.isEmpty()) {
-                //log.info("        predictor found for probeset");
-                numberOfPredictorsFound++;
-                
-                // Predictor is from map, and should already have replacement
-                //predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
-                //predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
-                
-                int valueCount = 0;
-                // For each phene-visit in a probeset row in the gene expression file
-                for (int i = 1; i < row.length; i++) {
-                    String pheneVisit = header[i];
-                    String value = row[i];
-                
-                    // Moved outside of loop:
+            for (String predictor: predictors) {
+                if (predictor != null && !predictor.isEmpty()) {
+                    //log.info("        predictor found for probeset");
+                    numberOfPredictorsFound++;
+                    
+                    // Predictor is from map, and should already have replacement
                     //predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
                     //predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
+                    
+                    int valueCount = 0;
+                    
+                    // For each phene-visit in a probeset row in the gene expression file
+                    for (int i = 1; i < row.length; i++) {
+                        String pheneVisit = header[i];
+                        String value = row[i];
+                    
+                        // Moved outside of loop:
+                        //predictor = predictor.replaceAll("/", PREDICTOR_SLASH_REPLACEMENT);
+                        //predictor = predictor.replaceAll("-", PREDICTOR_HYPHEN_REPLACEMENT);
+    
+                        // Set mastersheet values
+                        //
+                        // ... Biomarker     <gene>biom<probeset>  <gene>biom<probeset> ...
+                        // ... <phene-visit> <value>               <value>
+                        // ... <phene-visit> <value>               <value>
+                        
+                        //int rowIndex = masterSheet.getRowIndex("Biomarkers", pheneVisit);
+                        Integer rowIndex = pheneVisitToRowNumMap.get(pheneVisit);
+                        
+                        //if (rowIndex >= 0) {
+                        if (rowIndex != null && rowIndex > 0) {
+                            Integer columnIndex = columnNameToIndexMap.get(predictor);
+                            if (columnIndex != null) {
+                                masterSheet.setValue(rowIndex, columnIndex, value);
+                                if (value != null || !value.trim().isEmpty()) {
+                                    valueCount++;
+                                }
+                            }
 
-                    // Set mastersheet values
-                    //
-                    // ... Biomarker     <gene>biom<probeset>  <gene>biom<probeset> ...
-                    // ... <phene-visit> <value>               <value>
-                    // ... <phene-visit> <value>               <value>
-                    
-                    //int rowIndex = masterSheet.getRowIndex("Biomarkers", pheneVisit);
-                    Integer rowIndex = pheneVisitToRowNumMap.get(pheneVisit);
-                    
-                    //if (rowIndex >= 0) {
-                    if (rowIndex != null && rowIndex > 0) {
-                        masterSheet.setValue(rowIndex, predictor, value);
-                        if (value != null || !value.trim().isEmpty()) {
-                            valueCount++;
                         }
                     }
+                    
+                    if (valueCount == 0) {
+                        predictorsToDelete.add(predictor);
+                    }
+                } else {
+                    log.info("        predictor NOT found for probset");
                 }
-                if (valueCount == 0) {
-                    predictorsToDelete.add(predictor);
-                }
-            } else {
-                log.info("        predictor NOT found for probset");
             }
         }
         geneExpressionCsvReader.close();

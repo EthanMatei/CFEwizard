@@ -187,6 +187,7 @@ public class TestingScoresCalc {
         this.predictionPheneHighCutoff     = predictionPheneHighCutoff;
         this.predictionComparisonThreshold = predictionComparisonThreshold;
         
+        log.info("Testing calculation diagnosis type: " + diagnosisType);
         CfeResults cfeResults = null;
         
         if (testingData == null) {
@@ -265,7 +266,7 @@ public class TestingScoresCalc {
                 predictorList,
                 this.geneExpressionCsv,
                 diagnosisType
-                );
+        );
 
         log.info("Master Sheet file name: " + this.testingMasterSheetFile);
 
@@ -975,6 +976,17 @@ public class TestingScoresCalc {
         csvReader.close();
         
         log.info("Finished processing gene expression file.");
+        
+        if (diagnosisType.equals(DiagnosisType.GENDER)) {
+            int columnIndex = masterSheetDataTable.getColumnIndex("dx");
+            if (columnIndex < 0) {
+                throw new Exception("Could not find column \"dx\" in testing master sheet.");
+            }
+            masterSheetDataTable.replaceColumnValues("dx", "M", "M-M");
+            masterSheetDataTable.replaceColumnValues("dx", "F", "F-F");
+            
+            log.info("Gender based scoring dx column replacement completed.");
+        }
         
         //-----------------------------)--------------------------
         // Write the master sheet to a CSV file

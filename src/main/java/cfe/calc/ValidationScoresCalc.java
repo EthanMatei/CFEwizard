@@ -124,6 +124,8 @@ public class ValidationScoresCalc {
 	    long startTime = System.nanoTime();
 
 	    log.info("Validation scoring phase started");
+	    
+	    log.info("Validation diagnosis type: " + validationDiagnosisType);
 
 	    CfeResults cfeResults = null;
 
@@ -638,6 +640,7 @@ public class ValidationScoresCalc {
             String gender = masterSheet.getValue(i, "Gender(M/F)");
             String dxCode = masterSheet.getValue(i, "DxCode");
             
+            
             if (diagnosisType.equals(DiagnosisType.GENDER)) { 
                 masterSheet.setValue(i, "dx", gender);
             }
@@ -825,7 +828,7 @@ public class ValidationScoresCalc {
         if (diagnosisType.equals(DiagnosisType.GENDER)) {
             int columnIndex = masterSheet.getColumnIndex("dx");
             if (columnIndex < 0) {
-                throw new Exception("Could not find column \"dx\" master sheet.");
+                throw new Exception("Could not find column \"dx\" in validation master sheet.");
             }
             masterSheet.replaceColumnValues("dx", "M", "M-M");
             masterSheet.replaceColumnValues("dx", "F", "F-F");

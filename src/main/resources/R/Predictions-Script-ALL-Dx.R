@@ -95,6 +95,7 @@ diagnoses <- unlist(diagnoses)    # convert to vector
 
 genderDiagnoses <- c(paste("F", diagnoses, sep="-"), paste("M", diagnoses, sep="-"))
 genderDiagnoses <- genderDiagnoses[genderDiagnoses %in% c("M-F", "F-M") == FALSE]
+genderDiagnoses <- genderDiagnoses[genderDiagnoses %in% c("M-GENDER", "F-GENDER") == FALSE]
 genderDiagnoses <- unlist(genderDiagnoses)
 
 cat("\nDIAGNOSES: ")

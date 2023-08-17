@@ -45,6 +45,17 @@ $( document ).ready(function() {
     $("#cfeResultsTypesSelect").on("change", function(event) {
         updatePastResults();
     });
+    
+    $(".pastResultsRadio").on("change", function(event) {
+    	let checked = $(this).prop('checked');
+    	//if (checked) {
+    	//	alert("Checked!");
+    	//}
+    	//else {
+    	//	alert("Not checked.");
+    	//}
+    	//$(this).prop('checked', false);
+    });
 });
 
 function submitForm() {
@@ -144,7 +155,7 @@ function submitForm() {
     
         <fieldset class="dataInput">
             <p style="font-weight: bold;">
-            <s:radio name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created spreadsheet:'}"/>
+            <s:radio class="pastResultsRadio" name="startingCfeResultsId" list="#{@cfe.action.BatchAction@MANUAL_RESULTS_START: 'Manually created spreadsheet:'}"/>
             <i id="manuallyCreatedHelpButton" style="margin-left: 1em;" class="fa fa-question-circle"></i>    
             </p>
             
@@ -228,7 +239,7 @@ function submitForm() {
                     <s:iterator value="startingResultsList" var="result">
                         <tr>
                             <td>
-                                <s:radio name="startingCfeResultsId" list="{cfeResultsId}"/>
+                                <s:radio class="pastResultsRadio" name="startingCfeResultsId" list="{cfeResultsId}"/>
                             </td>
                             <td>
                                 <s:a action="CfeResultsXlsxDisplay" title="Discovery Results">

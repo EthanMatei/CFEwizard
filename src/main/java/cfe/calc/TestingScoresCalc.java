@@ -1180,12 +1180,12 @@ public class TestingScoresCalc {
 
                 row.add(predictor);
                 row.add(direction);
-                row.add("0"); // Male
-                row.add("0"); // Female
+                row.add("1"); // Male
+                row.add("1"); // Female
                 
                 // NEW:
                 for (String dx: diagnoses) {
-                    row.add("0");
+                    row.add("1");
                 }
                 
                 // OLD:
@@ -1198,7 +1198,7 @@ public class TestingScoresCalc {
                 //row.add("0"); // PSYCH
                 //row.add("0"); // PSYCHOSIS
                 
-                row.add("0"); // GENDER
+                row.add("1"); // GENDER
                 row.add("1"); // All
 
                 predictorList.addRow(row);

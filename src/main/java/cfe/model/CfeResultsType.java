@@ -53,20 +53,21 @@ public class CfeResultsType {
      */
     public static List<String> getEndTypes() {
         List<String> types = new ArrayList<String>();
-        types.add(DISCOVERY_COHORT);
-        types.add(DISCOVERY_SCORES);
         
-        types.add(PRIORITIZATION_SCORES);
-        
-        types.add(VALIDATION_COHORT);
-        types.add(VALIDATION_SCORES);
-        
-        types.add(TESTING_COHORTS);
-        types.add(TESTING_SCORES);
+        types = getCompleteTypes();
 
         return types;
     }
  
+    public static List<String> getStartTypes() {
+        List<String> types = new ArrayList<String>();
+        
+        types = getCompleteTypes();
+        types.remove(TESTING_SCORES);
+
+        return types;
+    }
+    
     public static List<String> getTypes() {
         List<String> types = new ArrayList<String>();
         types.add(DISCOVERY_COHORT);
@@ -96,16 +97,9 @@ public class CfeResultsType {
     
     public static List<String> getCompleteTypes() {
         List<String> types = new ArrayList<String>();
-        types.add(DISCOVERY_COHORT);
-        types.add(DISCOVERY_SCORES);
         
-        types.add(PRIORITIZATION_SCORES);
-
-        types.add(VALIDATION_COHORT);
-        types.add(VALIDATION_SCORES);
-        
-        types.add(TESTING_COHORTS);
-        types.add(TESTING_SCORES);
+        types = getTypes();
+        types.remove(PRIORITIZATION_SCORES_ONLY);
 
         return types;
     }   

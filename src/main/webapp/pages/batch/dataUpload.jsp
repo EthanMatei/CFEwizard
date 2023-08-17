@@ -10,11 +10,48 @@
 <tiles:putAttribute name="content">
 
 <script>
-    function submitForm() {
-    	document.getElementById("uploadButton").disabled = true;
-    	document.body.style.cursor='wait';
-    	document.uploadForm.submit();
-    }
+$( document ).ready(function() {
+    
+	// Use the filter values to hide non-applicable past results table rows
+	function updatePastResults() {
+	    phene = $("#cfeResultsPheneSelect").val().trim();
+	    resultsType = $("#cfeResultsTypesSelect").val().trim();
+	    // alert("Phene: " + phene + ", results type: " + resultsType);
+	    
+	    let table = $("#pastResultsTable");
+	    let trs = $("tr", table);
+	    for (let i = 1; i < trs.length; i++) {
+	    	let tr = trs[i];
+	    	let tds = $("td", tr);
+	    	let rowResultsType = $(tds[2]).text().trim();
+	    	let rowPhene = $(tds[4]).text().trim();
+	    	
+	    	if ((resultsType == "ALL" || resultsType == rowResultsType) && (phene == "ALL" || phene == rowPhene)) {
+	            tr.style.display = ''; 
+	    	}
+	    	else {
+	           tr.style.display = 'none';
+	        }
+	    
+	    	// alert(rowResultsType + " " + rowPhene);
+	    }
+	    
+	}
+	
+    $("#cfeResultsPheneSelect").on("change", function(event) {
+        updatePastResults();
+    });
+    
+    $("#cfeResultsTypesSelect").on("change", function(event) {
+        updatePastResults();
+    });
+});
+
+function submitForm() {
+	document.getElementById("uploadButton").disabled = true;
+	document.body.style.cursor='wait';
+	document.uploadForm.submit();
+}
 </script>
 
 <s:include value="/pages/batch/steps.jsp"/>
@@ -166,7 +203,17 @@
             Past calculated or uploaded result:
             </p>
             
-            <table class="dataTable" style="margin-left: 3em;">
+            <div style="margin-bottom: 22px; margin-left: 3em; border: 1px solid #000000; border-radius: 7px; padding: 7px; background-color: #F5F5FF;">
+                <span style="font-weight: bold; margin-left: 1em;">Phene:</span> 
+                <s:select id="cfeResultsPheneSelect" list="resultsPhenes" name="resultsPhene" value="resultsPhene">
+                </s:select>
+                
+                <span style="font-weight: bold; margin-left: 1em;">Type:</span> 
+                <s:select id="cfeResultsTypesSelect" list="cfeResultsTypes" name="cfeResultsType" value="cfeResultsType">
+                </s:select>
+            </div>
+
+            <table class="dataTable" id="pastResultsTable" style="margin-left: 3em;">
                 <tr> 
                     <th>ID</th>
                     <th>Results</th>

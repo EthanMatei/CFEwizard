@@ -120,6 +120,12 @@ public class BatchAction extends BaseAction implements SessionAware {
     private List<String> endingResultsTypeList;
     private String endingResultsType;
     
+    /* Results filter */
+    private String cfeResultsType;
+    private List<String> cfeResultsTypes;
+    private String resultsPhene;
+    private List<String> resultsPhenes;
+    
     /* General */
     private List<String> diagnosisTypes;
     
@@ -302,6 +308,16 @@ public class BatchAction extends BaseAction implements SessionAware {
         admissionReasons.add("Drugs");
         admissionReasons.add("Pain");
         Collections.sort(admissionReasons);
+        
+        this.cfeResultsTypes = new ArrayList<String>();
+        this.cfeResultsTypes.add("ALL");
+        this.cfeResultsType = "ALL";
+        this.cfeResultsTypes.addAll( CfeResultsType.getStartTypes() );
+        
+        this.resultsPhene = "ALL";
+        this.resultsPhenes = new ArrayList<String>();
+        this.resultsPhenes.add("ALL");
+        this.resultsPhenes.addAll( CfeResultsService.getPhenes() );
     }
     
     public void withSession(Map<String, Object> session) {
@@ -2387,4 +2403,41 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.testingScoresResultsId = testingScoresResultsId;
     }
 
+    
+
+    /* Filter Variables */
+    
+    public String getCfeResultsType() {
+        return cfeResultsType;
+    }
+
+    public void setCfeResultsType(String cfeResultsType) {
+        this.cfeResultsType = cfeResultsType;
+    }
+
+    public List<String> getCfeResultsTypes() {
+        return cfeResultsTypes;
+    }
+
+    public void setCfeResultsTypes(List<String> cfeResultsTypes) {
+        this.cfeResultsTypes = cfeResultsTypes;
+    }
+
+    public String getResultsPhene() {
+        return resultsPhene;
+    }
+
+    public void setResultsPhene(String resultsPhene) {
+        this.resultsPhene = resultsPhene;
+    }
+
+    public List<String> getResultsPhenes() {
+        return resultsPhenes;
+    }
+
+    public void setResultsPhenes(List<String> resultsPhenes) {
+        this.resultsPhenes = resultsPhenes;
+    }
+
+    
 }

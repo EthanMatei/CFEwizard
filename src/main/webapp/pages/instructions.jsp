@@ -62,7 +62,7 @@ that are generated before you proceed.
 
 <hr/>
 
-<h3>Prioritization Special Functions</h3>
+<h3>Prioritization</h3>
 
 <p>
 In addition to being able to change the starting and ending steps of the CFE Pipeline, it is also possible to run

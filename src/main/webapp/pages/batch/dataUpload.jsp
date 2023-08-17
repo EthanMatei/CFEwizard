@@ -40,7 +40,9 @@
     <p>
     <s:submit value="Upload" id="uploadButton" class="submit"/>
     </p>
-        
+    
+    <hr/>        
+    
     <s:hidden name="testingDbTempFileName" />     
     <s:token />
     

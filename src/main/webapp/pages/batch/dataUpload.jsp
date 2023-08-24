@@ -46,8 +46,21 @@ $( document ).ready(function() {
         updatePastResults();
     });
     
-    $(".pastResultsRadio").on("change", function(event) {
-    	let checked = $(this).prop('checked');
+    $(".pastResultsRadio").on("click", function(event) {
+    	//let checked = 
+    	//alert($(this).attr("class"));
+        if ($(this).hasClass("on")) {
+            $(this).prop("checked", false);
+            $(this).removeClass("on");
+        }
+        else {
+        	$(".pastResultsRadio").removeClass("on");
+            $(this).addClass("on");
+        	$(this).prop("checked", true);
+        }
+        
+        // $(this).toggleClass("on");
+         
     	//if (checked) {
     	//	alert("Checked!");
     	//}

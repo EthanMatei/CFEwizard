@@ -497,6 +497,12 @@ for (i in 1:(nrow(predictors))) {
         else if (sex == "F" && dx == "M") {
           next
         }
+        else if (sex == "M" && dx == "GENDER") {
+          next
+        }
+        else if (sex == "F" && dx == "GENDER") {
+          next
+        }
         else {
           tableRow <- c(sex,dx,predictor,  direction)
         }

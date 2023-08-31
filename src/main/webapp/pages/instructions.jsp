@@ -66,28 +66,28 @@ that are generated before you proceed.
 
 <p>
 In addition to being able to change the starting and ending steps of the CFE Pipeline, it is also possible to run
-the Prioritization step on its own. To run this, click on <b>Special Functions -> (Prioritization) Scoring</b>.
+the Prioritization step on its own. To run this, click on <b>Other Functions -> (Prioritization) Scoring</b>.
 If you specify a manually uploaded gene list or all genes in the first step, prioritization scores will
 be calculated that do not have associated discovery scores. If you want to use these 
 prioritization scores in the CFE Pipeline,
 you will need to merge them with previously calculated discovery scores by clicking on
-<b>Special Functions -> (Prioritization) Merge with Discovery Scores</b>
+<b>Other Functions -> (Prioritization) Merge with Discovery Scores</b>
 </p>
 
 <p>
 The Prioritization phase uses a literature database, and the data for this need to be uploaded to the CFE Wizard.
 MS Access literature databases are uploaded and combined into a single CFE Wizard MySQL literature database.
-To upload MS Access literature databases, click on <b>Special Functions -> (Prioritization) Upload Literature Databases</b>.
+To upload MS Access literature databases, click on <b>Other Functions -> (Prioritization) Upload Literature Databases</b>.
 </p>
 
 <p>
 To download a spreadsheet of the diseases in the CFE Wizard literature database, click on
-<b>Special Functions -> (Prioritization) Diseases Report</b>
+<b>Other Functions -> (Prioritization) Diseases Report</b>
 </p>
 
 <p>
 To see information on the CFE Wizard literature database tables, click on 
-<b>Special Functions -> (Prioritization) CFE Database Status</b>.
+<b>Other Functions -> (Prioritization) CFE Database Status</b>.
 This function also provides a button (<b>Clear All</b>) that will delete
 all data currently stored in the CFE literature database.
 </p>

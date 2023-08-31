@@ -57,7 +57,7 @@ public class CalculateScores extends BaseAction implements SessionAware {
 	private List<DiseaseSelector> diseaseSelectors = new ArrayList<DiseaseSelector>();
 
 	public CalculateScores() {
-        this.setCurrentTab("Special Functions");    
+        this.setCurrentTab("Other Functions");    
         this.setCurrentSubTab("Scoring");
         this.setCurrentStep(4);
 	}

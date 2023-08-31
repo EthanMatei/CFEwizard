@@ -464,7 +464,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <span style="font-weight: bold;">First Year Hospitalization</span>
+                        <span style="font-weight: bold;">First Year</span>
                     </td>
                     <td>
                         <p>
@@ -477,7 +477,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <span style="font-weight: bold;">Future Hospitalization</span>
+                        <span style="font-weight: bold;">All Future</span>
                     </td>
                     <td>
                         <p>

@@ -91,11 +91,11 @@ CFE Template
                 
                 &nbsp;|&nbsp;
                 
-                <s:if test="currentTab.equals('Special Functions')">
-                    <s:a class="selectedMainTab" action="TestingDbUploadInit"><i class="fa fa-toolbox"></i> Special Functions</s:a>
+                <s:if test="currentTab.equals('Other Functions')">
+                    <s:a class="selectedMainTab" action="TestingDbUploadInit"><i class="fa fa-toolbox"></i> Other Functions</s:a>
                 </s:if>
                 <s:else>
-                    <s:a action="TestingDbUploadInit"><i class="fa fa-toolbox"></i> Special Functions</s:a>
+                    <s:a action="TestingDbUploadInit"><i class="fa fa-toolbox"></i> Other Functions</s:a>
                 </s:else>              
                 
                 <s:if test="#session.username==adminUser">
@@ -143,7 +143,7 @@ CFE Template
                     </s:else>
                 </s:if>
                 
-                <s:if test="currentTab.equals('Special Functions')">
+                <s:if test="currentTab.equals('Other Functions')">
                     
                     <fieldset style="float: left;">
                         <legend style="font-weight: bold;">Discovery</legend>

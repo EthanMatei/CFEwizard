@@ -41,7 +41,7 @@ public class ValidationDataMergeAction extends BaseAction implements SessionAwar
 	
 
     public ValidationDataMergeAction() {
-        this.setCurrentTab("Special Functions");
+        this.setCurrentTab("Other Functions");
         this.setCurrentSubTab("Merge with Discovery Scores");
     }
     

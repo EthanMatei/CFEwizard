@@ -23,8 +23,8 @@ Scenario: Saved Results page
     And I should see "Order:"
     And I should see "Phene:"
 
-Scenario: Special Functions page
-    When I click on link "Special Functions"
+Scenario: Other Functions page
+    When I click on link "Other Functions"
     Then I should see "Phenomic Database Check"
 
 Scenario: Admin page

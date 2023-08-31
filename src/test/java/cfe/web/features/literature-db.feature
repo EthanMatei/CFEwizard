@@ -2,7 +2,7 @@ Feature: Literature database
 
 Background:
     Given I am logged into the CFE Wizard
-    When I click on link "Special Functions"
+    When I click on link "Other Functions"
     
 Scenario: Literature database upload page access
     When I click on link "Upload Literature Databases"

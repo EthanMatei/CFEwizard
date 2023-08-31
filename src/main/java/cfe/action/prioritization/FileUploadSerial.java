@@ -57,7 +57,7 @@ public class FileUploadSerial extends BaseAction implements SessionAware {
 	private Map<String, Object> webSession;
 
 	public FileUploadSerial() {
-	    this.setCurrentTab("Special Functions"); 
+	    this.setCurrentTab("Other Functions"); 
 	    this.setCurrentSubTab("Upload Literature Databases");
 	    this.setCurrentStep(3);
 	}

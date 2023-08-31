@@ -38,7 +38,7 @@ public class DatabaseStatusAction extends BaseAction implements SessionAware {
     private String dbUser;
 
     public DatabaseStatusAction() {
-        this.setCurrentTab("Special Functions");
+        this.setCurrentTab("Other Functions");
         this.setCurrentSubTab("CFE Database Status");
     }
     

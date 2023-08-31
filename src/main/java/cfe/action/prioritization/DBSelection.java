@@ -20,7 +20,7 @@ public class DBSelection extends BaseAction implements SessionAware {
 	private Map<String, Object> webSession;
 	
 	public DBSelection() {
-	    this.setCurrentTab("Special Functions"); 
+	    this.setCurrentTab("Other Functions"); 
 	    this.setCurrentSubTab("Upload Literature Databases");
 	    this.setCurrentStep(1);
 	}

@@ -44,7 +44,7 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	
 	public TestingDbCheckAction() {
-	    this.setCurrentTab("Special Functions");
+	    this.setCurrentTab("Other Functions");
 	    this.setCurrentSubTab("Phenomic Database Check");
 	    
 	    this.tableCheckInfos = new ArrayList<TableCheckInfo>();

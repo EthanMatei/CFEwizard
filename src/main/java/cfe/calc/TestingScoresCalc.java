@@ -776,6 +776,10 @@ public class TestingScoresCalc {
         int firstYearVisitNumber       = 0;
         int hospitalizationVisitNumber = 0;
         
+        int cohortTestVisitNumber            = 1;
+        int cohortFirstYearVisitNumber       = 1;
+        int cohortHospitalizationVisitNumber = 1;
+        
         int nonCohortTestVisitNumber            = 101;
         int nonCohortFirstYearVisitNumber       = 101;
         int nonCohortHospitalizationVisitNumber = 101;
@@ -812,58 +816,35 @@ public class TestingScoresCalc {
                 masterSheetDataTable.setValue(i,"HospitalizationCohort", "0");
             }
             
+            
             if (!subject.equals(previousSubject)) {
+                // If this is a new subject
+                cohortTestVisitNumber            = 1;
+                cohortFirstYearVisitNumber       = 1;
+                cohortHospitalizationVisitNumber = 1;
+                
                 previousSubject = subject;
-              
-                if (testCohort.equals("1")) {
-                    testVisitNumber = 1;
-                }
-                else {
-                    testVisitNumber = nonCohortTestVisitNumber;
-                    nonCohortTestVisitNumber++;
-                }
-                
-                if (firstYearCohort.equals("1")) {
-                    firstYearVisitNumber = 1;
-                }
-                else {
-                    firstYearVisitNumber = nonCohortFirstYearVisitNumber;
-                    nonCohortFirstYearVisitNumber++;
-                }
-                
-                if (hospitalizationCohort.equals("1")) {
-                    hospitalizationVisitNumber = 1;
-                }
-                else {
-                    hospitalizationVisitNumber = nonCohortHospitalizationVisitNumber;
-                    nonCohortHospitalizationVisitNumber++;
-                }
+            }
+            
+            if (testCohort.equals("1")) {
+                testVisitNumber = cohortTestVisitNumber++;
             }
             else {
+                testVisitNumber = nonCohortTestVisitNumber++;
+            }
                 
-                if (testCohort.equals("1")) {
-                    testVisitNumber++;
-                }
-                else {
-                    testVisitNumber = nonCohortTestVisitNumber;
-                    nonCohortTestVisitNumber++;
-                }
+            if (firstYearCohort.equals("1")) {
+                firstYearVisitNumber = cohortFirstYearVisitNumber++;
+            }
+            else {
+                firstYearVisitNumber = nonCohortFirstYearVisitNumber++;
+            }
                 
-                if (firstYearCohort.equals("1")) {
-                    firstYearVisitNumber++;
-                }
-                else {
-                    firstYearVisitNumber = nonCohortFirstYearVisitNumber;
-                    nonCohortFirstYearVisitNumber++;
-                }
-                
-                if (hospitalizationCohort.equals("1")) {
-                    hospitalizationVisitNumber++;
-                }
-                else {
-                    hospitalizationVisitNumber = nonCohortHospitalizationVisitNumber;
-                    nonCohortHospitalizationVisitNumber++;
-                }
+            if (hospitalizationCohort.equals("1")) {
+                hospitalizationVisitNumber = cohortHospitalizationVisitNumber++;
+            }
+            else {
+                hospitalizationVisitNumber = nonCohortHospitalizationVisitNumber++;
             }
             
             masterSheetDataTable.setValue(i, "Hospitalization.VisitNumber", hospitalizationVisitNumber + "");

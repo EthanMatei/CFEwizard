@@ -37,6 +37,7 @@ import cfe.services.CfeResultsService;
 import cfe.utils.Authorization;
 import cfe.utils.FileUtil;
 import cfe.utils.PheneCondition;
+import cfe.utils.TableCheckInfo;
 
 
 public class BatchAction extends BaseAction implements SessionAware {
@@ -141,6 +142,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     List<String> discoveryPheneList;
     
     Long discoveryCohortResultsId;
+    
+    private List<TableCheckInfo> tableCheckInfos;
     
     /* Discovery Scores ------------------------------------------------------------- */
     
@@ -318,6 +321,8 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.resultsPhenes = new ArrayList<String>();
         this.resultsPhenes.add("ALL");
         this.resultsPhenes.addAll( CfeResultsService.getPhenes() );
+        
+        this.tableCheckInfos = new ArrayList<TableCheckInfo>();
     }
     
     public void withSession(Map<String, Object> session) {
@@ -391,6 +396,9 @@ public class BatchAction extends BaseAction implements SessionAware {
                 File testingDbTmp = FileUtil.createTempFile("testing-db-", ".accdb");
                 FileUtils.copyFile(this.testingDb, testingDbTmp);
                 this.testingDbTempFileName = testingDbTmp.getAbsolutePath();
+                
+                // Check the phenomic (testing) database
+                this.tableCheckInfos = TableCheckInfo.checkTestingDatabase(testingDbTempFileName);
 
                 // Process testing database
                 DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDbTempFileName);
@@ -1330,6 +1338,14 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setTestingDbTempFileName(String testingDbTempFileName) {
         this.testingDbTempFileName = testingDbTempFileName;
+    }
+
+    public List<TableCheckInfo> getTableCheckInfos() {
+        return tableCheckInfos;
+    }
+
+    public void setTableCheckInfos(List<TableCheckInfo> tableCheckInfos) {
+        this.tableCheckInfos = tableCheckInfos;
     }
 
     //------------------------------------

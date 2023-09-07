@@ -145,6 +145,9 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     private List<TableCheckInfo> tableCheckInfos;
     
+    private int phenomicDatabaseErrorCount;
+    private int phenomicDatabaseWarningCount;
+    
     /* Discovery Scores ------------------------------------------------------------- */
     
     private PercentileScores discoveryPercentileScores = new PercentileScores();
@@ -399,6 +402,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 // Check the phenomic (testing) database
                 this.tableCheckInfos = TableCheckInfo.checkTestingDatabase(testingDbTempFileName);
+                this.phenomicDatabaseErrorCount   = TableCheckInfo.getErrorCount(tableCheckInfos);
+                this.phenomicDatabaseWarningCount = TableCheckInfo.getWarningCount(tableCheckInfos);
 
                 // Process testing database
                 DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDbTempFileName);
@@ -1346,6 +1351,22 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setTableCheckInfos(List<TableCheckInfo> tableCheckInfos) {
         this.tableCheckInfos = tableCheckInfos;
+    }
+    
+    public int getPhenomicDatabaseErrorCount() {
+        return phenomicDatabaseErrorCount;
+    }
+
+    public void setPhenomicDatabaseErrorCount(int phenomicDatabaseErrorCount) {
+        this.phenomicDatabaseErrorCount = phenomicDatabaseErrorCount;
+    }
+
+    public int getPhenomicDatabaseWarningCount() {
+        return phenomicDatabaseWarningCount;
+    }
+
+    public void setPhenomicDatabaseWarningCount(int phenomicDatabaseWarningCount) {
+        this.phenomicDatabaseWarningCount = phenomicDatabaseWarningCount;
     }
 
     //------------------------------------

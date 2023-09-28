@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.util.Strings;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -1720,7 +1721,12 @@ public class DataTable {
         ArrayList<String> row = this.index.get(keyValue);
         
         for (int i = 0; i < this.columns.size(); i++) {
-            rowMap.put(this.columns.get(i), row.get(i)); 
+            if (i < row.size()) {
+                rowMap.put(this.columns.get(i), row.get(i));
+            }
+            else {
+                rowMap.put(this.columns.get(i), "");
+            }
         }
         
         return rowMap;
@@ -1737,8 +1743,21 @@ public class DataTable {
         
         ArrayList<String> row = this.getRow(rowNum);
         
+        /*
+        if (row.size() < this.columns.size()) {
+            int num = columns.size() - row.size();
+            String rowValuesString = "\"" + String.join("\", \"", row) + "\"";
+            throw new Exception("Data row with the following values is missing " + num + " value(s): " + rowValuesString);    
+        }
+        */
+        
         for (int i = 0; i < this.columns.size(); i++) {
-            rowMap.put(this.columns.get(i), row.get(i)); 
+            if (i < row.size()) {
+                rowMap.put(this.columns.get(i), row.get(i));
+            }
+            else {
+                rowMap.put(this.columns.get(i), "");                
+            }
         }
         
         return rowMap;

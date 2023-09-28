@@ -34,6 +34,7 @@ import cfe.model.prioritization.GeneListInput;
 import cfe.model.prioritization.disease.DiseaseSelector;
 import cfe.parser.DiscoveryDatabaseParser;
 import cfe.services.CfeResultsService;
+import cfe.services.prioritization.DisorderService;
 import cfe.utils.Authorization;
 import cfe.utils.FileUtil;
 import cfe.utils.PheneCondition;
@@ -230,6 +231,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     private String validationRScriptCommandFile;
     private String validationRScriptOutputFile;
+    
+    private boolean skipValidationSteps;
 
 
     /* Testing Cohorts --------------------------------------------------------------- */
@@ -390,7 +393,9 @@ public class BatchAction extends BaseAction implements SessionAware {
 		else {
 		    try {
 		        log.info("Testing database \"" + this.testingDbFileName + "\" uploaded.");
-
+		        
+		        // Set default disease selectors (for manually entered case)
+                this.diseaseSelectors = DisorderService.getDiseaseSelectors();
 	              
                 // Copy the upload files to temporary files, because the upload files get deleted
                 // and they are needed beyond this method
@@ -536,6 +541,16 @@ public class BatchAction extends BaseAction implements SessionAware {
 	                //}
 		        }
 
+	               
+
+		        if (this.startingResultsType != null) {
+                    if (this.startingResultsType.equals(CfeResultsType.VALIDATION_COHORT) || this.startingResultsType.equals(CfeResultsType.VALIDATION_SCORES)) {
+                        if (this.skipValidationSteps) {
+                            throw new Exception("Illegal starting step of \"" + startingResultsType + "\" specified when skipping validation steps selected.");
+                        }
+                    }
+		        }
+                
 	            this.showDiscoveryCohort      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_COHORT, this.startingResultsType, this.endingResultsType);
 	            this.showDiscoveryScores      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_SCORES, this.startingResultsType, this.endingResultsType);
 	            this.showPrioritizationScores = CfeResultsType.typeIsInRange(CfeResultsType.PRIORITIZATION_SCORES, this.startingResultsType, this.endingResultsType);
@@ -569,9 +584,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 		            pastCfeResultsMap.put(key, value);
 		        }
 		        */
-		        
-
-			    
+		        	    
 		    } catch (Exception exception) {
 		        this.setErrorMessage("The uploads could not be processed. " + exception.getLocalizedMessage());
                 String stackTrace = ExceptionUtils.getStackTrace(exception);
@@ -592,6 +605,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     public String calculate() throws Exception {
         String result = SUCCESS;
         
+        log.info("START of BatchAction calculate method.");
+        
         this.setCurrentStep(3);
         
         if (!Authorization.isAdmin(webSession)) {
@@ -599,23 +614,6 @@ public class BatchAction extends BaseAction implements SessionAware {
         }
         else {
             try { 
-                // Probeset to gene database mapping
-                //File probesetToGeneMappingDbTmp = FileUtil.createTempFile("probest-to-gene-mapping-db-", ".accdb");
-                //FileUtils.copyFile(this.probesetToGeneMappingDb, probesetToGeneMappingDbTmp);
-                //this.probesetToGeneMappingDbTempFileName = probesetToGeneMappingDbTmp.getAbsolutePath();
-                //this.probesetToGeneMappingDbFileName = probesetToGeneMappingDb.getAbsolutePath();
-
-                //------------------------------------------------------------
-                // Get the probeset to mapping information
-                //------------------------------------------------------------
-                //String key = ProbesetMappingParser.PROBE_SET_ID_COLUMN;
-                //DataTable probesetMapping = new DataTable(key);
-
-                //ProbesetMappingParser probesetDbParser = new ProbesetMappingParser(this.probesetToGeneMappingDb.getAbsolutePath());
-                //Table table = probesetDbParser.getMappingTable();
-                //probesetMapping.initializeToAccessTable(table);
-                //this.probesetToGeneMap = probesetMapping.getMap(key, ProbesetMappingParser.GENECARDS_SYMBOL_COLUMN);
-                
                 String[] pheneInfo = null;
 
                 //----------------------------------------
@@ -659,7 +657,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 log.info("PHENE: " + this.discoveryPhene);
                 
                 //CfeResultsType endingResultsTypeObj = new CfeResultsType(this.endingResultsType);
-               
+
                 
                         
                 //=========================================================================
@@ -792,7 +790,13 @@ public class BatchAction extends BaseAction implements SessionAware {
                         throw new Exception("Gene list specification\"" + this.geneListSpecification + "\" is invalid.");
                     }
 
-                    this.diseaseSelectors = DiseaseSelector.importCsvFile(diseasesCsvFileName, diseasesCsv);
+                    // If a diseases CSV File was specified, then use it
+                    // Otherwise, use the manusally entered values
+                    if (diseasesCsv != null) {
+                        log.info("diseasesCsv set, diseasesCsvFileName = \"" + diseasesCsvFileName + "\"");
+                        this.diseaseSelectors = DiseaseSelector.importCsvFile(diseasesCsvFileName, diseasesCsv);
+                    }
+                    
                     List<cfe.enums.prioritization.ScoringWeights> weights = this.getPrioritizationWeights();
 
                     PrioritizationScoresCalc prioritizationScoresCalc = new PrioritizationScoresCalc();
@@ -824,42 +828,45 @@ public class BatchAction extends BaseAction implements SessionAware {
                 // Create Validation Cohort
                 //================================================================================
                 
-                CfeResults validationCohort = null;
                 
-                // Skip this step, if it is out of the range of the steps specified
-                if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_COHORT, this.startingResultsType,  this.endingResultsType)) {
-                    
-                    log.info("Step " + CfeResultsType.VALIDATION_COHORT + " started.");
-                    
-                    phene1 = phene1.replace("[", "").replace("] ", ".");
-                    phene2 = phene2.replace("[", "").replace("] ", ".");
-                    phene3 = phene3.replace("[", "").replace("] ", ".");
-                    List<PheneCondition> pheneConditions = PheneCondition.createList(
-                            phene1, operator1, value1,
-                            phene2, operator2, value2,
-                            phene3, operator3, value3
-                            );
+                CfeResults validationCohort = null;
 
-                    double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
+                if (!this.skipValidationSteps) {
+                    // Skip this step, if it is out of the range of the steps specified
+                    if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_COHORT, this.startingResultsType,  this.endingResultsType)) {
 
-                    ValidationCohortCalc validationCohortCalc = new ValidationCohortCalc();
+                        log.info("Step " + CfeResultsType.VALIDATION_COHORT + " started.");
 
-                    validationCohort = validationCohortCalc.calculate(
-                            prioritizationScores,
-                            pheneConditions,
-                            percentInValidation,
-                            this.validationCohortComparisonThreshold
-                            );
+                        phene1 = phene1.replace("[", "").replace("] ", ".");
+                        phene2 = phene2.replace("[", "").replace("] ", ".");
+                        phene3 = phene3.replace("[", "").replace("] ", ".");
+                        List<PheneCondition> pheneConditions = PheneCondition.createList(
+                                phene1, operator1, value1,
+                                phene2, operator2, value2,
+                                phene3, operator3, value3
+                                );
 
-                    this.validationCohortResultsId = validationCohort.getCfeResultsId();
-                    log.info("Step " + CfeResultsType.VALIDATION_COHORT + " completed.");
-                }
-                else {
-                    if (startingResultsTypeObj != null && startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
-                        validationCohort = startingResults;       
+                        double percentInValidation = Double.parseDouble(this.percentInValidationCohort) / 100.0;
+
+                        ValidationCohortCalc validationCohortCalc = new ValidationCohortCalc();
+
+                        validationCohort = validationCohortCalc.calculate(
+                                prioritizationScores,
+                                pheneConditions,
+                                percentInValidation,
+                                this.validationCohortComparisonThreshold
+                                );
+
                         this.validationCohortResultsId = validationCohort.getCfeResultsId();
+                        log.info("Step " + CfeResultsType.VALIDATION_COHORT + " completed.");
                     }
-                    log.info("Step " + CfeResultsType.VALIDATION_COHORT + " skipped.");
+                    else {
+                        if (startingResultsTypeObj != null && startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_COHORT)) {
+                            validationCohort = startingResults;       
+                            this.validationCohortResultsId = validationCohort.getCfeResultsId();
+                        }
+                        log.info("Step " + CfeResultsType.VALIDATION_COHORT + " skipped.");
+                    }
                 }
                 
              
@@ -869,55 +876,56 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                 CfeResults validationScores = null;
                 
-                // Skip this step, if it is out of the range of the steps specified
-                if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType,  this.endingResultsType)) {
-                    log.info("Step " + CfeResultsType.VALIDATION_SCORES + " started.");
-                    ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
+                if (!this.skipValidationSteps) {
+                    // Skip this step, if it is out of the range of the steps specified
+                    if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType,  this.endingResultsType)) {
+                        log.info("Step " + CfeResultsType.VALIDATION_SCORES + " started.");
+                        ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
 
-                    log.info("Validation score cutoff: " + this.validationScoreCutoff);
-                    log.info("Validation scores comparison threshold: " + this.validationScoresComparisonThreshold);
+                        log.info("Validation score cutoff: " + this.validationScoreCutoff);
+                        log.info("Validation scores comparison threshold: " + this.validationScoresComparisonThreshold);
 
-                    try {
-                        validationScores = validationScoresCalc.calculate(
-                                validationCohort,
-                                this.validationScoreCutoff,
-                                this.validationScoresComparisonThreshold,
-                                this.bonferroniScore,
-                                this.nominalScore,
-                                this.stepwiseScore,
-                                this.nonStepwiseScore,
-                                this.updatedValidationMasterSheet,
-                                this.updatedValidationMasterSheetFileName,
-                                this.updatedValidationPredictorList,
-                                this.updatedValidationPredictorListFileName,
-                                this.validationDiagnosisType,
-                                this.geneExpressionCsv
-                        );
-                    }
-                    catch (Exception exception) {
-                        // Something went wrong. Get R script command and output if available.
-                        if (validationScoresCalc != null) {
-                            this.validationRScriptCommandFile = FileUtil.createTempFile(
-                                    "validation-r-script-command-", ".txt", validationScoresCalc.getValidationScoringCommand()
-                            );
-                            this.validationRScriptOutputFile = FileUtil.createTempFile(
-                                "validation-r-script-output-", ".txt", validationScoresCalc.getScriptOutput()
+                        try {
+                            validationScores = validationScoresCalc.calculate(
+                                    validationCohort,
+                                    this.validationScoreCutoff,
+                                    this.validationScoresComparisonThreshold,
+                                    this.bonferroniScore,
+                                    this.nominalScore,
+                                    this.stepwiseScore,
+                                    this.nonStepwiseScore,
+                                    this.updatedValidationMasterSheet,
+                                    this.updatedValidationMasterSheetFileName,
+                                    this.updatedValidationPredictorList,
+                                    this.updatedValidationPredictorListFileName,
+                                    this.validationDiagnosisType,
+                                    this.geneExpressionCsv
                             );
                         }
-                        throw new Exception("Validation scoring error: " + exception.getLocalizedMessage(), exception);
-                    }
-                    
-                    this.validationScoresResultsId = validationScores.getCfeResultsId();
-                    log.info("Step " + CfeResultsType.VALIDATION_SCORES + " completed.");
-                }
-                else {
-                    if (startingResultsTypeObj != null && startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_SCORES)) {
-                        validationScores = startingResults;       
+                        catch (Exception exception) {
+                            // Something went wrong. Get R script command and output if available.
+                            if (validationScoresCalc != null) {
+                                this.validationRScriptCommandFile = FileUtil.createTempFile(
+                                        "validation-r-script-command-", ".txt", validationScoresCalc.getValidationScoringCommand()
+                                        );
+                                this.validationRScriptOutputFile = FileUtil.createTempFile(
+                                        "validation-r-script-output-", ".txt", validationScoresCalc.getScriptOutput()
+                                        );
+                            }
+                            throw new Exception("Validation scoring error: " + exception.getLocalizedMessage(), exception);
+                        }
+
                         this.validationScoresResultsId = validationScores.getCfeResultsId();
+                        log.info("Step " + CfeResultsType.VALIDATION_SCORES + " completed.");
                     }
-                    log.info("Step " + CfeResultsType.VALIDATION_SCORES + " skipped.");
+                    else {
+                        if (startingResultsTypeObj != null && startingResultsTypeObj.isEqualTo(CfeResultsType.VALIDATION_SCORES)) {
+                            validationScores = startingResults;       
+                            this.validationScoresResultsId = validationScores.getCfeResultsId();
+                        }
+                        log.info("Step " + CfeResultsType.VALIDATION_SCORES + " skipped.");
+                    }
                 }
-                
                 
                 
                 //================================================================================
@@ -932,12 +940,23 @@ public class BatchAction extends BaseAction implements SessionAware {
                     TestingCohortsCalc testingCohortsCalc = new TestingCohortsCalc();
                     
                     try {
-                        testingCohorts = testingCohortsCalc.calculate(
-                            validationScores,
-                            this.followUpDb,
-                            this.followUpDbFileName,
-                            this.admissionPhene
-                        );
+                        if (this.skipValidationSteps) {
+                            // If the validation steps are being skipped, use the discovery scores
+                            testingCohorts = testingCohortsCalc.calculate(
+                                    prioritizationScores,
+                                    this.followUpDb,
+                                    this.followUpDbFileName,
+                                    this.admissionPhene
+                                );                            
+                        }
+                        else {
+                            testingCohorts = testingCohortsCalc.calculate(
+                                validationScores,
+                                this.followUpDb,
+                                this.followUpDbFileName,
+                                this.admissionPhene
+                            );
+                        }
                     }
                     catch (Exception exception) {
                         // Something went wrong. Get R script command and output if available.
@@ -1986,7 +2005,14 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setValidationRScriptOutputFile(String validationRScriptOutputFile) {
         this.validationRScriptOutputFile = validationRScriptOutputFile;
     }
+    
+    public boolean getSkipValidationSteps() {
+        return skipValidationSteps;
+    }
 
+    public void setSkipValidationSteps(boolean skipValidationSteps) {
+        this.skipValidationSteps = skipValidationSteps;
+    }
     
     public String getPercentInValidationCohort() {
         return percentInValidationCohort;

@@ -111,13 +111,25 @@ public class GeneListInput {
 	    
 	    Map<String,String> row = null;
 	        
+	    log.info("discovery scores number of rows: " + discoveryScores.getNumberOfRows());
+	    
 	    for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
+	        log.info("discovery score row #: " + i);
+	        
 	        row = discoveryScores.getRowMap(i);
 	        
+	        /*
 	        for (String rowKey: row.keySet()) {
 	            log.info("    ROW MAP[" + rowKey + "] = " + row.get(rowKey));
 	        }
-	            
+	        */
+	        
+	        String deRawScore = "DE Raw Score";
+	        if (!row.containsKey("deRawScore") || row.get(deRawScore).equalsIgnoreCase("NA")) {
+	            // If this row doesn't have a DE Raw Score or that score is NA, then scip this row
+	            continue;
+	        }
+	        
 	        String deScore = "DE Score";
 	            
 	        if (!row.containsKey(deScore)) {

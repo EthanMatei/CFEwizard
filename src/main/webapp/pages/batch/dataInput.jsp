@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/js/jquery-ui.theme.min.css">
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery-ui.min.js'/>"></script> 
+    <script src="<s:url includeParams='none' value='/js/diseases.js'/>"></script> 
     <script>
         $( function() {
             var discoveryPhenes = [
@@ -41,9 +42,13 @@
             $( "#phenomicDbCheckDetails" ).on( "click", function() {
                 $( "#phenomicDbCheckDialog" ).dialog( "open" );
                 return false;
-              });
-
-        } ); 
+            });
+            
+            $( "#manualDiseasesSpecification" ).accordion({
+            	active: false,
+                collapsible: true
+            });
+        }); 
         
 
     </script>
@@ -78,6 +83,8 @@
     
     <s:hidden name="startingResultsType"/>
     <s:hidden name="endingResultsType"/>
+    
+    <s:hidden name="skipValidationSteps"/>
     
     <%-- PHENOMIC (TESTING) DATABASE STATUS ====================================================== --%>
     <fieldset class=dataInput>
@@ -363,6 +370,17 @@
                     <s:param name="reportFormat" value="'csv'" />
                     diseases.csv
                 </s:a>
+                
+                <!-- <div id="manualDiseasesSpecification" style="margin-top: 7px;"> -->
+                <!--
+                <div style="margin-top: 7px;">
+                    <h3 style="font-size: 90%;">Manual Diseases Specification (WORK IN PROGRESS)</h3>
+                    <div>
+                        <s:include value="/pages/diseases_include.jsp"/>
+                    </div>
+                </div>
+                -->
+                
             </fieldset>
         </fieldset>
     </s:if>
@@ -372,7 +390,7 @@
     
     <%-- VALIDATION COHORT ===================================================================================== --%> 
 
-    <s:if test="showValidationCohort">    
+    <s:if test="showValidationCohort && !skipValidationSteps">    
         <div>&nbsp;</div>
     
         <fieldset class="dataInput">
@@ -412,7 +430,7 @@
     
     <%-- VALIDATION SCORES ===================================================================================== --%>
     
-    <s:if test="showValidationScores">    
+    <s:if test="showValidationScores && !skipValidationSteps">    
  
     <div>&nbsp;</div>
     <fieldset class="dataInput">

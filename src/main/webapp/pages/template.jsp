@@ -103,7 +103,7 @@ CFE Template
                     &nbsp;|&nbsp;
                     
                     <s:if test="currentTab.equals('Admin')">
-                        <s:a class="selectedMainTab" action="SystemStatusAction"><i class="fa fa-gear"></i> Admin</s:a></li>
+                        <s:a class="selectedMainTab" action="SystemStatusAction"><i class="fa fa-screwdriver-wrench"></i> Admin</s:a></li>
                     </s:if>
                     <s:else>
                         <s:a action="SystemStatusAction"><i class="fa fa-screwdriver-wrench"></i> Admin</s:a>

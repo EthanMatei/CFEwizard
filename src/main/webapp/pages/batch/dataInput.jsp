@@ -1,6 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
- 
+
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
@@ -85,6 +85,7 @@
     <s:hidden name="endingResultsType"/>
     
     <s:hidden name="skipValidationSteps"/>
+
     
     <%-- PHENOMIC (TESTING) DATABASE STATUS ====================================================== --%>
     <fieldset class=dataInput>
@@ -172,7 +173,7 @@
                 <tr> <th>Data</th> <th>File</th> </tr>
                 <tr>
                      <td> Gene Expression CSV File</td>
-                    <td> <s:file name="geneExpressionCsv" label="Gene Expression CSV" /> </td>
+                     <td> <s:file name="geneExpressionCsv" label="Gene Expression CSV" /> </td>
                 </tr>          
             </table>
         </fieldset>
@@ -372,14 +373,14 @@
                 </s:a>
                 
                 <!-- <div id="manualDiseasesSpecification" style="margin-top: 7px;"> -->
-                <!--
+                <%--
                 <div style="margin-top: 7px;">
                     <h3 style="font-size: 90%;">Manual Diseases Specification (WORK IN PROGRESS)</h3>
                     <div>
                         <s:include value="/pages/diseases_include.jsp"/>
                     </div>
                 </div>
-                -->
+                --%>
                 
             </fieldset>
         </fieldset>

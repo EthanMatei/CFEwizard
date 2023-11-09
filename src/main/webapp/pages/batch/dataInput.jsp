@@ -534,6 +534,11 @@
             </p>
         
             <p>
+            All score: <s:textfield size="5" style="text-align: right; margin-right: 2em;" name="testingAllScore"/> 
+            Gender score: <s:textfield size="5" style="text-align: right;" name="testingGenderScore"/>
+            </p>
+            
+            <p>
             Updated Predictor List CSV File (optional)
             <s:file name="updatedTestingPredictorList" />
             </p>
@@ -602,7 +607,7 @@
         
     <!-- <s:submit value="Calculate" id="calculateButton" onclick="submitForm();" /> -->
     <p>
-    <s:submit value="Run" id="calculateButton" style="font-size: 125%; font-weight: bold; padding-left: 1em; padding-right: 1em;"/>
+    <s:submit value="Run" id="calculateButton" style="font-size: 125%; font-weight: bold; padding-left: 1em; padding-right: 1em; margin-bottom: 24px;"/>
     </p>
     
     <s:token />

@@ -277,6 +277,9 @@ public class BatchAction extends BaseAction implements SessionAware {
     private Double predictionPheneHighCutoff;
     private Double predictionPheneComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
     
+    private Double testingGenderScore;
+    private Double testingAllScore;
+    
     // Script command and output files (for case where process fails)
     private String stateCrossSectionalRScriptCommandFile;
     private String stateCrossSectionalRScriptOutputFile;
@@ -302,6 +305,9 @@ public class BatchAction extends BaseAction implements SessionAware {
     public BatchAction() {
         this.setCurrentTab("CFE Pipeline");
         this.setCurrentStep(1);
+        
+        this.testingAllScore    = 3.0;
+        this.testingGenderScore = 2.0;
         
         admissionReasons = new ArrayList<String>();
         admissionReasons.add("Suicide");
@@ -1024,7 +1030,9 @@ public class BatchAction extends BaseAction implements SessionAware {
                             this.predictionPhene,
                             this.predictionPheneHighCutoff,
                             this.predictionPheneComparisonThreshold,
-                            this.testingDiagnosisType
+                            this.testingDiagnosisType,
+                            this.testingAllScore,
+                            this.testingGenderScore
                         );
                     }
                     catch (Exception exception) {
@@ -2359,6 +2367,23 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setPredictionPheneComparisonThreshold(Double predictionPheneComparisonThreshold) {
         this.predictionPheneComparisonThreshold = predictionPheneComparisonThreshold;
+    }
+
+    
+    public Double getTestingGenderScore() {
+        return testingGenderScore;
+    }
+
+    public void setTestingGenderScore(Double testingGenderScore) {
+        this.testingGenderScore = testingGenderScore;
+    }
+
+    public Double getTestingAllScore() {
+        return testingAllScore;
+    }
+
+    public void setTestingAllScore(Double testingAllScore) {
+        this.testingAllScore = testingAllScore;
     }
 
     

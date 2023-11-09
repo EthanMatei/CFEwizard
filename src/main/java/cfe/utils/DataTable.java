@@ -1515,6 +1515,18 @@ public class DataTable {
         return value;
     }
     
+    public Double getDoubleValue(int rowNum, String columnName) throws Exception {
+        Double value = null;
+        String stringValue = this.getValue(rowNum, columnName);
+        try {
+            value = Double.parseDouble(stringValue);
+        }
+        catch (NumberFormatException exception) {
+            value = null;
+        }
+        return value;
+    }
+    
 	public void setValue(String keyValue, String columnName, String value) throws Exception {
 	    ArrayList<String> row = this.getRow(keyValue);
 

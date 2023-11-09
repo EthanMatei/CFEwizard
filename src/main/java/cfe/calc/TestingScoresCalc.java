@@ -159,7 +159,10 @@ public class TestingScoresCalc {
             String predictionPhene,
             Double predictionPheneHighCutoff,
             Double predictionComparisonThreshold,
-            String diagnosisType
+            String diagnosisType,
+            
+            Double testingAllScore,
+            Double testingGenderScore
 	) throws Exception {
 	    
 	    this.testingData               = testingCohorts;
@@ -391,6 +394,32 @@ public class TestingScoresCalc {
             this.rScriptOutputFileStateCrossSectional = tempFile.getAbsolutePath();
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputStateCrossSectional);
+            
+            // Add score column
+            String scoreColumnName = "Score";
+            dataTable.addColumn(scoreColumnName, "0");
+            for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
+                String gender = dataTable.getValue(i, "Gender");
+                String dx = dataTable.getValue(i, "Dx");
+                Double auc = dataTable.getDoubleValue(i, "AUC");
+                Double aucPValue = dataTable.getDoubleValue(i, "AUC.p.value");
+
+                if (auc != null && auc > 0.5 && aucPValue != null && aucPValue < 0.05) {
+                    if (gender.equalsIgnoreCase("All")) {
+                        dataTable.setValue(i, scoreColumnName, testingAllScore + "");
+                    }
+                    else if (dx.equalsIgnoreCase("F") || dx.equalsIgnoreCase("M")) {
+                        dataTable.setValue(i, scoreColumnName, testingGenderScore + ""); 
+                    }
+                    else {
+                        dataTable.setValue(i, scoreColumnName, "0"); 
+                    }
+                }
+                else {
+                    dataTable.setValue(i, scoreColumnName, "0"); 
+                }
+            }
+
             resultsTables.put(CfeResultsSheets.TESTING_STATE_CROSS_SECTIONAL, dataTable);
         }
         

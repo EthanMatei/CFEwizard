@@ -45,9 +45,11 @@ public class TestingScoresCalc {
 	private static final String END_OF_PHENES_MARKER   = "END_OF_PHENES";
 	private static final String START_OF_PHENES_MARKER = "START_OF_PHENES";
 	
+	// study types
 	public static final String CROSS_SECTIONAL = "cross-sectional";
 	public static final String LONGITUDINAL    = "longitudinal";
 	
+	// test types
 	public static final String STATE      = "state";
 	public static final String FIRST_YEAR = "first-year";     // first year hospitalizations
 	public static final String FUTURE     = "future";         // future hospitalizations
@@ -162,7 +164,8 @@ public class TestingScoresCalc {
             String diagnosisType,
             
             Double testingAllScore,
-            Double testingGenderScore
+            Double testingGenderScore,
+            Double testingGenderDiagnosisScore
 	) throws Exception {
 	    
 	    this.testingData               = testingCohorts;
@@ -395,30 +398,7 @@ public class TestingScoresCalc {
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputStateCrossSectional);
             
-            // Add score column
-            String scoreColumnName = "Score";
-            dataTable.addColumn(scoreColumnName, "0");
-            for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
-                String gender = dataTable.getValue(i, "Gender");
-                String dx = dataTable.getValue(i, "Dx");
-                Double auc = dataTable.getDoubleValue(i, "AUC");
-                Double aucPValue = dataTable.getDoubleValue(i, "AUC.p.value");
-
-                if (auc != null && auc > 0.5 && aucPValue != null && aucPValue < 0.05) {
-                    if (gender.equalsIgnoreCase("All")) {
-                        dataTable.setValue(i, scoreColumnName, testingAllScore + "");
-                    }
-                    else if (dx.equalsIgnoreCase("F") || dx.equalsIgnoreCase("M")) {
-                        dataTable.setValue(i, scoreColumnName, testingGenderScore + ""); 
-                    }
-                    else {
-                        dataTable.setValue(i, scoreColumnName, "0"); 
-                    }
-                }
-                else {
-                    dataTable.setValue(i, scoreColumnName, "0"); 
-                }
-            }
+            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
 
             resultsTables.put(CfeResultsSheets.TESTING_STATE_CROSS_SECTIONAL, dataTable);
         }
@@ -442,6 +422,9 @@ public class TestingScoresCalc {
             this.rScriptOutputFileStateLongitudinal = tempFile.getAbsolutePath();
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputStateLongitudinal);
+            
+            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            
             resultsTables.put(CfeResultsSheets.TESTING_STATE_LONGITUDINAL, dataTable);
         }
 
@@ -463,6 +446,9 @@ public class TestingScoresCalc {
             this.rScriptOutputFileFirstYearCrossSectional = tempFile.getAbsolutePath();
                                 
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputFirstYearCrossSectional);
+            
+            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            
             resultsTables.put(CfeResultsSheets.TESTING_FIRST_YEAR_CROSS_SECTIONAL, dataTable);
         }
         
@@ -484,6 +470,9 @@ public class TestingScoresCalc {
             this.rScriptOutputFileFirstYearLongitudinal = tempFile.getAbsolutePath();                    
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputFirstYearLongitudinal);
+            
+            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            
             resultsTables.put(CfeResultsSheets.TESTING_FIRST_YEAR_LONGITUDINAL, dataTable);
         }
         
@@ -507,6 +496,9 @@ public class TestingScoresCalc {
             this.rScriptOutputFileFutureCrossSectional = tempFile.getAbsolutePath();
                                 
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputFutureCrossSectional);
+            
+            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            
             resultsTables.put(CfeResultsSheets.TESTING_FUTURE_CROSS_SECTIONAL, dataTable);
         }
         
@@ -529,6 +521,9 @@ public class TestingScoresCalc {
             this.rScriptOutputFileFutureLongitudinal = tempFile.getAbsolutePath();                    
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputFutureLongitudinal);
+            
+            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            
             resultsTables.put(CfeResultsSheets.TESTING_FUTURE_LONGITUDINAL, dataTable);
         }
         
@@ -689,6 +684,55 @@ public class TestingScoresCalc {
         return cfeResults;
 	}
 
+	public void calculateCfe4Scores(DataTable dataTable, String testType, String studyType, Double testingAllScore, Double testingGenderScore, Double testingGenderDiagnosisScore)
+	        throws Exception
+	{
+        // Add score column
+        String scoreColumnName = "Score";
+        dataTable.addColumn(scoreColumnName, "0");
+        for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
+            String gender = dataTable.getValue(i, "Gender");
+            String dx = dataTable.getValue(i, "Dx");
+            Double auc = dataTable.getDoubleValue(i, "AUC");
+            Double aucPValue = dataTable.getDoubleValue(i, "AUC.p.value");
+
+            if (auc != null && auc > 0.5 && aucPValue != null && aucPValue < 0.05) {
+                if (gender.equalsIgnoreCase("All")) {
+                    dataTable.setValue(i, scoreColumnName, testingAllScore + "");
+                }
+                else if (dx.equalsIgnoreCase("Gender")) {
+                    dataTable.setValue(i, scoreColumnName, testingGenderScore + ""); 
+                }
+                else {
+                    dataTable.setValue(i, scoreColumnName, testingGenderDiagnosisScore + ""); 
+                }
+            }
+            else {
+                dataTable.setValue(i, scoreColumnName, "0"); 
+            }
+            
+            /*
+            if (testType == STATE) {
+                if (studyType == CROSS_SECTIONAL) {
+                }
+                else if (studyType == LONGITUDINAL) {    
+                }
+            }
+            else if (testType == FIRST_YEAR) {
+                if (studyType == CROSS_SECTIONAL) {
+                }
+                else if (studyType == LONGITUDINAL) {    
+                }                
+            }
+            else if (testType == FUTURE) {
+                if (studyType == CROSS_SECTIONAL) {
+                }
+                else if (studyType == LONGITUDINAL) {    
+                }                     
+            }
+            */
+        }
+	}
    
 	
     public String createTestingMasterSheet(Long testingDataId, DataTable predictorList, File geneExpressionCsvFile, String diagnosisType)

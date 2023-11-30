@@ -277,8 +277,10 @@ public class BatchAction extends BaseAction implements SessionAware {
     private Double predictionPheneHighCutoff;
     private Double predictionPheneComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
     
-    private Double testingGenderScore;
     private Double testingAllScore;
+    private Double testingGenderScore;
+    private Double testingGenderDiagnosisScore;
+
     
     // Script command and output files (for case where process fails)
     private String stateCrossSectionalRScriptCommandFile;
@@ -306,8 +308,9 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.setCurrentTab("CFE Pipeline");
         this.setCurrentStep(1);
         
-        this.testingAllScore    = 3.0;
-        this.testingGenderScore = 2.0;
+        this.testingAllScore             = 4.0;
+        this.testingGenderScore          = 2.0;
+        this.testingGenderDiagnosisScore = 1.0;
         
         admissionReasons = new ArrayList<String>();
         admissionReasons.add("Suicide");
@@ -1032,7 +1035,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                             this.predictionPheneComparisonThreshold,
                             this.testingDiagnosisType,
                             this.testingAllScore,
-                            this.testingGenderScore
+                            this.testingGenderScore,
+                            this.testingGenderDiagnosisScore
                         );
                     }
                     catch (Exception exception) {
@@ -2369,6 +2373,15 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.predictionPheneComparisonThreshold = predictionPheneComparisonThreshold;
     }
 
+  
+
+    public Double getTestingAllScore() {
+        return testingAllScore;
+    }
+
+    public void setTestingAllScore(Double testingAllScore) {
+        this.testingAllScore = testingAllScore;
+    }
     
     public Double getTestingGenderScore() {
         return testingGenderScore;
@@ -2378,12 +2391,12 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.testingGenderScore = testingGenderScore;
     }
 
-    public Double getTestingAllScore() {
-        return testingAllScore;
+    public Double getTestingGenderDiagnosisScore() {
+        return testingGenderDiagnosisScore;
     }
 
-    public void setTestingAllScore(Double testingAllScore) {
-        this.testingAllScore = testingAllScore;
+    public void setTestingGenderDiagnosisScore(Double testingGenderDiagnosisScore) {
+        this.testingGenderDiagnosisScore = testingGenderDiagnosisScore;
     }
 
     

@@ -534,8 +534,9 @@
             </p>
         
             <p>
-            All score: <s:textfield size="5" style="text-align: right; margin-right: 2em;" name="testingAllScore"/> 
-            Gender score: <s:textfield size="5" style="text-align: right;" name="testingGenderScore"/>
+            All Score: <s:textfield size="5" style="text-align: right; margin-right: 2em;" name="testingAllScore"/> 
+            Gender Score: <s:textfield size="5" style="text-align: right; margin-right: 2em;" name="testingGenderScore"/>
+            Gender Diagnosis Score: <s:textfield size="5" style="text-align: right;" name="testingGenderDiagnosisScore"/>
             </p>
             
             <p>

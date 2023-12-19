@@ -531,6 +531,26 @@ public class TestingScoresCalc {
         
         // Set generate time
         this.scoresGeneratedTime = new Date();
+
+        //-----------------------------------------------
+        // Add CFE 4 scores sheet
+        //-----------------------------------------------
+        DataTable scoringResultsDataTable = new DataTable();
+        scoringResultsDataTable.setName(CfeResultsSheets.TESTING_SCORING_RESULTS);
+        scoringResultsDataTable.addColumn("Predictor", "");
+        scoringResultsDataTable.addColumn("State Score", "");
+        scoringResultsDataTable.addColumn("First-Year Score", "");
+        scoringResultsDataTable.addColumn("Future Score", "");
+        
+        //for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
+        //    String predictor = dataTable.getValue(i, "Predictor");
+        //    dataTable.setValue(i, "Predictor", predictor);
+        //    
+        //    // FINISH !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //}
+        
+        resultsTables.put(CfeResultsSheets.TESTING_SCORING_RESULTS, scoringResultsDataTable);
+        
         
         // Add testing scores info table
         DataTable testingScoresInfo = this.createTestingScoresInfoTable();
@@ -684,53 +704,66 @@ public class TestingScoresCalc {
         return cfeResults;
 	}
 
-	public void calculateCfe4Scores(DataTable dataTable, String testType, String studyType, Double testingAllScore, Double testingGenderScore, Double testingGenderDiagnosisScore)
+	public void calculateCfe4Scores(DataTable dataTable, String testType, String studyType, 
+	        Double testingAllScore, Double testingGenderScore, Double testingGenderDiagnosisScore)
 	        throws Exception
 	{
-        // Add score column
+	    String oneTailPValueColumnName = "1-tail p-value";
+        if (testType == FUTURE) {
+            dataTable.addColumn(oneTailPValueColumnName, "0");
+        }
+        
+	    // Add score column
         String scoreColumnName = "Score";
         dataTable.addColumn(scoreColumnName, "0");
+        
+        //--------------------------------------------------------------
+        // Set score values
+        //--------------------------------------------------------------
         for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
+            
             String gender = dataTable.getValue(i, "Gender");
             String dx = dataTable.getValue(i, "Dx");
             Double auc = dataTable.getDoubleValue(i, "AUC");
             Double aucPValue = dataTable.getDoubleValue(i, "AUC.p.value");
 
-            if (auc != null && auc > 0.5 && aucPValue != null && aucPValue < 0.05) {
-                if (gender.equalsIgnoreCase("All")) {
-                    dataTable.setValue(i, scoreColumnName, testingAllScore + "");
-                }
-                else if (dx.equalsIgnoreCase("Gender")) {
-                    dataTable.setValue(i, scoreColumnName, testingGenderScore + ""); 
+            if (testType == STATE || testType == FIRST_YEAR) {
+                if (auc != null && auc > 0.5 && aucPValue != null && aucPValue < 0.05) {
+                    if (gender.equalsIgnoreCase("All")) {
+                        dataTable.setValue(i, scoreColumnName, testingAllScore + "");
+                    }
+                    else if (dx.equalsIgnoreCase("Gender")) {
+                        dataTable.setValue(i, scoreColumnName, testingGenderScore + ""); 
+                    }
+                    else {
+                        dataTable.setValue(i, scoreColumnName, testingGenderDiagnosisScore + ""); 
+                    }
                 }
                 else {
-                    dataTable.setValue(i, scoreColumnName, testingGenderDiagnosisScore + ""); 
+                    dataTable.setValue(i, scoreColumnName, "0"); 
                 }
-            }
-            else {
-                dataTable.setValue(i, scoreColumnName, "0"); 
-            }
-            
-            /*
-            if (testType == STATE) {
-                if (studyType == CROSS_SECTIONAL) {
-                }
-                else if (studyType == LONGITUDINAL) {    
-                }
-            }
-            else if (testType == FIRST_YEAR) {
-                if (studyType == CROSS_SECTIONAL) {
-                }
-                else if (studyType == LONGITUDINAL) {    
-                }                
             }
             else if (testType == FUTURE) {
-                if (studyType == CROSS_SECTIONAL) {
+                Double oddsRatio = dataTable.getDoubleValue(i, "Odds.ratio");
+                Double pValueForOddsRatio = dataTable.getDoubleValue(i, "p.value.for.odds.ratio");
+                Double oneTailPValue = pValueForOddsRatio / 2.0;
+                
+                dataTable.setValue(i, oneTailPValueColumnName, oneTailPValue + "");
+                if (oddsRatio > 1 && oneTailPValue < 0.05) {
+                    if (gender.equalsIgnoreCase("All")) {
+                        dataTable.setValue(i, scoreColumnName, testingAllScore + "");
+                    }
+                    else if (dx.equalsIgnoreCase("Gender")) {
+                        dataTable.setValue(i, scoreColumnName, testingGenderScore + ""); 
+                    }
+                    else {
+                        dataTable.setValue(i, scoreColumnName, testingGenderDiagnosisScore + ""); 
+                    }
                 }
-                else if (studyType == LONGITUDINAL) {    
-                }                     
+                else {
+                    dataTable.setValue(i, scoreColumnName, "0");
+                }
             }
-            */
         }
 	}
    

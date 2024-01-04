@@ -232,7 +232,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String validationRScriptCommandFile;
     private String validationRScriptOutputFile;
     
-    private boolean skipValidationSteps;
+    // private boolean skipValidationSteps;
 
 
     /* Testing Cohorts --------------------------------------------------------------- */
@@ -300,6 +300,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     
     public BatchAction() {
+        //this.skipValidationSteps = false;
+        
         this.setCurrentTab("CFE Pipeline");
         this.setCurrentStep(1);
         
@@ -404,14 +406,20 @@ public class BatchAction extends BaseAction implements SessionAware {
                 File testingDbTmp = FileUtil.createTempFile("testing-db-", ".accdb");
                 FileUtils.copyFile(this.testingDb, testingDbTmp);
                 this.testingDbTempFileName = testingDbTmp.getAbsolutePath();
+         
+                log.info("Testing database uploaded.");
                 
                 // Check the phenomic (testing) database
                 this.tableCheckInfos = TableCheckInfo.checkTestingDatabase(testingDbTempFileName);
                 this.phenomicDatabaseErrorCount   = TableCheckInfo.getErrorCount(tableCheckInfos);
                 this.phenomicDatabaseWarningCount = TableCheckInfo.getWarningCount(tableCheckInfos);
 
+                log.info("Testing database checked.");
+                
                 // Process testing database
                 DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDbTempFileName);
+                log.info("Testing database parsed.");
+                
                 dbParser.checkCoreTables();
                 //this.pheneTables = dbParser.getPheneTables();
                 this.discoveryPheneList = dbParser.getPheneList();
@@ -427,6 +435,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 		        
 		        // Get diagnosis types
 		        this.diagnosisTypes = DiagnosisType.getTypes();
+                log.info("Disagnosis types retrieved");
                 
 		        this.showTestingInputs = false;
                 
@@ -545,11 +554,13 @@ public class BatchAction extends BaseAction implements SessionAware {
 
 		        if (this.startingResultsType != null) {
                     if (this.startingResultsType.equals(CfeResultsType.VALIDATION_COHORT) || this.startingResultsType.equals(CfeResultsType.VALIDATION_SCORES)) {
-                        if (this.skipValidationSteps) {
-                            throw new Exception("Illegal starting step of \"" + startingResultsType + "\" specified when skipping validation steps selected.");
-                        }
+                        //if (this.skipValidationSteps) {
+                        //    throw new Exception("Illegal starting step of \"" + startingResultsType + "\" specified when skipping validation steps selected.");
+                        //}
                     }
 		        }
+		        
+		        log.info("Setting show variables...");
                 
 	            this.showDiscoveryCohort      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_COHORT, this.startingResultsType, this.endingResultsType);
 	            this.showDiscoveryScores      = CfeResultsType.typeIsInRange(CfeResultsType.DISCOVERY_SCORES, this.startingResultsType, this.endingResultsType);
@@ -559,6 +570,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 	            this.showTestingCohorts       = CfeResultsType.typeIsInRange(CfeResultsType.TESTING_COHORTS, this.startingResultsType, this.endingResultsType); 
 	            this.showTestingScores        = CfeResultsType.typeIsInRange(CfeResultsType.TESTING_SCORES, this.startingResultsType, this.endingResultsType); 
 
+	            log.info("Show variables set.");
 	               
 	            /*
 		        pastCfeResultsMap = new LinkedHashMap<Long, String>();
@@ -594,6 +606,8 @@ public class BatchAction extends BaseAction implements SessionAware {
 		        result = ERROR;
 		    }
 		}
+		
+		log.info("RESULT = " + result);
 	    return result;
 	}
 	
@@ -831,7 +845,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 CfeResults validationCohort = null;
 
-                if (!this.skipValidationSteps) {
+                //if (!this.skipValidationSteps) {
                     // Skip this step, if it is out of the range of the steps specified
                     if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_COHORT, this.startingResultsType,  this.endingResultsType)) {
 
@@ -867,7 +881,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                         }
                         log.info("Step " + CfeResultsType.VALIDATION_COHORT + " skipped.");
                     }
-                }
+                //}
                 
              
                 //===============================================================
@@ -876,7 +890,7 @@ public class BatchAction extends BaseAction implements SessionAware {
 
                 CfeResults validationScores = null;
                 
-                if (!this.skipValidationSteps) {
+                //if (!this.skipValidationSteps) {
                     // Skip this step, if it is out of the range of the steps specified
                     if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType,  this.endingResultsType)) {
                         log.info("Step " + CfeResultsType.VALIDATION_SCORES + " started.");
@@ -925,7 +939,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                         }
                         log.info("Step " + CfeResultsType.VALIDATION_SCORES + " skipped.");
                     }
-                }
+                //}
                 
                 
                 //================================================================================
@@ -940,6 +954,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                     TestingCohortsCalc testingCohortsCalc = new TestingCohortsCalc();
                     
                     try {
+                        /*
                         if (this.skipValidationSteps) {
                             // If the validation steps are being skipped, use the discovery scores
                             testingCohorts = testingCohortsCalc.calculate(
@@ -949,14 +964,15 @@ public class BatchAction extends BaseAction implements SessionAware {
                                     this.admissionPhene
                                 );                            
                         }
-                        else {
+                        */
+                        /* else { */
                             testingCohorts = testingCohortsCalc.calculate(
                                 validationScores,
                                 this.followUpDb,
                                 this.followUpDbFileName,
                                 this.admissionPhene
                             );
-                        }
+                        /* } */
                     }
                     catch (Exception exception) {
                         // Something went wrong. Get R script command and output if available.
@@ -2006,6 +2022,7 @@ public class BatchAction extends BaseAction implements SessionAware {
         this.validationRScriptOutputFile = validationRScriptOutputFile;
     }
     
+    /*
     public boolean getSkipValidationSteps() {
         return skipValidationSteps;
     }
@@ -2013,6 +2030,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     public void setSkipValidationSteps(boolean skipValidationSteps) {
         this.skipValidationSteps = skipValidationSteps;
     }
+    */
     
     public String getPercentInValidationCohort() {
         return percentInValidationCohort;

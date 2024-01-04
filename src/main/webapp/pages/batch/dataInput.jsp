@@ -84,7 +84,8 @@
     <s:hidden name="startingResultsType"/>
     <s:hidden name="endingResultsType"/>
     
-    <s:hidden name="skipValidationSteps"/>
+    
+    <%-- <s:hidden name="skipValidationSteps"/> --%>
 
     
     <%-- PHENOMIC (TESTING) DATABASE STATUS ====================================================== --%>
@@ -391,7 +392,7 @@
     
     <%-- VALIDATION COHORT ===================================================================================== --%> 
 
-    <s:if test="showValidationCohort && !skipValidationSteps">    
+    <s:if test="showValidationCohort/>    
         <div>&nbsp;</div>
     
         <fieldset class="dataInput">
@@ -431,7 +432,7 @@
     
     <%-- VALIDATION SCORES ===================================================================================== --%>
     
-    <s:if test="showValidationScores && !skipValidationSteps">    
+    <s:if test="showValidationScores"/>    
  
     <div>&nbsp;</div>
     <fieldset class="dataInput">

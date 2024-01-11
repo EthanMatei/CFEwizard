@@ -29,7 +29,18 @@
                 source: discoveryPhenes
             });
             */
+            $( "#phenomicDbCheckDialog" ).dialog({
+                title: "Phenomic Database Status Details",
+                dialogClass: "phenomic-db-check-dialog",
+                autoOpen: false,
+                width: 940,
+                height: 540
+            });
             
+            $( "#phenomicDbCheckDetails" ).on( "click", function() {
+                $( "#phenomicDbCheckDialog" ).dialog( "open" );
+                return false;
+            });            
 
         } ); 
         
@@ -66,6 +77,82 @@
     
     <s:hidden name="startingResultsType"/>
     <s:hidden name="endingResultsType"/>
+    
+    <%-- PHENOMIC (TESTING) DATABASE STATUS ====================================================== --%>
+    <fieldset class=dataInput>
+        <legend>Phenomic Database Status</legend>
+        <p>
+        Database File: <s:property value="testingDbFileName"/>
+        </p>
+
+        <div style="float: left;">
+            <table class="dataTable">
+                <tr>
+                    <td>
+                       <s:if test="phenomicDatabaseWarningCount > 0">
+                           <span style="font-weight: bold; color: #FF8000;">Warnings:</span>
+                       </s:if>
+                       <s:else>
+                           Warnings:
+                       </s:else>
+                    </td>
+                    <s:if test="phenomicDatabaseWarningCount > 0">
+                        <td style="text-align: right; font-weight: bold; color:  #FF8000;"> <s:property value="phenomicDatabaseWarningCount"/> </td>
+                    </s:if>
+                    <s:else>
+                        <td style="text-align: right;"> <s:property value="phenomicDatabaseWarningCount"/> </td>
+                    </s:else>
+                </tr>
+                <tr>
+                    <td>
+                        <s:if test="phenomicDatabaseErrorCount > 0">
+                            <span style="font-weight: bold; color: red;">Errors:</span>
+                        </s:if>
+                        <s:else>
+                            Errors:
+                        </s:else>
+                    </td>
+                    <s:if test="phenomicDatabaseErrorCount > 0">
+                        <td style="text-align: right; font-weight: bold; color: red;"> <s:property value="phenomicDatabaseErrorCount"/> </td>
+                    </s:if>
+                    <s:else>
+                        <td style="text-align: right;"> <s:property value="phenomicDatabaseErrorCount"/> </td>
+                    </s:else>
+                </tr>
+            </table>
+        </div>
+
+        <div style="float: left; margin-left: 1em; margin-top: 16px;">
+            <button id="phenomicDbCheckDetails">Details</button>
+        </div>
+
+        <div style="clear: both;"></div>
+
+        <div id="phenomicDbCheckDialog">
+            <s:iterator value="tableCheckInfos">
+                <hr/>
+                <div>
+                    <span style="font-weight: bold;">TABLE "<s:property value="name"/>"</span>
+                    <ul>
+                        <s:if test="!columns.isEmpty()">
+                            <li><span style="font-weight: bold;">COLUMNS:</span> <s:property value="columnsString"/></li>
+                        </s:if>
+
+                        <s:iterator value="errors" var="error">
+                            <li style="color: red;"><span style="color: red;"><i class="fa fa-exclamation-triangle"></i> ERROR: <s:property value="error"/></span></li>
+                        </s:iterator>
+
+                        <s:iterator value="warnings" var="error">
+                            <li style="color: #FF8000;"><span><i class="fa fa-exclamation-triangle"></i> WARNING: <s:property value="error"/></span></li>
+                        </s:iterator>
+                    </ul>
+                </div>
+
+            </s:iterator>
+        </div>
+    </fieldset>
+
+    <div>&nbsp;</div>
     
     
     <%--GENE EXPRESSION FILE (NON-DISCOVERY) ====================================================== --%>

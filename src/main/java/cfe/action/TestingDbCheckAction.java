@@ -41,6 +41,9 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	private String report;
 	
     private Date generatedTime;
+    
+    private int errorCount;
+    private int warningCount;
 	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	
@@ -49,6 +52,9 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	    this.setCurrentSubTab("Phenomic Database Check");
 	    
 	    this.tableCheckInfos = new ArrayList<TableCheckInfo>();
+	    
+	    this.errorCount   = 0;
+	    this.warningCount = 0;
 	}
 	
 	public String initialize() throws Exception {
@@ -82,6 +88,10 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 		        String testingDbFilePath = testingDb.getAbsolutePath();
 		        
 		        this.tableCheckInfos = TableCheckInfo.checkTestingDatabase(testingDbFilePath);
+		        
+		        this.errorCount   = TableCheckInfo.getErrorCount(tableCheckInfos);
+		        this.warningCount = TableCheckInfo.getWarningCount(tableCheckInfos);
+		        
 		        this.generatedTime = new Date();
 		    } catch (Exception exception) {
 		        String message = "The Discovery database \"" + this.testingDbFileName + "\" could not be processed: " + exception.getLocalizedMessage();
@@ -160,6 +170,22 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 
     public void setGeneratedTime(Date generatedTime) {
         this.generatedTime = generatedTime;
+    }
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    public void setErrorCount(int errorCount) {
+        this.errorCount = errorCount;
+    }
+
+    public int getWarningCount() {
+        return warningCount;
+    }
+
+    public void setWarningCount(int warningCount) {
+        this.warningCount = warningCount;
     }
 
 }

@@ -1070,7 +1070,7 @@ public class TestingScoresCalc {
         //---------------------------------------------
         String key = "Predictor";
 
-        DataTable predictorList = new DataTable(key);
+        DataTable predictorList = new DataTable();
         
         predictorList.addColumn(key, "");
         predictorList.addColumn("Direction", "");

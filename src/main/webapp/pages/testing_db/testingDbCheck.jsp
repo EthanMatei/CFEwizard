@@ -25,6 +25,14 @@
 <%-- <s:property value="report"/> --%>
 </pre>
 
+<p>
+<span style="font-weight: bold;">Database File:</span> &quot;<s:property value="testingDbFileName"/>&quot;
+</p>
+
+<p>
+<span style="font-weight: bold;">Time Generated:</span> <s:date name="generatedTime" format="MM/dd/yyyy HH:mm"/> 
+</p>
+
 <s:iterator value="tableCheckInfos">
     <hr/>
     <div>

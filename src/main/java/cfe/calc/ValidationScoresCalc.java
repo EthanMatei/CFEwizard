@@ -903,7 +903,7 @@ public class ValidationScoresCalc {
         
 	    String key = "Predictor";
 
-	    DataTable predictorList = new DataTable();
+	    DataTable predictorList = new DataTable(key);
 	    predictorList.addColumn(key, "");
 	    predictorList.addColumn("Direction", "");
         predictorList.addColumn("Male", "");

@@ -1720,7 +1720,12 @@ public class DataTable {
         ArrayList<String> row = this.index.get(keyValue);
         
         for (int i = 0; i < this.columns.size(); i++) {
-            rowMap.put(this.columns.get(i), row.get(i)); 
+            if (i < row.size()) {
+                rowMap.put(this.columns.get(i), row.get(i));
+            }
+            else {
+                rowMap.put(this.columns.get(i), "");
+            }
         }
         
         return rowMap;
@@ -1736,9 +1741,14 @@ public class DataTable {
         Map<String,String> rowMap = new HashMap<String,String>();
         
         ArrayList<String> row = this.getRow(rowNum);
-        
+
         for (int i = 0; i < this.columns.size(); i++) {
-            rowMap.put(this.columns.get(i), row.get(i)); 
+            if (i < row.size()) {
+                rowMap.put(this.columns.get(i), row.get(i));
+            }
+            else {
+                rowMap.put(this.columns.get(i), "");
+            }
         }
         
         return rowMap;

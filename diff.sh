@@ -6,10 +6,12 @@
 # diff src/main/java/cfe/calc/ValidationScoresCalc.java ../2024-01-11-cfe-wizard/src/main/java/cfe/calc/ValidationScoresCalc.java
 # diff src/main/java/cfe/model/VersionNumber.java ../2024-01-11-cfe-wizard/src/main/java/cfe/model/VersionNumber.java
 
-echo "src/main/java/cfe/model/prioritization/GeneListInput.java"
-diff -b src/main/java/cfe/model/prioritization/GeneListInput.java ../2024-01-11-cfe-wizard/src/main/java/cfe/model/prioritization/GeneListInput.java
+#echo "src/main/java/cfe/model/prioritization/GeneListInput.java"
+#diff -b src/main/java/cfe/model/prioritization/GeneListInput.java ../2024-01-11-cfe-wizard/src/main/java/cfe/model/prioritization/GeneListInput.java
 
-# diff src/main/java/cfe/utils/DataTable.java ../2024-01-11-cfe-wizard/src/main/java/cfe/utils/DataTable.java
+echo "src/main/java/cfe/utils/DataTable.java"
+diff -b src/main/java/cfe/utils/DataTable.java ../2024-01-11-cfe-wizard/src/main/java/cfe/utils/DataTable.java
+
 # diff src/main/resources/struts.properties ../2024-01-11-cfe-wizard/src/main/resources/struts.properties
 # diff src/main/webapp/css/cfe.css ../2024-01-11-cfe-wizard/src/main/webapp/css/cfe.css
 # diff src/main/webapp/js/diseases.js ../2024-01-11-cfe-wizard/src/main/webapp/js/diseases.js

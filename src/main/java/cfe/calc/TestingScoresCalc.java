@@ -373,6 +373,15 @@ public class TestingScoresCalc {
         //-------------------------------------------------------
         // Make specified calculations
         //-------------------------------------------------------
+
+        // Add CFE 4 scores sheet
+        DataTable scoringResultsDataTable = new DataTable();
+        scoringResultsDataTable.setName(CfeResultsSheets.TESTING_SCORING_RESULTS);
+        scoringResultsDataTable.addColumn("Predictor", "");
+        scoringResultsDataTable.addColumn("State Score", "");
+        scoringResultsDataTable.addColumn("First-Year Score", "");
+        scoringResultsDataTable.addColumn("Future Score", "");
+        scoringResultsDataTable.addColumn("Testing Score", "");
         
         // STATE CROSS-SECTIONAL
         if (this.stateCrossSectional) {
@@ -398,7 +407,7 @@ public class TestingScoresCalc {
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputStateCrossSectional);
             
-            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            this.calculateCfe4Scores(dataTable, scoringResultsDataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
 
             resultsTables.put(CfeResultsSheets.TESTING_STATE_CROSS_SECTIONAL, dataTable);
         }
@@ -423,7 +432,7 @@ public class TestingScoresCalc {
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputStateLongitudinal);
             
-            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            this.calculateCfe4Scores(dataTable, scoringResultsDataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
             
             resultsTables.put(CfeResultsSheets.TESTING_STATE_LONGITUDINAL, dataTable);
         }
@@ -447,7 +456,7 @@ public class TestingScoresCalc {
                                 
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputFirstYearCrossSectional);
             
-            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            this.calculateCfe4Scores(dataTable, scoringResultsDataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
             
             resultsTables.put(CfeResultsSheets.TESTING_FIRST_YEAR_CROSS_SECTIONAL, dataTable);
         }
@@ -471,7 +480,7 @@ public class TestingScoresCalc {
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputFirstYearLongitudinal);
             
-            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            this.calculateCfe4Scores(dataTable, scoringResultsDataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
             
             resultsTables.put(CfeResultsSheets.TESTING_FIRST_YEAR_LONGITUDINAL, dataTable);
         }
@@ -497,7 +506,7 @@ public class TestingScoresCalc {
                                 
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputFutureCrossSectional);
             
-            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            this.calculateCfe4Scores(dataTable, scoringResultsDataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
             
             resultsTables.put(CfeResultsSheets.TESTING_FUTURE_CROSS_SECTIONAL, dataTable);
         }
@@ -522,7 +531,7 @@ public class TestingScoresCalc {
             
             DataTable dataTable = this.getRScriptOutputFile(this.rScriptOutputFutureLongitudinal);
             
-            this.calculateCfe4Scores(dataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
+            this.calculateCfe4Scores(dataTable, scoringResultsDataTable, testType, studyType, testingAllScore, testingGenderScore, testingGenderDiagnosisScore);
             
             resultsTables.put(CfeResultsSheets.TESTING_FUTURE_LONGITUDINAL, dataTable);
         }
@@ -532,23 +541,17 @@ public class TestingScoresCalc {
         // Set generate time
         this.scoresGeneratedTime = new Date();
 
-        //-----------------------------------------------
-        // Add CFE 4 scores sheet
-        //-----------------------------------------------
-        DataTable scoringResultsDataTable = new DataTable();
-        scoringResultsDataTable.setName(CfeResultsSheets.TESTING_SCORING_RESULTS);
-        scoringResultsDataTable.addColumn("Predictor", "");
-        scoringResultsDataTable.addColumn("State Score", "");
-        scoringResultsDataTable.addColumn("First-Year Score", "");
-        scoringResultsDataTable.addColumn("Future Score", "");
         
-        //for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
-        //    String predictor = dataTable.getValue(i, "Predictor");
-        //    dataTable.setValue(i, "Predictor", predictor);
-        //    
-        //    // FINISH !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //}
-        
+        //-------------------------------------------------------------------------
+        // Calculate testing scores and add "testing scoring results" sheet
+        //-------------------------------------------------------------------------
+        for (int i = 1; i < scoringResultsDataTable.getNumberOfRows(); i++) {
+            double state     = scoringResultsDataTable.getDoubleValue(i, 1);
+            double firstYear = scoringResultsDataTable.getDoubleValue(i, 2);
+            double future    = scoringResultsDataTable.getDoubleValue(i, 3);
+            double testingScore = state + Math.max(firstYear, future);
+            scoringResultsDataTable.setValue(i, 4, testingScore + "");
+        }
         resultsTables.put(CfeResultsSheets.TESTING_SCORING_RESULTS, scoringResultsDataTable);
         
         
@@ -704,10 +707,10 @@ public class TestingScoresCalc {
         return cfeResults;
 	}
 
-	public void calculateCfe4Scores(DataTable dataTable, String testType, String studyType, 
+	public void calculateCfe4Scores(DataTable dataTable, DataTable scoringResultsDataTable, String testType, String studyType, 
 	        Double testingAllScore, Double testingGenderScore, Double testingGenderDiagnosisScore)
 	        throws Exception
-	{
+	{    
 	    String oneTailPValueColumnName = "1-tail p-value";
         if (testType == FUTURE) {
             dataTable.addColumn(oneTailPValueColumnName, "0");
@@ -717,31 +720,73 @@ public class TestingScoresCalc {
         String scoreColumnName = "Score";
         dataTable.addColumn(scoreColumnName, "0");
         
+        HashMap<String,Integer> predictorToRowNumberMap = new HashMap<String,Integer>();
+        
+        
+        //-----------------------------------------
+        // Set the results column index
+        //-----------------------------------------
+        int resultsColumnIndex = 0;
+        
+        if (testType == STATE) {
+            resultsColumnIndex = 1;
+        }
+        else if (testType == FIRST_YEAR) {
+            resultsColumnIndex = 2;
+        }
+        else if (testType == FUTURE) {
+            resultsColumnIndex = 3;
+        }
+        
         //--------------------------------------------------------------
         // Set score values
         //--------------------------------------------------------------
         for (int i = 0; i < dataTable.getNumberOfRows(); i++) {
+            
+            //-----------------------------------------------------------
+            // Add predictor to scoring results if not already added,
+            // and get the row number for the predictor
+            //-----------------------------------------------------------
+            String predictor = dataTable.getValue(i, "Predictor");
+            
+            int resultsRowNumber = 0;
+            
+
+            if (predictorToRowNumberMap.containsKey(predictor)) {
+                resultsRowNumber = predictorToRowNumberMap.get(predictor);
+            }
+            else {
+                String[] row = {"", "0", "0", "0", "0"};
+                scoringResultsDataTable.addRow(row);
+                resultsRowNumber = scoringResultsDataTable.getNumberOfRows() - 1;
+                scoringResultsDataTable.setValue(resultsRowNumber, 0, predictor); // zero for first column number
+                predictorToRowNumberMap.put(predictor, resultsRowNumber);
+            }
+            //-----------------------------------------------------------
             
             String gender = dataTable.getValue(i, "Gender");
             String dx = dataTable.getValue(i, "Dx");
             Double auc = dataTable.getDoubleValue(i, "AUC");
             Double aucPValue = dataTable.getDoubleValue(i, "AUC.p.value");
 
+            Double score = 0.0;
+            
             if (testType == STATE || testType == FIRST_YEAR) {
                 if (auc != null && auc > 0.5 && aucPValue != null && aucPValue < 0.05) {
                     if (gender.equalsIgnoreCase("All")) {
-                        dataTable.setValue(i, scoreColumnName, testingAllScore + "");
+                        score = testingAllScore;
                     }
                     else if (dx.equalsIgnoreCase("Gender")) {
-                        dataTable.setValue(i, scoreColumnName, testingGenderScore + ""); 
+                        score = testingGenderScore; 
                     }
                     else {
-                        dataTable.setValue(i, scoreColumnName, testingGenderDiagnosisScore + ""); 
+                        score = testingGenderDiagnosisScore;
                     }
                 }
                 else {
-                    dataTable.setValue(i, scoreColumnName, "0"); 
+                    score = 0.0;
                 }
+                dataTable.setValue(i, scoreColumnName, score + ""); 
             }
             else if (testType == FUTURE) {
                 Double oddsRatio = dataTable.getDoubleValue(i, "Odds.ratio");
@@ -751,18 +796,27 @@ public class TestingScoresCalc {
                 dataTable.setValue(i, oneTailPValueColumnName, oneTailPValue + "");
                 if (oddsRatio > 1 && oneTailPValue < 0.05) {
                     if (gender.equalsIgnoreCase("All")) {
-                        dataTable.setValue(i, scoreColumnName, testingAllScore + "");
+                        score = testingAllScore;
                     }
                     else if (dx.equalsIgnoreCase("Gender")) {
-                        dataTable.setValue(i, scoreColumnName, testingGenderScore + ""); 
+                        score = testingGenderScore;
                     }
                     else {
-                        dataTable.setValue(i, scoreColumnName, testingGenderDiagnosisScore + ""); 
+                        score = testingGenderDiagnosisScore;
                     }
                 }
                 else {
-                    dataTable.setValue(i, scoreColumnName, "0");
+                    score = 0.0;
                 }
+                dataTable.setValue(i, scoreColumnName, score + ""); 
+            }
+            
+            //----------------------------------------------------
+            // Update scoring results table
+            //----------------------------------------------------
+            double currentScore = scoringResultsDataTable.getDoubleValue(resultsRowNumber, resultsColumnIndex);
+            if (score > currentScore) {
+                scoringResultsDataTable.setValue(resultsRowNumber, resultsColumnIndex, score + "");
             }
         }
 	}

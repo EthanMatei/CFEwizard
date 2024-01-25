@@ -3,6 +3,7 @@ package cfe.action;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,8 +26,6 @@ import cfe.utils.TableCheckInfo;
 public class TestingDbCheckAction extends BaseAction implements SessionAware {
 
 	private static final long serialVersionUID = 1L;
-	
-    public static final String PHENE_VISIT_PATTERN = "^phchp\\d+v\\d+$|^CTBIN\\d+v\\d+$";
     
 	//private static final Log log = LogFactory.getLog(DiscoveryAction.class);
     private static Logger log = Logger.getLogger(TestingDbCheckAction.class.getName());
@@ -41,6 +40,11 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	
 	private String report;
 	
+    private Date generatedTime;
+    
+    private int errorCount;
+    private int warningCount;
+	
 	Map<String,ArrayList<ColumnInfo>> phenes = new TreeMap<String,ArrayList<ColumnInfo>>();
 	
 	public TestingDbCheckAction() {
@@ -48,6 +52,9 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 	    this.setCurrentSubTab("Phenomic Database Check");
 	    
 	    this.tableCheckInfos = new ArrayList<TableCheckInfo>();
+	    
+	    this.errorCount   = 0;
+	    this.warningCount = 0;
 	}
 	
 	public String initialize() throws Exception {
@@ -81,6 +88,11 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
 		        String testingDbFilePath = testingDb.getAbsolutePath();
 		        
 		        this.tableCheckInfos = TableCheckInfo.checkTestingDatabase(testingDbFilePath);
+		        
+		        this.errorCount   = TableCheckInfo.getErrorCount(tableCheckInfos);
+		        this.warningCount = TableCheckInfo.getWarningCount(tableCheckInfos);
+		        
+		        this.generatedTime = new Date();
 		    } catch (Exception exception) {
 		        String message = "The Discovery database \"" + this.testingDbFileName + "\" could not be processed: " + exception.getLocalizedMessage();
 		        log.severe(message);
@@ -152,5 +164,28 @@ public class TestingDbCheckAction extends BaseAction implements SessionAware {
         this.tableCheckInfos = tableCheckInfos;
     }
 
+    public Date getGeneratedTime() {
+        return generatedTime;
+    }
+
+    public void setGeneratedTime(Date generatedTime) {
+        this.generatedTime = generatedTime;
+    }
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    public void setErrorCount(int errorCount) {
+        this.errorCount = errorCount;
+    }
+
+    public int getWarningCount() {
+        return warningCount;
+    }
+
+    public void setWarningCount(int warningCount) {
+        this.warningCount = warningCount;
+    }
 
 }

@@ -11,11 +11,14 @@ import com.healthmarketscience.jackcess.Table;
 
 import cfe.parser.DiscoveryDatabaseParser;
 
+/* This code is obsolete */
+
 public class TestingDatabaseCheck {
     public static final String TESTING_DB_DIR = "/home/lab/shared/";
     public static final String TESTING_DB_FILE = "Testing Database MDH 12-12-2022.accdb";
     
-    public static final String PHENE_VISIT_PATTERN = "^phchp\\d+v\\d+$|^CTBIN\\d+v\\d+$";
+    /* 2024-01-11: Decision made to not restrict phene visit pattern */
+    //public static final String PHENE_VISIT_PATTERN = "^phchp\\d+v\\d+$|^CTBIN\\d+v\\d+$";
     
     public static void main(String[] args) {
         
@@ -52,12 +55,13 @@ public class TestingDatabaseCheck {
                             out.println("    ERROR: duplicate phene visit \"" + pheneVisit + "\".");
                         }
                         //else if (pheneVisit.matches("^phchp\\d+v\\d+$|^CTBIN\\d+v\\d+$")) {
-                        else if (pheneVisit.matches(PHENE_VISIT_PATTERN)) {
+                        /* 2024-01-11: Decision made to not restrict phene visit pattern */
+                        //else if (pheneVisit.matches(PHENE_VISIT_PATTERN)) {
                             pheneVisits.add(pheneVisit);
-                        }
-                        else {
-                            out.println("    ERROR: phene visit \"" + pheneVisit + "\" has an incorrect format.");
-                        }
+                        //}
+                        //else {
+                        //    out.println("    ERROR: phene visit \"" + pheneVisit + "\" has an incorrect format.");
+                        //}
                            
                     }
                 }

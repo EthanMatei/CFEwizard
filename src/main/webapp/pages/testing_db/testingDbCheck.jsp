@@ -21,9 +21,25 @@
         
 <s:actionerror />
 
-<pre>
-<%-- <s:property value="report"/> --%>
-</pre>
+<hr/>
+
+<p>
+<span style="font-weight: bold;">Database File:</span> &quot;<s:property value="testingDbFileName"/>&quot;
+</p>
+
+<p>
+<span style="font-weight: bold;">Error Count:</span> <s:property value="errorCount"/>
+</p>
+
+<p>
+<span style="font-weight: bold;">Warning Count:</span> <s:property value="warningCount"/>
+</p>
+
+<p style="margin-bottom: 12px;">
+<span style="font-weight: bold;">Time Generated:</span> <s:date name="generatedTime" format="MM/dd/yyyy HH:mm"/> 
+</p>
+
+
 
 <s:iterator value="tableCheckInfos">
     <hr/>

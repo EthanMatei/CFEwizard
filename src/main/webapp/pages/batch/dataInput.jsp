@@ -1,6 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
-
+ 
 <tiles:insertTemplate template="/pages/template.jsp" flush="true">
 
 <tiles:putAttribute name="header">
@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="/js/jquery-ui.theme.min.css">
     <script src="<s:url includeParams='none' value='/js/jquery-3.6.0.min.js'/>"></script> 
     <script src="<s:url includeParams='none' value='/js/jquery-ui.min.js'/>"></script> 
-    <script src="<s:url includeParams='none' value='/js/diseases.js'/>"></script> 
     <script>
         $( function() {
             var discoveryPhenes = [
@@ -29,11 +28,10 @@
             $( "#discoveryPhenes" ).autocomplete({
                 source: discoveryPhenes
             });
- 
             */
             $( "#phenomicDbCheckDialog" ).dialog({
-            	title: "Phenomic Database Status Details",
-            	dialogClass: "phenomic-db-check-dialog",
+                title: "Phenomic Database Status Details",
+                dialogClass: "phenomic-db-check-dialog",
                 autoOpen: false,
                 width: 940,
                 height: 540
@@ -42,13 +40,9 @@
             $( "#phenomicDbCheckDetails" ).on( "click", function() {
                 $( "#phenomicDbCheckDialog" ).dialog( "open" );
                 return false;
-            });
-            
-            $( "#manualDiseasesSpecification" ).accordion({
-            	active: false,
-                collapsible: true
-            });
-        }); 
+            });            
+
+        } ); 
         
 
     </script>
@@ -84,16 +78,13 @@
     <s:hidden name="startingResultsType"/>
     <s:hidden name="endingResultsType"/>
     
-    <s:hidden name="skipValidationSteps"/>
-
-    
     <%-- PHENOMIC (TESTING) DATABASE STATUS ====================================================== --%>
     <fieldset class=dataInput>
         <legend>Phenomic Database Status</legend>
         <p>
         Database File: <s:property value="testingDbFileName"/>
         </p>
-        
+
         <div style="float: left;">
             <table class="dataTable">
                 <tr>
@@ -119,7 +110,7 @@
                         </s:if>
                         <s:else>
                             Errors:
-                        </s:else> 
+                        </s:else>
                     </td>
                     <s:if test="phenomicDatabaseErrorCount > 0">
                         <td style="text-align: right; font-weight: bold; color: red;"> <s:property value="phenomicDatabaseErrorCount"/> </td>
@@ -128,59 +119,58 @@
                         <td style="text-align: right;"> <s:property value="phenomicDatabaseErrorCount"/> </td>
                     </s:else>
                 </tr>
-            </table> 
+            </table>
         </div>
-        
+
         <div style="float: left; margin-left: 1em; margin-top: 16px;">
             <button id="phenomicDbCheckDetails">Details</button>
         </div>
-        
+
         <div style="clear: both;"></div>
 
-        
         <div id="phenomicDbCheckDialog">
-			<s:iterator value="tableCheckInfos">
-			    <hr/>
-			    <div>
-			        <span style="font-weight: bold;">TABLE "<s:property value="name"/>"</span>
-			        <ul>
-			            <s:if test="!columns.isEmpty()">
-			                <li><span style="font-weight: bold;">COLUMNS:</span> <s:property value="columnsString"/></li>
-			            </s:if>
-			
-			            <s:iterator value="errors" var="error">
-			                <li style="color: red;"><span style="color: red;"><i class="fa fa-exclamation-triangle"></i> ERROR: <s:property value="error"/></span></li>
-			            </s:iterator>
-			            
-			            <s:iterator value="warnings" var="error">
-			                <li style="color: #FF8000;"><span><i class="fa fa-exclamation-triangle"></i> WARNING: <s:property value="error"/></span></li>
-			            </s:iterator>
-			        </ul>
-			    </div>
-			
-			</s:iterator>
+            <s:iterator value="tableCheckInfos">
+                <hr/>
+                <div>
+                    <span style="font-weight: bold;">TABLE "<s:property value="name"/>"</span>
+                    <ul>
+                        <s:if test="!columns.isEmpty()">
+                            <li><span style="font-weight: bold;">COLUMNS:</span> <s:property value="columnsString"/></li>
+                        </s:if>
+
+                        <s:iterator value="errors" var="error">
+                            <li style="color: red;"><span style="color: red;"><i class="fa fa-exclamation-triangle"></i> ERROR: <s:property value="error"/></span></li>
+                        </s:iterator>
+
+                        <s:iterator value="warnings" var="error">
+                            <li style="color: #FF8000;"><span><i class="fa fa-exclamation-triangle"></i> WARNING: <s:property value="error"/></span></li>
+                        </s:iterator>
+                    </ul>
+                </div>
+
+            </s:iterator>
         </div>
     </fieldset>
-    
+
     <div>&nbsp;</div>
-        
+    
+    
     <%--GENE EXPRESSION FILE (NON-DISCOVERY) ====================================================== --%>
     <s:if test="showValidationScores || showTestingScores"> 
-        <fieldset class=dataInput>
-            <legend>Data Files</legend>
+    <fieldset class=dataInput>
+        <legend>Data Files</legend>
         
-            <table class="dataTable">
-                <tr> <th>Data</th> <th>File</th> </tr>
-                <tr>
-                     <td> Gene Expression CSV File</td>
-                     <td> <s:file name="geneExpressionCsv" label="Gene Expression CSV" /> </td>
-                </tr>          
-            </table>
-        </fieldset>
-        <div>&nbsp;</div>
+        <table class="dataTable">
+            <tr> <th>Data</th> <th>File</th> </tr>
+            <tr>
+                <td> Gene Expression CSV File</td>
+                <td> <s:file name="geneExpressionCsv" label="Gene Expression CSV" /> </td>
+            </tr>          
+        </table>
+    </fieldset>
     </s:if>
     
-
+    <div>&nbsp;</div>
     
     <%-- DISCOVERY COHORTS ========================================================================= --%>
     <s:if test="showDiscoveryCohort">
@@ -371,17 +361,6 @@
                     <s:param name="reportFormat" value="'csv'" />
                     diseases.csv
                 </s:a>
-                
-                <!-- <div id="manualDiseasesSpecification" style="margin-top: 7px;"> -->
-                <%--
-                <div style="margin-top: 7px;">
-                    <h3 style="font-size: 90%;">Manual Diseases Specification (WORK IN PROGRESS)</h3>
-                    <div>
-                        <s:include value="/pages/diseases_include.jsp"/>
-                    </div>
-                </div>
-                --%>
-                
             </fieldset>
         </fieldset>
     </s:if>
@@ -391,7 +370,7 @@
     
     <%-- VALIDATION COHORT ===================================================================================== --%> 
 
-    <s:if test="showValidationCohort && !skipValidationSteps">    
+    <s:if test="showValidationCohort">    
         <div>&nbsp;</div>
     
         <fieldset class="dataInput">
@@ -431,7 +410,7 @@
     
     <%-- VALIDATION SCORES ===================================================================================== --%>
     
-    <s:if test="showValidationScores && !skipValidationSteps">    
+    <s:if test="showValidationScores">    
  
     <div>&nbsp;</div>
     <fieldset class="dataInput">

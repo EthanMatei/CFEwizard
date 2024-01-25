@@ -35,14 +35,15 @@ public class GeneExpressionFile {
             throw new Exception("The first header value \"" + header[0] + "\" is not \"ID\" for the gene expression file.");
         }
         
-        for (int i = 1; i < header.length; i++) {
-            if (!(header[i]).matches(TestingDbCheckAction.PHENE_VISIT_PATTERN)) {
-                csvReader.close();
-                throw new Exception("Header number " + (i+1) + " with value \"" + header[i] + "\" is not a valid phene visit"
-                        + " for a validation gene expression CSV file. The header row of a gene expression file"
-                        + " should have \"ID\" as its first column and valid phene visits for the remaining columns.");
-            }
-        }
+        /* 2024-01-11: Decision made to not restrict phene visit pattern */
+        //for (int i = 1; i < header.length; i++) {
+        //    if (!(header[i]).matches(TestingDbCheckAction.PHENE_VISIT_PATTERN)) {
+        //        csvReader.close();
+        //        throw new Exception("Header number " + (i+1) + " with value \"" + header[i] + "\" is not a valid phene visit"
+        //                + " for a validation gene expression CSV file. The header row of a gene expression file"
+        //                + " should have \"ID\" as its first column and valid phene visits for the remaining columns.");
+        //    }
+        //}
         
         csvReader.close();
     }

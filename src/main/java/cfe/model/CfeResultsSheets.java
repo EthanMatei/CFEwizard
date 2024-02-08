@@ -45,4 +45,6 @@ public class CfeResultsSheets {
     public static final String TESTING_SCORES_INFO                = "testing scores info";
     
     public static final String TESTING_SCORING_RESULTS            = "testing scoring results";
+    
+    public static final String CFE_SCORES                         = "cfe scores";
 }

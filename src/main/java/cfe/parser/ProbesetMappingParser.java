@@ -28,6 +28,12 @@ public class ProbesetMappingParser {
 	    this.database = DatabaseBuilder.open(new File(msAccessFile));
 	}
 	
+	/**
+	 * Gets the table from the database that maps probesets to genes.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	public Table getMappingTable() throws Exception {
 	    Table map = null;
 	    ArrayList<String> genecardsTables = new ArrayList<String>();

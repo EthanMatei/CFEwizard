@@ -897,7 +897,10 @@ public class TestingScoresCalc {
                     if (gender != null && gender.equalsIgnoreCase("All")) {
                         score = testingAllScore;
                     }
-                    else if (dx != null && dx.equalsIgnoreCase("Gender")) {
+                    else if (dx != null && gender != null && gender.equalsIgnoreCase("F") && dx.equalsIgnoreCase("F")) { 
+                        score = testingGenderScore; 
+                    }
+                    else if (dx != null && gender != null && gender.equalsIgnoreCase("M") && dx.equalsIgnoreCase("M")) { 
                         score = testingGenderScore; 
                     }
                     else {
@@ -919,8 +922,11 @@ public class TestingScoresCalc {
                     if (gender.equalsIgnoreCase("All")) {
                         score = testingAllScore;
                     }
-                    else if (dx.equalsIgnoreCase("Gender")) {
-                        score = testingGenderScore;
+                    else if (dx != null && gender != null && gender.equalsIgnoreCase("F") && dx.equalsIgnoreCase("F")) { 
+                        score = testingGenderScore; 
+                    }
+                    else if (dx != null && gender != null && gender.equalsIgnoreCase("M") && dx.equalsIgnoreCase("M")) { 
+                        score = testingGenderScore; 
                     }
                     else {
                         score = testingGenderDiagnosisScore;

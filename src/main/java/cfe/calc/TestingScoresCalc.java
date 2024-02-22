@@ -139,6 +139,8 @@ public class TestingScoresCalc {
     
     private Long cfeResultsId;
 
+    private String diagnosisType;
+
 	
 	public CfeResults calculate(
 	        CfeResults testingCohorts,
@@ -192,6 +194,8 @@ public class TestingScoresCalc {
         this.predictionPhene               = predictionPhene;
         this.predictionPheneHighCutoff     = predictionPheneHighCutoff;
         this.predictionComparisonThreshold = predictionComparisonThreshold;
+        
+        this.diagnosisType = diagnosisType;
         
         log.info("Testing calculation diagnosis type: " + diagnosisType);
         CfeResults cfeResults = null;
@@ -843,7 +847,12 @@ public class TestingScoresCalc {
         String scoreColumnName = "Score";
         dataTable.addColumn(scoreColumnName, "0");
         
+        // Set up predictor to row number map. Initialize with values from testing scores results data table.
         HashMap<String,Integer> predictorToRowNumberMap = new HashMap<String,Integer>();
+        for (int rowNum = 0; rowNum < testingScoringResultsDataTable.getNumberOfRows(); rowNum++) {
+            String predictor = testingScoringResultsDataTable.getValue(rowNum, 0);
+            predictorToRowNumberMap.put(predictor, rowNum); 
+        }
         
         
         //-----------------------------------------
@@ -1540,6 +1549,11 @@ public class TestingScoresCalc {
         infoTable.addRow(row);
         
         row = new ArrayList<String>();
+        row.add("Diagnosis Type");
+        row.add(this.diagnosisType);
+        infoTable.addRow(row);
+        
+        row = new ArrayList<String>();
         row.add("Score Cutoff");
         row.add(this.scoreCutoff + "");
         infoTable.addRow(row);
@@ -2186,6 +2200,14 @@ public class TestingScoresCalc {
     
     public void setrScriptOutputFutureLongitudinal(String rScriptOutputFutureLongitudinal) {
         this.rScriptOutputFutureLongitudinal = rScriptOutputFutureLongitudinal;
+    }
+
+    public String getDiagnosisType() {
+        return diagnosisType;
+    }
+
+    public void setDiagnosisType(String diagnosisType) {
+        this.diagnosisType = diagnosisType;
     }
 
 }

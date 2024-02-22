@@ -549,7 +549,7 @@ public class TestingScoresCalc {
         //-------------------------------------------------------------------------
         // Calculate testing scores and add "testing scoring results" sheet
         //-------------------------------------------------------------------------
-        for (int i = 1; i < testingScoringResultsDataTable.getNumberOfRows(); i++) {
+        for (int i = 0; i < testingScoringResultsDataTable.getNumberOfRows(); i++) {
             double state     = testingScoringResultsDataTable.getDoubleValue(i, 1);
             double firstYear = testingScoringResultsDataTable.getDoubleValue(i, 2);
             double future    = testingScoringResultsDataTable.getDoubleValue(i, 3);

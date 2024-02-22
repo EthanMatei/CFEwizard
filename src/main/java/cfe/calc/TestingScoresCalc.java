@@ -831,7 +831,9 @@ public class TestingScoresCalc {
 	public void calculateTestingScores(DataTable dataTable, DataTable testingScoringResultsDataTable, String testType, String studyType, 
 	        Double testingAllScore, Double testingGenderScore, Double testingGenderDiagnosisScore)
 	        throws Exception
-	{    
+	{   
+	    log.info("Calculating Testing Scores for " + testType + " " + studyType + ".");
+	    
 	    String oneTailPValueColumnName = "1-tail p-value";
         if (testType == FUTURE) {
             dataTable.addColumn(oneTailPValueColumnName, "0");
@@ -943,6 +945,8 @@ public class TestingScoresCalc {
             //----------------------------------------------------
             double currentScore = testingScoringResultsDataTable.getDoubleValue(resultsRowNumber, resultsColumnIndex);
             if (score > currentScore) {
+                // Scores for cross-sectional and longitudinal studies should be stored in the same cell for each
+                // test type, so this code should in effect take the maximum of each.
                 testingScoringResultsDataTable.setValue(resultsRowNumber, resultsColumnIndex, score + "");
             }
         }

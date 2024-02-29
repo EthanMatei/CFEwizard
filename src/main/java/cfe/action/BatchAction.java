@@ -231,6 +231,7 @@ public class BatchAction extends BaseAction implements SessionAware {
     private String validationRScriptCommandFile;
     private String validationRScriptOutputFile;
 
+    private boolean skipValidationSteps;
 
     /* Testing Cohorts --------------------------------------------------------------- */
     
@@ -304,6 +305,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     public BatchAction() {
         this.setCurrentTab("CFE Pipeline");
         this.setCurrentStep(1);
+        
+        this.skipValidationSteps = false;
         
         this.testingAllScore             = 4.0;
         this.testingGenderScore          = 2.0;
@@ -1999,6 +2002,14 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setValidationRScriptOutputFile(String validationRScriptOutputFile) {
         this.validationRScriptOutputFile = validationRScriptOutputFile;
+    }
+    
+    public boolean isSkipValidationSteps() {
+        return skipValidationSteps;
+    }
+
+    public void setSkipValidationSteps(boolean skipValidationSteps) {
+        this.skipValidationSteps = skipValidationSteps;
     }
 
     

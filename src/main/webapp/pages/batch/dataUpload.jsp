@@ -145,14 +145,12 @@ function submitForm() {
         });
         </script>
     
-        <%--
         <hr/>
     
         <p>
         <span style="font-weight: bold;">Skip Validation Steps:</span>
         <s:checkbox name="skipValidationSteps"/> (WORK IN PROGRESS)
         </p>
-        --%>
     
         <hr/>
     

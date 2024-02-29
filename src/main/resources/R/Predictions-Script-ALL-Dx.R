@@ -329,7 +329,7 @@ tableColNames <- c("Gender",
 #for HOSP runs we additionally do some cox regressions so we need column names for those too
 if (stateFirstYearHosp | stateFutureHosp | FIRSTYEARtest | FUTUREtest | DEATHtest){  
   tableColNames <- c(tableColNames, 
-      "Odds ratio predicting suicide",
+      "Odds ratio",
       "p-value for odds ratio")
   
 }
@@ -338,9 +338,6 @@ if (stateFirstYearHosp | stateFutureHosp | FIRSTYEARtest | FUTUREtest | DEATHtes
 table <- as.data.frame(setNames(replicate(length(tableColNames),0, simplify = F), tableColNames))
 
 
-
-# supply the source() function with the filepath of the version of the predictor variable you want to use 
-# source("Z:\\Suman\\Suicide project with new guidelines using 2 probesets\\R\\CurrentBatchFunctionFourCornerstones (SG 10-27-2020).R")
 fourCornerstonesScript <- paste(scriptDir, "CurrentBatchFunctionFourCornerstones.R", sep="/")
 source(fourCornerstonesScript)
 

@@ -17,7 +17,8 @@ import cfe.parser.DiscoveryDatabaseParser;
 
 public class TableCheckInfo {
     
-    public static final String PHENE_VISIT_PATTERN = "^phchp\\d+v\\d+$|^CTBIN\\d+v\\d+$";
+    /* 2024-01-11: Decision made to not restrict phene visit pattern */
+    //public static final String PHENE_VISIT_PATTERN = "^phchp\\d+v\\d+$|^CTBIN\\d+v\\d+$";
     
 	private String name;
 	private Set<String> columns;
@@ -154,12 +155,13 @@ public class TableCheckInfo {
                     if (pheneVisits.contains(pheneVisit)) {
                         tableCheckInfo.addError("Duplicate phene visit \"" + pheneVisit + "\" on line " + (i+1) + ".");
                     }
-                    else if (pheneVisit.matches(PHENE_VISIT_PATTERN)) {
+                    /* 2024-01-11: Decision made to not restrict phene visit pattern */
+                    //else if (pheneVisit.matches(PHENE_VISIT_PATTERN)) {
                         pheneVisits.add(pheneVisit);
-                    }
-                    else {
-                        tableCheckInfo.addError("Phene visit \"" + pheneVisit + "\" on line " + (i+1) + " has an incorrect format.");
-                    }
+                    //}
+                    //else {
+                    //    tableCheckInfo.addError("Phene visit \"" + pheneVisit + "\" on line " + (i+1) + " has an incorrect format.");
+                    //}
                        
                 }
             }

@@ -368,3 +368,7 @@ span.help {
 div.helpDialog {
 	background-color: #F5F5F5;
 }
+
+.phenomic-db-check-dialog {
+    border: 2px solid #000063 !important;
+}

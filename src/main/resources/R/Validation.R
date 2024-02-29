@@ -223,7 +223,7 @@ tableColNames <- c("Analysis",
 #for HOSP runs we additionally do some cox regressions so we need column names for those too
 if (stateFirstYearHosp | stateFutureHosp | FIRSTYEARtest | FUTUREtest | DEATHtest){  
   tableColNames <- c(tableColNames, 
-                     "Odds ratio predicting suicide",
+                     "Odds ratio",
                      "p-value for odds ratio")
   
 }

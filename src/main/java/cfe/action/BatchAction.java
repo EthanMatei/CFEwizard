@@ -145,6 +145,9 @@ public class BatchAction extends BaseAction implements SessionAware {
     
     private List<TableCheckInfo> tableCheckInfos;
     
+    private int phenomicDatabaseErrorCount;
+    private int phenomicDatabaseWarningCount;
+
     /* Discovery Scores ------------------------------------------------------------- */
     
     private PercentileScores discoveryPercentileScores = new PercentileScores();
@@ -271,6 +274,11 @@ public class BatchAction extends BaseAction implements SessionAware {
     private Double predictionPheneHighCutoff;
     private Double predictionPheneComparisonThreshold = DEFAULT_COMPARISON_THRESHOLD;
     
+    private Double testingAllScore;
+    private Double testingGenderScore;
+    private Double testingGenderDiagnosisScore;
+
+    
     // Script command and output files (for case where process fails)
     private String stateCrossSectionalRScriptCommandFile;
     private String stateCrossSectionalRScriptOutputFile;
@@ -296,6 +304,10 @@ public class BatchAction extends BaseAction implements SessionAware {
     public BatchAction() {
         this.setCurrentTab("CFE Pipeline");
         this.setCurrentStep(1);
+        
+        this.testingAllScore             = 4.0;
+        this.testingGenderScore          = 2.0;
+        this.testingGenderDiagnosisScore = 1.0;
         
         admissionReasons = new ArrayList<String>();
         admissionReasons.add("Suicide");
@@ -399,6 +411,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                 
                 // Check the phenomic (testing) database
                 this.tableCheckInfos = TableCheckInfo.checkTestingDatabase(testingDbTempFileName);
+                this.phenomicDatabaseErrorCount   = TableCheckInfo.getErrorCount(tableCheckInfos);
+                this.phenomicDatabaseWarningCount = TableCheckInfo.getWarningCount(tableCheckInfos);
+                
+                log.info("Testing database checked.");
 
                 // Process testing database
                 DiscoveryDatabaseParser dbParser = new DiscoveryDatabaseParser(this.testingDbTempFileName);
@@ -1000,7 +1016,10 @@ public class BatchAction extends BaseAction implements SessionAware {
                             this.predictionPhene,
                             this.predictionPheneHighCutoff,
                             this.predictionPheneComparisonThreshold,
-                            this.testingDiagnosisType
+                            this.testingDiagnosisType,
+                            this.testingAllScore,
+                            this.testingGenderScore,
+                            this.testingGenderDiagnosisScore
                         );
                     }
                     catch (Exception exception) {
@@ -1346,6 +1365,22 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setTableCheckInfos(List<TableCheckInfo> tableCheckInfos) {
         this.tableCheckInfos = tableCheckInfos;
+    }
+
+    public int getPhenomicDatabaseErrorCount() {
+        return phenomicDatabaseErrorCount;
+    }
+
+    public void setPhenomicDatabaseErrorCount(int phenomicDatabaseErrorCount) {
+        this.phenomicDatabaseErrorCount = phenomicDatabaseErrorCount;
+    }
+
+    public int getPhenomicDatabaseWarningCount() {
+        return phenomicDatabaseWarningCount;
+    }
+
+    public void setPhenomicDatabaseWarningCount(int phenomicDatabaseWarningCount) {
+        this.phenomicDatabaseWarningCount = phenomicDatabaseWarningCount;
     }
 
     //------------------------------------
@@ -2312,6 +2347,32 @@ public class BatchAction extends BaseAction implements SessionAware {
 
     public void setPredictionPheneComparisonThreshold(Double predictionPheneComparisonThreshold) {
         this.predictionPheneComparisonThreshold = predictionPheneComparisonThreshold;
+    }
+
+  
+
+    public Double getTestingAllScore() {
+        return testingAllScore;
+    }
+
+    public void setTestingAllScore(Double testingAllScore) {
+        this.testingAllScore = testingAllScore;
+    }
+    
+    public Double getTestingGenderScore() {
+        return testingGenderScore;
+    }
+
+    public void setTestingGenderScore(Double testingGenderScore) {
+        this.testingGenderScore = testingGenderScore;
+    }
+
+    public Double getTestingGenderDiagnosisScore() {
+        return testingGenderDiagnosisScore;
+    }
+
+    public void setTestingGenderDiagnosisScore(Double testingGenderDiagnosisScore) {
+        this.testingGenderDiagnosisScore = testingGenderDiagnosisScore;
     }
 
     

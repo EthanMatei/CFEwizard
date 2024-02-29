@@ -1,5 +1,5 @@
 package cfe.model;
 
 public class VersionNumber {
-    public static final String VERSION_NUMBER = "0.4.5";
+    public static final String VERSION_NUMBER = "1.0.0";
 }

@@ -78,6 +78,8 @@
     <s:hidden name="startingResultsType"/>
     <s:hidden name="endingResultsType"/>
     
+    <s:hidden name="skipValidationSteps"/>
+    
     <%-- PHENOMIC (TESTING) DATABASE STATUS ====================================================== --%>
     <fieldset class=dataInput>
         <legend>Phenomic Database Status</legend>
@@ -410,7 +412,7 @@
     
     <%-- VALIDATION SCORES ===================================================================================== --%>
     
-    <s:if test="showValidationScores">    
+    <s:if test="showValidationScores && !skipValidationSteps">    
  
     <div>&nbsp;</div>
     <fieldset class="dataInput">

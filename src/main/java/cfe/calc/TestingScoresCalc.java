@@ -140,8 +140,8 @@ public class TestingScoresCalc {
     private Long cfeResultsId;
 
     private String diagnosisType;
-
 	
+    
 	public CfeResults calculate(
 	        CfeResults testingCohorts,
 	        double scoreCutoff,
@@ -168,6 +168,7 @@ public class TestingScoresCalc {
             Double testingAllScore,
             Double testingGenderScore,
             Double testingGenderDiagnosisScore
+            
 	) throws Exception {
 	    
 	    this.testingData               = testingCohorts;
@@ -196,6 +197,7 @@ public class TestingScoresCalc {
         this.predictionComparisonThreshold = predictionComparisonThreshold;
         
         this.diagnosisType = diagnosisType;
+        
         
         log.info("Testing calculation diagnosis type: " + diagnosisType);
         CfeResults cfeResults = null;
@@ -602,13 +604,16 @@ public class TestingScoresCalc {
         }
         
         // Create Validation scores map
-        DataTable validationScoresDataTable = resultsTables.get(CfeResultsType.VALIDATION_SCORES);
+        DataTable validationScoresDataTable = new DataTable();
         HashMap<String,Double> validationScoresMap = new HashMap<String,Double>();
-        
-        for (int i = 0; i < validationScoresDataTable.getNumberOfRows(); i++) {
-            String predictor = validationScoresDataTable.getValue(i, "Gene");
-            Double score = validationScoresDataTable.getDoubleValue(i, "ValidationScore");
-            validationScoresMap.put(predictor, score);
+        if (resultsTables.containsKey(CfeResultsType.VALIDATION_SCORES)) {
+            validationScoresDataTable = resultsTables.get(CfeResultsType.VALIDATION_SCORES);
+       
+            for (int i = 0; i < validationScoresDataTable.getNumberOfRows(); i++) {
+                String predictor = validationScoresDataTable.getValue(i, "Gene");
+                Double score = validationScoresDataTable.getDoubleValue(i, "ValidationScore");
+                validationScoresMap.put(predictor, score);
+            }
         }
         
         
@@ -1326,28 +1331,31 @@ public class TestingScoresCalc {
         //---------------------------------------------
         // Get validation scores
         //---------------------------------------------
-        XSSFSheet validationSheet = workbook.getSheet(CfeResultsSheets.VALIDATION_SCORES);
-        
-        DataTable validationScoresDataTable = null;
         Map<String,Double> validationScores = null;
+        XSSFSheet validationSheet = workbook.getSheet(CfeResultsSheets.VALIDATION_SCORES);
         if (validationSheet != null) {
-            validationScoresDataTable = new DataTable("Gene");
-            validationScoresDataTable.initializeToWorkbookSheet(validationSheet);
-            
-            validationScores = new HashMap<String,Double>();
-            
-            for (int i = 0; i < validationScoresDataTable.getNumberOfRows(); i++) {
-                String gene = validationScoresDataTable.getValue(i,  "Gene");
-                String scoreString = validationScoresDataTable.getValue(i, "ValidationScore");
-                double score = 0.0;
+
+            DataTable validationScoresDataTable = null;
+
+            if (validationSheet != null) {
+                validationScoresDataTable = new DataTable("Gene");
+                validationScoresDataTable.initializeToWorkbookSheet(validationSheet);
+
+                validationScores = new HashMap<String,Double>();
                 
-                try {
-                    score = Double.parseDouble(scoreString);
+                for (int i = 0; i < validationScoresDataTable.getNumberOfRows(); i++) {
+                    String gene = validationScoresDataTable.getValue(i,  "Gene");
+                    String scoreString = validationScoresDataTable.getValue(i, "ValidationScore");
+                    double score = 0.0;
+
+                    try {
+                        score = Double.parseDouble(scoreString);
+                    }
+                    catch (NumberFormatException exception) {
+                        score = 0.0;
+                    }
+                    validationScores.put(gene, score);
                 }
-                catch (NumberFormatException exception) {
-                    score = 0.0;
-                }
-                validationScores.put(gene, score);
             }
         }
         

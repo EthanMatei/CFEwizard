@@ -651,6 +651,12 @@ public class BatchAction extends BaseAction implements SessionAware {
                     log.info("PHENE INFO from starting results with ID: " + startingCfeResultsId);
                    
                     startingResultsTypeObj = new CfeResultsType(startingResults.getResultsType());
+                    
+                    // Error if starting step is Validation Scores and skip validation specified
+                    if (startingResults.getResultsType() == CfeResultsType.VALIDATION_SCORES && this.skipValidationSteps) {
+                        throw new Exception("Cannot specify both a starting step of \"" + CfeResultsType.VALIDATION_SCORES
+                                + "\" and skipping validation scoring.");
+                    }
                 }
                 else {
                     startingResultsType = CfeResultsType.NONE;
@@ -884,7 +890,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                 CfeResults validationScores = null;
                 
                 // Skip this step, if it is out of the range of the steps specified
-                if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType,  this.endingResultsType)) {
+                if (CfeResultsType.typeIsInRange(CfeResultsType.VALIDATION_SCORES, this.startingResultsType,  this.endingResultsType)
+                        && !this.skipValidationSteps) {
                     log.info("Step " + CfeResultsType.VALIDATION_SCORES + " started.");
                     ValidationScoresCalc validationScoresCalc = new ValidationScoresCalc();
 
@@ -945,9 +952,17 @@ public class BatchAction extends BaseAction implements SessionAware {
                     log.info("Step " + CfeResultsType.TESTING_COHORTS + " started.");
                     TestingCohortsCalc testingCohortsCalc = new TestingCohortsCalc();
                     
+                    CfeResults testingData = null;
+                    if (this.skipValidationSteps) {
+                        testingData = validationCohort;
+                    }
+                    else {
+                        testingData = validationScores;    
+                    }
+                    
                     try {
                         testingCohorts = testingCohortsCalc.calculate(
-                            validationScores,
+                            testingData, // validationScores,
                             this.followUpDb,
                             this.followUpDbFileName,
                             this.admissionPhene

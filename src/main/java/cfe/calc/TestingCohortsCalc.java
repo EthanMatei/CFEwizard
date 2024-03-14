@@ -333,6 +333,11 @@ public class TestingCohortsCalc {
                 cfeResults.setResultsType(CfeResultsType.TESTING_COHORTS);
                 cfeResults.addCsvAndTextFiles(validationResults);   // Add files from input results
             }
+            else if (validationResults.getResultsType().equals(CfeResultsType.VALIDATION_COHORT)) {
+                // Assuming Validation scoring skipped
+                cfeResults.setResultsType(CfeResultsType.TESTING_COHORTS);
+                cfeResults.addCsvAndTextFiles(validationResults);   // Add files from input results
+            }
 
             cfeResults.setResultsSpreadsheet(resultsWorkbook);
             cfeResults.setGeneratedTime(new Date());

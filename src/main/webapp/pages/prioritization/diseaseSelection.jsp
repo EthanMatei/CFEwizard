@@ -253,9 +253,16 @@ manually select diseases and enter coefficients.
     <s:file name="diseasesImport" label="Disease Selection CSV File" />
     <s:submit value="Import" style="font-weight: bold;"/>
     <s:token />
+    
+    <s:a action="PrioritizationReport" style="margin-left: 4em;">
+        <s:param name="reportName" value="'diseases-with-coefficients'" />
+        <s:param name="reportFormat" value="'csv'" />
+        diseases.csv
+    </s:a>
 </s:form>
 </div>
 
+                
 <hr/>
 
 <h3>Diseases - Manual Entry</h3>

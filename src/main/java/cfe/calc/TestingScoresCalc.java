@@ -698,7 +698,9 @@ public class TestingScoresCalc {
         //------------------------------------------------------
         
         // Add files from input results
+        log.info("Adding CSV and text files from input data to Testing Scoring CFE Results...");
         cfeResults.addCsvAndTextFiles(testingData);
+        log.info("Input data CSV and text files added to Testing Scoring CFE Results.");
         
         // Add the testing R script command
         //cfeResults.addTextFile(CfeResultsFileType.TESTING_R_SCRIPT_COMMAND, this.testingScoringCommand);
@@ -709,6 +711,7 @@ public class TestingScoresCalc {
                     CfeResultsFileType.PREDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_COMMAND,
                     this.rCommandStateCrossSectional
             );
+            log.info("Testing R script command file added for state cross-sectional.");
         }
         
         if (this.rScriptOutputStateCrossSectional != null) {
@@ -716,6 +719,7 @@ public class TestingScoresCalc {
                     CfeResultsFileType.PREDICTION_STATE_CROSS_SECTIONAL_R_SCRIPT_LOG,
                     this.rScriptOutputStateCrossSectional
             );
+            log.info("Testing R script log file added for state cross-sectional.");
         }
         
         
@@ -724,6 +728,7 @@ public class TestingScoresCalc {
                     CfeResultsFileType.PREDICTION_STATE_LONGITUDINAL_R_SCRIPT_COMMAND,
                     this.rCommandStateLongitudinal
             );
+            log.info("Testing R script command file added for state longitudinal.");
         }
         
         if (this.rScriptOutputStateLongitudinal != null) {
@@ -731,21 +736,26 @@ public class TestingScoresCalc {
                     CfeResultsFileType.PREDICTION_STATE_LONGITUDINAL_R_SCRIPT_LOG,
                     this.rScriptOutputStateLongitudinal
             );
+            log.info("Testing R script log file added for state longitudinal.");
         }
         
         
         if (this.rCommandFirstYearCrossSectional != null) {
+            log.info("Adding Testing R script command file for first year cross-sectional...");
             cfeResults.addTextFile(
                     CfeResultsFileType.PREDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_COMMAND,
                     this.rCommandFirstYearCrossSectional
             );
+            log.info("Testing R script command file added for first year cross-sectional.");
         }
         
         if (this.rScriptOutputFirstYearCrossSectional != null) {
+            log.info("Adding Testing R script log file for first year cross-sectional...");
             cfeResults.addTextFile(
                     CfeResultsFileType.PREDICTION_FIRST_YEAR_CROSS_SECTIONAL_R_SCRIPT_LOG,
                     this.rScriptOutputFirstYearCrossSectional
             );
+            log.info("Testing R script log file added for first year cross-sectional.");
         }
         
         
@@ -793,14 +803,17 @@ public class TestingScoresCalc {
         }
 
         // Add the master sheet file
+        log.info("Adding Testing master sheet...");
         File masterSheetFile = new File(this.testingMasterSheetFile);
         String masterSheetContents = FileUtils.readFileToString(masterSheetFile, StandardCharsets.UTF_8);
         cfeResults.addCsvFile(CfeResultsFileType.TESTING_MASTER_SHEET, masterSheetContents);
-
+        log.info("Testing master sheet added to CFE Results.");
+        
         // Add the predictor list file
         File predictorFile = new File(this.predictorListFile);
         String predictorListContents = FileUtils.readFileToString(predictorFile, StandardCharsets.UTF_8);
         cfeResults.addCsvFile(CfeResultsFileType.TESTING_PREDICTOR_LIST, predictorListContents);
+        log.info("Testing predictor list added to CFE Results");
         
         // Add the updated master sheet, if any
         if (this.updatedMasterSheetCsv != null) {
@@ -814,6 +827,7 @@ public class TestingScoresCalc {
             cfeResults.addCsvFile(CfeResultsFileType.TESTING_UPDATED_PREDICTOR_LIST, updatedPredictorListContents);
         }                
         
+        log.info("Saving Testing Scores CFE Results...");
         CfeResultsService.save(cfeResults);
         log.info("cfeResults object saved.");
         
@@ -821,6 +835,7 @@ public class TestingScoresCalc {
         if (this.cfeResultsId < 1) {
             throw new Exception("Testing scoring results id is not >= 1: " + cfeResultsId);
         }
+        log.info("Testing Scoring CFE Results ID: " + cfeResultsId);
 
         return cfeResults;
 	}

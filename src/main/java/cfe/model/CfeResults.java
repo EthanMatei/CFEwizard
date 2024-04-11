@@ -454,14 +454,32 @@ public class CfeResults implements Serializable {
         file.setCfeResults(this);   // Set the file's parent to this object
         this.cfeResultsFile.add(file);
     }
+
+    public void addTextFile(String fileType, byte[] content) {
+        CfeResultsFile file = new CfeResultsFile();
+        file.setToTextFile(fileType, content);
+        file.setCfeResults(this);   // Set the file's parent to this object
+        this.cfeResultsFile.add(file);
+    }
     
     public void addCsvFile(String fileType, String content) {
+        CfeResultsFile file = new CfeResultsFile();
+        log.info("New File object created.");
+        file.setToCsvFile(fileType, content);
+        log.info("File object st to CSV File.");
+        file.setCfeResults(this);   // Set the file's parent to this object
+        log.info("CSV File parent set.");
+        this.cfeResultsFile.add(file);
+        log.info("CSV file added to cfeResults.");
+    }
+
+    
+    public void addCsvFile(String fileType, byte[] content) {
         CfeResultsFile file = new CfeResultsFile();
         file.setToCsvFile(fileType, content);
         file.setCfeResults(this);   // Set the file's parent to this object
         this.cfeResultsFile.add(file);
     }
-    
     @Transient
     /**
      * Gets the set of all file types (whether generated, imported, or both)
@@ -480,23 +498,26 @@ public class CfeResults implements Serializable {
             
             if (cfeResultsFile.getMimeType().contentEquals("text/plain")) {
                 String fileType = cfeResultsFile.getFileType();
-                String content = cfeResultsFile.getContentAsString();
+                byte[] content = cfeResultsFile.getContent();
                 this.addTextFile(fileType, content);
             }
         }
     }
     
     public void addCsvAndTextFiles(CfeResults addResults) {
+        
+        log.info("Number of CSV and test files to add: " + addResults.cfeResultsFile.size());
+        
         for (CfeResultsFile cfeResultsFile: addResults.cfeResultsFile) {
             
             if (cfeResultsFile.getMimeType().contentEquals("text/plain")) {
                 String fileType = cfeResultsFile.getFileType();
-                String content = cfeResultsFile.getContentAsString();
+                byte[] content = cfeResultsFile.getContent();
                 this.addTextFile(fileType, content);
             }
             else if (cfeResultsFile.getMimeType().contentEquals("text/csv")) {
                 String fileType = cfeResultsFile.getFileType();
-                String content = cfeResultsFile.getContentAsString();
+                byte[] content = cfeResultsFile.getContent();
                 this.addCsvFile(fileType, content);
             }
         }

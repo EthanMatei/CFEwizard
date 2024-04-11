@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,6 +25,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.io.FileUtils;
+
 
 /**
  * Class for storing files in the database.
@@ -37,6 +40,8 @@ public class CfeResultsFile implements Serializable, Comparable<CfeResultsFile> 
 
     private static final long serialVersionUID = 1L;
 
+    private static Logger log = Logger.getLogger(CfeResultsFile.class.getName());
+    
     @Id @GeneratedValue(strategy=IDENTITY)
     private Long cfeResultsFileId;
     
@@ -96,6 +101,14 @@ public class CfeResultsFile implements Serializable, Comparable<CfeResultsFile> 
         this.creationTime = new Date();
     }
     
+    
+    public void setToTextFile(String fileType, byte[] content) {
+        this.fileType = fileType;
+        this.mimeType = "text/plain";
+        this.content  = content;
+        this.creationTime = new Date();
+    }
+    
     public void setToTextFile(String fileType, String content) {
         this.fileType = fileType;
         this.mimeType = "text/plain";
@@ -103,11 +116,34 @@ public class CfeResultsFile implements Serializable, Comparable<CfeResultsFile> 
         this.creationTime = new Date();
     }
     
-    public void setToCsvFile(String fileType, String content) {
+    public void setToCsvFile(String fileType, byte[] content) {
         this.fileType = fileType;
         this.mimeType = "text/csv";
-        this.content  = content.getBytes(StandardCharsets.UTF_8);
+        this.content  = content;
         this.creationTime = new Date();
+    }
+    
+    public void setToCsvFile(String fileType, String content) {
+        this.fileType = fileType;
+        log.info("File type set to: " + fileType);
+        this.mimeType = "text/csv";
+        log.info("Mime type set to: " + mimeType);
+        if (content == null) {
+            log.info("Content is null!");
+        }
+        log.info("content length: " + content.length());
+        
+        //FileUtils.writeStringToFile(null, content);
+        try {
+            this.content  = content.getBytes(StandardCharsets.UTF_8);
+        }
+        catch (Exception exception) {
+            log.severe(exception.getLocalizedMessage());
+        }
+        log.info("Content set. Content length = " + content.length() + ".");
+        
+        this.creationTime = new Date();
+        log.info("Creation time set.");
     }
     
     public Long getCfeResultsFileId() {

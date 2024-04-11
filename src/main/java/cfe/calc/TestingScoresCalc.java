@@ -805,13 +805,15 @@ public class TestingScoresCalc {
         // Add the master sheet file
         log.info("Adding Testing master sheet...");
         File masterSheetFile = new File(this.testingMasterSheetFile);
-        String masterSheetContents = FileUtils.readFileToString(masterSheetFile, StandardCharsets.UTF_8);
+        //String masterSheetContents = FileUtils.readFileToString(masterSheetFile, StandardCharsets.UTF_8);
+        byte[] masterSheetContents = FileUtils.readFileToByteArray(masterSheetFile);
         cfeResults.addCsvFile(CfeResultsFileType.TESTING_MASTER_SHEET, masterSheetContents);
         log.info("Testing master sheet added to CFE Results.");
         
         // Add the predictor list file
         File predictorFile = new File(this.predictorListFile);
-        String predictorListContents = FileUtils.readFileToString(predictorFile, StandardCharsets.UTF_8);
+        //String predictorListContents = FileUtils.readFileToString(predictorFile, StandardCharsets.UTF_8);
+        byte[] predictorListContents = FileUtils.readFileToByteArray(predictorFile);
         cfeResults.addCsvFile(CfeResultsFileType.TESTING_PREDICTOR_LIST, predictorListContents);
         log.info("Testing predictor list added to CFE Results");
         

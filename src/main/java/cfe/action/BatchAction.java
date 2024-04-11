@@ -606,6 +606,8 @@ public class BatchAction extends BaseAction implements SessionAware {
     public String calculate() throws Exception {
         String result = SUCCESS;
         
+        log.info("************** CALCULATE START ***************************************************");
+        
         this.setCurrentStep(3);
         
         if (!Authorization.isAdmin(webSession)) {
@@ -638,6 +640,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                 CfeResultsType startingResultsTypeObj = null;
                 CfeResults startingResults = null;
                 
+                log.info("*** startingCfeResultsId = " + startingCfeResultsId);
+                
                 if (this.startingCfeResultsId != null && this.startingCfeResultsId > 0) {
                     startingResults = CfeResultsService.get(startingCfeResultsId);
                     if (startingResults == null) {
@@ -665,6 +669,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                     pheneInfo = this.discoveryPheneInfo.split("]", 2);
                     log.info("PHENE INFO from input field");
                 }
+                
+                log.info("startingResultsTypeObj: " + startingResultsTypeObj.toString());
                 
                 if (pheneInfo.length > 1) {
                     log.info("PHENE INFO (2): " + pheneInfo[0] + " | " + pheneInfo[1]);

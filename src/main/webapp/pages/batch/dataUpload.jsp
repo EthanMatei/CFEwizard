@@ -149,7 +149,7 @@ function submitForm() {
     
         <p>
         <span style="font-weight: bold;">Skip Validation Scoring:</span>
-        <s:checkbox name="skipValidationSteps"/> (WORK IN PROGRESS)
+        <s:checkbox name="skipValidationSteps"/>
         </p>
     
         <hr/>

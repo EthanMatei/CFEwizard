@@ -197,7 +197,8 @@ if ( STATEtest ){
   # data$ROC <- as.numeric(data[PHENE] >= 4)
   clinical <- data$ValCategory == "Clinical"
   high     <- data$valCategory == "High"
-  data$ROC <- as.numeric(clinical | high)
+  low      <- data$valCategory == "Low"
+  data$ROC <- as.numeric(clinical | high | low)
   #Split dataset by cohort##
   data <- data[data$ValidationCohort == 1,]
   #data <- data[data$TestCohort == 1,]

@@ -468,6 +468,8 @@ public class BatchAction extends BaseAction implements SessionAware {
                             this.discoveryPheneInfo       = pheneNameLowHigh.getLeft();
                             this.discoveryPheneLowCutoff  = pheneNameLowHigh.getMiddle();
                             this.discoveryPheneHighCutoff = pheneNameLowHigh.getRight();
+
+                            log.info("DISCOVERY PHENE INFO: " + this.discoveryPheneInfo);
                             
                             this.manualResultsType = CfeResultsWorkbook.check(workbook, this.manualResultsSpreadsheetFileName);  // Do some validity checks
                             

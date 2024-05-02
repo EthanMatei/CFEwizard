@@ -257,16 +257,17 @@ public class ValidationScoresCalc {
 	        //log.info("Gender Diagnoses: " + genderDiagnoses);
 
 	        // Create the R script command
-	        String[] rScriptCommand = new String[7];
+	        String[] rScriptCommand = new String[8];
 	        rScriptCommand[0] = WebAppProperties.getRscriptPath();    // Full path of the Rscript command
 	        rScriptCommand[1] = scriptFile;     // The R script to run
 	        rScriptCommand[2] = scriptDir;   // The directory that contains R scripts
 	        rScriptCommand[3] = this.phene;
+	        rScriptCommand[4] = validationData.getHighCutoff() + "";
 	        //rScriptCommand[4] = diagnoses;
 	        //rScriptCommand[5] = genderDiagnoses;
-	        rScriptCommand[4] = masterSheetArg;
-	        rScriptCommand[5] = predictorListArg;
-	        rScriptCommand[6] = this.tempDir;
+	        rScriptCommand[5] = masterSheetArg;
+	        rScriptCommand[6] = predictorListArg;
+	        rScriptCommand[7] = this.tempDir;
 
 	        this.validationScoringCommand = "\"" + String.join("\" \"",  rScriptCommand) + "\"";
 	        log.info("Validation Scoring Command: " + this.validationScoringCommand);

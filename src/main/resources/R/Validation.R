@@ -13,11 +13,12 @@ if (length(args) != 5) {
 
 scriptDir            <- args[1]
 phene                <- args[2]
+pheneHighCutoff      <- args[3]
 # diagnoses            <- args[3]
 # genderDiagnoses      <- args[4]
-masterSheetCsvFile   <- args[3]
-predictorListCsvFile <- args[4]
-outputDir            <- args[5]
+masterSheetCsvFile   <- args[4]
+predictorListCsvFile <- args[5]
+outputDir            <- args[6]
 
 predictorFilePath <- predictorListCsvFile
 
@@ -194,11 +195,11 @@ if ( STATEtest ){
   
   #calculate ROC grouping variable
   #specify the PHENE variable above
-  # data$ROC <- as.numeric(data[PHENE] >= 4)
-  clinical <- data$ValCategory == "Clinical"
-  high     <- data$valCategory == "High"
-  low      <- data$valCategory == "Low"
-  data$ROC <- as.numeric(clinical | high | low)
+  data$ROC <- as.numeric(data[PHENE] >= pheneHighCutoff)
+  # clinical <- data$ValCategory == "Clinical"
+  # high     <- data$valCategory == "High"
+  # low      <- data$valCategory == "Low"
+  # data$ROC <- as.numeric(clinical | high | low)
   #Split dataset by cohort##
   data <- data[data$ValidationCohort == 1,]
   #data <- data[data$TestCohort == 1,]

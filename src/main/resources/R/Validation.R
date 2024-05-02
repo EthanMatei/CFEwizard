@@ -194,7 +194,8 @@ if ( STATEtest ){
   
   #calculate ROC grouping variable
   #specify the PHENE variable above
-  data$ROC <- as.numeric(data[PHENE] >= 4)
+  # data$ROC <- as.numeric(data[PHENE] >= 4)
+  data$ROC <- as.numeric(data$ValCategory == "Clinical")
   #Split dataset by cohort##
   data <- data[data$ValidationCohort == 1,]
   #data <- data[data$TestCohort == 1,]

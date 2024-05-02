@@ -110,6 +110,7 @@ public class ValidationScoresCalc {
 	        CfeResults validationCohort,
 	        double scoreCutoff,
 	        double comparisonThreshold,
+	        double discoveryPheneHighCutoff,
             double bonferroniScore,
             double nominalScore,
             double stepwiseScore,
@@ -262,7 +263,7 @@ public class ValidationScoresCalc {
 	        rScriptCommand[1] = scriptFile;     // The R script to run
 	        rScriptCommand[2] = scriptDir;   // The directory that contains R scripts
 	        rScriptCommand[3] = this.phene;
-	        rScriptCommand[4] = validationData.getHighCutoff() + "";
+	        rScriptCommand[4] = discoveryPheneHighCutoff + "";
 	        //rScriptCommand[4] = diagnoses;
 	        //rScriptCommand[5] = genderDiagnoses;
 	        rScriptCommand[5] = masterSheetArg;

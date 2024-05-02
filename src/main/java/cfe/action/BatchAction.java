@@ -911,6 +911,7 @@ public class BatchAction extends BaseAction implements SessionAware {
                                 validationCohort,
                                 this.validationScoreCutoff,
                                 this.validationScoresComparisonThreshold,
+                                this.discoveryPheneHighCutoff,
                                 this.bonferroniScore,
                                 this.nominalScore,
                                 this.stepwiseScore,

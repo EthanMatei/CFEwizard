@@ -6,7 +6,7 @@
 # Process command line arguments
 #-------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-if (length(args) != 5) {
+if (length(args) != 6) {
   print(paste("Incorrect number of arguments: ", length(args)))
   stop("Incorrect number of arguments to Validation script")
 }

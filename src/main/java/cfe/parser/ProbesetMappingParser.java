@@ -41,7 +41,7 @@ public class ProbesetMappingParser {
 	    try {
 	        Set<String> tableNames = this.database.getTableNames();
 	        for (String tableName: tableNames) {
-	            if (tableName.toLowerCase().contains("genecards")) {
+	            if (tableName.toLowerCase().contains("genecards") || tableName.toLowerCase().contains("annotations")) {
 	                genecardsTables.add(tableName);    
 	            }
 	        }
@@ -51,14 +51,14 @@ public class ProbesetMappingParser {
 	    
 	    if (genecardsTables.size() == 0) {
 	        String message = "No mapping table found in probset to gene mapping database."
-	                + " The database must contain one table that has the word \"genecards\" in its name"
+	                + " The database must contain one table that has the word \"genecards\" or \"annotations\" in its name"
 	                + " that provides the mapping information.";
 	        throw new Exception(message);
 	    }
 	    
 	    if (genecardsTables.size() > 1) {
 	        String message = "More than one mapping table found in probset to gene mapping database."
-	                + " The database must contain only one table that has the word \"genecards\" in its name,"
+	                + " The database must contain only one table that has the word \"genecards\" or \"annotations\" in its name,"
 	                + " which is used to get the mapping information.";
 	        throw new Exception(message);
 	    }

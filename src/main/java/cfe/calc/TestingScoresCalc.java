@@ -1249,7 +1249,7 @@ public class TestingScoresCalc {
             for (String predictor: predictors) {
 
                 if (predictor != null && !predictor.isEmpty()) {
-                    for (int i = 0; i < row.length; i++) {
+                    for (int i = 1; i < row.length; i++) {
                         String pheneVisit = header[i];
                         String rowValue = row[i];
                         

@@ -785,7 +785,7 @@ public class ValidationScoresCalc {
                     int valueCount = 0;
                     
                     // For each phene-visit in a probeset row in the gene expression file
-                    for (int i = 1; i < row.length; i++) {
+                    for (int i = 0; i < row.length; i++) {
                         String pheneVisit = header[i];
                         String value = row[i];
                     

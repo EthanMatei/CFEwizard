@@ -44,10 +44,12 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 	    
 	private List<Disorder> disorders;
 	
-	public DiseaseSelectionAction() {
+	public DiseaseSelectionAction() throws Exception {
         this.setCurrentTab("Other Functions");    
         this.setCurrentSubTab("Scoring");
         this.setCurrentStep(3);    
+        
+        this.diseaseSelectors = DisorderService.getDiseaseSelectors();
 	}
 	
 	public List<DiseaseSelector> getModel() {
@@ -204,6 +206,8 @@ public class DiseaseSelectionAction extends BaseAction implements ModelDriven<Li
 	public String execute() throws Exception {
 
 		String result = SUCCESS;
+		
+		log.info("DISEASE SELECTORS COUNT (DEVELOP): " + diseaseSelectors.size());
 		
 		if (!Authorization.isLoggedIn(session)) {
 			result = LOGIN;

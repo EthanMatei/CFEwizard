@@ -24,9 +24,9 @@ public class PercentileScores {
         this.upperBounds.add(1.0);
         
         this.scores.add(0.0);
-        this.scores.add(1.0);
         this.scores.add(2.0);
         this.scores.add(4.0);
+        this.scores.add(6.0);
     }
     
     public PercentileScores(double[] upperBounds, double[] scores) throws Exception {

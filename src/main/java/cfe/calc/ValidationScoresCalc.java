@@ -333,19 +333,35 @@ public class ValidationScoresCalc {
 	        String scoreColumn = "ValidationScore";
 	        validationScoringDataTable.addColumn(scoreColumn, "");
 
+	        //------------------------------------------------------------
+	        // Get column indexes
+	        //------------------------------------------------------------
+            int geneIndex     = validationScoringDataTable.getColumnIndex("Gene");
+            if (geneIndex < 0) {
+                throw new Exception("Could not find Gene column in validation scoring.");
+            }
+            
+            int stepwiseIndex = validationScoringDataTable.getColumnIndex("Stepwise.Test");
+            if (stepwiseIndex < 0) {
+                throw new Exception("Could not find stepwise (\"Stepwise.Test\") column in validation scoring.");
+            }
+            
+            int pValueIndex   = validationScoringDataTable.getColumnIndex("ANOVA.p.value");
+            if (pValueIndex < 0) {
+                throw new Exception("Could not find p-value (\"ANOVA.p.value\") column in validation scoring.");
+            }
+            
 	        for (int rowIndex = 0; rowIndex < validationScoringDataTable.getNumberOfRows(); rowIndex++) {
 	            double validationScore = 0;
-	            int stepwiseIndex = validationScoringDataTable.getColumnIndex("Stepwise.Test");
-	            int pValueIndex   = validationScoringDataTable.getColumnIndex("ANOVA.p.value");
 
-	            if (stepwiseIndex < 0) {
-	                throw new Exception("Could not find stepwise column in validation scoring.");
-	            }
-
-	            if (pValueIndex < 0) {
-	                throw new Exception("Could not find p-value column in validation scoring.");
-	            }
-
+	            //--------------------------------------------------------------------------
+	            // Reverse substitution to biomarker name made for R script
+	            //--------------------------------------------------------------------------
+	            String gene = validationScoringDataTable.getValue(rowIndex, geneIndex);
+                gene = gene.replaceAll(PREDICTOR_SLASH_REPLACEMENT, "/");
+                gene = gene.replaceAll(PREDICTOR_HYPHEN_REPLACEMENT, "-");
+                validationScoringDataTable.setValue(rowIndex, geneIndex, gene);
+                
 	            String stepwise = validationScoringDataTable.getValue(rowIndex, stepwiseIndex);
 	            String pValueString = validationScoringDataTable.getValue(rowIndex, pValueIndex);
 

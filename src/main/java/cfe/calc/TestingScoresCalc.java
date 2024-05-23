@@ -892,6 +892,34 @@ public class TestingScoresCalc {
             resultsColumnIndex = 3;
         }
         
+        //--------------------------------------------------------
+        // Get column indexes
+        //--------------------------------------------------------
+        int predictorIndex = dataTable.getColumnIndex("Predictor");
+        if (predictorIndex < 0) {
+            throw new Exception("Column \"Predictor\" not found in testing scores results.");
+        }
+        
+        int genderIndex = dataTable.getColumnIndex("Gender");
+        if (genderIndex < 0) {
+            throw new Exception("Column \"Gender\" not found in testing scores results.");
+        }
+        
+        int dxIndex = dataTable.getColumnIndex("Dx");
+        if (dxIndex < 0) {
+            throw new Exception("Column \"Dx\" not found in testing scores results.");
+        }
+        
+        int aucIndex = dataTable.getColumnIndex("AUC");
+        if (aucIndex < 0) {
+            throw new Exception("Column \"AUC\" not found in testing scores results.");
+        }
+        
+        int aucPValueIndex = dataTable.getColumnIndex("AUC.p.value");
+        if (aucPValueIndex < 0) {
+            throw new Exception("Column \"AUC.p.value\" not found in testing scores results.");
+        }
+        
         //--------------------------------------------------------------
         // Set score values
         //--------------------------------------------------------------
@@ -901,7 +929,14 @@ public class TestingScoresCalc {
             // Add predictor to scoring results if not already added,
             // and get the row number for the predictor
             //-----------------------------------------------------------
-            String predictor = dataTable.getValue(i, "Predictor");
+            String predictor = dataTable.getValue(i, predictorIndex);
+            
+            //--------------------------------------------------------------------------
+            // Reverse substitution to biomarker name made for R script
+            //--------------------------------------------------------------------------
+            predictor = predictor.replaceAll(ValidationScoresCalc.PREDICTOR_SLASH_REPLACEMENT, "/");
+            predictor = predictor.replaceAll(ValidationScoresCalc.PREDICTOR_HYPHEN_REPLACEMENT, "-");
+            dataTable.setValue(i, predictorIndex, predictor);
             
             int resultsRowNumber = 0;
             
@@ -918,10 +953,10 @@ public class TestingScoresCalc {
             }
             //-----------------------------------------------------------
             
-            String gender = dataTable.getValue(i, "Gender");
-            String dx = dataTable.getValue(i, "Dx");
-            Double auc = dataTable.getDoubleValue(i, "AUC");
-            Double aucPValue = dataTable.getDoubleValue(i, "AUC.p.value");
+            String gender = dataTable.getValue(i, genderIndex);
+            String dx = dataTable.getValue(i, dxIndex);
+            Double auc = dataTable.getDoubleValue(i, aucIndex);
+            Double aucPValue = dataTable.getDoubleValue(i, aucPValueIndex);
 
             Double score = 0.0;
             

@@ -105,6 +105,8 @@ public class GeneListInput {
         String key = null;  // Can have duplicates
 	    DataTable discoveryScores = discoveryResults.getSheetAsDataTable(CfeResultsType.DISCOVERY_SCORES, key);
 	    
+	    log.info("Discovery scores rows: " + discoveryScores.getNumberOfRows());
+	    
 	    if (discoveryScores == null) {
 	        throw new Exception("Discovery scores were not found in discovery results specified for gene list creation.");
 	    }
@@ -114,15 +116,14 @@ public class GeneListInput {
 	    for (int i = 0; i < discoveryScores.getNumberOfRows(); i++) {
 	        row = discoveryScores.getRowMap(i);
 	        
-            /*
-	        for (String rowKey: row.keySet()) {
-	            log.info("    ROW MAP[" + rowKey + "] = " + row.get(rowKey));
-	        }
-            */
+	        //for (String rowKey: row.keySet()) {
+	        //    log.info("    ROW MAP[" + rowKey + "] = " + row.get(rowKey));
+	        //}
 
             String deRawScore = "DE Raw Score";
-            if (!row.containsKey("deRawScore") || row.get(deRawScore).equalsIgnoreCase("NA")) {
+            if (!row.containsKey(deRawScore) || row.get(deRawScore).equalsIgnoreCase("NA")) {
                 // If this row doesn't have a DE Raw Score or that score is NA, then skip this row
+                // log.info("No DE RAW Score; skipping row number " + i);
                 continue;
             }
 

@@ -802,16 +802,21 @@ public class BatchAction extends BaseAction implements SessionAware {
                 if (CfeResultsType.typeIsInRange(CfeResultsType.PRIORITIZATION_SCORES, this.startingResultsType,  this.endingResultsType)) {
                     log.info("Step " + CfeResultsType.PRIORITIZATION_SCORES + " started.");
                     
+                    log.info("*** GENE LIST SPECIFICATION: \"" + this.geneListSpecification + "\"");
+                    
                     // Process the gene list
                     if (this.geneListSpecification.contentEquals("All")) {
+                        log.info("Generating gene list with all genes.");
                         this.geneListUploadFileName = "";
                         this.geneListInput = new GeneListInput();
                     }
                     else if (this.geneListSpecification.contentEquals("Upload File:")) {
+                        log.info("Generating gene list from uploaded file.");
                         // FIX!!!!!!!!!! - NOT CORRECT FILE NAME HERE - need the path????????????????
                         this.geneListInput = new GeneListInput(this.geneListUpload.getAbsolutePath());
                     }
                     else if (this.geneListSpecification.contentEquals("Generate from Discovery:")) {
+                        log.info("*** Generating gene list from Discovery results.");
                         this.geneListUploadFileName = "";
                         this.geneListInput = new GeneListInput(discoveryScores, this.prioritizationScoreCutoff, this.prioritizationComparisonThreshold);
                     }

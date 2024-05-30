@@ -80,8 +80,8 @@ public class ValidationScoresCalc {
     
     // Slashes and hyphens in predictors will cause an error in the R script, so these
     // characters are replaced with the following values
-    public static final String PREDICTOR_SLASH_REPLACEMENT  = "88888";
-    public static final String PREDICTOR_HYPHEN_REPLACEMENT = "77777";
+    public static final String PREDICTOR_SLASH_REPLACEMENT  = "_88888_";
+    public static final String PREDICTOR_HYPHEN_REPLACEMENT = "_77777_";
 	
 
     double bonferroniScore  = 6;

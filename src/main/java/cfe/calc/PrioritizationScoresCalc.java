@@ -96,11 +96,52 @@ public class PrioritizationScoresCalc {
             Date generatedTime = new Date();
 
 
+
             // Generate a workbook with the prioritization scores
             XSSFWorkbook workbook = ReportGenerator.generateScoresWorkbook(
                         results, /* scores, */ weights, diseaseSelectors, geneListInput,
                         discoveryId, discoveryScoreCutoff, geneListFileName 
                         );
+
+            // JB Edit 7-30-2025: Issue with Prioritization Scores & Details sheets saving genes separated by commas (Ex: BRF1, Brf1) -> CFE Scores tab pulls incorrect prioritization score
+            // Prioritization Scores: gene is column B (index 1)
+            String sheetNameScores = "prioritization scores";
+            int geneColIdxScores = 1;
+            org.apache.poi.xssf.usermodel.XSSFSheet sheetScores = workbook.getSheet(sheetNameScores);
+            if (sheetScores != null) {
+                for (int i = 1; i <= sheetScores.getLastRowNum(); i++) { // Assuming row 0 is header
+                    org.apache.poi.ss.usermodel.Row row = sheetScores.getRow(i);
+                    if (row != null) {
+                        org.apache.poi.ss.usermodel.Cell geneCell = row.getCell(geneColIdxScores);
+                        if (geneCell != null && geneCell.getCellType() == org.apache.poi.ss.usermodel.CellType.STRING) {
+                            String geneValue = geneCell.getStringCellValue();
+                            if (geneValue.contains(",")) {
+                                String newGene = geneValue.split(",")[0].trim();
+                                geneCell.setCellValue(newGene);
+                            }
+                        }
+                    }
+                }
+            }
+            // Prioritization Score Details: gene is column A (index 0)
+            String sheetNameDetails = "prioritization score details";
+            int geneColIdxDetails = 0;
+            org.apache.poi.xssf.usermodel.XSSFSheet sheetDetails = workbook.getSheet(sheetNameDetails);
+            if (sheetDetails != null) {
+                for (int i = 1; i <= sheetDetails.getLastRowNum(); i++) { // Assuming row 0 is header
+                    org.apache.poi.ss.usermodel.Row row = sheetDetails.getRow(i);
+                    if (row != null) {
+                        org.apache.poi.ss.usermodel.Cell geneCell = row.getCell(geneColIdxDetails);
+                        if (geneCell != null && geneCell.getCellType() == org.apache.poi.ss.usermodel.CellType.STRING) {
+                            String geneValue = geneCell.getStringCellValue();
+                            if (geneValue.contains(",")) {
+                                String newGene = geneValue.split(",")[0].trim();
+                                geneCell.setCellValue(newGene);
+                            }
+                        }
+                    }
+                }
+            }
 
             // If the gene list was created from Discovery results, include
             // the Discovery results in the workbook
@@ -141,66 +182,66 @@ public class PrioritizationScoresCalc {
 
         return cfeResults;
     }
-	
-	/*	???
-	public void validate() {
-		
-		//JGM log.info("Score: " + this.score);
-		
-		if (	!this.score.contains(Scores.SUICIDE.getLabel()) && 
-				!this.score.contains(Scores.MOOD.getLabel()) &&
-				!this.score.contains(Scores.PSYCHOSIS.getLabel()) &&
-				!this.score.contains(Scores.OTHER.getLabel())
-				)
-			addActionError( "Score calculation for " + this.score + " is currently not supported." );
+    
+    /*	???
+    public void validate() {
+        
+        //JGM log.info("Score: " + this.score);
+        
+        if (	!this.score.contains(Scores.SUICIDE.getLabel()) && 
+                !this.score.contains(Scores.MOOD.getLabel()) &&
+                !this.score.contains(Scores.PSYCHOSIS.getLabel()) &&
+                !this.score.contains(Scores.OTHER.getLabel())
+                )
+            addActionError( "Score calculation for " + this.score + " is currently not supported." );
 
-	}
-	*/
+    }
+    */
 
-	public Map<String, ScoreResults> getScores() {
-		return scores;
-	}
+    public Map<String, ScoreResults> getScores() {
+        return scores;
+    }
 
-	public void setScores(Map<String, ScoreResults> scores) {
-		this.scores = scores;
-	}
-	
+    public void setScores(Map<String, ScoreResults> scores) {
+        this.scores = scores;
+    }
+    
 
 
-	//---------------------------------------------------------------------
-	// Getters and Setters
-	//---------------------------------------------------------------------
-	public String getScore() {
-		return this.score;
-	}
+    //---------------------------------------------------------------------
+    // Getters and Setters
+    //---------------------------------------------------------------------
+    public String getScore() {
+        return this.score;
+    }
  
-	public void setScore(String score) {
-		this.score = score;
-	}
-	
-	public boolean isOtherCompleted() {
-		return otherCompleted;
-	}
+    public void setScore(String score) {
+        this.score = score;
+    }
+    
+    public boolean isOtherCompleted() {
+        return otherCompleted;
+    }
 
-	public void setOtherCompleted(boolean otherCompleted) {
-		this.otherCompleted = otherCompleted;
-	}
+    public void setOtherCompleted(boolean otherCompleted) {
+        this.otherCompleted = otherCompleted;
+    }
 
-	public List<DiseaseSelector> getDiseaseSelectors() {
-		return diseaseSelectors;
-	}
+    public List<DiseaseSelector> getDiseaseSelectors() {
+        return diseaseSelectors;
+    }
 
-	public void setDiseaseSelectors(List<DiseaseSelector> diseaseSelectors) {
-		this.diseaseSelectors = diseaseSelectors;
-	}
+    public void setDiseaseSelectors(List<DiseaseSelector> diseaseSelectors) {
+        this.diseaseSelectors = diseaseSelectors;
+    }
 
-	public Results getResults() {
-		return results;
-	}
+    public Results getResults() {
+        return results;
+    }
 
-	public void setResults(Results results) {
-		this.results = results;
-	}
+    public void setResults(Results results) {
+        this.results = results;
+    }
 
 
     public Long getDiscoveryId() {

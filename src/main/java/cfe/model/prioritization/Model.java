@@ -41,7 +41,7 @@ abstract class Model {
 	public void setID(long iD) {
 		ID = iD;
 	}
-	@Column(length=50)
+	@Column(length=255)
 	public String getPsychiatricDomain() {
 		return PsychiatricDomain;
 	}
@@ -50,7 +50,7 @@ abstract class Model {
 		if (psychiatricDomain == null) psychiatricDomain = "";
 		PsychiatricDomain = psychiatricDomain.trim();
 	}
-	@Column(length=50)
+	@Column(length=150)
 	public String getSubDomain() {
 		return SubDomain;
 	}
@@ -59,7 +59,7 @@ abstract class Model {
 		if (subDomain == null) subDomain = "";
 		SubDomain = subDomain.trim();
 	}
-	@Column(length=50)
+	@Column(length=255)
 	public String getRelevantDisorder() {
 		return RelevantDisorder;
 	}

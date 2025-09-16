@@ -3,63 +3,45 @@ package cfe.model.prioritization.disease;
 
 
 public class Disease {
-	String domain;
-	String subdomain;
-	String relevantDisorder;
+	private final String psychiatricDomain;
+	private final String subdomain;
+	private final String relevantDisorder;
 	
-	public Disease(String domain, String subdomain, String relevantDisorder) {
-		this.domain = domain;
-		this.subdomain = subdomain;
-		this.relevantDisorder = relevantDisorder;
+	public Disease(String psychiatricDomain, String subdomain, String relevantDisorder) {
+	    this.psychiatricDomain = psychiatricDomain == null ? null : psychiatricDomain.trim().toUpperCase();
+	    this.subdomain = subdomain == null ? null : subdomain.trim().toUpperCase();
+	    this.relevantDisorder = relevantDisorder == null ? null : relevantDisorder.trim().toUpperCase();
 	}
 
+	@Override
 	public boolean equals(Object obj) {
-	    boolean equal = true;
-		if (obj == null) {
-			equal = false;
-		}
-		else if (!(obj instanceof Disease)) {
-			equal = false;
-		}
-		else {
-			Disease d = (Disease) obj;
-			
-		    if (domain == null && d.domain != null) equal = false;
-		    else if (domain != null && !domain.equals(d.domain)) equal = false;
-		    else if (subdomain == null && d.subdomain != null) equal = false;
-		    else if (subdomain != null && !subdomain.equals(d.subdomain)) equal = false;
-		    else if (relevantDisorder == null && d.relevantDisorder != null) equal = false;
-		    else if (relevantDisorder != null && !relevantDisorder.equals(d.relevantDisorder)) equal = false;
-		}
-	    return equal;
+	    if (this == obj) return true;
+	    if (obj == null || getClass() != obj.getClass()) return false;
+	    Disease other = (Disease) obj;
+	    return (psychiatricDomain == null ? other.psychiatricDomain == null : psychiatricDomain.equals(other.psychiatricDomain))
+	        && (subdomain == null ? other.subdomain == null : subdomain.equals(other.subdomain))
+	        && (relevantDisorder == null ? other.relevantDisorder == null : relevantDisorder.equals(other.relevantDisorder));
 	}
-	
+
+	@Override
 	public int hashCode() {
-		return (this.domain + this.subdomain + this.relevantDisorder).hashCode();
+	    int result = 17;
+	    result = 31 * result + (psychiatricDomain == null ? 0 : psychiatricDomain.hashCode());
+	    result = 31 * result + (subdomain == null ? 0 : subdomain.hashCode());
+	    result = 31 * result + (relevantDisorder == null ? 0 : relevantDisorder.hashCode());
+	    return result;
 	}
 
 	public String getDomain() {
-		return domain;
-	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
+		return psychiatricDomain;
 	}
 
 	public String getSubdomain() {
 		return subdomain;
 	}
 
-	public void setSubdomain(String subdomain) {
-		this.subdomain = subdomain;
-	}
-
 	public String getRelevantDisorder() {
 		return relevantDisorder;
-	}
-
-	public void setRelevantDisorder(String relevantDisorder) {
-		this.relevantDisorder = relevantDisorder;
 	}
 	
 }

@@ -22,9 +22,9 @@ public class Research {
 					&& gene.equals(r.gene) 
 					&& category.equals(r.category)
 					&& subcategory.equals(r.subcategory)
-					&& psychiatricDomain.equals(r.psychiatricDomain)
-					&& subdomain.equals(r.subdomain)
-					&& relevantDisorder.equals(r.relevantDisorder)
+					&& psychiatricDomain.equalsIgnoreCase(r.psychiatricDomain)
+					&& subdomain.equalsIgnoreCase(r.subdomain)
+					&& relevantDisorder.equalsIgnoreCase(r.relevantDisorder)
 					&& tissue.equals( r.tissue )
 					&& directionChange.equals( r.directionChange )
 					&& pubMedId.equals( r.pubMedId )
@@ -34,9 +34,16 @@ public class Research {
 		}
 		return areEqual;
 	}
-	
+
 	public int hashCode() {
-	    return (this.pubMedId + this.relevantDisorder + this.category + this.subcategory).hashCode(); 	
+	    // Use upper case for case-insensitive fields
+	    return (this.pubMedId 
+	            + (this.relevantDisorder == null ? "" : this.relevantDisorder.toUpperCase())
+	            + this.category 
+	            + this.subcategory
+	            + (this.psychiatricDomain == null ? "" : this.psychiatricDomain.toUpperCase())
+	            + (this.subdomain == null ? "" : this.subdomain.toUpperCase())
+	    ).hashCode(); 	
 	}
 	
 	//----------------------------------------------

@@ -112,16 +112,19 @@ public class DiseaseSelector {
             //    + "." + diseaseSelector.getPsychiatricSubDomain() + "." + diseaseSelector.getRelevantDisorder());
 
             for (String[] line: data) {
-                String domain           = line[0];
-                String subDomain        = line[1];
-                String relevantDisorder = line[2];
+                String domain           = line[0] == null ? "" : line[0].trim();
+                String subDomain        = line[1] == null ? "" : line[1].trim();
+                String relevantDisorder = line[2] == null ? "" : line[2].trim();
                 String coefficient      = line[3];
 
-                // log.info("    " + domain + "." + subDomain + "." + relevantDisorder + ": " + coefficient);
+                // Normalize for case-insensitive comparison
+                String dsDomain = diseaseSelector.getPsychiatricDomain() == null ? "" : diseaseSelector.getPsychiatricDomain().trim();
+                String dsSubDomain = diseaseSelector.getPsychiatricSubDomain() == null ? "" : diseaseSelector.getPsychiatricSubDomain().trim();
+                String dsRelevantDisorder = diseaseSelector.getRelevantDisorder() == null ? "" : diseaseSelector.getRelevantDisorder().trim();
 
-                if (diseaseSelector.getPsychiatricDomain().contentEquals(domain)
-                        && diseaseSelector.getPsychiatricSubDomain().contentEquals(subDomain)
-                        && diseaseSelector.getRelevantDisorder().contentEquals(relevantDisorder)) {
+                if (dsDomain.equalsIgnoreCase(domain)
+                        && dsSubDomain.equalsIgnoreCase(subDomain)
+                        && dsRelevantDisorder.equalsIgnoreCase(relevantDisorder)) {
 
                     diseaseSelectors.get(i).setRelevantDisorderSelected(true);
 

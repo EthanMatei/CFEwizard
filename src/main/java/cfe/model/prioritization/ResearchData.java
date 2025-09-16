@@ -145,7 +145,12 @@ public class ResearchData {
 		Set<Disease> diseases = new HashSet<Disease>();
 		for (Research research: this.get(gene)) {
 			if (research.category.equals(category)) {
-				Disease disease = new Disease(research.getPsychiatricDomain(), research.getSubdomain(), research.getRelevantDisorder());
+				// Pass original case to Disease; Disease class should handle case-insensitivity
+				Disease disease = new Disease(
+					research.getPsychiatricDomain(),
+					research.getSubdomain(),
+					research.getRelevantDisorder()
+				);
 				diseases.add( disease );
 			}
 		}		
@@ -156,7 +161,12 @@ public class ResearchData {
 		Set<Disease> diseases = new HashSet<Disease>();
 		for (Research research: this.get(gene)) {
 			if (research.category.equals(category) && research.subcategory.equals(subcategory)) {
-				Disease disease = new Disease(research.getPsychiatricDomain(), research.getSubdomain(), research.getRelevantDisorder());
+				// Pass original case to Disease; Disease class should handle case-insensitivity
+				Disease disease = new Disease(
+					research.getPsychiatricDomain(),
+					research.getSubdomain(),
+					research.getRelevantDisorder()
+				);
 				diseases.add( disease );
 			}
 		}		

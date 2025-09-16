@@ -29,11 +29,16 @@ public class DiseaseSelection {
 	
 	public double getCoefficent(String domain, String subdomain, String disorder) {
 		double coefficient = 0.0;
-		for (DiseaseSelector disease: this.diseaseSelectors) {
-			if (disease.getPsychiatricDomain().equals(domain)
-					&& disease.getPsychiatricSubDomain().equals(subdomain)
-					&& disease.getRelevantDisorder().equals(disorder)) {
-				coefficient = disease.getCoefficient();
+		if (domain != null && subdomain != null && disorder != null) {
+			domain    = domain.trim();
+			subdomain = subdomain.trim();
+			disorder  = disorder.trim();
+			for (DiseaseSelector disease: this.diseaseSelectors) {
+				if (disease.getPsychiatricDomain().trim().equalsIgnoreCase(domain)
+						&& disease.getPsychiatricSubDomain().trim().equalsIgnoreCase(subdomain)
+						&& disease.getRelevantDisorder().trim().equalsIgnoreCase(disorder)) {
+					coefficient = disease.getCoefficient();
+				}
 			}
 		}
 		return coefficient;

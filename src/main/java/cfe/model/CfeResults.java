@@ -53,7 +53,7 @@ public class CfeResults implements Serializable {
 	private Date generatedTime;
 
     @Lob
-    @Column(name="results", nullable=true, columnDefinition="mediumblob")
+    @Column(name="results", nullable=true, columnDefinition="longblob")
 	private byte[] results;
 	
 	private String resultsType;
@@ -522,4 +522,5 @@ public class CfeResults implements Serializable {
             }
         }
     }	
+
 }
